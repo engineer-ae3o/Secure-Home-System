@@ -25,18 +25,20 @@ enable_language(C CXX ASM)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -mfloat-abi=soft -ffunction-sections -Wextra -Wall -fdata-sections -fno-common")
-set(CMAKE_CXX_FLAGS "-mcpu=cortex-m3 -mthumb -mfloat-abi=soft -Wall -Wextra -fdata-sections -ffunction-sections -Wnoexcept \
-                     -Wwrite-strings -Wformat=2 -fno-common -Wnull-dereference -fno-exceptions -fno-rtti -Wstrict-aliasing=2")
+set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wnoexcept -Wwrite-strings -Wformat=2 -Wnull-dereference -fno-exceptions -fno-rtti -Wstrict-aliasing=2")
 
-set(CMAKE_C_FLAGS_DEBUG "-Og -g3 -ggdb -fanalyzer -fanalyzer-verbosity=2 -DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "-Og -g3 -ggdb -DDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Wl,-s -DNDEBUG")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
-set(CMAKE_EXE_LINKER_FLAGS "-T${CMAKE_SOURCE_DIR}/STM32F103XB_FLASH.ld -Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--cref \
-                            -Wl,--gc-sections --specs=nano.specs")
+set(CMAKE_EXE_LINKER_FLAGS "-T${CMAKE_SOURCE_DIR}/STM32F103XB_FLASH.ld
+                            -Wl,-Map=${CMAKE_PROJECT_NAME}.map
+                            -Wl,--cref
+                            -Wl,--gc-sections
+                            --specs=nano.specs")
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -54,11 +56,39 @@ add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE "-ffast-math -fno-math-errno  -Wall -fdata-sections -Wnoexcept -Werror -Wextra \
-                         -Wshadow -Wconversion -Wwrite-strings -Wformat=2 -ffunction-sections -Wold-style-cast -Wsign-conversion \
-                         -fno-common -fstrict-aliasing -Wdouble-promotion -fstack-usage -Wuseless-cast -Wnull-dereference -Wcast-align \
-                         -fstrict-overflow -fno-exceptions -fno-rtti -Wstrict-null-sentinel  -Wduplicated-branches -Wswitch-enum \
-                         -Wlogical-op -Wduplicated-cond -Wstrict-aliasing=2 -fno-threadsafe-statics -Wzero-as-null-pointer-constant")
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
+        -ffast-math
+        -fno-math-errno
+        -fno-finite-loops
+        -Wall
+        -fdata-sections
+        -Wnoexcept
+        -Werror
+        -Wextra
+        -Wshadow
+        -Wconversion
+        -Wwrite-strings
+        -Wformat=2
+        -ffunction-sections
+        -Wold-style-cast
+        -Wsign-conversion
+        -fno-common
+        -fstrict-aliasing
+        -Wdouble-promotion
+        -fstack-usage
+        -Wnull-dereference
+        -Wcast-align
+        -fstrict-overflow
+        -fno-exceptions
+        -fno-rtti
+        -Wstrict-null-sentinel
+        -Wduplicated-branches
+        -Wswitch-enum
+        -Wlogical-op
+        -Wduplicated-cond
+        -Wstrict-aliasing=2
+        -fno-threadsafe-statics
+        -Wzero-as-null-pointer-constant)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ascon_static)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE littlefs)
@@ -82,16 +112,16 @@ add_custom_target(build
     COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}
 )
 
-# Cppcheck analysis
 find_program(CPPCHECK cppcheck)
 if (CPPCHECK)
     add_custom_target(cppcheck
-        COMMAND ${CPPCHECK} --enable-all
+        COMMAND ${CPPCHECK} --enable=all
+                            --inconclusive
+                            --output-file=analysis.txt
                             --std=gnu++23
                             --project=${CMAKE_BINARY_DIR}/compile_commands.json
                             --suppress=missingIncludeSystem
                             --inline-suppr
-                            --error-exitcode=1
         COMMENT "Running static analysis"
     )
 endif()

@@ -2,6 +2,8 @@
 #include "common.hpp"
 
 
+uint32_t SystemCoreClock;
+
 extern "C" {
     // Prevent name mangling: called from the reset handler
     void system_init() {

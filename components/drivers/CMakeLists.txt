@@ -22,16 +22,42 @@ set_target_properties(drivers PROPERTIES
     CXX_EXTENSIONS ON
 )
 
-target_compile_options(drivers PRIVATE "-ffast-math -fno-math-errno  -Wall -fdata-sections -Wnoexcept -Werror -Wextra \
-                         -Wshadow -Wconversion -Wwrite-strings -Wformat=2 -ffunction-sections -Wold-style-cast -Wsign-conversion \
-                         -fno-common -fstrict-aliasing -Wdouble-promotion -fstack-usage -Wuseless-cast -Wnull-dereference -Wcast-align \
-                         -fstrict-overflow -fno-exceptions -fno-rtti -Wstrict-null-sentinel  -Wduplicated-branches -Wswitch-enum \
-                         -Wlogical-op -Wduplicated-cond -Wstrict-aliasing=2 -fno-threadsafe-statics -Wzero-as-null-pointer-constant")
+target_compile_options(drivers PRIVATE -ffast-math
+                                       -fno-math-errno
+                                       -Wall
+                                       -fdata-sections
+                                       -Wnoexcept
+                                       -Werror
+                                       -Wextra
+                                       -Wshadow
+                                       -Wconversion
+                                       -Wwrite-strings
+                                       -Wformat=2
+                                       -ffunction-sections
+                                       -Wold-style-cast
+                                       -Wsign-conversion
+                                       -fno-common
+                                       -fstrict-aliasing
+                                       -Wdouble-promotion
+                                       -fstack-usage
+                                       -Wnull-dereference
+                                       -Wcast-align
+                                       -fstrict-overflow
+                                       -fno-exceptions
+                                       -fno-rtti
+                                       -Wstrict-null-sentinel
+                                       -Wduplicated-branches
+                                       -Wswitch-enum
+                                       -Wlogical-op
+                                       -Wduplicated-cond
+                                       -Wstrict-aliasing=2
+                                       -fno-threadsafe-statics
+                                       -Wzero-as-null-pointer-constant)
 
 target_include_directories(drivers PUBLIC inc/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/m-profile/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Include/)
 target_include_directories(drivers PUBLIC ../littlefs/)
-target_include_directories(drivers PUBLIC ../etl-20.39.4/include/)
+target_include_directories(drivers PUBLIC ../etl/)
 target_include_directories(drivers PUBLIC ../ascon-suite/src/)

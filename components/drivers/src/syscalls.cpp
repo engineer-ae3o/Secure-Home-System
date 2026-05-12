@@ -45,25 +45,80 @@ extern "C" {
         // Update core clock settings
         SystemCoreClock = 72'000'000UL;
 
-        // Enable memfault, bus faults and usage fault exceptions
-        SCB->SHCSR |= (SCB_SHCSR_MEMFAULTENA_Msk |
-                       SCB_SHCSR_BUSFAULTENA_Msk |
+        // Enable bus fault and usage fault exceptions
+        SCB->SHCSR |= (SCB_SHCSR_BUSFAULTENA_Msk |
                        SCB_SHCSR_USGFAULTENA_Msk);
-
-        NVIC_EnableIRQ(HardFault_IRQn);
-        NVIC_EnableIRQ(MemoryManagement_IRQn);
-        NVIC_EnableIRQ(BusFault_IRQn);
-        NVIC_EnableIRQ(UsageFault_IRQn);
-
+        
         // Enable exceptions on divide by 0 and unaligned trapping
         SCB->CCR |= (SCB_CCR_DIV_0_TRP_Msk | SCB_CCR_UNALIGN_TRP_Msk);
     }
 
-    void HardFault_Handler
-    void MemManage_Handler
-    void BusFault_Handler
-    void UsageFault_Handler
+    void HardFault_Handler() {
+        __asm volatile (
+            "tst lr, #4\n"
+            "ite eq\n"
+            "mrseq r0, msp\n"
+            "mrsne r0, psp\n"
+            "b hard_fault_dump\n"
+        );
+    }
+    
+    void BusFault_Handler() {
+        __asm volatile (
+            "tst lr, #4\n"
+            "ite eq\n"
+            "mrseq r0, msp\n"
+            "mrsne r0, psp\n"
+            "b bus_fault_dump\n"
+        );
+    }
 
+    void UsageFault_Handler() {
+        __asm volatile (
+            "tst lr, #4\n"
+            "ite eq\n"
+            "mrseq r0, msp\n"
+            "mrsne r0, psp\n"
+            "b usage_fault_dump\n"
+        );
+    }
+
+    void hard_fault_dump(uint32_t* frame) {
+        [[maybe_unused]] volatile uint32_t r0 = frame[0];
+        [[maybe_unused]] volatile uint32_t r1 = frame[1];
+        [[maybe_unused]] volatile uint32_t r2 = frame[2];
+        [[maybe_unused]] volatile uint32_t r3 = frame[3];
+        [[maybe_unused]] volatile uint32_t r12 = frame[4];
+        [[maybe_unused]] volatile uint32_t lr = frame[5];
+        [[maybe_unused]] volatile uint32_t pc = frame[6];
+        [[maybe_unused]] volatile uint32_t psr = frame[7];
+        __asm volatile ("bkpt #0");
+    }
+
+    void bus_fault_dump(uint32_t* frame) {
+        [[maybe_unused]] volatile uint32_t r0 = frame[0];
+        [[maybe_unused]] volatile uint32_t r1 = frame[1];
+        [[maybe_unused]] volatile uint32_t r2 = frame[2];
+        [[maybe_unused]] volatile uint32_t r3 = frame[3];
+        [[maybe_unused]] volatile uint32_t r12 = frame[4];
+        [[maybe_unused]] volatile uint32_t lr = frame[5];
+        [[maybe_unused]] volatile uint32_t pc = frame[6];
+        [[maybe_unused]] volatile uint32_t cfsr = SCB->CFSR;
+        __asm volatile ("bkpt #0");
+    }
+    
+    void usage_fault_dump(uint32_t* frame) {
+        [[maybe_unused]] volatile uint32_t r0 = frame[0];
+        [[maybe_unused]] volatile uint32_t r1 = frame[1];
+        [[maybe_unused]] volatile uint32_t r2 = frame[2];
+        [[maybe_unused]] volatile uint32_t r3 = frame[3];
+        [[maybe_unused]] volatile uint32_t r12 = frame[4];
+        [[maybe_unused]] volatile uint32_t lr = frame[5];
+        [[maybe_unused]] volatile uint32_t pc = frame[6];
+        [[maybe_unused]] volatile uint32_t cfsr = SCB->CFSR;
+        __asm volatile ("bkpt #0");
+    }
+    
     void putchar_(char c) {
         // TODO: Implement `putchar_(char)`
         (void)c;
@@ -72,7 +127,7 @@ extern "C" {
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
         (void)xTask;
         printf("Stack overflow in %s task. Activating debugger", pcTaskName);
-        __ASM("bkpt 1");
+        __asm volatile ("bkpt #0");
     }
 
     int _close(int) {

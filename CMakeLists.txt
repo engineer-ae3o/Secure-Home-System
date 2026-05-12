@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 4.1)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
 
-set(CMAKE_C_COMPILER   C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe)
-set(CMAKE_CXX_COMPILER C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-g++.exe)
-set(CMAKE_ASM_COMPILER C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe)
-set(CMAKE_AR           C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-ar.exe)
-set(CMAKE_OBJCOPY      C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-objcopy.exe)
-set(CMAKE_OBJDUMP      C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-objdump.exe)
-set(CMAKE_SIZE         C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-size.exe)
-set(CMAKE_GDB          C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gdb.exe)
+set(CMAKE_C_COMPILER   arm-none-eabi-gcc.exe)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++.exe)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc.exe)
+set(CMAKE_AR           arm-none-eabi-ar.exe)
+set(CMAKE_OBJCOPY      arm-none-eabi-objcopy.exe)
+set(CMAKE_OBJDUMP      arm-none-eabi-objdump.exe)
+set(CMAKE_SIZE         arm-none-eabi-size.exe)
+set(CMAKE_GDB          arm-none-eabi-gdb.exe)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
@@ -73,7 +73,6 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wwrite-strings
         -Wformat=2
         -ffunction-sections
-        -Wold-style-cast
         -Wsign-conversion
         -fno-common
         -fstrict-aliasing
@@ -147,6 +146,6 @@ add_custom_target(openocd
 
 # Launch GDB
 add_custom_target(gdb
-    COMMAND ${CMAKE_GDB} ${CMAKE_PROJECT_NAME} -ex "target extended-remote localhost:3333"
+    COMMAND ${CMAKE_GDB} ${CMAKE_PROJECT_NAME}
     COMMENT "Launching GDB"
 )

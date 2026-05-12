@@ -113,6 +113,7 @@ target_include_directories(ascon
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         ${PROJECT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/components/ascon-suite/
 )
 set_target_properties(ascon PROPERTIES
     VERSION ${AsconSuite_VERSION_MAJOR}.${AsconSuite_VERSION_MINOR}.${AsconSuite_VERSION_PATCH}
@@ -125,6 +126,7 @@ target_include_directories(ascon_static
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         ${PROJECT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/components/ascon-suite/
 )
 
 # Install the libraries.

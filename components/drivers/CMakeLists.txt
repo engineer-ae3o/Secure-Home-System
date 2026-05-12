@@ -31,7 +31,6 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Wwrite-strings
                                        -Wformat=2
                                        -ffunction-sections
-                                       -Wold-style-cast
                                        -Wsign-conversion
                                        -fno-common
                                        -fstrict-aliasing

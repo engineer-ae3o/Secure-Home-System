@@ -52,6 +52,7 @@ add_subdirectory(components/littlefs/)
 add_subdirectory(components/ascon-suite/)
 add_subdirectory(components/freertos/)
 add_subdirectory(components/f103-hal/)
+add_subdirectory(components/printf/)
 
 # Create executable
 add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
@@ -92,7 +93,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -fno-threadsafe-statics
         -Wzero-as-null-pointer-constant)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ascon_static f103-hal freertos littlefs drivers)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ascon_static f103-hal freertos littlefs drivers printf)
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     C_STANDARD 23
@@ -128,7 +129,7 @@ endif()
 
 # Flash via openocd
 add_custom_target(flash
-    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"
+    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME}.bin verify reset exit"
     COMMENT "Flashing device"
 )
 

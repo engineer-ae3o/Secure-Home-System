@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 4.1)
 
 file(GLOB HAL_SRCS "./*.c")
 
-add_library(freertos STATIC ${HAL_SRCS})
+add_library(freertos STATIC
+            ${HAL_SRCS}
+            portable/GCC/ARM_CM3/port.c)
 
 target_include_directories(freertos PUBLIC include/)
 

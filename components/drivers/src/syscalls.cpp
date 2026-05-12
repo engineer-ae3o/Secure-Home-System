@@ -1,5 +1,9 @@
 #include "stm32f103xb.h"
 #include "common.hpp"
+#include "printf.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 
 uint32_t SystemCoreClock;
@@ -32,6 +36,10 @@ extern "C" {
 
         // Update core clock settings
         SystemCoreClock = 72'000'000UL;
+    }
+
+    void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
+        
     }
 }
 

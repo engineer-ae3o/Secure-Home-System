@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(drivers STATIC
-    src/gpio.cpp
-    src/i2c.cpp
     src/keypad.cpp
     src/pcf8574.cpp
     src/reed_nc.cpp
@@ -10,7 +8,6 @@ add_library(drivers STATIC
     src/secure_system.cpp
     src/syscalls.cpp
     src/tamper.cpp
-    src/uart.cpp
 )
 
 set_target_properties(drivers PROPERTIES
@@ -55,9 +52,11 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Wzero-as-null-pointer-constant)
 
 target_include_directories(drivers PUBLIC inc/)
+target_include_directories(drivers PUBLIC ../f103-hal/Inc/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/m-profile/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/)
 target_include_directories(drivers PUBLIC ../cmsis-device-f1/Include/)
+target_include_directories(drivers PUBLIC ../freertos/include/)
 target_include_directories(drivers PUBLIC ../littlefs/)
 target_include_directories(drivers PUBLIC ../etl/)
 target_include_directories(drivers PUBLIC ../ascon-suite/src/)

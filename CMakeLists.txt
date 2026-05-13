@@ -129,7 +129,7 @@ endif()
 
 # Flash via openocd
 add_custom_target(flash
-    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME}.bin verify reset exit"
+    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"
     COMMENT "Flashing device"
 )
 
@@ -147,6 +147,6 @@ add_custom_target(openocd
 
 # Launch GDB
 add_custom_target(gdb
-    COMMAND ${CMAKE_GDB} ${CMAKE_PROJECT_NAME} -ex "target remote :3333"
+    COMMAND ${CMAKE_GDB} ${CMAKE_PROJECT_NAME} -ex "target extended-remote localhost:3333"
     COMMENT "Launching GDB"
 )

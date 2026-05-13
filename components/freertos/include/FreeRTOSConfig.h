@@ -136,7 +136,7 @@
  *
  * Defining configTICK_TYPE_WIDTH_IN_BITS as TICK_TYPE_WIDTH_64_BITS causes
  * TickType_t to be defined (typedef'ed) as an unsigned 64-bit type. */
-#define configTICK_TYPE_WIDTH_IN_BITS              TICK_TYPE_WIDTH_64_BITS
+#define configTICK_TYPE_WIDTH_IN_BITS              TICK_TYPE_WIDTH_32_BITS
 
 /* Set configIDLE_SHOULD_YIELD to 1 to have the Idle task yield to an
  * application task if there is an Idle priority (priority 0) application task
@@ -419,8 +419,7 @@
     if( ( x ) == 0 )              \
     {                             \
         taskDISABLE_INTERRUPTS(); \
-        for( ; ; )                \
-        ;                         \
+        __asm("bkpt 1");          \
     }
 
 /******************************************************************************/
@@ -591,11 +590,11 @@
 
 /* Set configENABLE_MPU to 1 to enable the Memory Protection Unit (MPU), or 0
  * to leave the Memory Protection Unit disabled. */
-#define configENABLE_MPU                  1
+#define configENABLE_MPU                  0
 
 /* Set configENABLE_FPU to 1 to enable the Floating Point Unit (FPU), or 0
  * to leave the Floating Point Unit disabled. */
-#define configENABLE_FPU                  1
+#define configENABLE_FPU                  0
 
 /* Set configENABLE_MVE to 1 to enable the M-Profile Vector Extension (MVE)
  * support, or 0 to leave the MVE support disabled. This option is only
@@ -636,8 +635,8 @@
 #define configUSE_MUTEXES                      1
 #define configUSE_RECURSIVE_MUTEXES            1
 #define configUSE_COUNTING_SEMAPHORES          1
-#define configUSE_QUEUE_SETS                   0
-#define configUSE_APPLICATION_TASK_TAG         0
+#define configUSE_QUEUE_SETS                   1
+#define configUSE_APPLICATION_TASK_TAG         1
 
 /* USE_POSIX_ERRNO enables the task global FreeRTOS_errno variable which will
  * contain the most recent error for that task. */
@@ -654,12 +653,12 @@
 #define INCLUDE_vTaskDelay                     1
 #define INCLUDE_xTaskGetSchedulerState         1
 #define INCLUDE_xTaskGetCurrentTaskHandle      1
-#define INCLUDE_uxTaskGetStackHighWaterMark    0
-#define INCLUDE_xTaskGetIdleTaskHandle         0
-#define INCLUDE_eTaskGetState                  0
-#define INCLUDE_xTimerPendFunctionCall         0
-#define INCLUDE_xTaskAbortDelay                0
-#define INCLUDE_xTaskGetHandle                 0
+#define INCLUDE_uxTaskGetStackHighWaterMark    1
+#define INCLUDE_xTaskGetIdleTaskHandle         1
+#define INCLUDE_eTaskGetState                  1
+#define INCLUDE_xTimerPendFunctionCall         1
+#define INCLUDE_xTaskAbortDelay                1
+#define INCLUDE_xTaskGetHandle                 1
 #define INCLUDE_xTaskResumeFromISR             1
 
 #endif /* FREERTOS_CONFIG_H */

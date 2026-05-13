@@ -1,14 +1,22 @@
 #include "stm32f103xb.h"
 #include "common.hpp"
-#include "printf.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD 1
+#include "printf.h"
 
-uint32_t SystemCoreClock;
+#include <errno.h>
+#include <stddef.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 
 extern "C" {
+
+    uint32_t SystemCoreClock;
+
     // Prevent name mangling: called from the reset handler
     void system_init() {
         // Enable the prefetch queue and set the flash latency to 2 wait states
@@ -36,10 +44,69 @@ extern "C" {
 
         // Update core clock settings
         SystemCoreClock = 72'000'000UL;
+
+        // Enable memfault, bus faults and usage fault exceptions
+        SCB->SHCSR |= (SCB_SHCSR_MEMFAULTENA_Msk |
+                       SCB_SHCSR_BUSFAULTENA_Msk |
+                       SCB_SHCSR_USGFAULTENA_Msk);
+
+        NVIC_EnableIRQ(HardFault_IRQn);
+        NVIC_EnableIRQ(MemoryManagement_IRQn);
+        NVIC_EnableIRQ(BusFault_IRQn);
+        NVIC_EnableIRQ(UsageFault_IRQn);
+
+        // Enable exceptions on divide by 0 and unaligned trapping
+        SCB->CCR |= (SCB_CCR_DIV_0_TRP_Msk | SCB_CCR_UNALIGN_TRP_Msk);
+    }
+
+    void HardFault_Handler
+    void MemManage_Handler
+    void BusFault_Handler
+    void UsageFault_Handler
+
+    void putchar_(char c) {
+        // TODO: Implement `putchar_(char)`
+        (void)c;
     }
 
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
-        
+        (void)xTask;
+        printf("Stack overflow in %s task. Activating debugger", pcTaskName);
+        __ASM("bkpt 1");
+    }
+
+    int _close(int) {
+        return 0;
+    }
+
+    int _lseek(int, int, int) {
+        return 0;
+    }
+
+    int _read(int, char*, int) {
+        return 0;
+    }
+
+    int _write(int, char*, int) {
+        return 0;
+    }
+
+    caddr_t _sbrk(int) {
+        errno = ENOMEM;
+        return (caddr_t)-1;
+    }
+
+    int _fstat(int, struct stat*) {
+        return 0;
+    }
+
+    int _isatty(int) {
+        return 0;
+    }
+
+    void _exit(int) {
+        __asm("bkpt 1");
+        while (1);
     }
 }
 
@@ -52,12 +119,6 @@ const char* hal_err_to_string(hal_err_t err) {
         case hal_err_t::HAL_TIMEOUT:                 return "HAL_TIMEOUT";
         case hal_err_t::HAL_TX_ERROR:                return "HAL_TX_ERROR";
         case hal_err_t::HAL_RX_ERROR:                return "HAL_RX_ERROR";
-        case hal_err_t::HAL_I2C_DEVICE_NOT_FOUND:    return "HAL_I2C_DEVICE_NOT_FOUND";
-        case hal_err_t::HAL_I2C_ARBITRATION_LOST:    return "HAL_I2C_ARBITRATION_LOST";
-        case hal_err_t::HAL_UART_TC_FAILED_TO_SET:   return "HAL_UART_TC_FAILED_TO_SET";
-        case hal_err_t::HAL_DMA_TE:                  return "HAL_DMA_TE";
-        case hal_err_t::HAL_DMA_DME:                 return "HAL_DMA_DME";
-        case hal_err_t::HAL_DMA_ERR_UNKNOWN:         return "HAL_DMA_ERR_UNKNOWN";
         default:                                     return "";
     }
 }

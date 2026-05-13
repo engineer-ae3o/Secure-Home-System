@@ -51,13 +51,16 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -fno-threadsafe-statics
                                        -Wzero-as-null-pointer-constant)
 
-target_include_directories(drivers PUBLIC inc/)
-target_include_directories(drivers PUBLIC ../f103-hal/Inc/)
-target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/m-profile/)
-target_include_directories(drivers PUBLIC ../cmsis-device-f1/Core/Include/)
-target_include_directories(drivers PUBLIC ../cmsis-device-f1/Include/)
-target_include_directories(drivers PUBLIC ../freertos/include/)
-target_include_directories(drivers PUBLIC ../ascon-suite/src/)
-target_include_directories(drivers PUBLIC ../littlefs/)
-target_include_directories(drivers PUBLIC ../printf/)
-target_include_directories(drivers PUBLIC ../etl/)
+target_compile_definitions(drivers PUBLIC STM32F103xB PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD=1)
+
+target_include_directories(drivers PUBLIC inc/
+                                          ../freertos/portable/GCC/ARM_CM3/
+                                          ../f103-hal/Inc/
+                                          ../cmsis-device-f1/Core/Include/m-profile/
+                                          ../cmsis-device-f1/Core/Include/
+                                          ../cmsis-device-f1/Include/
+                                          ../freertos/include/
+                                          ../ascon-suite/src/
+                                          ../littlefs/
+                                          ../printf/
+                                          ../etl/)

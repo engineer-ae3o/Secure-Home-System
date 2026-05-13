@@ -36,6 +36,8 @@
 #endif
 /* *INDENT-ON* */
 
+#include <stdint.h>
+
 /*-----------------------------------------------------------
  * Port specific definitions.
  *

@@ -25,19 +25,7 @@ enum class hal_err_t : uint8_t {
 
     // Generic Transfer and Reception failures
     HAL_TX_ERROR,
-    HAL_RX_ERROR,
-
-    // I2C extensions
-    HAL_I2C_DEVICE_NOT_FOUND,
-    HAL_I2C_ARBITRATION_LOST,
-    
-    // UART extension
-    HAL_UART_TC_FAILED_TO_SET,
-    
-    // DMA extensions
-    HAL_DMA_TE,
-    HAL_DMA_DME,
-    HAL_DMA_ERR_UNKNOWN,
+    HAL_RX_ERROR
     
 };
 

@@ -6,7 +6,9 @@ add_library(freertos STATIC
             ${HAL_SRCS}
             portable/GCC/ARM_CM3/port.c)
 
-target_include_directories(freertos PUBLIC include/)
+target_include_directories(freertos PUBLIC
+                            include/
+                            portable/GCC/ARM_CM3/)
 
 set_target_properties(freertos PROPERTIES
     C_STANDARD 23

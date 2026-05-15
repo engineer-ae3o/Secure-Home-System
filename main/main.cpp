@@ -21,9 +21,9 @@ void led_task(void*) {
     
     while (1) {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(5000));
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -35,8 +35,7 @@ extern "C" {
     
     [[noreturn]] int main() {
 
-        auto ret = HAL_Init();
-        if (ret != HAL_OK) return;
+        HAL_Init();
         
         xTaskCreateStatic(led_task, "led_task", config::bytes_to_words(1024U), nullptr, 6, led_task_stack.data(), &led_task_tcb);
         

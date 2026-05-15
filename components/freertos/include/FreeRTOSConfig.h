@@ -104,7 +104,7 @@
  * support tickless mode. See
  * https://www.freertos.org/low-power-tickless-rtos.html Defaults to 0 if left
  * undefined. */
-#define configUSE_TICKLESS_IDLE                    1
+#define configUSE_TICKLESS_IDLE                    0
 
 /* configMAX_PRIORITIES Sets the number of available task priorities.  Tasks can
  * be assigned priorities of 0 to (configMAX_PRIORITIES - 1).  Zero is the
@@ -337,7 +337,7 @@
  * functionality in the build.  Set to 0 to exclude the hook functionality from
  * the build.  The application writer is responsible for providing the hook
  * function for any set to 1.  See https://www.freertos.org/a00016.html. */
-#define configUSE_IDLE_HOOK                   0
+#define configUSE_IDLE_HOOK                   1
 #define configUSE_TICK_HOOK                   0
 #define configUSE_MALLOC_FAILED_HOOK          0
 #define configUSE_DAEMON_TASK_STARTUP_HOOK    0

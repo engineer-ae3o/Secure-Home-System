@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.1)
 
-file(GLOB HAL_SRCS "./*.c")
+file(GLOB HAL_SRCS "tasks.c" "./*.c")
 
 add_library(freertos STATIC
             ${HAL_SRCS}

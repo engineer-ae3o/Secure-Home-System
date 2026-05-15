@@ -65,7 +65,7 @@ extern "C" {
             "b hard_fault_dump\n"
         );
     }
-     
+    
     __attribute__((naked))
     void BusFault_Handler() {
         __asm volatile (
@@ -139,6 +139,16 @@ extern "C" {
         while (1);
     }
     
+    void vPortSetupTimerInterrupt() {
+        SysTick->VAL = 0;
+        SysTick->LOAD = (config::CLOCK_SPEED_HZ / configTICK_RATE_HZ);
+        SysTick->CTRL |= (SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk);
+    }
+
+    void vApplicationIdleHook() {
+        __WFI();
+    }
+
     int _close(int) {
         return 0;
     }

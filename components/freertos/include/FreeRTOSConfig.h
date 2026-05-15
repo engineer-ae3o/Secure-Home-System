@@ -234,7 +234,7 @@
  * task.  See
  * https://www.freertos.org/RTOS-software-timer-service-daemon-task.html Only
  * used if configUSE_TIMERS is set to 1. */
-#define configTIMER_TASK_STACK_DEPTH    configMINIMAL_STACK_SIZE
+#define configTIMER_TASK_STACK_DEPTH    ( 1024UL / 4UL )
 
 /* configTIMER_QUEUE_LENGTH sets the length of the queue (the number of discrete
  * items the queue can hold) used to send commands to the timer task.  See
@@ -287,7 +287,7 @@
  * or heap_4.c are included in the build.  This value is defaulted to 4096 bytes
  * but it must be tailored to each application.  Note the heap will appear in
  * the .bss section.  See https://www.freertos.org/a00111.html. */
-#define configTOTAL_HEAP_SIZE                        1024
+#define configTOTAL_HEAP_SIZE                        4096
 
 /* Set configAPPLICATION_ALLOCATED_HEAP to 1 to have the application allocate
  * the array used as the FreeRTOS heap.  Set to 0 to have the linker allocate
@@ -305,7 +305,7 @@
 /* Set configENABLE_HEAP_PROTECTOR to 1 to enable bounds checking and
  * obfuscation to internal heap block pointers in heap_4.c and heap_5.c to help
  * catch pointer corruptions. Defaults to 0 if left undefined. */
-#define configENABLE_HEAP_PROTECTOR                  0
+#define configENABLE_HEAP_PROTECTOR                  1
 
 /******************************************************************************/
 /* Interrupt nesting behaviour configuration. *********************************/
@@ -323,7 +323,7 @@
  * to the highest interrupt priority (0).  Not supported by all FreeRTOS ports.
  * See https://www.freertos.org/RTOS-Cortex-M3-M4.html for information specific
  * to ARM Cortex-M devices. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY     5U
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY     ( 5U << 4 )
 
 /* Another name for configMAX_SYSCALL_INTERRUPT_PRIORITY - the name used depends
  * on the FreeRTOS port. */
@@ -388,6 +388,9 @@
  * undefined. */
 #define configUSE_STATS_FORMATTING_FUNCTIONS    0
 
+#define vPortSVCHandler    SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
+
 /******************************************************************************/
 /* Co-routine related definitions. ********************************************/
 /******************************************************************************/
@@ -420,6 +423,7 @@
     {                             \
         taskDISABLE_INTERRUPTS(); \
         __asm("bkpt #0");         \
+        while (1);                \
     }
 
 /******************************************************************************/
@@ -438,7 +442,7 @@
  * target hardware.  Normally 8 or 16.  Only used by the FreeRTOS Cortex-M MPU
  * ports, not the standard ARMv7-M Cortex-M port.  Defaults to 8 if left
  * undefined. */
-#define configTOTAL_MPU_REGIONS                                   8
+#define configTOTAL_MPU_REGIONS                                   0
 
 /* configTEX_S_C_B_FLASH allows application writers to override the default
  * values for the for TEX, Shareable (S), Cacheable (C) and Bufferable (B) bits
@@ -561,7 +565,7 @@
 /* secureconfigMAX_SECURE_CONTEXTS define the maximum number of tasks that can
  *  call into the secure side of an ARMv8-M chip.  Not used by any other ports.
  */
-#define secureconfigMAX_SECURE_CONTEXTS        5
+#define secureconfigMAX_SECURE_CONTEXTS        0
 
 /* Defines the kernel provided implementation of
  * vApplicationGetIdleTaskMemory() and vApplicationGetTimerTaskMemory()
@@ -579,14 +583,14 @@
  * to enable the TrustZone support in FreeRTOS ARMv8-M ports which allows the
  * non-secure FreeRTOS tasks to call the (non-secure callable) functions
  * exported from secure side. */
-#define configENABLE_TRUSTZONE            1
+#define configENABLE_TRUSTZONE            0
 
 /* If the application writer does not want to use TrustZone, but the hardware
  * does not support disabling TrustZone then the entire application (including
  * the FreeRTOS scheduler) can run on the secure side without ever branching to
  * the non-secure side. To do that, in addition to setting
  * configENABLE_TRUSTZONE to 0, also set configRUN_FREERTOS_SECURE_ONLY to 1. */
-#define configRUN_FREERTOS_SECURE_ONLY    1
+#define configRUN_FREERTOS_SECURE_ONLY    0
 
 /* Set configENABLE_MPU to 1 to enable the Memory Protection Unit (MPU), or 0
  * to leave the Memory Protection Unit disabled. */
@@ -602,7 +606,7 @@
  * (MVE) is available only on these architectures. configENABLE_MVE must be left
  * undefined, or defined to 0 for the Cortex-M23,Cortex-M33 and Cortex-M35P
  * ports. */
-#define configENABLE_MVE                  1
+#define configENABLE_MVE                  0
 
 /******************************************************************************/
 /* ARMv7-M and ARMv8-M port Specific Configuration definitions. ***************/

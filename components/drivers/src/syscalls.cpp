@@ -137,7 +137,7 @@ extern "C" {
         __asm volatile ("bkpt #0");
         while (1);
     }
-
+    
     int _close(int) {
         return 0;
     }

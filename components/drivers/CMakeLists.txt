@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(drivers STATIC
-    src/keypad.cpp
     src/pcf8574.cpp
     src/reed_nc.cpp
     src/sim800l.cpp

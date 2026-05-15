@@ -1,5 +1,5 @@
 #include "stm32f103xb.h"
-#include "common.hpp"
+#include "config.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -20,6 +20,7 @@ extern "C" {
     // Prevent name mangling: called from the reset handler
     void system_init() {
         // Enable the prefetch queue and set the flash latency to 2 wait states
+        // ST's engineers are crazy. _1 is for 2 wait states, not the _2 macro
         FLASH->ACR |= (FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_1);
 
         // Enable the HSE
@@ -43,7 +44,7 @@ extern "C" {
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 
         // Update core clock settings
-        SystemCoreClock = 72'000'000UL;
+        SystemCoreClock = config::CLOCK_SPEED_HZ;
 
         // Enable bus fault and usage fault exceptions
         SCB->SHCSR |= (SCB_SHCSR_BUSFAULTENA_Msk |
@@ -53,6 +54,7 @@ extern "C" {
         SCB->CCR |= (SCB_CCR_DIV_0_TRP_Msk | SCB_CCR_UNALIGN_TRP_Msk);
     }
 
+    __attribute__((naked))
     void HardFault_Handler() {
         __asm volatile (
             "tst lr, #4\n"
@@ -62,7 +64,8 @@ extern "C" {
             "b hard_fault_dump\n"
         );
     }
-    
+     
+    __attribute__((naked))
     void BusFault_Handler() {
         __asm volatile (
             "tst lr, #4\n"
@@ -73,6 +76,7 @@ extern "C" {
         );
     }
 
+    __attribute__((naked))
     void UsageFault_Handler() {
         __asm volatile (
             "tst lr, #4\n"
@@ -83,7 +87,7 @@ extern "C" {
         );
     }
 
-    void hard_fault_dump(uint32_t* frame) {
+    [[noreturn]] void hard_fault_dump(uint32_t* frame) {
         [[maybe_unused]] volatile uint32_t r0 = frame[0];
         [[maybe_unused]] volatile uint32_t r1 = frame[1];
         [[maybe_unused]] volatile uint32_t r2 = frame[2];
@@ -93,9 +97,10 @@ extern "C" {
         [[maybe_unused]] volatile uint32_t pc = frame[6];
         [[maybe_unused]] volatile uint32_t psr = frame[7];
         __asm volatile ("bkpt #0");
+        while (1);
     }
 
-    void bus_fault_dump(uint32_t* frame) {
+    [[noreturn]] void bus_fault_dump(uint32_t* frame) {
         [[maybe_unused]] volatile uint32_t r0 = frame[0];
         [[maybe_unused]] volatile uint32_t r1 = frame[1];
         [[maybe_unused]] volatile uint32_t r2 = frame[2];
@@ -105,9 +110,10 @@ extern "C" {
         [[maybe_unused]] volatile uint32_t pc = frame[6];
         [[maybe_unused]] volatile uint32_t cfsr = SCB->CFSR;
         __asm volatile ("bkpt #0");
+        while (1);
     }
     
-    void usage_fault_dump(uint32_t* frame) {
+    [[noreturn]] void usage_fault_dump(uint32_t* frame) {
         [[maybe_unused]] volatile uint32_t r0 = frame[0];
         [[maybe_unused]] volatile uint32_t r1 = frame[1];
         [[maybe_unused]] volatile uint32_t r2 = frame[2];
@@ -117,6 +123,7 @@ extern "C" {
         [[maybe_unused]] volatile uint32_t pc = frame[6];
         [[maybe_unused]] volatile uint32_t cfsr = SCB->CFSR;
         __asm volatile ("bkpt #0");
+        while (1);
     }
     
     void putchar_(char c) {
@@ -126,8 +133,9 @@ extern "C" {
 
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
         (void)xTask;
-        printf("Stack overflow in %s task. Activating debugger", pcTaskName);
+        printf("Stack overflow in %s. Activating debugger", pcTaskName);
         __asm volatile ("bkpt #0");
+        while (1);
     }
 
     int _close(int) {
@@ -162,18 +170,5 @@ extern "C" {
     void _exit(int) {
         __asm("bkpt 1");
         while (1);
-    }
-}
-
-const char* hal_err_to_string(hal_err_t err) {
-    switch (err) {
-        case hal_err_t::HAL_OK:                      return "HAL_OK";
-        case hal_err_t::HAL_FAIL:                    return "HAL_FAIL";
-        case hal_err_t::HAL_INVALID_ARG:             return "HAL_INVALID_ARG";
-        case hal_err_t::HAL_INVALID_STATE:           return "HAL_INVALID_STATE";
-        case hal_err_t::HAL_TIMEOUT:                 return "HAL_TIMEOUT";
-        case hal_err_t::HAL_TX_ERROR:                return "HAL_TX_ERROR";
-        case hal_err_t::HAL_RX_ERROR:                return "HAL_RX_ERROR";
-        default:                                     return "";
     }
 }

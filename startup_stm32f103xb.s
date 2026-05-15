@@ -60,9 +60,6 @@ defined in linker script */
     .type Reset_Handler, %function
 
 Reset_Handler:
-    /* Call the system init function to enable the clock */
-    bl system_init
-
     /* Copy the data segment initializers from flash to SRAM */
     ldr r0, =_sdata
     ldr r1, =_edata
@@ -85,7 +82,7 @@ LoopCopyDataInit:
     ldr r4, =_ebss
     movs r3, #0
     b LoopFillZerobss
-
+    
 FillZerobss:
     str  r3, [r2]
     adds r2, r2, #4
@@ -93,6 +90,9 @@ FillZerobss:
 LoopFillZerobss:
     cmp r2, r4
     bcc FillZerobss
+
+    /* Call the system init function to enable the clock */
+    bl system_init
 
     /* Call static constructors */
     bl __libc_init_array

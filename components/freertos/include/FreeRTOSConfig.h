@@ -153,7 +153,7 @@
 /* configQUEUE_REGISTRY_SIZE sets the maximum number of queues and semaphores
  * that can be referenced from the queue registry.  Only required when using a
  * kernel aware debugger.  Defaults to 0 if left undefined. */
-#define configQUEUE_REGISTRY_SIZE                  0
+#define configQUEUE_REGISTRY_SIZE                  5
 
 /* Set configENABLE_BACKWARD_COMPATIBILITY to 1 to map function names and
  * datatypes from old version of FreeRTOS to their latest equivalent.  Defaults
@@ -281,13 +281,13 @@
  * dynamically allocated objects from the build.  Defaults to 1 if left
  * undefined.  See
  * https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html. */
-#define configSUPPORT_DYNAMIC_ALLOCATION             0
+#define configSUPPORT_DYNAMIC_ALLOCATION             1
 
 /* Sets the total size of the FreeRTOS heap, in bytes, when heap_1.c, heap_2.c
  * or heap_4.c are included in the build.  This value is defaulted to 4096 bytes
  * but it must be tailored to each application.  Note the heap will appear in
  * the .bss section.  See https://www.freertos.org/a00111.html. */
-#define configTOTAL_HEAP_SIZE                        0
+#define configTOTAL_HEAP_SIZE                        1024
 
 /* Set configAPPLICATION_ALLOCATED_HEAP to 1 to have the application allocate
  * the array used as the FreeRTOS heap.  Set to 0 to have the linker allocate
@@ -315,7 +315,7 @@
  * switch performing interrupts.  Not supported by all FreeRTOS ports.  See
  * https://www.freertos.org/RTOS-Cortex-M3-M4.html for information specific to
  * ARM Cortex-M devices. */
-#define configKERNEL_INTERRUPT_PRIORITY          0
+#define configKERNEL_INTERRUPT_PRIORITY          0xFFU
 
 /* configMAX_SYSCALL_INTERRUPT_PRIORITY sets the interrupt priority above which
  * FreeRTOS API calls must not be made.  Interrupts above this priority are
@@ -323,11 +323,11 @@
  * to the highest interrupt priority (0).  Not supported by all FreeRTOS ports.
  * See https://www.freertos.org/RTOS-Cortex-M3-M4.html for information specific
  * to ARM Cortex-M devices. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY     0
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY     5U
 
 /* Another name for configMAX_SYSCALL_INTERRUPT_PRIORITY - the name used depends
  * on the FreeRTOS port. */
-#define configMAX_API_CALL_INTERRUPT_PRIORITY    0
+#define configMAX_API_CALL_INTERRUPT_PRIORITY    configMAX_SYSCALL_INTERRUPT_PRIORITY
 
 /******************************************************************************/
 /* Hook and callback function related definitions. ****************************/
@@ -419,7 +419,7 @@
     if( ( x ) == 0 )              \
     {                             \
         taskDISABLE_INTERRUPTS(); \
-        __asm("bkpt 1");          \
+        __asm("bkpt #0");         \
     }
 
 /******************************************************************************/

@@ -1,4 +1,5 @@
 #include "stm32f1xx_hal.h"
+#include "keypad.hpp"
 #include "config.hpp"
 
 #include "FreeRTOS.h"

@@ -67,9 +67,9 @@
  * The default value is undefined (commented out).  If you need this value bring
  * it back and set it to a suitable value. */
 
-/*
- #define configSYSTICK_CLOCK_HZ                  [Platform specific]
- */
+
+ #define configSYSTICK_CLOCK_HZ                  ( configCPU_CLOCK_HZ )
+
 
 /******************************************************************************/
 /* Scheduling behaviour related definitions. **********************************/
@@ -287,7 +287,7 @@
  * or heap_4.c are included in the build.  This value is defaulted to 4096 bytes
  * but it must be tailored to each application.  Note the heap will appear in
  * the .bss section.  See https://www.freertos.org/a00111.html. */
-#define configTOTAL_HEAP_SIZE                        4096
+#define configTOTAL_HEAP_SIZE                        4096UL
 
 /* Set configAPPLICATION_ALLOCATED_HEAP to 1 to have the application allocate
  * the array used as the FreeRTOS heap.  Set to 0 to have the linker allocate
@@ -388,8 +388,9 @@
  * undefined. */
 #define configUSE_STATS_FORMATTING_FUNCTIONS    0
 
-#define vPortSVCHandler    SVC_Handler
-#define xPortPendSVHandler PendSV_Handler
+#define vPortSVCHandler     SVC_Handler
+#define xPortPendSVHandler  PendSV_Handler
+#define xPortSysTickHandler SysTick_Handler
 
 /******************************************************************************/
 /* Co-routine related definitions. ********************************************/

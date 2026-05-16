@@ -35,7 +35,8 @@ extern "C" {
     
     [[noreturn]] int main() {
 
-        HAL_Init();
+        auto ret = HAL_Init();
+        if (ret != HAL_OK) return;
         
         xTaskCreateStatic(led_task, "led_task", config::bytes_to_words(1024U), nullptr, 6, led_task_stack.data(), &led_task_tcb);
         

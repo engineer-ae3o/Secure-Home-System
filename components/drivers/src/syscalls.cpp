@@ -16,8 +16,7 @@
 extern "C" {
 
     uint32_t SystemCoreClock;
-
-    // Prevent name mangling: called from the reset handler
+    
     void system_init() {
         // Enable the prefetch queue and set the flash latency to 2 wait states
         // ST's engineers are crazy. _1 is for 2 wait states, not the _2 macro
@@ -28,6 +27,7 @@ extern "C" {
         while (!(RCC->CR & RCC_CR_HSERDY));
 
         // Set HSE as PLL source and multiply the 8MHz HSE by 9 to get a 72MHz clock speed
+        RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL);
         RCC->CFGR |= (RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL9);
 
         // Set the buses' prescalers
@@ -40,6 +40,7 @@ extern "C" {
         while (!(RCC->CR & RCC_CR_PLLRDY));
 
         // Switch the system clock to the PLL
+        RCC->CFGR &= ~RCC_CFGR_SW;
         RCC->CFGR |= RCC_CFGR_SW_PLL;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
 

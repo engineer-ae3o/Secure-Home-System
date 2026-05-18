@@ -201,33 +201,15 @@ namespace pad {
         private:
             static void debounce_timer_cb(TimerHandle_t xTimer) {
                 // Get timer ID
-                const keypad_t* keypad = static_cast<keypad_t*>(pvTimerGetTimerID(xTimer));
+                keypad_t* keypad = static_cast<keypad_t*>(pvTimerGetTimerID(xTimer));
                 
-                // Keypad scanning
-                uint8_t row{}, column{};
-
-                // Get column that was pressed
-                if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[0]) == GPIO_PIN_RESET)     
-                    column = 0;
-                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[1]) == GPIO_PIN_RESET)
-                    column = 1;
-                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[2]) == GPIO_PIN_RESET)
-                    column = 2;
-                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[3]) == GPIO_PIN_RESET)
-                    column = 3;
-                // Very unlikely to happen since no human would be fast enough to remove their
-                // hand from the keypad in 50ms, setting the pin back to its high state
-                else [[unlikely]] {
-                    // Clear the interrupt pending flags on all pins before unmasking the EXTI interrupts
-                    __HAL_GPIO_EXTI_CLEAR_IT(keypad->col_pins);
-                    // Enable interrupts by unmasking EXTI interrupts
-                    EXTI->IMR |= keypad->col_pins;
-                    return;
-                }
-
                 // Set all row pins high
                 HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_SET);
 
+                // Keypad scanning
+                uint8_t row{}, column{};
+                bool found{};
+                
                 [&]() {
                     // Get row on which the press was detected
                     for (uint8_t i = 0; i < ROWS; i++) {
@@ -235,18 +217,20 @@ namespace pad {
                         // them is the key that was pressed, that is, the pin that would be low
                         HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_config.row_pins[i], GPIO_PIN_RESET);
 
-                        // If any column is low, then its corresponding row is the right one
+                        // If any column is low, then itself and its corresponding row is the right one
                         for (uint8_t j = 0; j < COLUMNS; j++) {
                             if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[j]) == GPIO_PIN_RESET) {
                                 row = i;
+                                column = j;
+                                found = true;
                                 return;
                             }
                         }
                     }
                 } ();
-
-                // Send only first detected keypad press to queue
-                xQueueSend(keypad->m_event_queue, &KEYS[row][column], 0);
+                
+                // Send only first detected keypad press to queue and if we found the key
+                if (found) xQueueSend(keypad->m_event_queue, &KEYS[row][column], 0);
 
                 // Take all row pins back to their default low state
                 HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_RESET);

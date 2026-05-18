@@ -52,6 +52,10 @@ static void keypad_task(void*) {
     NVIC_EnableIRQ(EXTI4_IRQn);
     NVIC_EnableIRQ(EXTI9_5_IRQn);
 
+    NVIC_SetPriority(EXTI3_IRQn, 15);
+    NVIC_SetPriority(EXTI4_IRQn, 15);
+    NVIC_SetPriority(EXTI9_5_IRQn, 15);
+
     while (1) {
         xQueueReceive(event_queue, &key, portMAX_DELAY);
         (void)key;

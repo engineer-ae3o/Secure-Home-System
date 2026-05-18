@@ -29,18 +29,21 @@ namespace pad {
     };
 
     struct config_t {
-        etl::array<uint32_t, ROWS> row_pins{};
-        etl::array<uint32_t, COLUMNS> col_pins{};
+        GPIO_TypeDef* row_port{};
+        etl::array<uint16_t, ROWS> row_pins{};
+
+        GPIO_TypeDef* col_port{};
+        etl::array<uint16_t, COLUMNS> col_pins{};
     };
     
-    template <uintptr_t row_port, uintptr_t col_port, uint8_t queue_length>
+    template <uint8_t queue_length>
     class keypad_t {
         private:
             bool m_is_initialized{};
 
             config_t m_config{};
-            uint32_t row_pins{};
-            uint32_t col_pins{};
+            uint16_t row_pins{};
+            uint16_t col_pins{};
 
             QueueHandle_t m_event_queue{};
             etl::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
@@ -50,10 +53,7 @@ namespace pad {
             StaticTimer_t m_debounce_timer_structure{};
             
         public:
-            keypad_t(const config_t& config) : m_config(config) {
-                col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
-                row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
-            }
+            keypad_t() = default;
 
             ~keypad_t() noexcept {
                 if (m_is_initialized) deinit();
@@ -69,23 +69,30 @@ namespace pad {
              * @brief Initializes and configures the gpio pins according to how
              *        they will be used for the keypad scanning.
              * 
+             * @param[in] config Config struct which contains the pins to use
+             *                   to configure the keypad
+             * 
              * @note The interrupts still have to be enabled with NVIC
              */
-            void init() {
+            void init(const config_t& config) {
                 ASSERT(!m_is_initialized);
 
-                // Configure the clocks
-                if constexpr      (reinterpret_cast<GPIO_TypeDef*>(col_port) == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(col_port) == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(col_port) == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(col_port) == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-                else static_assert(false);
+                m_config = config;
+                col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
+                row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
 
-                if constexpr      (reinterpret_cast<GPIO_TypeDef*>(row_port) == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(row_port) == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(row_port) == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-                else if constexpr (reinterpret_cast<GPIO_TypeDef*>(row_port) == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-                else static_assert(false);
+                // Configure the clocks
+                if      (m_config.col_port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
+                else if (m_config.col_port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
+                else if (m_config.col_port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
+                else if (m_config.col_port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
+                else ASSERT(false);
+
+                if      (m_config.row_port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
+                else if (m_config.row_port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
+                else if (m_config.row_port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
+                else if (m_config.row_port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
+                else ASSERT(false);
                 
                 // Set all columns as input pullups with interrupt on falling edge
                 GPIO_InitTypeDef col_init = {
@@ -94,7 +101,7 @@ namespace pad {
                     .Pull = GPIO_PULLUP,
                     .Speed = GPIO_SPEED_FREQ_LOW
                 };
-                HAL_GPIO_Init(reinterpret_cast<GPIO_TypeDef*>(col_port), &col_init);
+                HAL_GPIO_Init(m_config.col_port, &col_init);
                 
                 // Set all rows as output push pull
                 GPIO_InitTypeDef row_init = {
@@ -103,14 +110,14 @@ namespace pad {
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
                 };
-                HAL_GPIO_Init(reinterpret_cast<GPIO_TypeDef*>(row_port), &row_init);
+                HAL_GPIO_Init(m_config.row_port, &row_init);
 
                 // Set all row pins low by default so any press triggers
                 // the falling edge irq on the pressed column key immediately
-                HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(row_port), row_pins, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(m_config.row_port, row_pins, GPIO_PIN_RESET);
 
                 // Can't fail since stack allocated
-                m_event_queue = xQueueCreateStatic(queue_length, sizeof(KEYS[0][0]), m_queue_buffer.data(), m_queue_structure);
+                m_event_queue = xQueueCreateStatic(queue_length, sizeof(KEYS[0][0]), m_queue_buffer.data(), &m_queue_structure);
                 m_debounce_timer = xTimerCreateStatic("Debounce_timer", pdMS_TO_TICKS(DEBOUNCE_TIME_MS), pdFALSE,
                                                        this, debounce_timer_cb, &m_debounce_timer_structure);
 
@@ -131,7 +138,7 @@ namespace pad {
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
                 };
-                HAL_GPIO_Init(reinterpret_cast<GPIO_TypeDef*>(col_port), &col_init);
+                HAL_GPIO_Init(m_config.col_port, &col_init);
                 
                 GPIO_InitTypeDef row_init = {
                     .Pin = row_pins,
@@ -139,7 +146,7 @@ namespace pad {
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
                 };
-                HAL_GPIO_Init(reinterpret_cast<GPIO_TypeDef*>(row_port), &row_init);
+                HAL_GPIO_Init(m_config.row_port, &row_init);
 
                 m_config = {};
                 row_pins = {};
@@ -200,41 +207,37 @@ namespace pad {
                 uint8_t row{}, column{};
 
                 // Get column that was pressed
-                if (HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(col_port), keypad->m_config.col_pins[0]) == GPIO_PIN_RESET)     
+                if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[0]) == GPIO_PIN_RESET)     
                     column = 0;
-                
-                else if (HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(col_port), keypad->m_config.col_pins[1]) == GPIO_PIN_RESET)
+                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[1]) == GPIO_PIN_RESET)
                     column = 1;
-                
-                else if (HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(col_port), keypad->m_config.col_pins[2]) == GPIO_PIN_RESET)
+                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[2]) == GPIO_PIN_RESET)
                     column = 2;
-                
-                else if (HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(col_port), keypad->m_config.col_pins[3]) == GPIO_PIN_RESET)
+                else if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[3]) == GPIO_PIN_RESET)
                     column = 3;
-                
                 // Very unlikely to happen since no human would be fast enough to remove their
                 // hand from the keypad in 50ms, setting the pin back to its high state
                 else [[unlikely]] {
                     // Clear the interrupt pending flags on all pins before unmasking the EXTI interrupts
-                    __HAL_GPIO_EXTI_CLEAR_IT(col_pins);
+                    __HAL_GPIO_EXTI_CLEAR_IT(keypad->col_pins);
                     // Enable interrupts by unmasking EXTI interrupts
-                    EXTI->IMR |= col_pins;
+                    EXTI->IMR |= keypad->col_pins;
                     return;
                 }
 
                 // Set all row pins high
-                HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(row_port), row_pins, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_SET);
 
                 [&]() {
                     // Get row on which the press was detected
                     for (uint8_t i = 0; i < ROWS; i++) {
                         // Set a row pin low and read all its column pins to determine if any of
                         // them is the key that was pressed, that is, the pin that would be low
-                        HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(row_port), keypad->m_config.row_pins[i], GPIO_PIN_RESET);
+                        HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_config.row_pins[i], GPIO_PIN_RESET);
 
                         // If any column is low, then its corresponding row is the right one
                         for (uint8_t j = 0; j < COLUMNS; j++) {
-                            if (HAL_GPIO_ReadPin(reinterpret_cast<GPIO_TypeDef*>(col_port), keypad->m_config.col_pins[j]) == GPIO_PIN_RESET) {
+                            if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[j]) == GPIO_PIN_RESET) {
                                 row = i;
                                 return;
                             }
@@ -246,13 +249,13 @@ namespace pad {
                 xQueueSend(keypad->m_event_queue, &KEYS[row][column], 0);
 
                 // Take all row pins back to their default low state
-                HAL_GPIO_WritePin(reinterpret_cast<GPIO_TypeDef*>(row_port), row_pins, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_RESET);
 
                 // Clear the interrupt pending flags on all pins before unmasking the EXTI interrupts
-                __HAL_GPIO_EXTI_CLEAR_IT(col_pins);
+                __HAL_GPIO_EXTI_CLEAR_IT(keypad->col_pins);
                 
                 // Enable interrupts by unmasking EXTI interrupts
-                EXTI->IMR |= col_pins;
+                EXTI->IMR |= keypad->col_pins;
             }
     };
     

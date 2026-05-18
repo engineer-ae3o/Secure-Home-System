@@ -22,7 +22,7 @@ namespace config {
 
     struct gpio_pin_t {
         GPIO_TypeDef* port{};
-        uint32_t pin{};
+        uint16_t pin{};
     };
 
     // ADC pins to be used for entropy gathering for random number generation
@@ -36,12 +36,12 @@ namespace config {
     };
 
     // LCD I2C pins
-    constexpr inline I2C_TypeDef* LCD_I2C_PORT = I2C1;
+    const inline I2C_TypeDef* LCD_I2C_PORT = I2C1;
     constexpr inline gpio_pin_t LCD_SCL = { .port = GPIOB, .pin = GPIO_PIN_6 };
     constexpr inline gpio_pin_t LCD_SDA = { .port = GPIOB, .pin = GPIO_PIN_7 };
 
     // GSM module UART pins
-    constexpr inline USART_TypeDef* GSM_UART_PORT = USART1;
+    const inline USART_TypeDef* GSM_UART_PORT = USART1;
     constexpr inline gpio_pin_t GSM_TX = { .port = GPIOA, .pin = GPIO_PIN_9 };
     constexpr inline gpio_pin_t GSM_RX = { .port = GPIOA, .pin = GPIO_PIN_10 };
 
@@ -63,6 +63,9 @@ namespace config {
     // Reed and Tamper switches' pins
     constexpr inline gpio_pin_t REED_SWITCH   = { .port = GPIOC, .pin = GPIO_PIN_14 };
     constexpr inline gpio_pin_t TAMPER_SWITCH = { .port = GPIOC, .pin = GPIO_PIN_15 };
+
+    // FreeRTOS params
+    constexpr inline uint8_t QUEUE_SIZE = 5;
 
     // Needed for conversion since FreeRTOS uses words
     consteval inline size_t bytes_to_words(size_t bytes) { return bytes / 4; }

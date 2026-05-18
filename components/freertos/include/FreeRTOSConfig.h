@@ -234,7 +234,7 @@
  * task.  See
  * https://www.freertos.org/RTOS-software-timer-service-daemon-task.html Only
  * used if configUSE_TIMERS is set to 1. */
-#define configTIMER_TASK_STACK_DEPTH    ( 1024UL / 4UL )
+#define configTIMER_TASK_STACK_DEPTH    ( 512UL / 4UL )
 
 /* configTIMER_QUEUE_LENGTH sets the length of the queue (the number of discrete
  * items the queue can hold) used to send commands to the timer task.  See
@@ -281,13 +281,13 @@
  * dynamically allocated objects from the build.  Defaults to 1 if left
  * undefined.  See
  * https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html. */
-#define configSUPPORT_DYNAMIC_ALLOCATION             1
+#define configSUPPORT_DYNAMIC_ALLOCATION             0
 
 /* Sets the total size of the FreeRTOS heap, in bytes, when heap_1.c, heap_2.c
  * or heap_4.c are included in the build.  This value is defaulted to 4096 bytes
  * but it must be tailored to each application.  Note the heap will appear in
  * the .bss section.  See https://www.freertos.org/a00111.html. */
-#define configTOTAL_HEAP_SIZE                        4096UL
+#define configTOTAL_HEAP_SIZE                        0
 
 /* Set configAPPLICATION_ALLOCATED_HEAP to 1 to have the application allocate
  * the array used as the FreeRTOS heap.  Set to 0 to have the linker allocate
@@ -305,7 +305,7 @@
 /* Set configENABLE_HEAP_PROTECTOR to 1 to enable bounds checking and
  * obfuscation to internal heap block pointers in heap_4.c and heap_5.c to help
  * catch pointer corruptions. Defaults to 0 if left undefined. */
-#define configENABLE_HEAP_PROTECTOR                  1
+#define configENABLE_HEAP_PROTECTOR                  0
 
 /******************************************************************************/
 /* Interrupt nesting behaviour configuration. *********************************/

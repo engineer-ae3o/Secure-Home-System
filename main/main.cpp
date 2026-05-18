@@ -8,6 +8,8 @@
 #include "etl/array.h"
 
 
+static pad::keypad_t<config::QUEUE_SIZE> keypad;
+
 static void led_task(void*) {
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -30,22 +32,25 @@ static void led_task(void*) {
 
 static void keypad_task(void*) {
 
-    constexpr pad::config_t config = {
+    const pad::config_t config = {
+        .row_port = config::KEYPAD_ROW_PINS[0].port,
         .row_pins = { config::KEYPAD_ROW_PINS[0].pin, config::KEYPAD_ROW_PINS[1].pin,
                       config::KEYPAD_ROW_PINS[2].pin, config::KEYPAD_ROW_PINS[3].pin, },
         
+        .col_port = config::KEYPAD_COLUMN_PINS[0].port,
         .col_pins = { config::KEYPAD_COLUMN_PINS[0].pin, config::KEYPAD_COLUMN_PINS[1].pin,
                       config::KEYPAD_COLUMN_PINS[2].pin, config::KEYPAD_COLUMN_PINS[3].pin, },
     };
 
-    constexpr std::uintptr_t row_port = reinterpret_cast<uintptr_t>(config::KEYPAD_ROW_PINS[0].port);
-    constexpr std::uintptr_t col_port = reinterpret_cast<uintptr_t>(config::KEYPAD_COLUMN_PINS[0].port);
-
-    pad::keypad_t<row_port, col_port, 5> keypad(config);
-    keypad.init();
+    keypad.init(config);
 
     const auto& event_queue = keypad.get_event_queue();
     unsigned char key{};
+
+    // Enable the NVIC interrupts
+    NVIC_EnableIRQ(EXTI3_IRQn);
+    NVIC_EnableIRQ(EXTI4_IRQn);
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
 
     while (1) {
         xQueueReceive(event_queue, &key, portMAX_DELAY);
@@ -66,11 +71,23 @@ extern "C" {
 
         HAL_Init();
         
-        xTaskCreateStatic(led_task, "led_task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-        xTaskCreateStatic(keypad_task, "keypad_task", config::bytes_to_words(2048), nullptr, 7, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
+        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(2048), nullptr, 7, keypad_task_stack.data(), &keypad_task_tcb);
         
         vTaskStartScheduler();
 
         while (1);
+    }
+
+    void EXTI3_IRQHandler() {
+        keypad.irq_handler();
+    }
+
+    void EXTI4_IRQHandler() {
+        keypad.irq_handler();
+    }
+
+    void EXTI9_5_IRQHandler() {
+        keypad.irq_handler();
     }
 }

@@ -4,8 +4,7 @@ file(GLOB HAL_SRCS "tasks.c" "./*.c")
 
 add_library(freertos STATIC
             ${HAL_SRCS}
-            portable/GCC/ARM_CM3/port.c
-            portable/MemMang/heap_4.c)
+            portable/GCC/ARM_CM3/port.c)
 
 target_include_directories(freertos PUBLIC
                             include/

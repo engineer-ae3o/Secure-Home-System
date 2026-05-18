@@ -20,7 +20,13 @@ namespace utils {
 
         if constexpr (std::to_underlying(level) <= std::to_underlying(config::LOG_LEVEL)) {
             char msg[128]{};
+
+            // Fixing compilation error because GCC is unable to figure out
+            // what's in `fmt` since it's a `const char*`, not a format string
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat-nonliteral"
             snprintf(msg, sizeof(msg), fmt, std::forward<Args>(args)...);
+            #pragma GCC diagnostic pop
             
             if constexpr (level == ERROR)     printf("[ERROR]: %s", msg);
             else if constexpr (level == WARN) printf("[WARN]: %s", msg);

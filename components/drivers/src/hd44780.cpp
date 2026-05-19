@@ -17,15 +17,16 @@ namespace lcd {
     static bool s_is_initialized{};
 
     // Forward declarations
-    static void send_byte(uint8_t byte);
-    static void send_cmd(uint8_t cmd);
-    static void send_data(etl::span<const uint8_t> data);
+    static inline void send_byte(uint8_t byte);
+    static inline void send_cmd(uint8_t cmd);
+    static inline void send_data(etl::span<const uint8_t> data);
     
 
     // Public API
     void init() {
         ASSERT(!s_is_initialized);
 
+        // Initialize the I2C bus
         s_handle.Instance = config::LCD_I2C_PORT;
         s_handle.Init.ClockSpeed = 100'000U;
         s_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -37,22 +38,52 @@ namespace lcd {
         s_handle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
 
         ASSERT(HAL_I2C_Init(&s_handle) == HAL_OK);
-        
+
+        // Initialize the GPIO pins
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+
+        GPIO_InitTypeDef pin_init = {
+            .Pin = (config::LCD_SDA.pin | config::LCD_SCL.pin),
+            .Mode = GPIO_MODE_AF_OD,
+            .Pull = GPIO_PULLUP,
+            .Speed = GPIO_SPEED_FREQ_HIGH
+        };
+        HAL_GPIO_Init(config::LCD_SDA.port, &pin_init);
+
+        // Send the initialization sequence to the HD44780 controller
+
 
         s_is_initialized = true;
     }
 
     void deinit() {
         ASSERT(s_is_initialized);
-        
 
+        // Deinitialize the I2C peripheral. Real helpful comment, I know
+        ASSERT(HAL_I2C_DeInit(&s_handle) == HAL_OK);
+        s_handle = {};
+
+        // Set the pins to analog
+        GPIO_InitTypeDef pin_deinit = {
+            .Pin = (config::LCD_SDA.pin | config::LCD_SCL.pin),
+            .Mode = GPIO_MODE_ANALOG,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        };
+        HAL_GPIO_Init(config::LCD_SDA.port, &pin_deinit);
+        
         s_is_initialized = false;
     }
 
     void println(const etl::istring& str, uint8_t line) {
         ASSERT(s_is_initialized);
         ASSERT(line < ROWS);
+        ASSERT(str.length() <= COLUMNS);
 
+        for (size_t column{0}; const auto& c : str) {
+            put_char(c, column, line);
+            column++;
+        }
     }
 
     void put_char(unsigned char c, uint8_t col, uint8_t line) {
@@ -61,17 +92,28 @@ namespace lcd {
         ASSERT(line < ROWS);
 
     }
+
+    void clear_screen() {
+        ASSERT(s_is_initialized);
+
+        // Create string with all whitespaces
+        const etl::string<COLUMNS> empty_str(COLUMNS, ' ');
+
+        for (uint8_t i = 0; i < ROWS; i++) {
+            println(empty_str, i);
+        }
+    }
     
     // Helpers
-    static void send_byte(uint8_t byte) {
+    static inline void send_byte(uint8_t byte) {
         
     }
 
-    static void send_cmd(uint8_t cmd) {
+    static inline void send_cmd(uint8_t cmd) {
         
     }
 
-    static void send_data(etl::span<const uint8_t> data) {
+    static inline void send_data(etl::span<const uint8_t> data) {
 
     }
     

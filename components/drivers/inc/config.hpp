@@ -36,7 +36,7 @@ namespace config {
     };
 
     // LCD I2C pins
-    const inline I2C_TypeDef* LCD_I2C_PORT = I2C1;
+    inline I2C_TypeDef* LCD_I2C_PORT = I2C1;
     constexpr inline gpio_pin_t LCD_SCL = { .port = GPIOB, .pin = GPIO_PIN_6 };
     constexpr inline gpio_pin_t LCD_SDA = { .port = GPIOB, .pin = GPIO_PIN_7 };
 

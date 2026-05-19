@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(drivers STATIC
+    src/hd44780.cpp
     src/sim800l.cpp
     src/secure_system.cpp
     src/syscalls.cpp

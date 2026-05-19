@@ -1,7 +1,6 @@
 #pragma once
 
 
-#include "stm32f103xb.h"
 #include "stm32f1xx_hal.h"
 #include "utils.hpp"
 
@@ -25,7 +24,7 @@ namespace pad {
         { '1', '2', '3', 'A' },
         { '4', '5', '6', 'B' },
         { '7', '8', '9', 'C' },
-        { '*', '0', '#', 'D' },
+        { '*', '0', '#', 'D' }
     };
 
     struct config_t {
@@ -78,6 +77,8 @@ namespace pad {
                 ASSERT(!m_is_initialized);
 
                 m_config = config;
+
+                // Do this now to avoid recomputing the OR'ed mask multiple times
                 col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
                 row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
 

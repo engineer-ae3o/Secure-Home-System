@@ -1,5 +1,6 @@
 #include "stm32f1xx_hal.h"
 #include "keypad.hpp"
+#include "switch.hpp"
 #include "config.hpp"
 
 #include "FreeRTOS.h"
@@ -9,6 +10,9 @@
 
 
 static pad::keypad_t<config::QUEUE_SIZE> keypad;
+static nc::switch_t<nc::type_t::REED> reed;
+static nc::switch_t<nc::type_t::LIMIT> tamper;
+
 
 static void led_task(void*) {
 
@@ -62,11 +66,48 @@ static void keypad_task(void*) {
     }
 }
 
+static void switch_task(void*) {
+
+    const nc::config_t reed_config = {
+        .port = config::REED_SWITCH.port,
+        .pin = config::REED_SWITCH.pin,
+        .irq_type = EXTI15_10_IRQn,
+        .calling_task_handle = xTaskGetCurrentTaskHandle()
+    };
+    reed.init(reed_config);
+    
+    const nc::config_t tamper_config = {
+        .port = config::TAMPER_SWITCH.port,
+        .pin = config::TAMPER_SWITCH.pin,
+        .irq_type = EXTI15_10_IRQn,
+        .calling_task_handle = xTaskGetCurrentTaskHandle()
+    };
+    tamper.init(tamper_config);
+
+    while (1) {
+        uint32_t flag{};
+        xTaskNotifyWait(0, 0xFFFFFFFFU, &flag, portMAX_DELAY);
+        
+        if (flag & std::to_underlying(nc::type_t::REED)) {
+            // Reed switch broken
+            (void)flag;
+        }
+        
+        if (flag & std::to_underlying(nc::type_t::LIMIT)) {
+            // Tamper switch broken
+            (void)flag;
+        }
+    }
+}
+
 static etl::array<StackType_t, 512> led_task_stack{};
 static StaticTask_t led_task_tcb{};
 
-static etl::array<StackType_t, 2048> keypad_task_stack{};
+static etl::array<StackType_t, 512> keypad_task_stack{};
 static StaticTask_t keypad_task_tcb{};
+
+static etl::array<StackType_t, 512> switch_task_stack{};
+static StaticTask_t switch_task_tcb{};
 
 
 extern "C" {
@@ -76,7 +117,8 @@ extern "C" {
         HAL_Init();
         
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(2048), nullptr, 7, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 7, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 6, switch_task_stack.data(), &switch_task_tcb);
         
         vTaskStartScheduler();
 
@@ -93,5 +135,14 @@ extern "C" {
 
     void EXTI9_5_IRQHandler() {
         keypad.irq_handler();
+    }
+
+    void EXTI15_10_IRQHandler() {
+        if (__HAL_GPIO_EXTI_GET_IT(config::REED_SWITCH.pin)) {
+            reed.irq_handler();
+        }
+        if (__HAL_GPIO_EXTI_GET_IT(config::TAMPER_SWITCH.pin)) {
+            tamper.irq_handler();
+        }
     }
 }

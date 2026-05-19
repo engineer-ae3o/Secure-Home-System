@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(drivers STATIC
-    src/pcf8574.cpp
-    src/reed_nc.cpp
     src/sim800l.cpp
     src/secure_system.cpp
     src/syscalls.cpp
-    src/tamper.cpp
 )
 
 set_target_properties(drivers PROPERTIES

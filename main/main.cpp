@@ -28,9 +28,9 @@ static void led_task(void*) {
     
     while (1) {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        vTaskDelay(pdMS_TO_TICKS(3000));
+        vTaskDelay(pdMS_TO_TICKS(500));
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
@@ -84,6 +84,8 @@ static void switch_task(void*) {
     };
     tamper.init(tamper_config);
 
+    volatile nc::type_t type = nc::type_t::REED;
+
     while (1) {
         uint32_t flag{};
         xTaskNotifyWait(0, 0xFFFFFFFFU, &flag, portMAX_DELAY);
@@ -91,11 +93,15 @@ static void switch_task(void*) {
         if (flag & std::to_underlying(nc::type_t::REED)) {
             // Reed switch broken
             (void)flag;
+            type = nc::type_t::REED;
+            (void)type;
         }
         
         if (flag & std::to_underlying(nc::type_t::LIMIT)) {
             // Tamper switch broken
             (void)flag;
+            type = nc::type_t::LIMIT;
+            (void)type;
         }
     }
 }

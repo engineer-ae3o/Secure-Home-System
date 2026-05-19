@@ -29,18 +29,6 @@ namespace lcd {
     void deinit();
 
     /**
-     * @brief Prints the given ASCII text to the LCD screen
-     * 
-     * @param[in] str  String to write to the display. Truncates the
-     *                 string output if greater than `COLUMNS - 1`
-     * @param[in] line Line number. Can be from 0 to `ROWS - 1`
-     * 
-     * @note Asserts on internal failure, or when the function
-     *       is called wrongly. Is not thread safe.
-     */
-    void println(const etl::istring& str, uint8_t line);
-
-    /**
      * @brief Prints the given ASCII character to the LCD screen
      * 
      * @param[in] c    Character to write to the LCD screen
@@ -53,11 +41,34 @@ namespace lcd {
     void put_char(unsigned char c, uint8_t col, uint8_t line);
 
     /**
-     * @brief Clears the screen and sets to all whitespaces.
+     * @brief Prints the given ASCII text to the LCD screen
+     * 
+     * @param[in] str  String to write to the display. Truncates the
+     *                 string output if greater than `COLUMNS - 1`
+     * @param[in] line Line number. Can be from 0 to `ROWS - 1`
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    void println(const etl::string_view& str, uint8_t line);
+
+    /**
+     * @brief Clears the screen and sets it to whitespaces.
      * 
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
     void clear_screen();
+
+    /**
+     * @brief Turns the LED backlight on or off
+     * 
+     * @param[in] on Default parameter of true which indicates
+     *               whether or not to turn on the LED backlight
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    void backlight_on(bool on = true);
 
 } // namespace lcd

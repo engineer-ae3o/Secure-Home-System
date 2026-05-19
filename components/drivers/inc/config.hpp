@@ -39,6 +39,7 @@ namespace config {
     inline I2C_TypeDef* LCD_I2C_PORT = I2C1;
     constexpr inline gpio_pin_t LCD_SCL = { .port = GPIOB, .pin = GPIO_PIN_6 };
     constexpr inline gpio_pin_t LCD_SDA = { .port = GPIOB, .pin = GPIO_PIN_7 };
+    constexpr inline gpio_pin_t LCD_LED = { .port = GPIOB, .pin = GPIO_PIN_9 };
 
     // GSM module UART pins
     const inline USART_TypeDef* GSM_UART_PORT = USART1;

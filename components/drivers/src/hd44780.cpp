@@ -1,13 +1,13 @@
-#pragma once
-
-
 #include "stm32f1xx_hal.h"
 #include "hd44780.hpp"
 #include "config.hpp"
 #include "utils.hpp"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "etl/string.h"
-#include "etl/span.h"
+#include "etl/array.h"
 
 
 namespace lcd {
@@ -16,10 +16,17 @@ namespace lcd {
     static I2C_HandleTypeDef s_handle{};
     static bool s_is_initialized{};
 
+    // Offsets for calculating offset position
+    static constexpr etl::array<uint8_t, ROWS> OFFSETS = { 0x00U, 0x40U };
+
+    // I2C address of the I2C bracket on the HD44780 controller
+    static constexpr uint8_t ADDRESS{};
+
     // Forward declarations
-    static inline void send_byte(uint8_t byte);
+    static inline void send_nibble(uint8_t nibble, uint8_t rs);
+    static inline void send_byte(uint8_t byte, uint8_t rs);
     static inline void send_cmd(uint8_t cmd);
-    static inline void send_data(etl::span<const uint8_t> data);
+    static inline void send_data(uint8_t data);
     
 
     // Public API
@@ -39,7 +46,7 @@ namespace lcd {
 
         ASSERT(HAL_I2C_Init(&s_handle) == HAL_OK);
 
-        // Initialize the GPIO pins
+        // Initialize the I2C GPIO pins
         __HAL_RCC_GPIOB_CLK_ENABLE();
 
         GPIO_InitTypeDef pin_init = {
@@ -50,9 +57,30 @@ namespace lcd {
         };
         HAL_GPIO_Init(config::LCD_SDA.port, &pin_init);
 
+        GPIO_InitTypeDef led_init = {
+            .Pin = config::LCD_LED.pin,
+            .Mode = GPIO_MODE_OUTPUT_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW
+        };
+        HAL_GPIO_Init(config::LCD_LED.port, &led_init);
+        
+        // Wait 40ms after power on so VCC gets stable
+        vTaskDelay(pdMS_TO_TICKS(40));
+
         // Send the initialization sequence to the HD44780 controller
-
-
+        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(5)); // Function set 1
+        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 2
+        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 3
+        send_cmd(0x20U); vTaskDelay(pdMS_TO_TICKS(1)); // 4 bit mode
+        
+        // Full function set
+        send_cmd(0x28U); vTaskDelay(pdMS_TO_TICKS(2)); // 4 bit, 2 lines, 5x8 dots
+        send_cmd(0x08U); vTaskDelay(pdMS_TO_TICKS(2)); // Display off
+        send_cmd(0x01U); vTaskDelay(pdMS_TO_TICKS(2)); // Display clear
+        send_cmd(0x06U); vTaskDelay(pdMS_TO_TICKS(2)); // Entry mode
+        send_cmd(0x0CU); vTaskDelay(pdMS_TO_TICKS(2)); // Display on
+        
         s_is_initialized = true;
     }
 
@@ -65,7 +93,7 @@ namespace lcd {
 
         // Set the pins to analog
         GPIO_InitTypeDef pin_deinit = {
-            .Pin = (config::LCD_SDA.pin | config::LCD_SCL.pin),
+            .Pin = (config::LCD_SDA.pin | config::LCD_SCL.pin | config::LCD_LED.pin),
             .Mode = GPIO_MODE_ANALOG,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW
@@ -75,7 +103,14 @@ namespace lcd {
         s_is_initialized = false;
     }
 
-    void println(const etl::istring& str, uint8_t line) {
+    void put_char(unsigned char c, uint8_t col, uint8_t line) {
+        ASSERT(s_is_initialized);
+        ASSERT(col < COLUMNS);
+        ASSERT(line < ROWS);
+
+    }
+
+    void println(const etl::string_view& str, uint8_t line) {
         ASSERT(s_is_initialized);
         ASSERT(line < ROWS);
         ASSERT(str.length() <= COLUMNS);
@@ -84,13 +119,6 @@ namespace lcd {
             put_char(c, column, line);
             column++;
         }
-    }
-
-    void put_char(unsigned char c, uint8_t col, uint8_t line) {
-        ASSERT(s_is_initialized);
-        ASSERT(col < COLUMNS);
-        ASSERT(line < ROWS);
-
     }
 
     void clear_screen() {
@@ -104,17 +132,29 @@ namespace lcd {
         }
     }
     
+    void backlight_on(bool on = true) {
+        on ? HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_SET) :
+             HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_RESET);
+    }
+
     // Helpers
-    static inline void send_byte(uint8_t byte) {
-        
+    static inline void send_nibble(uint8_t nibble, uint8_t rs) {
+        const uint8_t data = (nibble << 4) | (1 << 3) | (rs & 0b1U);
+    }
+
+    static inline void send_byte(uint8_t byte, uint8_t rs) {
+        send_nibble((byte >> 4), rs);   // High nibble first
+        send_nibble((byte & 0xFU), rs); // Low nibble next
     }
 
     static inline void send_cmd(uint8_t cmd) {
-        
+        // RS = 0 for commands
+        send_byte(cmd, 0);
     }
 
-    static inline void send_data(etl::span<const uint8_t> data) {
-
+    static inline void send_data(uint8_t data) {
+        // RS = 1 for data
+        send_byte(data, 1);
     }
-    
+
 } // namespace lcd

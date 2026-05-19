@@ -1,4 +1,4 @@
-#include "stm32f103xb.h"
+#include "stm32f1xx_hal.h"
 #include "config.hpp"
 
 #include "FreeRTOS.h"

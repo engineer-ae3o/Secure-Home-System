@@ -1,4 +1,5 @@
 #include "stm32f1xx_hal.h"
+#include "hd44780.hpp"
 #include "keypad.hpp"
 #include "switch.hpp"
 #include "config.hpp"
@@ -14,7 +15,7 @@ static nc::switch_t<nc::type_t::REED> reed;
 static nc::switch_t<nc::type_t::LIMIT> tamper;
 
 
-static void led_task(void*) {
+[[noreturn]] static void led_task(void*) {
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
     
@@ -34,7 +35,7 @@ static void led_task(void*) {
     }
 }
 
-static void keypad_task(void*) {
+[[noreturn]] static void keypad_task(void*) {
 
     const pad::config_t config = {
         .row_port = config::KEYPAD_ROW_PINS[0].port,
@@ -66,7 +67,7 @@ static void keypad_task(void*) {
     }
 }
 
-static void switch_task(void*) {
+[[noreturn]] static void switch_task(void*) {
 
     const nc::config_t reed_config = {
         .port = config::REED_SWITCH.port,
@@ -106,8 +107,49 @@ static void switch_task(void*) {
     }
 }
 
+[[noreturn]] static void lcd_task(void*) {
+    
+    lcd::init();
+    lcd::clear_screen();
+    lcd::backlight_on();
+
+    // Text to be displayed
+    constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {{
+        { "", "" },
+        { "", "" },
+        { "", "" },
+        { "", "" },
+        { "", "" },
+    }};
+    
+    while (1) {
+        for (const auto& line : lcd_text) {
+            lcd::clear_screen();
+
+            lcd::println(line[0], 0);
+            lcd::println(line[1], 1);
+
+            vTaskDelay(pdMS_TO_TICKS(5000));
+        }
+    }
+}
+
+[[noreturn]] static void gsm_task(void*) {
+
+    while (1) {
+
+    }
+}
+
+// Tasks TCBs and Stacks
 static etl::array<StackType_t, 512> led_task_stack{};
 static StaticTask_t led_task_tcb{};
+
+static etl::array<StackType_t, 512> lcd_task_stack{};
+static StaticTask_t lcd_task_tcb{};
+
+static etl::array<StackType_t, 512> gsm_task_stack{};
+static StaticTask_t gsm_task_tcb{};
 
 static etl::array<StackType_t, 512> keypad_task_stack{};
 static StaticTask_t keypad_task_tcb{};
@@ -123,8 +165,10 @@ extern "C" {
         HAL_Init();
         
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 7, keypad_task_stack.data(), &keypad_task_tcb);
-        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 6, switch_task_stack.data(), &switch_task_tcb);
+        xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
+        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 5, gsm_task_stack.data(), &gsm_task_tcb);
+        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
         
         vTaskStartScheduler();
 
@@ -151,4 +195,5 @@ extern "C" {
             tamper.irq_handler();
         }
     }
+    
 }

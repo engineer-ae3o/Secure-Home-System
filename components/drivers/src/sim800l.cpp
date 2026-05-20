@@ -17,27 +17,39 @@ namespace gsm {
 
     enum class cmd_t : uint8_t {
         // Initialization
-        AT,
-        ECHO_OFF,
-        TEXT_MODE,
-        SET_SMSC,
+        AT,           // Module alive check
+        ECHO_OFF,     // Disable echo
+        TEXT_MODE,    // SMS text mode
+        SET_SMSC,     // GLO SMSC
 
         // Status checks
-        CHECK_SIM,
-        CHECK_REG,
-        CHECK_SIGNAL,
+        CHECK_SIM,    // Check if SIM card is present and ready
+        CHECK_REG,    // Network registration
+        CHECK_SIGNAL, // Check signal strength
 
         // IMSI
-        GET_IMSI,
+        GET_IMSI,     // Get the SIM card's IMSI
 
         // Total
-        COUNT
+        COUNT         // Used to get total number for array declaration
+    };
+
+    struct cmd_entry_t {
+        const char* tx{};
+        const char* rx{};
     };
 
     // AT commands LUT
-    static constexpr etl::array<etl::string_view, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {
-        
-    };
+    static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
+        [std::to_underlying(cmd_t::AT)]           = { "AT\r\n",                         "OK" },
+        [std::to_underlying(cmd_t::ECHO_OFF)]     = { "ATE0\r\n",                       "OK" },
+        [std::to_underlying(cmd_t::TEXT_MODE)]    = { "AT+CMGF=1\r\n",                  "OK" },
+        [std::to_underlying(cmd_t::SET_SMSC)]     = { "AT+CSCA=\"+2348050020020\"\r\n", "OK" },
+        [std::to_underlying(cmd_t::CHECK_SIM)]    = { "AT+CPIN?\r\n",                   "+CPIN: READY" },
+        [std::to_underlying(cmd_t::CHECK_REG)]    = { "AT+CREG?\r\n",                   "+CREG" },
+        [std::to_underlying(cmd_t::CHECK_SIGNAL)] = { "AT+CSQ\r\n",                     "+CSQ" },
+        [std::to_underlying(cmd_t::GET_IMSI)]     = { "AT+CIMI\r\n",                    "OK" },
+    }};
 
     
     // Public API
@@ -109,7 +121,8 @@ namespace gsm {
         NVIC_SetPriority(DMA1_Channel4_IRQn, 15);
         NVIC_SetPriority(DMA1_Channel5_IRQn, 15);
         
-        // 
+        // Send AT commands to the module to confirm everything is ok
+        
 
         s_is_initialized = true;
 

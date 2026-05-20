@@ -89,8 +89,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wlogical-op
         -Wduplicated-cond
         -Wstrict-aliasing=2
-        -fno-threadsafe-statics
-        -Wzero-as-null-pointer-constant)
+        -fno-threadsafe-statics)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ascon_static f103-hal freertos littlefs drivers printf)
 

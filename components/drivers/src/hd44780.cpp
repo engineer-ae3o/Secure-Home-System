@@ -17,10 +17,14 @@ namespace lcd {
     static bool s_is_initialized{};
 
     // Offsets for calculating offset position
-    static constexpr etl::array<uint8_t, ROWS> OFFSETS = { 0x00U, 0x40U };
+    static constexpr etl::array<uint8_t, ROWS> OFFSETS = {
+           0x00U, 0x40U,
+        // Uncomment if ROWS == 4
+        // 0x14U, 0x54U
+    };
 
-    // I2C address of the I2C bracket on the HD44780 controller
-    static constexpr uint8_t ADDRESS{};
+    // I2C address of the backpack on the HD44780 controller
+    static constexpr uint8_t ADDRESS{0x27U};
 
     // Forward declarations
     static inline void send_nibble(uint8_t nibble, uint8_t rs);
@@ -69,10 +73,11 @@ namespace lcd {
         vTaskDelay(pdMS_TO_TICKS(40));
 
         // Send the initialization sequence to the HD44780 controller
-        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(5)); // Function set 1
-        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 2
-        send_cmd(0x30U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 3
-        send_cmd(0x20U); vTaskDelay(pdMS_TO_TICKS(1)); // 4 bit mode
+        // Bloody cheap displays and their stupid timings
+        send_nibble(0x3U, 0U); vTaskDelay(pdMS_TO_TICKS(5)); // Function set 1
+        send_nibble(0x3U, 0U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 2
+        send_nibble(0x3U, 0U); vTaskDelay(pdMS_TO_TICKS(1)); // Function set 3
+        send_nibble(0x2U, 0U); vTaskDelay(pdMS_TO_TICKS(1)); // 4 bit mode
         
         // Full function set
         send_cmd(0x28U); vTaskDelay(pdMS_TO_TICKS(2)); // 4 bit, 2 lines, 5x8 dots
@@ -108,38 +113,62 @@ namespace lcd {
         ASSERT(col < COLUMNS);
         ASSERT(line < ROWS);
 
+        // Set cursor and send the character
+        const uint8_t addr = OFFSETS[line] + col;
+        send_cmd(0x80U | (addr & 0x7FU));
+        send_data(c);
     }
 
-    void println(const etl::string_view& str, uint8_t line) {
+    void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace) {
         ASSERT(s_is_initialized);
         ASSERT(line < ROWS);
         ASSERT(str.length() <= COLUMNS);
 
-        for (size_t column{0}; const auto& c : str) {
-            put_char(c, column, line);
-            column++;
+        // Set cursor to the first column of the row
+        const uint8_t addr = OFFSETS[line];
+        send_cmd(0x80U | (addr & 0x7FU));
+        
+        // Now send the string
+        for (const auto& c : str) {
+            send_data(c);
+        }
+        
+        if (pad_to_whitespace) {
+            // Pad the remaining columns with whitespaces
+            for (auto remaining{str.length()}; remaining < COLUMNS; remaining++) {
+                send_data(' ');
+            }
         }
     }
 
     void clear_screen() {
         ASSERT(s_is_initialized);
-
-        // Create string with all whitespaces
-        const etl::string<COLUMNS> empty_str(COLUMNS, ' ');
-
-        for (uint8_t i = 0; i < ROWS; i++) {
-            println(empty_str, i);
-        }
+        send_cmd(0x01U); // Display clear
+        vTaskDelay(pdMS_TO_TICKS(2));
     }
     
-    void backlight_on(bool on = true) {
+    void backlight_on(bool on) {
+        // Of course I could use `on` directly, but if I wanted no type system, I'd use C
         on ? HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_SET) :
              HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_RESET);
     }
 
     // Helpers
     static inline void send_nibble(uint8_t nibble, uint8_t rs) {
-        const uint8_t data = (nibble << 4) | (1 << 3) | (rs & 0b1U);
+        // BL is Backlight. En is Enable
+        // RW is read-write. RS selects data or cmds
+                   // `(D7 D6 D5 D4)`   `(BL)` `(EN & RW are 0)`  `(RS)`
+        uint8_t data = (nibble << 4) | (1 << 3)                 | (rs & 0b1U);
+        // Fuck me sideways. ST requires you to shift the address to the left by 1 place
+        // For some f***ing reason, it can't be done internally. Not like it's const or some shit
+        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
+
+        // Pulse the EN bit
+        data |= static_cast<uint8_t>(1U << 2); // EN high
+        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
+
+        data &= static_cast<uint8_t>(~(1U << 2)); // EN low
+        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
     }
 
     static inline void send_byte(uint8_t byte, uint8_t rs) {

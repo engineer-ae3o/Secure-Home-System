@@ -46,14 +46,17 @@ namespace lcd {
      * @param[in] str  String to write to the display. Truncates the
      *                 string output if greater than `COLUMNS - 1`
      * @param[in] line Line number. Can be from 0 to `ROWS - 1`
+     * @param[in] pad_to_whitespace Determines whether or not the pad the
+     *                              remaining columns not filled with text
+     *                              with whitespaces
      * 
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void println(const etl::string_view& str, uint8_t line);
+    void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace = true);
 
     /**
-     * @brief Clears the screen and sets it to whitespaces.
+     * @brief Clears the screen.
      * 
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.

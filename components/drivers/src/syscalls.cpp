@@ -7,6 +7,8 @@
 #define PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD 1
 #include "printf.h"
 
+#include "etl/atomic.h"
+
 #include <errno.h>
 #include <stddef.h>
 #include <sys/stat.h>
@@ -149,37 +151,45 @@ extern "C" {
         __WFI();
     }
 
-    int _close(int) {
-        return 0;
+    // Setup the timer to be used by the HAL since FreeRTOS
+    // already consumes SysTick
+    static volatile etl::atomic<uint32_t> s_hal_tick{};
+
+    HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
+        // Enable TIM2 clock
+        __HAL_RCC_TIM2_CLK_ENABLE();
+
+        // Configure TIM2 for 1ms interrupts at 72MHz
+        // Prescaler: 72MHz / 72 = 1MHz, so a PSC of 72 - 1 = 71
+        // Auto reload: 1kHz, so an ARR of 1000 - 1 = 999
+        TIM2->PSC = 71;
+        TIM2->ARR = 999;
+        TIM2->EGR = TIM_EGR_UG;
+        TIM2->SR &= ~TIM_SR_UIF;
+        TIM2->DIER |= TIM_DIER_UIE;
+        TIM2->CR1 |= TIM_CR1_CEN;
+
+        // Configure NVIC settings for TIM2
+        NVIC_EnableIRQ(TIM2_IRQn);
+        NVIC_SetPriority(TIM2_IRQn, TickPriority);
+
+        return HAL_OK;
     }
 
-    int _lseek(int, int, int) {
-        return 0;
+    uint32_t HAL_GetTick() {
+        return s_hal_tick;
     }
 
-    int _read(int, char*, int) {
-        return 0;
+    void HAL_IncTick() {
+        s_hal_tick++;
     }
 
-    int _write(int, char*, int) {
-        return 0;
+    void TIM2_IRQHandler() {
+        if (TIM2->SR & TIM_SR_UIF) {
+            // Clear update interrupt flag and increment the timer
+            TIM2->SR &= ~TIM_SR_UIF;
+            s_hal_tick++;
+        }
     }
-
-    caddr_t _sbrk(int) {
-        errno = ENOMEM;
-        return (caddr_t)-1;
-    }
-
-    int _fstat(int, struct stat*) {
-        return 0;
-    }
-
-    int _isatty(int) {
-        return 0;
-    }
-
-    void _exit(int) {
-        __asm("bkpt 1");
-        while (1);
-    }
+    
 }

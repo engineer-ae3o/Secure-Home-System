@@ -44,8 +44,7 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Wlogical-op
                                        -Wduplicated-cond
                                        -Wstrict-aliasing=2
-                                       -fno-threadsafe-statics
-                                       -Wzero-as-null-pointer-constant)
+                                       -fno-threadsafe-statics)
 
 target_compile_definitions(drivers PUBLIC STM32F103xB PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD=1)
 

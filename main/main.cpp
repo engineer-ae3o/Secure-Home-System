@@ -115,21 +115,21 @@ static nc::switch_t<nc::type_t::LIMIT> tamper;
 
     // Text to be displayed
     constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {{
-        { "", "" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
+        { "I", "hate" },
+        { "my", "life." },
+        { "This", "is" },
+        { "so", "so" },
+        { "damn", "boring" },
     }};
     
     while (1) {
         for (const auto& line : lcd_text) {
-            lcd::clear_screen();
-
+            // Print text. Bet you didn't know that before
             lcd::println(line[0], 0);
             lcd::println(line[1], 1);
 
-            vTaskDelay(pdMS_TO_TICKS(5000));
+            // Block 2.5s. Helpful? Share and drop a comment (hehe) if it did
+            vTaskDelay(pdMS_TO_TICKS(2500));
         }
     }
 }

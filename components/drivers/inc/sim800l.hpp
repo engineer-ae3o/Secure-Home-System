@@ -1,13 +1,25 @@
 #pragma once
 
 
-#include "stm32f1xx_hal.h"
+#include "etl/string.h"
+#include "etl/expected.h"
 
 
 namespace gsm {
 
-    class sim800l_t {
-
+    enum class status_t : uint8_t {
+        OK,
+        SIM_NOT_FOUND,
     };
     
+    status_t init();
+
+    void deinit();
+
+    status_t send_sms();
+
+    status_t get_sim_status();
+
+    etl::expected<uint32_t, status_t> get_imsi();
+
 } // namespace gsm

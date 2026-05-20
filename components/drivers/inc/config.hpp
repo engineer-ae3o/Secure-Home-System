@@ -35,8 +35,12 @@ namespace config {
 
     // GSM module UART pins
     inline USART_TypeDef* GSM_UART_PORT = USART1;
-    constexpr inline gpio_pin_t GSM_TX = { .port = GPIOA, .pin = GPIO_PIN_9 };
-    constexpr inline gpio_pin_t GSM_RX = { .port = GPIOA, .pin = GPIO_PIN_10 };
+    constexpr inline gpio_pin_t GSM_GPIO_TX = { .port = GPIOA, .pin = GPIO_PIN_9 };
+    constexpr inline gpio_pin_t GSM_GPIO_RX = { .port = GPIOA, .pin = GPIO_PIN_10 };
+
+    // USART1 DMA Channels
+    inline DMA_Channel_TypeDef* GSM_UART_DMA_TX = DMA1_Channel4;
+    inline DMA_Channel_TypeDef* GSM_UART_DMA_RX = DMA1_Channel5;
 
     // Keypad matrix pins
     constexpr inline gpio_pin_t KEYPAD_ROW_PINS[] = {

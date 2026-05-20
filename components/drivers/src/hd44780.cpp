@@ -36,8 +36,10 @@ namespace lcd {
     // Public API
     void init() {
         utils::assert_check(!s_is_initialized);
-
+        
         // Initialize the I2C bus
+        __HAL_RCC_I2C1_CLK_ENABLE();
+
         s_handle.Instance = config::LCD_I2C_PORT;
         s_handle.Init.ClockSpeed = 100'000U;
         s_handle.Init.DutyCycle = I2C_DUTYCYCLE_2;
@@ -148,9 +150,7 @@ namespace lcd {
     }
     
     void backlight_on(bool on) {
-        // Of course I could use `on` directly, but if I wanted no type system, I'd use C
-        on ? HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_SET) :
-             HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, (on ? GPIO_PIN_SET : GPIO_PIN_RESET));
     }
 
     // Helpers

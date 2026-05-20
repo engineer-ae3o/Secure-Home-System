@@ -195,5 +195,5 @@ extern "C" {
             tamper.irq_handler();
         }
     }
-    
+
 }

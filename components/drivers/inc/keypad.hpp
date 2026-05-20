@@ -41,8 +41,8 @@ namespace pad {
             bool m_is_initialized{};
 
             config_t m_config{};
-            uint16_t row_pins{};
-            uint16_t col_pins{};
+            uint16_t m_row_pins{};
+            uint16_t m_col_pins{};
 
             QueueHandle_t m_event_queue{};
             etl::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
@@ -74,30 +74,30 @@ namespace pad {
              * @note The interrupts still have to be enabled with NVIC
              */
             void init(const config_t& config) {
-                ASSERT(!m_is_initialized);
+                utils::assert_check(!m_is_initialized);
 
                 m_config = config;
 
                 // Do this now to avoid recomputing the OR'ed mask multiple times
-                col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
-                row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
+                m_col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
+                m_row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
 
                 // Configure the clocks
                 if      (m_config.col_port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
                 else if (m_config.col_port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
                 else if (m_config.col_port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
                 else if (m_config.col_port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-                else ASSERT(false);
+                else utils::assert_check(false);
 
                 if      (m_config.row_port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
                 else if (m_config.row_port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
                 else if (m_config.row_port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
                 else if (m_config.row_port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-                else ASSERT(false);
+                else utils::assert_check(false);
                 
                 // Set all columns as input pullups with interrupt on falling edge
                 GPIO_InitTypeDef col_init = {
-                    .Pin = col_pins,
+                    .Pin = m_col_pins,
                     .Mode = GPIO_MODE_IT_FALLING,
                     .Pull = GPIO_PULLUP,
                     .Speed = GPIO_SPEED_FREQ_LOW
@@ -106,7 +106,7 @@ namespace pad {
                 
                 // Set all rows as output push pull
                 GPIO_InitTypeDef row_init = {
-                    .Pin = row_pins,
+                    .Pin = m_row_pins,
                     .Mode = GPIO_MODE_OUTPUT_PP,
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
@@ -115,7 +115,7 @@ namespace pad {
 
                 // Set all row pins low by default so any press triggers
                 // the falling edge irq on the pressed column key immediately
-                HAL_GPIO_WritePin(m_config.row_port, row_pins, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(m_config.row_port, m_row_pins, GPIO_PIN_RESET);
 
                 // Can't fail since stack allocated
                 m_event_queue = xQueueCreateStatic(queue_length, sizeof(KEYS[0][0]), m_queue_buffer.data(), &m_queue_structure);
@@ -130,11 +130,11 @@ namespace pad {
              *        analog mode so as to reduce power consumption
              */
             void deinit() {
-                ASSERT(m_is_initialized);
+                utils::assert_check(m_is_initialized);
 
                 // Sets all pins as analog to reduce power draw
                 GPIO_InitTypeDef col_init = {
-                    .Pin = col_pins,
+                    .Pin = m_col_pins,
                     .Mode = GPIO_MODE_ANALOG,
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
@@ -142,7 +142,7 @@ namespace pad {
                 HAL_GPIO_Init(m_config.col_port, &col_init);
                 
                 GPIO_InitTypeDef row_init = {
-                    .Pin = row_pins,
+                    .Pin = m_row_pins,
                     .Mode = GPIO_MODE_ANALOG,
                     .Pull = GPIO_NOPULL,
                     .Speed = GPIO_SPEED_FREQ_LOW
@@ -150,8 +150,8 @@ namespace pad {
                 HAL_GPIO_Init(m_config.row_port, &row_init);
 
                 m_config = {};
-                row_pins = {};
-                col_pins = {};
+                m_row_pins = {};
+                m_col_pins = {};
 
                 // Can't delete since stack allocated
                 // So, just zero the memory and mark as unused
@@ -177,7 +177,7 @@ namespace pad {
              * @return The event queue
              */
             QueueHandle_t get_event_queue() const {
-                ASSERT(m_is_initialized);
+                utils::assert_check(m_is_initialized);
                 return m_event_queue;
             };
 
@@ -187,11 +187,11 @@ namespace pad {
              */
             void irq_handler() {
                 // Clear the interrupt pending flags on all pins
-                __HAL_GPIO_EXTI_CLEAR_IT(col_pins);
+                __HAL_GPIO_EXTI_CLEAR_IT(m_col_pins);
                 
                 // And disable interrupts globally on the port by masking it.
                 // Will be reenabled by the debounce timer after it's done scanning
-                EXTI->IMR &= ~col_pins;
+                EXTI->IMR &= ~m_col_pins;
 
                 // Start the debounce timer
                 BaseType_t higher_priority_task_woken = pdFALSE;
@@ -205,7 +205,7 @@ namespace pad {
                 keypad_t* keypad = static_cast<keypad_t*>(pvTimerGetTimerID(xTimer));
                 
                 // Set all row pins high
-                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_row_pins, GPIO_PIN_SET);
 
                 // Keypad scanning
                 uint8_t row{}, column{};
@@ -234,14 +234,14 @@ namespace pad {
                 if (found) xQueueSend(keypad->m_event_queue, &KEYS[row][column], 0);
 
                 // Take all row pins back to their default low state
-                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->row_pins, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_row_pins, GPIO_PIN_RESET);
 
                 // Clear the interrupt pending flags on all pins before unmasking the EXTI interrupts
-                __HAL_GPIO_EXTI_CLEAR_IT(keypad->col_pins);
+                __HAL_GPIO_EXTI_CLEAR_IT(keypad->m_col_pins);
                 
                 // Enable interrupts by unmasking EXTI interrupts
-                EXTI->IMR |= keypad->col_pins;
+                EXTI->IMR |= keypad->m_col_pins;
             }
     };
-    
+
 } // namespace pad

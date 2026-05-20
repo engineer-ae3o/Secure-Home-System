@@ -31,11 +31,11 @@ namespace lcd {
     static inline void send_byte(uint8_t byte, uint8_t rs);
     static inline void send_cmd(uint8_t cmd);
     static inline void send_data(uint8_t data);
-    
+
 
     // Public API
     void init() {
-        ASSERT(!s_is_initialized);
+        utils::assert_check(!s_is_initialized);
 
         // Initialize the I2C bus
         s_handle.Instance = config::LCD_I2C_PORT;
@@ -48,7 +48,7 @@ namespace lcd {
         s_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
         s_handle.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
 
-        ASSERT(HAL_I2C_Init(&s_handle) == HAL_OK);
+        utils::assert_check(HAL_I2C_Init(&s_handle) == HAL_OK);
 
         // Initialize the I2C GPIO pins
         __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -90,10 +90,10 @@ namespace lcd {
     }
 
     void deinit() {
-        ASSERT(s_is_initialized);
+        utils::assert_check(s_is_initialized);
 
         // Deinitialize the I2C peripheral. Real helpful comment, I know
-        ASSERT(HAL_I2C_DeInit(&s_handle) == HAL_OK);
+        utils::assert_check(HAL_I2C_DeInit(&s_handle) == HAL_OK);
         s_handle = {};
 
         // Set the pins to analog
@@ -109,9 +109,9 @@ namespace lcd {
     }
 
     void put_char(unsigned char c, uint8_t col, uint8_t line) {
-        ASSERT(s_is_initialized);
-        ASSERT(col < COLUMNS);
-        ASSERT(line < ROWS);
+        utils::assert_check(s_is_initialized);
+        utils::assert_check(col < COLUMNS);
+        utils::assert_check(line < ROWS);
 
         // Set cursor and send the character
         const uint8_t addr = OFFSETS[line] + col;
@@ -120,9 +120,9 @@ namespace lcd {
     }
 
     void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace) {
-        ASSERT(s_is_initialized);
-        ASSERT(line < ROWS);
-        ASSERT(str.length() <= COLUMNS);
+        utils::assert_check(s_is_initialized);
+        utils::assert_check(line < ROWS);
+        utils::assert_check(str.length() <= COLUMNS);
 
         // Set cursor to the first column of the row
         const uint8_t addr = OFFSETS[line];
@@ -142,7 +142,7 @@ namespace lcd {
     }
 
     void clear_screen() {
-        ASSERT(s_is_initialized);
+        utils::assert_check(s_is_initialized);
         send_cmd(0x01U); // Display clear
         vTaskDelay(pdMS_TO_TICKS(2));
     }

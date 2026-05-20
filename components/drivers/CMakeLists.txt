@@ -57,5 +57,4 @@ target_include_directories(drivers PUBLIC inc/
                                           ../freertos/include/
                                           ../ascon-suite/src/
                                           ../littlefs/
-                                          ../printf/
                                           ../etl/)

@@ -37,7 +37,7 @@ namespace nc {
              *       EXTI interrupt handler for the used pins
              */
             void init(const config_t& config) {
-                ASSERT(!m_is_initialized);
+                utils::assert_check(!m_is_initialized);
 
                 m_config = config;
                 
@@ -46,7 +46,7 @@ namespace nc {
                 else if (m_config.port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
                 else if (m_config.port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
                 else if (m_config.port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-                else ASSERT(false);
+                else utils::assert_check(false);
 
                 // Set pin as input with interrupt on the rising edge
                 GPIO_InitTypeDef pin_init = {
@@ -69,7 +69,7 @@ namespace nc {
              *        consumption on the pin. Also disables the corresponding NVIC irq
              */
             void deinit() {
-                ASSERT(m_is_initialized);
+                utils::assert_check(m_is_initialized);
 
                 // Set pin as analog to reduce power draw
                 GPIO_InitTypeDef pin_deinit = {

@@ -6,15 +6,7 @@
 
 
 namespace config {
-
-    enum class log_level_t : uint8_t {
-        NONE = 0,
-        ERROR,
-        WARN,
-        INFO
-    };
-
-    constexpr inline log_level_t LOG_LEVEL = log_level_t::INFO;
+    
     constexpr inline bool ASSERTS_ENABLED = true;
 
     // Core clock speed being used
@@ -42,7 +34,7 @@ namespace config {
     constexpr inline gpio_pin_t LCD_LED = { .port = GPIOB, .pin = GPIO_PIN_9 };
 
     // GSM module UART pins
-    const inline USART_TypeDef* GSM_UART_PORT = USART1;
+    inline USART_TypeDef* GSM_UART_PORT = USART1;
     constexpr inline gpio_pin_t GSM_TX = { .port = GPIOA, .pin = GPIO_PIN_9 };
     constexpr inline gpio_pin_t GSM_RX = { .port = GPIOA, .pin = GPIO_PIN_10 };
 

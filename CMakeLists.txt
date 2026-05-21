@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
@@ -90,7 +90,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wstrict-aliasing=2
         -fno-threadsafe-statics)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ascon_static f103-hal freertos littlefs drivers)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     C_STANDARD 23

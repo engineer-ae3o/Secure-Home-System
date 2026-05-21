@@ -3,6 +3,9 @@
 #include "config.hpp"
 #include "utils.hpp"
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 
 namespace gsm {
 
@@ -10,6 +13,7 @@ namespace gsm {
     static UART_HandleTypeDef s_uart_handle{};
     static DMA_HandleTypeDef s_dma_tx_handle{};
     static DMA_HandleTypeDef s_dma_rx_handle{};
+    static TaskHandle_t s_calling_task_handle{};
 
     static bool s_is_initialized{};
 
@@ -56,19 +60,6 @@ namespace gsm {
     status_t init() {
         utils::assert_check(!s_is_initialized);
 
-        // Configure the UART channel
-        __HAL_RCC_USART1_CLK_ENABLE();
-
-        s_uart_handle.Instance = config::GSM_UART_PORT;
-        s_uart_handle.Init.BaudRate = 9600U;
-        s_uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
-        s_uart_handle.Init.StopBits = UART_STOPBITS_1;
-        s_uart_handle.Init.Parity = UART_PARITY_NONE;
-        s_uart_handle.Init.Mode = UART_MODE_TX_RX;
-        s_uart_handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-        s_uart_handle.Init.OverSampling = UART_OVERSAMPLING_16;
-        utils::assert_check(HAL_UART_Init(&s_uart_handle) == HAL_OK);
-
         // Configure the GPIOs
         __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -90,6 +81,19 @@ namespace gsm {
         };
         HAL_GPIO_Init(config::GSM_GPIO_RX.port, &rx_init);
 
+        // Configure the UART channel
+        __HAL_RCC_USART1_CLK_ENABLE();
+
+        s_uart_handle.Instance = config::GSM_UART_PORT;
+        s_uart_handle.Init.BaudRate = 9600U;
+        s_uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
+        s_uart_handle.Init.StopBits = UART_STOPBITS_1;
+        s_uart_handle.Init.Parity = UART_PARITY_NONE;
+        s_uart_handle.Init.Mode = UART_MODE_TX_RX;
+        s_uart_handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+        s_uart_handle.Init.OverSampling = UART_OVERSAMPLING_16;
+        utils::assert_check(HAL_UART_Init(&s_uart_handle) == HAL_OK);
+
         // Configure the DMA channels
         __HAL_RCC_DMA1_CLK_ENABLE();
 
@@ -102,7 +106,9 @@ namespace gsm {
         s_dma_tx_handle.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
         s_dma_tx_handle.Init.Mode = DMA_NORMAL;
         s_dma_tx_handle.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+
         utils::assert_check(HAL_DMA_Init(&s_dma_tx_handle) == HAL_OK);
+        __HAL_LINKDMA(&s_uart_handle, hdmatx, s_dma_tx_handle);
 
         // RX
         s_dma_rx_handle.Instance = config::GSM_UART_DMA_RX;
@@ -113,13 +119,18 @@ namespace gsm {
         s_dma_rx_handle.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
         s_dma_rx_handle.Init.Mode = DMA_NORMAL;
         s_dma_rx_handle.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+
         utils::assert_check(HAL_DMA_Init(&s_dma_rx_handle) == HAL_OK);
+        __HAL_LINKDMA(&s_uart_handle, hdmarx, s_dma_rx_handle);
 
         // Enable the NVIC irqs and set priorities to lowest
         NVIC_EnableIRQ(DMA1_Channel4_IRQn);
         NVIC_EnableIRQ(DMA1_Channel5_IRQn);
         NVIC_SetPriority(DMA1_Channel4_IRQn, 15);
         NVIC_SetPriority(DMA1_Channel5_IRQn, 15);
+
+        // Capture calling task
+        s_calling_task_handle = xTaskGetCurrentTaskHandle();
         
         // Send AT commands to the module to confirm everything is ok
         
@@ -133,13 +144,18 @@ namespace gsm {
         utils::assert_check(s_is_initialized);
 
         // Deinitialize the USART and DMA channels
-        utils::assert_check(HAL_UART_DeInit(&s_uart_handle) == HAL_OK);
         utils::assert_check(HAL_DMA_DeInit(&s_dma_tx_handle) == HAL_OK);
         utils::assert_check(HAL_DMA_DeInit(&s_dma_rx_handle) == HAL_OK);
+        utils::assert_check(HAL_UART_DeInit(&s_uart_handle) == HAL_OK);
 
         s_uart_handle = {};
         s_dma_tx_handle = {};
         s_dma_rx_handle = {};
+        s_calling_task_handle = nullptr;
+
+        // Disable the corresponding NVIC DMA tx and rx irqs
+        NVIC_DisableIRQ(DMA1_Channel4_IRQn);
+        NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
         // Set TX and RX pins as analog
         GPIO_InitTypeDef gpio_deinit = {
@@ -153,34 +169,34 @@ namespace gsm {
         s_is_initialized = false;
     }
 
-    status_t send_sms() {
-        utils::assert_check(!s_is_initialized);
+    status_t send_sms(const etl::string_view& sms, const etl::string_view& number) {
+        utils::assert_check(s_is_initialized);
 
         return status_t::OK;
     }
 
     status_t get_sim_status() {
-        utils::assert_check(!s_is_initialized);
+        utils::assert_check(s_is_initialized);
         
         return status_t::OK;
     }
     
-    etl::expected<uint32_t, status_t> get_imsi() {
-        utils::assert_check(!s_is_initialized);
+    etl::expected<etl::array<char, 16>, status_t> get_imsi() {
+        utils::assert_check(s_is_initialized);
 
-        return 0U;
-    }
-
-    extern "C" {
-        // DMA TX irq handler
-        void DMA1_Channel4_IRQHandler() {
-            
-        }
-
-        // DMA RX irq handler
-        void DMA1_Channel5_IRQHandler() {
-            
-        }
+        return {};
     }
 
 } // namespace gsm
+
+extern "C" {
+    // DMA TX irq handler
+    void DMA1_Channel4_IRQHandler() {
+        HAL_DMA_IRQHandler(&gsm::s_dma_tx_handle);
+    }
+
+    // DMA RX irq handler
+    void DMA1_Channel5_IRQHandler() {
+        HAL_DMA_IRQHandler(&gsm::s_dma_rx_handle);
+    }
+}

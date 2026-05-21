@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.5)
 
 add_library(drivers STATIC
     src/hd44780.cpp

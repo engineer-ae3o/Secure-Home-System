@@ -131,16 +131,14 @@ __NO_RETURN void Reset_Handler(void) {
   Hard Fault Handler
  *---------------------------------------------------------------------------*/
 void HardFault_Handler(void) {
-    while (1)
-        ;
+    while (1);
 }
 
 /*---------------------------------------------------------------------------
   Default Handler for Exceptions / Interrupts
  *---------------------------------------------------------------------------*/
 void Default_Handler(void) {
-    while (1)
-        ;
+    while (1);
 }
 
 #if defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)

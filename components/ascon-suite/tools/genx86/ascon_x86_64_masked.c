@@ -43,8 +43,7 @@ static int num_shares = 2;
 #define UNROT(n) (64 - ROT_SHARE * (n))
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     reg_t* x0[MAX_SHARES];
     reg_t* x1[MAX_SHARES];
     reg_t* x2[MAX_SHARES];
@@ -388,25 +387,24 @@ static void gen_permute(int max_shares) {
     const char* preserve    = REG_RDX;
     reg_names   regs;
     int         share;
-    char*       reg_list[] = {
-        /* RDI keeps the state pointer throughout the function because
+    char*       reg_list[]      = {/* RDI keeps the state pointer throughout the function because
          * we need the state to be able to spill to and reload from */
-        REG_RAX,
-        REG_RCX,
-        REG_R8,
-        REG_R9,
-        REG_R10,
-        REG_R11,
-        REG_R12,
-        REG_R13,
-        REG_R14,
-        REG_R15,
-        REG_RBX,
-        REG_RBP,
-        REG_RSI,
-        REG_RDX,
-        NULL};
-    char* reg_names[7][4] = {
+                                   REG_RAX,
+                                   REG_RCX,
+                                   REG_R8,
+                                   REG_R9,
+                                   REG_R10,
+                                   REG_R11,
+                                   REG_R12,
+                                   REG_R13,
+                                   REG_R14,
+                                   REG_R15,
+                                   REG_RBX,
+                                   REG_RBP,
+                                   REG_RSI,
+                                   REG_RDX,
+                                   NULL};
+    char*       reg_names[7][4] = {
         {"x0_a", "x0_b", "x0_c", "x0_d"},
         {"x1_a", "x1_b", "x1_c", "x1_d"},
         {"x2_a", "x2_b", "x2_c", "x2_d"},

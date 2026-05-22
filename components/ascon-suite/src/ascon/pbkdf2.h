@@ -42,7 +42,7 @@ extern "C" {
  */
 #define ASCON_PBKDF2_SIZE 32
 
-/**
+    /**
  * \brief Derives key material using ASCON-PBKDF2.
  *
  * \param out Points to the output buffer to receive the key material.
@@ -65,9 +65,15 @@ extern "C" {
  *
  * \sa ascon_pbkdf2_hmac()
  */
-void ascon_pbkdf2(unsigned char* out, size_t outlen, const unsigned char* password, size_t passwordlen, const unsigned char* salt, size_t saltlen, unsigned long count);
+    void ascon_pbkdf2(unsigned char*       out,
+                      size_t               outlen,
+                      const unsigned char* password,
+                      size_t               passwordlen,
+                      const unsigned char* salt,
+                      size_t               saltlen,
+                      unsigned long        count);
 
-/**
+    /**
  * \brief Derives key material using ASCON-PBKDF2 (legacy HMAC version).
  *
  * \param out Points to the output buffer to receive the key material.
@@ -87,7 +93,13 @@ void ascon_pbkdf2(unsigned char* out, size_t outlen, const unsigned char* passwo
  * \note This function uses ASCON-HMAC to implement the pseudorandom
  * function PRF from RFC 8018 for compatibility with existing designs.
  */
-void ascon_pbkdf2_hmac(unsigned char* out, size_t outlen, const unsigned char* password, size_t passwordlen, const unsigned char* salt, size_t saltlen, unsigned long count);
+    void ascon_pbkdf2_hmac(unsigned char*       out,
+                           size_t               outlen,
+                           const unsigned char* password,
+                           size_t               passwordlen,
+                           const unsigned char* salt,
+                           size_t               saltlen,
+                           unsigned long        count);
 
 #ifdef __cplusplus
 }

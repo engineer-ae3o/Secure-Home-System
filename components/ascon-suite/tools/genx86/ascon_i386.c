@@ -44,8 +44,7 @@
 #define X4_O 36
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     reg_t* x0_e;
     reg_t* x1_e;
     reg_t* x2_e;
@@ -124,9 +123,8 @@ static void gen_sbox(reg_names* regs) {
 /* Generate the code for a single sliced ASCON round */
 static void gen_round_sliced(reg_names* regs, int round) {
     /* Round constants for all rounds */
-    static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
-    reg_t* t2;
+    static const unsigned char RC[12 * 2] = {12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    reg_t*                     t2;
 
     /* Set up to operate on the even words which are currently in registers */
     regs->x0 = regs->x0_e;
@@ -304,8 +302,7 @@ static void gen_permute(void) {
     const char* state;
     const char* first_round;
     int         round;
-    char*       reg_list[] = {
-        REG_EBX, REG_ECX, REG_EDX, REG_ESI, REG_EDI, REG_EAX, REG_EBP, NULL};
+    char*       reg_list[] = {REG_EBX, REG_ECX, REG_EDX, REG_ESI, REG_EDI, REG_EAX, REG_EBP, NULL};
 
     /* Set up the stack frame, and load the arguments into eax and ebp */
 #if X86_64_PLATFORM

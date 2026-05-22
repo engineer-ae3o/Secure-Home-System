@@ -678,16 +678,13 @@ HAL_StatusTypeDef HAL_RTC_SetTime(RTC_HandleTypeDef* hrtc, RTC_TimeTypeDef* sTim
         assert_param(IS_RTC_MINUTES(sTime->Minutes));
         assert_param(IS_RTC_SECONDS(sTime->Seconds));
 
-        counter_time = (uint32_t)(((uint32_t)sTime->Hours * 3600U) +
-                                  ((uint32_t)sTime->Minutes * 60U) +
-                                  ((uint32_t)sTime->Seconds));
+        counter_time = (uint32_t)(((uint32_t)sTime->Hours * 3600U) + ((uint32_t)sTime->Minutes * 60U) + ((uint32_t)sTime->Seconds));
     } else {
         assert_param(IS_RTC_HOUR24(RTC_Bcd2ToByte(sTime->Hours)));
         assert_param(IS_RTC_MINUTES(RTC_Bcd2ToByte(sTime->Minutes)));
         assert_param(IS_RTC_SECONDS(RTC_Bcd2ToByte(sTime->Seconds)));
 
-        counter_time = (((uint32_t)(RTC_Bcd2ToByte(sTime->Hours)) * 3600U) +
-                        ((uint32_t)(RTC_Bcd2ToByte(sTime->Minutes)) * 60U) +
+        counter_time = (((uint32_t)(RTC_Bcd2ToByte(sTime->Hours)) * 3600U) + ((uint32_t)(RTC_Bcd2ToByte(sTime->Minutes)) * 60U) +
                         ((uint32_t)(RTC_Bcd2ToByte(sTime->Seconds))));
     }
 
@@ -1026,26 +1023,23 @@ HAL_StatusTypeDef HAL_RTC_SetAlarm(RTC_HandleTypeDef* hrtc, RTC_AlarmTypeDef* sA
     }
 
     /* Convert time in seconds */
-    counter_time = (uint32_t)(((uint32_t)stime.Hours * 3600U) +
-                              ((uint32_t)stime.Minutes * 60U) +
-                              ((uint32_t)stime.Seconds));
+    counter_time = (uint32_t)(((uint32_t)stime.Hours * 3600U) + ((uint32_t)stime.Minutes * 60U) + ((uint32_t)stime.Seconds));
 
     if (Format == RTC_FORMAT_BIN) {
         assert_param(IS_RTC_HOUR24(sAlarm->AlarmTime.Hours));
         assert_param(IS_RTC_MINUTES(sAlarm->AlarmTime.Minutes));
         assert_param(IS_RTC_SECONDS(sAlarm->AlarmTime.Seconds));
 
-        counter_alarm = (uint32_t)(((uint32_t)sAlarm->AlarmTime.Hours * 3600U) +
-                                   ((uint32_t)sAlarm->AlarmTime.Minutes * 60U) +
+        counter_alarm = (uint32_t)(((uint32_t)sAlarm->AlarmTime.Hours * 3600U) + ((uint32_t)sAlarm->AlarmTime.Minutes * 60U) +
                                    ((uint32_t)sAlarm->AlarmTime.Seconds));
     } else {
         assert_param(IS_RTC_HOUR24(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)));
         assert_param(IS_RTC_MINUTES(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)));
         assert_param(IS_RTC_SECONDS(RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
 
-        counter_alarm = (((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)) * 3600U) +
-                         ((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)) * 60U) +
-                         ((uint32_t)RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
+        counter_alarm =
+            (((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)) * 3600U) + ((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)) * 60U) +
+             ((uint32_t)RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
     }
 
     /* Check that requested alarm should expire in the same day (otherwise add 1 day) */
@@ -1108,26 +1102,23 @@ HAL_StatusTypeDef HAL_RTC_SetAlarm_IT(RTC_HandleTypeDef* hrtc, RTC_AlarmTypeDef*
     }
 
     /* Convert time in seconds */
-    counter_time = (uint32_t)(((uint32_t)stime.Hours * 3600U) +
-                              ((uint32_t)stime.Minutes * 60U) +
-                              ((uint32_t)stime.Seconds));
+    counter_time = (uint32_t)(((uint32_t)stime.Hours * 3600U) + ((uint32_t)stime.Minutes * 60U) + ((uint32_t)stime.Seconds));
 
     if (Format == RTC_FORMAT_BIN) {
         assert_param(IS_RTC_HOUR24(sAlarm->AlarmTime.Hours));
         assert_param(IS_RTC_MINUTES(sAlarm->AlarmTime.Minutes));
         assert_param(IS_RTC_SECONDS(sAlarm->AlarmTime.Seconds));
 
-        counter_alarm = (uint32_t)(((uint32_t)sAlarm->AlarmTime.Hours * 3600U) +
-                                   ((uint32_t)sAlarm->AlarmTime.Minutes * 60U) +
+        counter_alarm = (uint32_t)(((uint32_t)sAlarm->AlarmTime.Hours * 3600U) + ((uint32_t)sAlarm->AlarmTime.Minutes * 60U) +
                                    ((uint32_t)sAlarm->AlarmTime.Seconds));
     } else {
         assert_param(IS_RTC_HOUR24(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)));
         assert_param(IS_RTC_MINUTES(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)));
         assert_param(IS_RTC_SECONDS(RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
 
-        counter_alarm = (((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)) * 3600U) +
-                         ((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)) * 60U) +
-                         ((uint32_t)RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
+        counter_alarm =
+            (((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Hours)) * 3600U) + ((uint32_t)(RTC_Bcd2ToByte(sAlarm->AlarmTime.Minutes)) * 60U) +
+             ((uint32_t)RTC_Bcd2ToByte(sAlarm->AlarmTime.Seconds)));
     }
 
     /* Check that requested alarm should expire in the same day (otherwise add 1 day) */
@@ -1636,8 +1627,7 @@ static void RTC_DateUpdate(RTC_HandleTypeDef* hrtc, uint32_t DayElapsed) {
     day   = hrtc->DateToUpdate.Date;
 
     for (loop = 0U; loop < DayElapsed; loop++) {
-        if ((month == 1U) || (month == 3U) || (month == 5U) || (month == 7U) ||
-            (month == 8U) || (month == 10U) || (month == 12U)) {
+        if ((month == 1U) || (month == 3U) || (month == 5U) || (month == 7U) || (month == 8U) || (month == 10U) || (month == 12U)) {
             if (day < 31U) {
                 day++;
             }

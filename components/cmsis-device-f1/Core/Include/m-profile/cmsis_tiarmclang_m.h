@@ -278,8 +278,7 @@ __STATIC_FORCEINLINE void __TZ_set_STACKSEAL_S(uint32_t* stackTop) {
 #define __CLZ(value) __clz(value)
 
 /* __ARM_FEATURE_SAT is wrong for for Armv8-M Baseline devices */
-#if ((__ARM_FEATURE_SAT >= 1) && \
-     (__ARM_ARCH_ISA_THUMB >= 2))
+#if ((__ARM_FEATURE_SAT >= 1) && (__ARM_ARCH_ISA_THUMB >= 2))
 /**
   \brief   Signed Saturate
   \details Saturates a signed value.
@@ -1025,9 +1024,8 @@ __STATIC_FORCEINLINE void __TZ_set_FAULTMASK_NS(uint32_t faultMask) {
   \return               PSPLIM Register value
  */
 __STATIC_FORCEINLINE uint32_t __get_PSPLIM(void) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&     \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && \
-     (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&                                                                    \
+     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
     /* without main extensions, the non-secure PSPLIM is RAZ/WI */
     return (0U);
 #else
@@ -1047,8 +1045,7 @@ __STATIC_FORCEINLINE uint32_t __get_PSPLIM(void) {
   \return               PSPLIM Register value
  */
 __STATIC_FORCEINLINE uint32_t __TZ_get_PSPLIM_NS(void) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
     /* without main extensions, the non-secure PSPLIM is RAZ/WI */
     return (0U);
 #else
@@ -1069,9 +1066,8 @@ __STATIC_FORCEINLINE uint32_t __TZ_get_PSPLIM_NS(void) {
   \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
  */
 __STATIC_FORCEINLINE void __set_PSPLIM(uint32_t ProcStackPtrLimit) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&     \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && \
-     (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&                                                                    \
+     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
     /* without main extensions, the non-secure PSPLIM is RAZ/WI */
     (void)ProcStackPtrLimit;
 #else
@@ -1089,8 +1085,7 @@ __STATIC_FORCEINLINE void __set_PSPLIM(uint32_t ProcStackPtrLimit) {
   \param [in]    ProcStackPtrLimit  Process Stack Pointer Limit value to set
  */
 __STATIC_FORCEINLINE void __TZ_set_PSPLIM_NS(uint32_t ProcStackPtrLimit) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
     /* without main extensions, the non-secure PSPLIM is RAZ/WI */
     (void)ProcStackPtrLimit;
 #else
@@ -1108,9 +1103,8 @@ __STATIC_FORCEINLINE void __TZ_set_PSPLIM_NS(uint32_t ProcStackPtrLimit) {
   \return               MSPLIM Register value
  */
 __STATIC_FORCEINLINE uint32_t __get_MSPLIM(void) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&     \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && \
-     (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&                                                                    \
+     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
     /* without main extensions, the non-secure MSPLIM is RAZ/WI */
     return (0U);
 #else
@@ -1130,8 +1124,7 @@ __STATIC_FORCEINLINE uint32_t __get_MSPLIM(void) {
   \return               MSPLIM Register value
  */
 __STATIC_FORCEINLINE uint32_t __TZ_get_MSPLIM_NS(void) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
     /* without main extensions, the non-secure MSPLIM is RAZ/WI */
     return (0U);
 #else
@@ -1151,9 +1144,8 @@ __STATIC_FORCEINLINE uint32_t __TZ_get_MSPLIM_NS(void) {
   \param [in]    MainStackPtrLimit  Main Stack Pointer Limit value to set
  */
 __STATIC_FORCEINLINE void __set_MSPLIM(uint32_t MainStackPtrLimit) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&     \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && \
-     (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) &&                                                                    \
+     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)) && (!defined(__ARM_FEATURE_CMSE) || (__ARM_FEATURE_CMSE < 3)))
     /* without main extensions, the non-secure MSPLIM is RAZ/WI */
     (void)MainStackPtrLimit;
 #else
@@ -1171,8 +1163,7 @@ __STATIC_FORCEINLINE void __set_MSPLIM(uint32_t MainStackPtrLimit) {
   \param [in]    MainStackPtrLimit  Main Stack Pointer value to set
  */
 __STATIC_FORCEINLINE void __TZ_set_MSPLIM_NS(uint32_t MainStackPtrLimit) {
-#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && \
-     !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
+#if (!(defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) && !(defined(__ARM_ARCH_8_1M_MAIN__) && (__ARM_ARCH_8_1M_MAIN__ == 1)))
     /* without main extensions, the non-secure MSPLIM is RAZ/WI */
     (void)MainStackPtrLimit;
 #else
@@ -1278,11 +1269,9 @@ __STATIC_FORCEINLINE void __set_FPSCR(uint32_t fpscr) {
 #define __QADD __qadd
 #define __QSUB __qsub
 
-#define __PKHBT(ARG1, ARG2, ARG3) (((((uint32_t)(ARG1))) & 0x0000FFFFUL) | \
-                                   ((((uint32_t)(ARG2)) << (ARG3)) & 0xFFFF0000UL))
+#define __PKHBT(ARG1, ARG2, ARG3) (((((uint32_t)(ARG1))) & 0x0000FFFFUL) | ((((uint32_t)(ARG2)) << (ARG3)) & 0xFFFF0000UL))
 
-#define __PKHTB(ARG1, ARG2, ARG3) (((((uint32_t)(ARG1))) & 0xFFFF0000UL) | \
-                                   ((((uint32_t)(ARG2)) >> (ARG3)) & 0x0000FFFFUL))
+#define __PKHTB(ARG1, ARG2, ARG3) (((((uint32_t)(ARG1))) & 0xFFFF0000UL) | ((((uint32_t)(ARG2)) >> (ARG3)) & 0x0000FFFFUL))
 
 #define __SXTB16_RORn(ARG1, ARG2) __SXTB16(__ROR(ARG1, ARG2))
 

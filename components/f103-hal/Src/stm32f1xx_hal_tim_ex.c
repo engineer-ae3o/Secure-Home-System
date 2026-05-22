@@ -315,7 +315,8 @@ HAL_StatusTypeDef HAL_TIMEx_HallSensor_Start(TIM_HandleTypeDef* htim) {
     assert_param(IS_TIM_HALL_SENSOR_INTERFACE_INSTANCE(htim->Instance));
 
     /* Check the TIM channels state */
-    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
+    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) ||
+        (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
         return HAL_ERROR;
     }
 
@@ -387,7 +388,8 @@ HAL_StatusTypeDef HAL_TIMEx_HallSensor_Start_IT(TIM_HandleTypeDef* htim) {
     assert_param(IS_TIM_HALL_SENSOR_INTERFACE_INSTANCE(htim->Instance));
 
     /* Check the TIM channels state */
-    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
+    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) ||
+        (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
         return HAL_ERROR;
     }
 
@@ -1419,7 +1421,8 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Start(TIM_HandleTypeDef* htim, uint32_t Ou
     assert_param(IS_TIM_CCXN_INSTANCE(htim->Instance, OutputChannel));
 
     /* Check the TIM channels state */
-    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
+    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) ||
+        (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
         return HAL_ERROR;
     }
 
@@ -1501,7 +1504,8 @@ HAL_StatusTypeDef HAL_TIMEx_OnePulseN_Start_IT(TIM_HandleTypeDef* htim, uint32_t
     assert_param(IS_TIM_CCXN_INSTANCE(htim->Instance, OutputChannel));
 
     /* Check the TIM channels state */
-    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
+    if ((channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (channel_2_state != HAL_TIM_CHANNEL_STATE_READY) ||
+        (complementary_channel_1_state != HAL_TIM_CHANNEL_STATE_READY) || (complementary_channel_2_state != HAL_TIM_CHANNEL_STATE_READY)) {
         return HAL_ERROR;
     }
 
@@ -1625,8 +1629,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent(TIM_HandleTypeDef* htim, uint32_t 
 
     __HAL_LOCK(htim);
 
-    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) ||
-        (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
+    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) || (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
         /* Select the Input trigger */
         htim->Instance->SMCR &= ~TIM_SMCR_TS;
         htim->Instance->SMCR |= InputTrigger;
@@ -1678,8 +1681,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_IT(TIM_HandleTypeDef* htim, uint32
 
     __HAL_LOCK(htim);
 
-    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) ||
-        (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
+    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) || (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
         /* Select the Input trigger */
         htim->Instance->SMCR &= ~TIM_SMCR_TS;
         htim->Instance->SMCR |= InputTrigger;
@@ -1732,8 +1734,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef* htim, uint3
 
     __HAL_LOCK(htim);
 
-    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) ||
-        (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
+    if ((InputTrigger == TIM_TS_ITR0) || (InputTrigger == TIM_TS_ITR1) || (InputTrigger == TIM_TS_ITR2) || (InputTrigger == TIM_TS_ITR3)) {
         /* Select the Input trigger */
         htim->Instance->SMCR &= ~TIM_SMCR_TS;
         htim->Instance->SMCR |= InputTrigger;
@@ -1771,8 +1772,7 @@ HAL_StatusTypeDef HAL_TIMEx_ConfigCommutEvent_DMA(TIM_HandleTypeDef* htim, uint3
   *         mode.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef*             htim,
-                                                        const TIM_MasterConfigTypeDef* sMasterConfig) {
+HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef* htim, const TIM_MasterConfigTypeDef* sMasterConfig) {
     uint32_t tmpcr2;
     uint32_t tmpsmcr;
 
@@ -1830,8 +1830,7 @@ HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef*      
   *         interrupt can be enabled by calling the @ref __HAL_TIM_ENABLE_IT macro.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef*                    htim,
-                                                const TIM_BreakDeadTimeConfigTypeDef* sBreakDeadTimeConfig) {
+HAL_StatusTypeDef HAL_TIMEx_ConfigBreakDeadTime(TIM_HandleTypeDef* htim, const TIM_BreakDeadTimeConfigTypeDef* sBreakDeadTimeConfig) {
     /* Keep this variable initialized to 0 as it is used to configure BDTR register */
     uint32_t tmpbdtr = 0U;
 
@@ -1916,6 +1915,7 @@ __weak void HAL_TIMEx_CommutCallback(TIM_HandleTypeDef* htim) {
             the HAL_TIMEx_CommutCallback could be implemented in the user file
    */
 }
+
 /**
   * @brief  Commutation half complete callback in non-blocking mode
   * @param  htim TIM handle
@@ -1943,6 +1943,7 @@ __weak void HAL_TIMEx_BreakCallback(TIM_HandleTypeDef* htim) {
             the HAL_TIMEx_BreakCallback could be implemented in the user file
    */
 }
+
 /**
   * @}
   */
@@ -1991,6 +1992,7 @@ HAL_TIM_ChannelStateTypeDef HAL_TIMEx_GetChannelNState(const TIM_HandleTypeDef* 
 
     return channel_state;
 }
+
 /**
   * @}
   */
@@ -2132,6 +2134,7 @@ static void TIM_CCxNChannelCmd(TIM_TypeDef* TIMx, uint32_t Channel, uint32_t Cha
     /* Set or reset the CCxNE Bit */
     TIMx->CCER |= (uint32_t)(ChannelNState << (Channel & 0xFU)); /* 0xFU = 15 bits max shift */
 }
+
 /**
   * @}
   */

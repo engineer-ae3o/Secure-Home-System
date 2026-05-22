@@ -29,94 +29,91 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_Driver
+    /** @addtogroup STM32F1xx_Driver
   * @{
   */
 
-/** @addtogroup SDMMC_LL
+    /** @addtogroup SDMMC_LL
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
-/** @defgroup SDMMC_LL_Exported_Types SDMMC_LL Exported Types
+    /* Exported types ------------------------------------------------------------*/
+    /** @defgroup SDMMC_LL_Exported_Types SDMMC_LL Exported Types
   * @{
   */
 
-/** 
+    /** 
   * @brief  SDMMC Configuration Structure definition  
   */
-typedef struct
-{
-    uint32_t ClockEdge; /*!< Specifies the clock transition on which the bit capture is made.
+    typedef struct {
+        uint32_t ClockEdge; /*!< Specifies the clock transition on which the bit capture is made.
                                       This parameter can be a value of @ref SDMMC_LL_Clock_Edge                 */
 
-    uint32_t ClockBypass; /*!< Specifies whether the SDMMC Clock divider bypass is
+        uint32_t ClockBypass; /*!< Specifies whether the SDMMC Clock divider bypass is
                                       enabled or disabled.
                                       This parameter can be a value of @ref SDMMC_LL_Clock_Bypass               */
 
-    uint32_t ClockPowerSave; /*!< Specifies whether SDMMC Clock output is enabled or
+        uint32_t ClockPowerSave; /*!< Specifies whether SDMMC Clock output is enabled or
                                       disabled when the bus is idle.
                                       This parameter can be a value of @ref SDMMC_LL_Clock_Power_Save           */
 
-    uint32_t BusWide; /*!< Specifies the SDMMC bus width.
+        uint32_t BusWide; /*!< Specifies the SDMMC bus width.
                                       This parameter can be a value of @ref SDMMC_LL_Bus_Wide                   */
 
-    uint32_t HardwareFlowControl; /*!< Specifies whether the SDMMC hardware flow control is enabled or disabled.
+        uint32_t HardwareFlowControl; /*!< Specifies whether the SDMMC hardware flow control is enabled or disabled.
                                       This parameter can be a value of @ref SDMMC_LL_Hardware_Flow_Control      */
 
-    uint32_t ClockDiv; /*!< Specifies the clock frequency of the SDMMC controller.
+        uint32_t ClockDiv; /*!< Specifies the clock frequency of the SDMMC controller.
                                       This parameter can be a value between Min_Data = 0 and Max_Data = 255 */
 
-} SDIO_InitTypeDef;
+    } SDIO_InitTypeDef;
 
-/** 
+    /** 
   * @brief  SDMMC Command Control structure 
   */
-typedef struct
-{
-    uint32_t Argument; /*!< Specifies the SDMMC command argument which is sent
+    typedef struct {
+        uint32_t Argument; /*!< Specifies the SDMMC command argument which is sent
                                      to a card as part of a command message. If a command
                                      contains an argument, it must be loaded into this register
                                      before writing the command to the command register.              */
 
-    uint32_t CmdIndex; /*!< Specifies the SDMMC command index. It must be Min_Data = 0 and 
+        uint32_t CmdIndex; /*!< Specifies the SDMMC command index. It must be Min_Data = 0 and 
                                      Max_Data = 64                                                    */
 
-    uint32_t Response; /*!< Specifies the SDMMC response type.
+        uint32_t Response; /*!< Specifies the SDMMC response type.
                                      This parameter can be a value of @ref SDMMC_LL_Response_Type         */
 
-    uint32_t WaitForInterrupt; /*!< Specifies whether SDMMC wait for interrupt request is 
+        uint32_t WaitForInterrupt; /*!< Specifies whether SDMMC wait for interrupt request is 
                                      enabled or disabled.
                                      This parameter can be a value of @ref SDMMC_LL_Wait_Interrupt_State  */
 
-    uint32_t CPSM; /*!< Specifies whether SDMMC Command path state machine (CPSM)
+        uint32_t CPSM; /*!< Specifies whether SDMMC Command path state machine (CPSM)
                                      is enabled or disabled.
                                      This parameter can be a value of @ref SDMMC_LL_CPSM_State            */
-} SDIO_CmdInitTypeDef;
+    } SDIO_CmdInitTypeDef;
 
-/** 
+    /** 
   * @brief  SDMMC Data Control structure 
   */
-typedef struct
-{
-    uint32_t DataTimeOut; /*!< Specifies the data timeout period in card bus clock periods.  */
+    typedef struct {
+        uint32_t DataTimeOut; /*!< Specifies the data timeout period in card bus clock periods.  */
 
-    uint32_t DataLength; /*!< Specifies the number of data bytes to be transferred.         */
+        uint32_t DataLength; /*!< Specifies the number of data bytes to be transferred.         */
 
-    uint32_t DataBlockSize; /*!< Specifies the data block size for block transfer.
+        uint32_t DataBlockSize; /*!< Specifies the data block size for block transfer.
                                      This parameter can be a value of @ref SDMMC_LL_Data_Block_Size    */
 
-    uint32_t TransferDir; /*!< Specifies the data transfer direction, whether the transfer
+        uint32_t TransferDir; /*!< Specifies the data transfer direction, whether the transfer
                                      is a read or write.
                                      This parameter can be a value of @ref SDMMC_LL_Transfer_Direction */
 
-    uint32_t TransferMode; /*!< Specifies whether data transfer is in stream or block mode.
+        uint32_t TransferMode; /*!< Specifies whether data transfer is in stream or block mode.
                                      This parameter can be a value of @ref SDMMC_LL_Transfer_Type      */
 
-    uint32_t DPSM; /*!< Specifies whether SDMMC Data path state machine (DPSM)
+        uint32_t DPSM; /*!< Specifies whether SDMMC Data path state machine (DPSM)
                                      is enabled or disabled.
                                      This parameter can be a value of @ref SDMMC_LL_DPSM_State         */
-} SDIO_DataInitTypeDef;
+    } SDIO_DataInitTypeDef;
 
 /**
   * @}
@@ -126,32 +123,35 @@ typedef struct
 /** @defgroup SDMMC_LL_Exported_Constants SDMMC_LL Exported Constants
   * @{
   */
-#define SDMMC_ERROR_NONE 0x00000000U                   /*!< No error                                                      */
-#define SDMMC_ERROR_CMD_CRC_FAIL 0x00000001U           /*!< Command response received (but CRC check failed)              */
-#define SDMMC_ERROR_DATA_CRC_FAIL 0x00000002U          /*!< Data block sent/received (CRC check failed)                   */
-#define SDMMC_ERROR_CMD_RSP_TIMEOUT 0x00000004U        /*!< Command response timeout                                      */
-#define SDMMC_ERROR_DATA_TIMEOUT 0x00000008U           /*!< Data timeout                                                  */
-#define SDMMC_ERROR_TX_UNDERRUN 0x00000010U            /*!< Transmit FIFO underrun                                        */
-#define SDMMC_ERROR_RX_OVERRUN 0x00000020U             /*!< Receive FIFO overrun                                          */
-#define SDMMC_ERROR_ADDR_MISALIGNED 0x00000040U        /*!< Misaligned address                                            */
-#define SDMMC_ERROR_BLOCK_LEN_ERR 0x00000080U          /*!< Transferred block length is not allowed for the card or the
+#define SDMMC_ERROR_NONE 0x00000000U            /*!< No error                                                      */
+#define SDMMC_ERROR_CMD_CRC_FAIL 0x00000001U    /*!< Command response received (but CRC check failed)              */
+#define SDMMC_ERROR_DATA_CRC_FAIL 0x00000002U   /*!< Data block sent/received (CRC check failed)                   */
+#define SDMMC_ERROR_CMD_RSP_TIMEOUT 0x00000004U /*!< Command response timeout                                      */
+#define SDMMC_ERROR_DATA_TIMEOUT 0x00000008U    /*!< Data timeout                                                  */
+#define SDMMC_ERROR_TX_UNDERRUN 0x00000010U     /*!< Transmit FIFO underrun                                        */
+#define SDMMC_ERROR_RX_OVERRUN 0x00000020U      /*!< Receive FIFO overrun                                          */
+#define SDMMC_ERROR_ADDR_MISALIGNED 0x00000040U /*!< Misaligned address                                            */
+#define SDMMC_ERROR_BLOCK_LEN_ERR                                                                                                          \
+    0x00000080U                                      /*!< Transferred block length is not allowed for the card or the
                                                                             number of transferred bytes does not match the block length   */
-#define SDMMC_ERROR_ERASE_SEQ_ERR 0x00000100U          /*!< An error in the sequence of erase command occurs              */
-#define SDMMC_ERROR_BAD_ERASE_PARAM 0x00000200U        /*!< An invalid selection for erase groups                         */
-#define SDMMC_ERROR_WRITE_PROT_VIOLATION 0x00000400U   /*!< Attempt to program a write protect block                      */
-#define SDMMC_ERROR_LOCK_UNLOCK_FAILED 0x00000800U     /*!< Sequence or password error has been detected in unlock
+#define SDMMC_ERROR_ERASE_SEQ_ERR 0x00000100U        /*!< An error in the sequence of erase command occurs              */
+#define SDMMC_ERROR_BAD_ERASE_PARAM 0x00000200U      /*!< An invalid selection for erase groups                         */
+#define SDMMC_ERROR_WRITE_PROT_VIOLATION 0x00000400U /*!< Attempt to program a write protect block                      */
+#define SDMMC_ERROR_LOCK_UNLOCK_FAILED                                                                                                     \
+    0x00000800U                                      /*!< Sequence or password error has been detected in unlock
                                                                             command or if there was an attempt to access a locked card    */
-#define SDMMC_ERROR_COM_CRC_FAILED 0x00001000U         /*!< CRC check of the previous command failed                      */
-#define SDMMC_ERROR_ILLEGAL_CMD 0x00002000U            /*!< Command is not legal for the card state                       */
-#define SDMMC_ERROR_CARD_ECC_FAILED 0x00004000U        /*!< Card internal ECC was applied but failed to correct the data  */
-#define SDMMC_ERROR_CC_ERR 0x00008000U                 /*!< Internal card controller error                                */
-#define SDMMC_ERROR_GENERAL_UNKNOWN_ERR 0x00010000U    /*!< General or unknown error                                      */
-#define SDMMC_ERROR_STREAM_READ_UNDERRUN 0x00020000U   /*!< The card could not sustain data reading in stream rmode       */
-#define SDMMC_ERROR_STREAM_WRITE_OVERRUN 0x00040000U   /*!< The card could not sustain data programming in stream mode    */
-#define SDMMC_ERROR_CID_CSD_OVERWRITE 0x00080000U      /*!< CID/CSD overwrite error                                       */
-#define SDMMC_ERROR_WP_ERASE_SKIP 0x00100000U          /*!< Only partial address space was erased                         */
-#define SDMMC_ERROR_CARD_ECC_DISABLED 0x00200000U      /*!< Command has been executed without using internal ECC          */
-#define SDMMC_ERROR_ERASE_RESET 0x00400000U            /*!< Erase sequence was cleared before executing because an out
+#define SDMMC_ERROR_COM_CRC_FAILED 0x00001000U       /*!< CRC check of the previous command failed                      */
+#define SDMMC_ERROR_ILLEGAL_CMD 0x00002000U          /*!< Command is not legal for the card state                       */
+#define SDMMC_ERROR_CARD_ECC_FAILED 0x00004000U      /*!< Card internal ECC was applied but failed to correct the data  */
+#define SDMMC_ERROR_CC_ERR 0x00008000U               /*!< Internal card controller error                                */
+#define SDMMC_ERROR_GENERAL_UNKNOWN_ERR 0x00010000U  /*!< General or unknown error                                      */
+#define SDMMC_ERROR_STREAM_READ_UNDERRUN 0x00020000U /*!< The card could not sustain data reading in stream rmode       */
+#define SDMMC_ERROR_STREAM_WRITE_OVERRUN 0x00040000U /*!< The card could not sustain data programming in stream mode    */
+#define SDMMC_ERROR_CID_CSD_OVERWRITE 0x00080000U    /*!< CID/CSD overwrite error                                       */
+#define SDMMC_ERROR_WP_ERASE_SKIP 0x00100000U        /*!< Only partial address space was erased                         */
+#define SDMMC_ERROR_CARD_ECC_DISABLED 0x00200000U    /*!< Command has been executed without using internal ECC          */
+#define SDMMC_ERROR_ERASE_RESET                                                                                                            \
+    0x00400000U                                        /*!< Erase sequence was cleared before executing because an out
                                                                             of erase sequence command was received                        */
 #define SDMMC_ERROR_AKE_SEQ_ERR 0x00800000U            /*!< Error in sequence of authentication                           */
 #define SDMMC_ERROR_INVALID_VOLTRANGE 0x01000000U      /*!< Error in case of invalid voltage range                        */
@@ -166,74 +166,89 @@ typedef struct
 /** 
   * @brief SDMMC Commands Index 
   */
-#define SDMMC_CMD_GO_IDLE_STATE 0U         /*!< Resets the SD memory card.                                                               */
-#define SDMMC_CMD_SEND_OP_COND 1U          /*!< Sends host capacity support information and activates the card's initialization process. */
-#define SDMMC_CMD_ALL_SEND_CID 2U          /*!< Asks any card connected to the host to send the CID numbers on the CMD line.             */
-#define SDMMC_CMD_SET_REL_ADDR 3U          /*!< Asks the card to publish a new relative address (RCA).                                   */
-#define SDMMC_CMD_SET_DSR 4U               /*!< Programs the DSR of all cards.                                                           */
-#define SDMMC_CMD_SDMMC_SEN_OP_COND 5U     /*!< Sends host capacity support information (HCS) and asks the accessed card to send its
+#define SDMMC_CMD_GO_IDLE_STATE 0U /*!< Resets the SD memory card.                                                               */
+#define SDMMC_CMD_SEND_OP_COND 1U  /*!< Sends host capacity support information and activates the card's initialization process. */
+#define SDMMC_CMD_ALL_SEND_CID 2U  /*!< Asks any card connected to the host to send the CID numbers on the CMD line.             */
+#define SDMMC_CMD_SET_REL_ADDR 3U  /*!< Asks the card to publish a new relative address (RCA).                                   */
+#define SDMMC_CMD_SET_DSR 4U       /*!< Programs the DSR of all cards.                                                           */
+#define SDMMC_CMD_SDMMC_SEN_OP_COND                                                                                                        \
+    5U                              /*!< Sends host capacity support information (HCS) and asks the accessed card to send its
                                                                            operating condition register (OCR) content in the response on the CMD line.              */
-#define SDMMC_CMD_HS_SWITCH 6U             /*!< Checks switchable function (mode 0) and switch card function (mode 1).                   */
-#define SDMMC_CMD_SEL_DESEL_CARD 7U        /*!< Selects the card by its own relative address and gets deselected by any other address    */
-#define SDMMC_CMD_HS_SEND_EXT_CSD 8U       /*!< Sends SD Memory Card interface condition, which includes host supply voltage information
+#define SDMMC_CMD_HS_SWITCH 6U      /*!< Checks switchable function (mode 0) and switch card function (mode 1).                   */
+#define SDMMC_CMD_SEL_DESEL_CARD 7U /*!< Selects the card by its own relative address and gets deselected by any other address    */
+#define SDMMC_CMD_HS_SEND_EXT_CSD                                                                                                          \
+    8U                                    /*!< Sends SD Memory Card interface condition, which includes host supply voltage information
                                                                            and asks the card whether card supports voltage.                                         */
-#define SDMMC_CMD_SEND_CSD 9U              /*!< Addressed card sends its card specific data (CSD) on the CMD line.                       */
-#define SDMMC_CMD_SEND_CID 10U             /*!< Addressed card sends its card identification (CID) on the CMD line.                      */
-#define SDMMC_CMD_READ_DAT_UNTIL_STOP 11U  /*!< SD card doesn't support it.                                                              */
-#define SDMMC_CMD_STOP_TRANSMISSION 12U    /*!< Forces the card to stop transmission.                                                    */
-#define SDMMC_CMD_SEND_STATUS 13U          /*!< Addressed card sends its status register.                                                */
-#define SDMMC_CMD_HS_BUSTEST_READ 14U      /*!< Reserved                                                                                 */
-#define SDMMC_CMD_GO_INACTIVE_STATE 15U    /*!< Sends an addressed card into the inactive state.                                         */
-#define SDMMC_CMD_SET_BLOCKLEN 16U         /*!< Sets the block length (in bytes for SDSC) for all following block commands
+#define SDMMC_CMD_SEND_CSD 9U             /*!< Addressed card sends its card specific data (CSD) on the CMD line.                       */
+#define SDMMC_CMD_SEND_CID 10U            /*!< Addressed card sends its card identification (CID) on the CMD line.                      */
+#define SDMMC_CMD_READ_DAT_UNTIL_STOP 11U /*!< SD card doesn't support it.                                                              */
+#define SDMMC_CMD_STOP_TRANSMISSION 12U   /*!< Forces the card to stop transmission.                                                    */
+#define SDMMC_CMD_SEND_STATUS 13U         /*!< Addressed card sends its status register.                                                */
+#define SDMMC_CMD_HS_BUSTEST_READ 14U     /*!< Reserved                                                                                 */
+#define SDMMC_CMD_GO_INACTIVE_STATE 15U   /*!< Sends an addressed card into the inactive state.                                         */
+#define SDMMC_CMD_SET_BLOCKLEN                                                                                                             \
+    16U /*!< Sets the block length (in bytes for SDSC) for all following block commands
                                                                            (read, write, lock). Default block length is fixed to 512 Bytes. Not effective 
                                                                            for SDHS and SDXC.                                                                       */
-#define SDMMC_CMD_READ_SINGLE_BLOCK 17U    /*!< Reads single block of size selected by SET_BLOCKLEN in case of SDSC, and a block of
+#define SDMMC_CMD_READ_SINGLE_BLOCK                                                                                                        \
+    17U /*!< Reads single block of size selected by SET_BLOCKLEN in case of SDSC, and a block of
                                                                            fixed 512 bytes in case of SDHC and SDXC.                                                */
-#define SDMMC_CMD_READ_MULT_BLOCK 18U      /*!< Continuously transfers data blocks from card to host until interrupted by
+#define SDMMC_CMD_READ_MULT_BLOCK                                                                                                          \
+    18U                                    /*!< Continuously transfers data blocks from card to host until interrupted by
                                                                            STOP_TRANSMISSION command.                                                               */
 #define SDMMC_CMD_HS_BUSTEST_WRITE 19U     /*!< 64 bytes tuning pattern is sent for SDR50 and SDR104.                                    */
 #define SDMMC_CMD_WRITE_DAT_UNTIL_STOP 20U /*!< Speed class control command.                                                             */
 #define SDMMC_CMD_SET_BLOCK_COUNT 23U      /*!< Specify block count for CMD18 and CMD25.                                                 */
-#define SDMMC_CMD_WRITE_SINGLE_BLOCK 24U   /*!< Writes single block of size selected by SET_BLOCKLEN in case of SDSC, and a block of
+#define SDMMC_CMD_WRITE_SINGLE_BLOCK                                                                                                       \
+    24U                                  /*!< Writes single block of size selected by SET_BLOCKLEN in case of SDSC, and a block of
                                                                            fixed 512 bytes in case of SDHC and SDXC.                                                */
-#define SDMMC_CMD_WRITE_MULT_BLOCK 25U     /*!< Continuously writes blocks of data until a STOP_TRANSMISSION follows.                    */
-#define SDMMC_CMD_PROG_CID 26U             /*!< Reserved for manufacturers.                                                              */
-#define SDMMC_CMD_PROG_CSD 27U             /*!< Programming of the programmable bits of the CSD.                                         */
-#define SDMMC_CMD_SET_WRITE_PROT 28U       /*!< Sets the write protection bit of the addressed group.                                    */
-#define SDMMC_CMD_CLR_WRITE_PROT 29U       /*!< Clears the write protection bit of the addressed group.                                  */
-#define SDMMC_CMD_SEND_WRITE_PROT 30U      /*!< Asks the card to send the status of the write protection bits.                           */
-#define SDMMC_CMD_SD_ERASE_GRP_START 32U   /*!< Sets the address of the first write block to be erased. (For SD card only).              */
-#define SDMMC_CMD_SD_ERASE_GRP_END 33U     /*!< Sets the address of the last write block of the continuous range to be erased.           */
-#define SDMMC_CMD_ERASE_GRP_START 35U      /*!< Sets the address of the first write block to be erased. Reserved for each command
+#define SDMMC_CMD_WRITE_MULT_BLOCK 25U   /*!< Continuously writes blocks of data until a STOP_TRANSMISSION follows.                    */
+#define SDMMC_CMD_PROG_CID 26U           /*!< Reserved for manufacturers.                                                              */
+#define SDMMC_CMD_PROG_CSD 27U           /*!< Programming of the programmable bits of the CSD.                                         */
+#define SDMMC_CMD_SET_WRITE_PROT 28U     /*!< Sets the write protection bit of the addressed group.                                    */
+#define SDMMC_CMD_CLR_WRITE_PROT 29U     /*!< Clears the write protection bit of the addressed group.                                  */
+#define SDMMC_CMD_SEND_WRITE_PROT 30U    /*!< Asks the card to send the status of the write protection bits.                           */
+#define SDMMC_CMD_SD_ERASE_GRP_START 32U /*!< Sets the address of the first write block to be erased. (For SD card only).              */
+#define SDMMC_CMD_SD_ERASE_GRP_END 33U   /*!< Sets the address of the last write block of the continuous range to be erased.           */
+#define SDMMC_CMD_ERASE_GRP_START                                                                                                          \
+    35U /*!< Sets the address of the first write block to be erased. Reserved for each command
                                                                            system set by switch function command (CMD6).                                            */
-#define SDMMC_CMD_ERASE_GRP_END 36U        /*!< Sets the address of the last write block of the continuous range to be erased.
+#define SDMMC_CMD_ERASE_GRP_END                                                                                                            \
+    36U                            /*!< Sets the address of the last write block of the continuous range to be erased.
                                                                            Reserved for each command system set by switch function command (CMD6).                  */
-#define SDMMC_CMD_ERASE 38U                /*!< Reserved for SD security applications.                                                   */
-#define SDMMC_CMD_FAST_IO 39U              /*!< SD card doesn't support it (Reserved).                                                   */
-#define SDMMC_CMD_GO_IRQ_STATE 40U         /*!< SD card doesn't support it (Reserved).                                                   */
-#define SDMMC_CMD_LOCK_UNLOCK 42U          /*!< Sets/resets the password or lock/unlock the card. The size of the data block is set by
+#define SDMMC_CMD_ERASE 38U        /*!< Reserved for SD security applications.                                                   */
+#define SDMMC_CMD_FAST_IO 39U      /*!< SD card doesn't support it (Reserved).                                                   */
+#define SDMMC_CMD_GO_IRQ_STATE 40U /*!< SD card doesn't support it (Reserved).                                                   */
+#define SDMMC_CMD_LOCK_UNLOCK                                                                                                              \
+    42U /*!< Sets/resets the password or lock/unlock the card. The size of the data block is set by
                                                                            the SET_BLOCK_LEN command.                                                               */
-#define SDMMC_CMD_APP_CMD 55U              /*!< Indicates to the card that the next command is an application specific command rather
+#define SDMMC_CMD_APP_CMD                                                                                                                  \
+    55U /*!< Indicates to the card that the next command is an application specific command rather
                                                                            than a standard command.                                                                 */
-#define SDMMC_CMD_GEN_CMD 56U              /*!< Used either to transfer a data block to the card or to get a data block from the card
+#define SDMMC_CMD_GEN_CMD                                                                                                                  \
+    56U                      /*!< Used either to transfer a data block to the card or to get a data block from the card
                                                                            for general purpose/application specific commands.                                       */
-#define SDMMC_CMD_NO_CMD 64U               /*!< No command                                                                               */
+#define SDMMC_CMD_NO_CMD 64U /*!< No command                                                                               */
 
 /** 
   * @brief Following commands are SD Card Specific commands.
   *        SDMMC_APP_CMD should be sent before sending these commands. 
   */
-#define SDMMC_CMD_APP_SD_SET_BUSWIDTH 6U           /*!< (ACMD6) Defines the data bus width to be used for data transfer. The allowed data bus
+#define SDMMC_CMD_APP_SD_SET_BUSWIDTH                                                                                                      \
+    6U                              /*!< (ACMD6) Defines the data bus width to be used for data transfer. The allowed data bus
                                                                             widths are given in SCR register.                                                       */
-#define SDMMC_CMD_SD_APP_STATUS 13U                /*!< (ACMD13) Sends the SD status.                                                            */
-#define SDMMC_CMD_SD_APP_SEND_NUM_WRITE_BLOCKS 22U /*!< (ACMD22) Sends the number of the written (without errors) write blocks. Responds with
+#define SDMMC_CMD_SD_APP_STATUS 13U /*!< (ACMD13) Sends the SD status.                                                            */
+#define SDMMC_CMD_SD_APP_SEND_NUM_WRITE_BLOCKS                                                                                             \
+    22U /*!< (ACMD22) Sends the number of the written (without errors) write blocks. Responds with
                                                                            32bit+CRC data block.                                                                    */
-#define SDMMC_CMD_SD_APP_OP_COND 41U               /*!< (ACMD41) Sends host capacity support information (HCS) and asks the accessed card to
+#define SDMMC_CMD_SD_APP_OP_COND                                                                                                           \
+    41U /*!< (ACMD41) Sends host capacity support information (HCS) and asks the accessed card to
                                                                            send its operating condition register (OCR) content in the response on the CMD line.     */
-#define SDMMC_CMD_SD_APP_SET_CLR_CARD_DETECT 42U   /*!< (ACMD42) Connect/Disconnect the 50 KOhm pull-up resistor on CD/DAT3 (pin 1) of the card  */
-#define SDMMC_CMD_SD_APP_SEND_SCR 51U              /*!< Reads the SD Configuration Register (SCR).                                               */
-#define SDMMC_CMD_SDMMC_RW_DIRECT 52U              /*!< For SD I/O card only, reserved for security specification.                               */
-#define SDMMC_CMD_SDMMC_RW_EXTENDED 53U            /*!< For SD I/O card only, reserved for security specification.                               */
+#define SDMMC_CMD_SD_APP_SET_CLR_CARD_DETECT                                                                                               \
+    42U                                 /*!< (ACMD42) Connect/Disconnect the 50 KOhm pull-up resistor on CD/DAT3 (pin 1) of the card  */
+#define SDMMC_CMD_SD_APP_SEND_SCR 51U   /*!< Reads the SD Configuration Register (SCR).                                               */
+#define SDMMC_CMD_SDMMC_RW_DIRECT 52U   /*!< For SD I/O card only, reserved for security specification.                               */
+#define SDMMC_CMD_SDMMC_RW_EXTENDED 53U /*!< For SD I/O card only, reserved for security specification.                               */
 
 /** 
   * @brief Following commands are SD Card Specific security commands.
@@ -330,8 +345,7 @@ typedef struct
 #define SDIO_CLOCK_EDGE_RISING 0x00000000U
 #define SDIO_CLOCK_EDGE_FALLING SDIO_CLKCR_NEGEDGE
 
-#define IS_SDIO_CLOCK_EDGE(EDGE) (((EDGE) == SDIO_CLOCK_EDGE_RISING) || \
-                                  ((EDGE) == SDIO_CLOCK_EDGE_FALLING))
+#define IS_SDIO_CLOCK_EDGE(EDGE) (((EDGE) == SDIO_CLOCK_EDGE_RISING) || ((EDGE) == SDIO_CLOCK_EDGE_FALLING))
 /**
   * @}
   */
@@ -342,8 +356,7 @@ typedef struct
 #define SDIO_CLOCK_BYPASS_DISABLE 0x00000000U
 #define SDIO_CLOCK_BYPASS_ENABLE SDIO_CLKCR_BYPASS
 
-#define IS_SDIO_CLOCK_BYPASS(BYPASS) (((BYPASS) == SDIO_CLOCK_BYPASS_DISABLE) || \
-                                      ((BYPASS) == SDIO_CLOCK_BYPASS_ENABLE))
+#define IS_SDIO_CLOCK_BYPASS(BYPASS) (((BYPASS) == SDIO_CLOCK_BYPASS_DISABLE) || ((BYPASS) == SDIO_CLOCK_BYPASS_ENABLE))
 /**
   * @}
   */
@@ -354,8 +367,7 @@ typedef struct
 #define SDIO_CLOCK_POWER_SAVE_DISABLE 0x00000000U
 #define SDIO_CLOCK_POWER_SAVE_ENABLE SDIO_CLKCR_PWRSAV
 
-#define IS_SDIO_CLOCK_POWER_SAVE(SAVE) (((SAVE) == SDIO_CLOCK_POWER_SAVE_DISABLE) || \
-                                        ((SAVE) == SDIO_CLOCK_POWER_SAVE_ENABLE))
+#define IS_SDIO_CLOCK_POWER_SAVE(SAVE) (((SAVE) == SDIO_CLOCK_POWER_SAVE_DISABLE) || ((SAVE) == SDIO_CLOCK_POWER_SAVE_ENABLE))
 /**
   * @}
   */
@@ -367,9 +379,7 @@ typedef struct
 #define SDIO_BUS_WIDE_4B SDIO_CLKCR_WIDBUS_0
 #define SDIO_BUS_WIDE_8B SDIO_CLKCR_WIDBUS_1
 
-#define IS_SDIO_BUS_WIDE(WIDE) (((WIDE) == SDIO_BUS_WIDE_1B) || \
-                                ((WIDE) == SDIO_BUS_WIDE_4B) || \
-                                ((WIDE) == SDIO_BUS_WIDE_8B))
+#define IS_SDIO_BUS_WIDE(WIDE) (((WIDE) == SDIO_BUS_WIDE_1B) || ((WIDE) == SDIO_BUS_WIDE_4B) || ((WIDE) == SDIO_BUS_WIDE_8B))
 /**
   * @}
   */
@@ -380,8 +390,8 @@ typedef struct
 #define SDIO_HARDWARE_FLOW_CONTROL_DISABLE 0x00000000U
 #define SDIO_HARDWARE_FLOW_CONTROL_ENABLE SDIO_CLKCR_HWFC_EN
 
-#define IS_SDIO_HARDWARE_FLOW_CONTROL(CONTROL) (((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_DISABLE) || \
-                                                ((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_ENABLE))
+#define IS_SDIO_HARDWARE_FLOW_CONTROL(CONTROL)                                                                                             \
+    (((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_DISABLE) || ((CONTROL) == SDIO_HARDWARE_FLOW_CONTROL_ENABLE))
 /**
   * @}
   */
@@ -409,9 +419,8 @@ typedef struct
 #define SDIO_RESPONSE_SHORT SDIO_CMD_WAITRESP_0
 #define SDIO_RESPONSE_LONG SDIO_CMD_WAITRESP
 
-#define IS_SDIO_RESPONSE(RESPONSE) (((RESPONSE) == SDIO_RESPONSE_NO) ||    \
-                                    ((RESPONSE) == SDIO_RESPONSE_SHORT) || \
-                                    ((RESPONSE) == SDIO_RESPONSE_LONG))
+#define IS_SDIO_RESPONSE(RESPONSE)                                                                                                         \
+    (((RESPONSE) == SDIO_RESPONSE_NO) || ((RESPONSE) == SDIO_RESPONSE_SHORT) || ((RESPONSE) == SDIO_RESPONSE_LONG))
 /**
   * @}
   */
@@ -423,9 +432,7 @@ typedef struct
 #define SDIO_WAIT_IT SDIO_CMD_WAITINT
 #define SDIO_WAIT_PEND SDIO_CMD_WAITPEND
 
-#define IS_SDIO_WAIT(WAIT) (((WAIT) == SDIO_WAIT_NO) || \
-                            ((WAIT) == SDIO_WAIT_IT) || \
-                            ((WAIT) == SDIO_WAIT_PEND))
+#define IS_SDIO_WAIT(WAIT) (((WAIT) == SDIO_WAIT_NO) || ((WAIT) == SDIO_WAIT_IT) || ((WAIT) == SDIO_WAIT_PEND))
 /**
   * @}
   */
@@ -436,8 +443,7 @@ typedef struct
 #define SDIO_CPSM_DISABLE 0x00000000U
 #define SDIO_CPSM_ENABLE SDIO_CMD_CPSMEN
 
-#define IS_SDIO_CPSM(CPSM) (((CPSM) == SDIO_CPSM_DISABLE) || \
-                            ((CPSM) == SDIO_CPSM_ENABLE))
+#define IS_SDIO_CPSM(CPSM) (((CPSM) == SDIO_CPSM_DISABLE) || ((CPSM) == SDIO_CPSM_ENABLE))
 /**
   * @}
   */
@@ -450,10 +456,7 @@ typedef struct
 #define SDIO_RESP3 0x00000008U
 #define SDIO_RESP4 0x0000000CU
 
-#define IS_SDIO_RESP(RESP) (((RESP) == SDIO_RESP1) || \
-                            ((RESP) == SDIO_RESP2) || \
-                            ((RESP) == SDIO_RESP3) || \
-                            ((RESP) == SDIO_RESP4))
+#define IS_SDIO_RESP(RESP) (((RESP) == SDIO_RESP1) || ((RESP) == SDIO_RESP2) || ((RESP) == SDIO_RESP3) || ((RESP) == SDIO_RESP4))
 /**
   * @}
   */
@@ -485,21 +488,12 @@ typedef struct
 #define SDIO_DATABLOCK_SIZE_8192B (SDIO_DCTRL_DBLOCKSIZE_0 | SDIO_DCTRL_DBLOCKSIZE_2 | SDIO_DCTRL_DBLOCKSIZE_3)
 #define SDIO_DATABLOCK_SIZE_16384B (SDIO_DCTRL_DBLOCKSIZE_1 | SDIO_DCTRL_DBLOCKSIZE_2 | SDIO_DCTRL_DBLOCKSIZE_3)
 
-#define IS_SDIO_BLOCK_SIZE(SIZE) (((SIZE) == SDIO_DATABLOCK_SIZE_1B) ||    \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_2B) ||    \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_4B) ||    \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_8B) ||    \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_16B) ||   \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_32B) ||   \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_64B) ||   \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_128B) ||  \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_256B) ||  \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_512B) ||  \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_1024B) || \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_2048B) || \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_4096B) || \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_8192B) || \
-                                  ((SIZE) == SDIO_DATABLOCK_SIZE_16384B))
+#define IS_SDIO_BLOCK_SIZE(SIZE)                                                                                                           \
+    (((SIZE) == SDIO_DATABLOCK_SIZE_1B) || ((SIZE) == SDIO_DATABLOCK_SIZE_2B) || ((SIZE) == SDIO_DATABLOCK_SIZE_4B) ||                     \
+     ((SIZE) == SDIO_DATABLOCK_SIZE_8B) || ((SIZE) == SDIO_DATABLOCK_SIZE_16B) || ((SIZE) == SDIO_DATABLOCK_SIZE_32B) ||                   \
+     ((SIZE) == SDIO_DATABLOCK_SIZE_64B) || ((SIZE) == SDIO_DATABLOCK_SIZE_128B) || ((SIZE) == SDIO_DATABLOCK_SIZE_256B) ||                \
+     ((SIZE) == SDIO_DATABLOCK_SIZE_512B) || ((SIZE) == SDIO_DATABLOCK_SIZE_1024B) || ((SIZE) == SDIO_DATABLOCK_SIZE_2048B) ||             \
+     ((SIZE) == SDIO_DATABLOCK_SIZE_4096B) || ((SIZE) == SDIO_DATABLOCK_SIZE_8192B) || ((SIZE) == SDIO_DATABLOCK_SIZE_16384B))
 /**
   * @}
   */
@@ -510,8 +504,7 @@ typedef struct
 #define SDIO_TRANSFER_DIR_TO_CARD 0x00000000U
 #define SDIO_TRANSFER_DIR_TO_SDIO SDIO_DCTRL_DTDIR
 
-#define IS_SDIO_TRANSFER_DIR(DIR) (((DIR) == SDIO_TRANSFER_DIR_TO_CARD) || \
-                                   ((DIR) == SDIO_TRANSFER_DIR_TO_SDIO))
+#define IS_SDIO_TRANSFER_DIR(DIR) (((DIR) == SDIO_TRANSFER_DIR_TO_CARD) || ((DIR) == SDIO_TRANSFER_DIR_TO_SDIO))
 /**
   * @}
   */
@@ -522,8 +515,7 @@ typedef struct
 #define SDIO_TRANSFER_MODE_BLOCK 0x00000000U
 #define SDIO_TRANSFER_MODE_STREAM SDIO_DCTRL_DTMODE
 
-#define IS_SDIO_TRANSFER_MODE(MODE) (((MODE) == SDIO_TRANSFER_MODE_BLOCK) || \
-                                     ((MODE) == SDIO_TRANSFER_MODE_STREAM))
+#define IS_SDIO_TRANSFER_MODE(MODE) (((MODE) == SDIO_TRANSFER_MODE_BLOCK) || ((MODE) == SDIO_TRANSFER_MODE_STREAM))
 /**
   * @}
   */
@@ -534,8 +526,7 @@ typedef struct
 #define SDIO_DPSM_DISABLE 0x00000000U
 #define SDIO_DPSM_ENABLE SDIO_DCTRL_DTEN
 
-#define IS_SDIO_DPSM(DPSM) (((DPSM) == SDIO_DPSM_DISABLE) || \
-                            ((DPSM) == SDIO_DPSM_ENABLE))
+#define IS_SDIO_DPSM(DPSM) (((DPSM) == SDIO_DPSM_DISABLE) || ((DPSM) == SDIO_DPSM_ENABLE))
 /**
   * @}
   */
@@ -546,8 +537,7 @@ typedef struct
 #define SDIO_READ_WAIT_MODE_DATA2 0x00000000U
 #define SDIO_READ_WAIT_MODE_CLK (SDIO_DCTRL_RWMOD)
 
-#define IS_SDIO_READWAIT_MODE(MODE) (((MODE) == SDIO_READ_WAIT_MODE_CLK) || \
-                                     ((MODE) == SDIO_READ_WAIT_MODE_DATA2))
+#define IS_SDIO_READWAIT_MODE(MODE) (((MODE) == SDIO_READ_WAIT_MODE_CLK) || ((MODE) == SDIO_READ_WAIT_MODE_DATA2))
 /**
   * @}
   */
@@ -610,16 +600,14 @@ typedef struct
 #define SDIO_FLAG_RXDAVL SDIO_STA_RXDAVL
 #define SDIO_FLAG_SDIOIT SDIO_STA_SDIOIT
 #define SDIO_FLAG_CEATAEND SDIO_STA_CEATAEND
-#define SDIO_STATIC_FLAGS ((uint32_t)(SDIO_FLAG_CCRCFAIL | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_CTIMEOUT | \
-                                      SDIO_FLAG_DTIMEOUT | SDIO_FLAG_TXUNDERR | SDIO_FLAG_RXOVERR |  \
-                                      SDIO_FLAG_CMDREND | SDIO_FLAG_CMDSENT | SDIO_FLAG_DATAEND |    \
-                                      SDIO_FLAG_DBCKEND | SDIO_FLAG_SDIOIT))
+#define SDIO_STATIC_FLAGS                                                                                                                  \
+    ((uint32_t)(SDIO_FLAG_CCRCFAIL | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_CTIMEOUT | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_TXUNDERR |                   \
+                SDIO_FLAG_RXOVERR | SDIO_FLAG_CMDREND | SDIO_FLAG_CMDSENT | SDIO_FLAG_DATAEND | SDIO_FLAG_DBCKEND | SDIO_FLAG_SDIOIT))
 
-#define SDIO_STATIC_CMD_FLAGS ((uint32_t)(SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CTIMEOUT | SDIO_FLAG_CMDREND | \
-                                          SDIO_FLAG_CMDSENT))
+#define SDIO_STATIC_CMD_FLAGS ((uint32_t)(SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CTIMEOUT | SDIO_FLAG_CMDREND | SDIO_FLAG_CMDSENT))
 
-#define SDIO_STATIC_DATA_FLAGS ((uint32_t)(SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_TXUNDERR | \
-                                           SDIO_FLAG_RXOVERR | SDIO_FLAG_DATAEND | SDIO_FLAG_DBCKEND))
+#define SDIO_STATIC_DATA_FLAGS                                                                                                             \
+    ((uint32_t)(SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_TXUNDERR | SDIO_FLAG_RXOVERR | SDIO_FLAG_DATAEND | SDIO_FLAG_DBCKEND))
 /**
   * @}
   */
@@ -695,20 +683,17 @@ typedef struct
 /* ---------------------- SDIO registers bit mask --------------------------- */
 /* --- CLKCR Register ---*/
 /* CLKCR register clear mask */
-#define CLKCR_CLEAR_MASK ((uint32_t)(SDIO_CLKCR_CLKDIV | SDIO_CLKCR_PWRSAV | \
-                                     SDIO_CLKCR_BYPASS | SDIO_CLKCR_WIDBUS | \
-                                     SDIO_CLKCR_NEGEDGE | SDIO_CLKCR_HWFC_EN))
+#define CLKCR_CLEAR_MASK                                                                                                                   \
+    ((uint32_t)(SDIO_CLKCR_CLKDIV | SDIO_CLKCR_PWRSAV | SDIO_CLKCR_BYPASS | SDIO_CLKCR_WIDBUS | SDIO_CLKCR_NEGEDGE | SDIO_CLKCR_HWFC_EN))
 
 /* --- DCTRL Register ---*/
 /* SDIO DCTRL Clear Mask */
-#define DCTRL_CLEAR_MASK ((uint32_t)(SDIO_DCTRL_DTEN | SDIO_DCTRL_DTDIR | \
-                                     SDIO_DCTRL_DTMODE | SDIO_DCTRL_DBLOCKSIZE))
+#define DCTRL_CLEAR_MASK ((uint32_t)(SDIO_DCTRL_DTEN | SDIO_DCTRL_DTDIR | SDIO_DCTRL_DTMODE | SDIO_DCTRL_DBLOCKSIZE))
 
 /* --- CMD Register ---*/
 /* CMD Register clear mask */
-#define CMD_CLEAR_MASK ((uint32_t)(SDIO_CMD_CMDINDEX | SDIO_CMD_WAITRESP | \
-                                   SDIO_CMD_WAITINT | SDIO_CMD_WAITPEND |  \
-                                   SDIO_CMD_CPSMEN | SDIO_CMD_SDIOSUSPEND))
+#define CMD_CLEAR_MASK                                                                                                                     \
+    ((uint32_t)(SDIO_CMD_CMDINDEX | SDIO_CMD_WAITRESP | SDIO_CMD_WAITINT | SDIO_CMD_WAITPEND | SDIO_CMD_CPSMEN | SDIO_CMD_SDIOSUSPEND))
 
 /* SDIO Initialization Frequency (400KHz max) */
 #define SDIO_INIT_CLK_DIV ((uint8_t)0x76) /* 48MHz / (SDMMC_INIT_CLK_DIV + 2) < 400KHz */
@@ -1007,119 +992,119 @@ typedef struct
   */
 #define __SDIO_CEATA_SENDCMD_DISABLE() (*(__IO uint32_t*)CMD_ATACMD_BB = DISABLE)
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/* Exported functions --------------------------------------------------------*/
-/** @addtogroup SDMMC_LL_Exported_Functions
+    /* Exported functions --------------------------------------------------------*/
+    /** @addtogroup SDMMC_LL_Exported_Functions
   * @{
   */
 
-/* Initialization/de-initialization functions  **********************************/
-/** @addtogroup HAL_SDMMC_LL_Group1
+    /* Initialization/de-initialization functions  **********************************/
+    /** @addtogroup HAL_SDMMC_LL_Group1
   * @{
   */
-HAL_StatusTypeDef SDIO_Init(SDIO_TypeDef* SDIOx, SDIO_InitTypeDef Init);
-/**
+    HAL_StatusTypeDef SDIO_Init(SDIO_TypeDef* SDIOx, SDIO_InitTypeDef Init);
+    /**
   * @}
   */
 
-/* I/O operation functions  *****************************************************/
-/** @addtogroup HAL_SDMMC_LL_Group2
+    /* I/O operation functions  *****************************************************/
+    /** @addtogroup HAL_SDMMC_LL_Group2
   * @{
   */
-uint32_t          SDIO_ReadFIFO(SDIO_TypeDef* SDIOx);
-HAL_StatusTypeDef SDIO_WriteFIFO(SDIO_TypeDef* SDIOx, uint32_t* pWriteData);
-/**
+    uint32_t          SDIO_ReadFIFO(SDIO_TypeDef* SDIOx);
+    HAL_StatusTypeDef SDIO_WriteFIFO(SDIO_TypeDef* SDIOx, uint32_t* pWriteData);
+    /**
   * @}
   */
 
-/* Peripheral Control functions  ************************************************/
-/** @addtogroup HAL_SDMMC_LL_Group3
+    /* Peripheral Control functions  ************************************************/
+    /** @addtogroup HAL_SDMMC_LL_Group3
   * @{
   */
-HAL_StatusTypeDef SDIO_PowerState_ON(SDIO_TypeDef* SDIOx);
-HAL_StatusTypeDef SDIO_PowerState_OFF(SDIO_TypeDef* SDIOx);
-uint32_t          SDIO_GetPowerState(SDIO_TypeDef* SDIOx);
+    HAL_StatusTypeDef SDIO_PowerState_ON(SDIO_TypeDef* SDIOx);
+    HAL_StatusTypeDef SDIO_PowerState_OFF(SDIO_TypeDef* SDIOx);
+    uint32_t          SDIO_GetPowerState(SDIO_TypeDef* SDIOx);
 
-/* Command path state machine (CPSM) management functions */
-HAL_StatusTypeDef SDIO_SendCommand(SDIO_TypeDef* SDIOx, SDIO_CmdInitTypeDef* Command);
-uint8_t           SDIO_GetCommandResponse(SDIO_TypeDef* SDIOx);
-uint32_t          SDIO_GetResponse(SDIO_TypeDef* SDIOx, uint32_t Response);
+    /* Command path state machine (CPSM) management functions */
+    HAL_StatusTypeDef SDIO_SendCommand(SDIO_TypeDef* SDIOx, SDIO_CmdInitTypeDef* Command);
+    uint8_t           SDIO_GetCommandResponse(SDIO_TypeDef* SDIOx);
+    uint32_t          SDIO_GetResponse(SDIO_TypeDef* SDIOx, uint32_t Response);
 
-/* Data path state machine (DPSM) management functions */
-HAL_StatusTypeDef SDIO_ConfigData(SDIO_TypeDef* SDIOx, SDIO_DataInitTypeDef* Data);
-uint32_t          SDIO_GetDataCounter(SDIO_TypeDef* SDIOx);
-uint32_t          SDIO_GetFIFOCount(SDIO_TypeDef* SDIOx);
+    /* Data path state machine (DPSM) management functions */
+    HAL_StatusTypeDef SDIO_ConfigData(SDIO_TypeDef* SDIOx, SDIO_DataInitTypeDef* Data);
+    uint32_t          SDIO_GetDataCounter(SDIO_TypeDef* SDIOx);
+    uint32_t          SDIO_GetFIFOCount(SDIO_TypeDef* SDIOx);
 
-/* SDMMC Cards mode management functions */
-HAL_StatusTypeDef SDIO_SetSDMMCReadWaitMode(SDIO_TypeDef* SDIOx, uint32_t SDIO_ReadWaitMode);
-/**
+    /* SDMMC Cards mode management functions */
+    HAL_StatusTypeDef SDIO_SetSDMMCReadWaitMode(SDIO_TypeDef* SDIOx, uint32_t SDIO_ReadWaitMode);
+    /**
   * @}
   */
 
-/* SDMMC Commands management functions */
-/** @addtogroup HAL_SDMMC_LL_Group4
+    /* SDMMC Commands management functions */
+    /** @addtogroup HAL_SDMMC_LL_Group4
   * @{
   */
-uint32_t SDMMC_CmdBlockLength(SDIO_TypeDef* SDIOx, uint32_t BlockSize);
-uint32_t SDMMC_CmdReadSingleBlock(SDIO_TypeDef* SDIOx, uint32_t ReadAdd);
-uint32_t SDMMC_CmdReadMultiBlock(SDIO_TypeDef* SDIOx, uint32_t ReadAdd);
-uint32_t SDMMC_CmdWriteSingleBlock(SDIO_TypeDef* SDIOx, uint32_t WriteAdd);
-uint32_t SDMMC_CmdWriteMultiBlock(SDIO_TypeDef* SDIOx, uint32_t WriteAdd);
-uint32_t SDMMC_CmdEraseStartAdd(SDIO_TypeDef* SDIOx, uint32_t StartAdd);
-uint32_t SDMMC_CmdSDEraseStartAdd(SDIO_TypeDef* SDIOx, uint32_t StartAdd);
-uint32_t SDMMC_CmdEraseEndAdd(SDIO_TypeDef* SDIOx, uint32_t EndAdd);
-uint32_t SDMMC_CmdSDEraseEndAdd(SDIO_TypeDef* SDIOx, uint32_t EndAdd);
-uint32_t SDMMC_CmdErase(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdStopTransfer(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdSelDesel(SDIO_TypeDef* SDIOx, uint64_t Addr);
-uint32_t SDMMC_CmdGoIdleState(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdOperCond(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdAppCommand(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdAppOperCommand(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdBusWidth(SDIO_TypeDef* SDIOx, uint32_t BusWidth);
-uint32_t SDMMC_CmdSendSCR(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdSendCID(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdSendCSD(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdSetRelAdd(SDIO_TypeDef* SDIOx, uint16_t* pRCA);
-uint32_t SDMMC_CmdSetRelAddMmc(SDIO_TypeDef* SDIOx, uint16_t RCA);
-uint32_t SDMMC_CmdSendStatus(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdStatusRegister(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_CmdOpCondition(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdSwitch(SDIO_TypeDef* SDIOx, uint32_t Argument);
-uint32_t SDMMC_CmdSendEXTCSD(SDIO_TypeDef* SDIOx, uint32_t Argument);
-/**
+    uint32_t SDMMC_CmdBlockLength(SDIO_TypeDef* SDIOx, uint32_t BlockSize);
+    uint32_t SDMMC_CmdReadSingleBlock(SDIO_TypeDef* SDIOx, uint32_t ReadAdd);
+    uint32_t SDMMC_CmdReadMultiBlock(SDIO_TypeDef* SDIOx, uint32_t ReadAdd);
+    uint32_t SDMMC_CmdWriteSingleBlock(SDIO_TypeDef* SDIOx, uint32_t WriteAdd);
+    uint32_t SDMMC_CmdWriteMultiBlock(SDIO_TypeDef* SDIOx, uint32_t WriteAdd);
+    uint32_t SDMMC_CmdEraseStartAdd(SDIO_TypeDef* SDIOx, uint32_t StartAdd);
+    uint32_t SDMMC_CmdSDEraseStartAdd(SDIO_TypeDef* SDIOx, uint32_t StartAdd);
+    uint32_t SDMMC_CmdEraseEndAdd(SDIO_TypeDef* SDIOx, uint32_t EndAdd);
+    uint32_t SDMMC_CmdSDEraseEndAdd(SDIO_TypeDef* SDIOx, uint32_t EndAdd);
+    uint32_t SDMMC_CmdErase(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdStopTransfer(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdSelDesel(SDIO_TypeDef* SDIOx, uint64_t Addr);
+    uint32_t SDMMC_CmdGoIdleState(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdOperCond(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdAppCommand(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdAppOperCommand(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdBusWidth(SDIO_TypeDef* SDIOx, uint32_t BusWidth);
+    uint32_t SDMMC_CmdSendSCR(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdSendCID(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdSendCSD(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdSetRelAdd(SDIO_TypeDef* SDIOx, uint16_t* pRCA);
+    uint32_t SDMMC_CmdSetRelAddMmc(SDIO_TypeDef* SDIOx, uint16_t RCA);
+    uint32_t SDMMC_CmdSendStatus(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdStatusRegister(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_CmdOpCondition(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdSwitch(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    uint32_t SDMMC_CmdSendEXTCSD(SDIO_TypeDef* SDIOx, uint32_t Argument);
+    /**
   * @}
   */
 
-/* SDMMC Responses management functions *****************************************/
-/** @addtogroup HAL_SDMMC_LL_Group5
+    /* SDMMC Responses management functions *****************************************/
+    /** @addtogroup HAL_SDMMC_LL_Group5
   * @{
   */
-uint32_t SDMMC_GetCmdResp1(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint32_t Timeout);
-uint32_t SDMMC_GetCmdResp2(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_GetCmdResp3(SDIO_TypeDef* SDIOx);
-uint32_t SDMMC_GetCmdResp6(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint16_t* pRCA);
-uint32_t SDMMC_GetCmdResp7(SDIO_TypeDef* SDIOx);
-/**
+    uint32_t SDMMC_GetCmdResp1(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint32_t Timeout);
+    uint32_t SDMMC_GetCmdResp2(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_GetCmdResp3(SDIO_TypeDef* SDIOx);
+    uint32_t SDMMC_GetCmdResp6(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint16_t* pRCA);
+    uint32_t SDMMC_GetCmdResp7(SDIO_TypeDef* SDIOx);
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

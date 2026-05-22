@@ -156,7 +156,8 @@
   * @param  AttSpace_Timing pointer to Attribute space timing structure
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Init(NAND_HandleTypeDef* hnand, FSMC_NAND_PCC_TimingTypeDef* ComSpace_Timing, FSMC_NAND_PCC_TimingTypeDef* AttSpace_Timing) {
+HAL_StatusTypeDef
+HAL_NAND_Init(NAND_HandleTypeDef* hnand, FSMC_NAND_PCC_TimingTypeDef* ComSpace_Timing, FSMC_NAND_PCC_TimingTypeDef* AttSpace_Timing) {
     /* Check the NAND handle state */
     if (hnand == NULL) {
         return HAL_ERROR;
@@ -489,7 +490,8 @@ HAL_StatusTypeDef HAL_NAND_ConfigDevice(NAND_HandleTypeDef* hnand, const NAND_De
   * @param  NumPageToRead  number of pages to read from block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Read_Page_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint8_t* pBuffer, uint32_t NumPageToRead) {
+HAL_StatusTypeDef
+HAL_NAND_Read_Page_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint8_t* pBuffer, uint32_t NumPageToRead) {
     uint32_t index;
     uint32_t tickstart;
     uint32_t deviceaddress;
@@ -632,7 +634,8 @@ HAL_StatusTypeDef HAL_NAND_Read_Page_8b(NAND_HandleTypeDef* hnand, const NAND_Ad
   * @param  NumPageToRead  number of pages to read from block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Read_Page_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint16_t* pBuffer, uint32_t NumPageToRead) {
+HAL_StatusTypeDef
+HAL_NAND_Read_Page_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint16_t* pBuffer, uint32_t NumPageToRead) {
     uint32_t  index;
     uint32_t  tickstart;
     uint32_t  deviceaddress;
@@ -783,7 +786,8 @@ HAL_StatusTypeDef HAL_NAND_Read_Page_16b(NAND_HandleTypeDef* hnand, const NAND_A
   * @param  NumPageToWrite   number of pages to write to block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Write_Page_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint8_t* pBuffer, uint32_t NumPageToWrite) {
+HAL_StatusTypeDef
+HAL_NAND_Write_Page_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint8_t* pBuffer, uint32_t NumPageToWrite) {
     uint32_t       index;
     uint32_t       tickstart;
     uint32_t       deviceaddress;
@@ -923,7 +927,8 @@ HAL_StatusTypeDef HAL_NAND_Write_Page_8b(NAND_HandleTypeDef* hnand, const NAND_A
   * @param  NumPageToWrite   number of pages to write to block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Write_Page_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint16_t* pBuffer, uint32_t NumPageToWrite) {
+HAL_StatusTypeDef
+HAL_NAND_Write_Page_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint16_t* pBuffer, uint32_t NumPageToWrite) {
     uint32_t        index;
     uint32_t        tickstart;
     uint32_t        deviceaddress;
@@ -1071,7 +1076,8 @@ HAL_StatusTypeDef HAL_NAND_Write_Page_16b(NAND_HandleTypeDef* hnand, const NAND_
   * @param  NumSpareAreaToRead Number of spare area to read
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Read_SpareArea_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint8_t* pBuffer, uint32_t NumSpareAreaToRead) {
+HAL_StatusTypeDef
+HAL_NAND_Read_SpareArea_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint8_t* pBuffer, uint32_t NumSpareAreaToRead) {
     uint32_t index;
     uint32_t tickstart;
     uint32_t deviceaddress;
@@ -1222,7 +1228,10 @@ HAL_StatusTypeDef HAL_NAND_Read_SpareArea_8b(NAND_HandleTypeDef* hnand, const NA
   * @param  NumSpareAreaToRead Number of spare area to read
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Read_SpareArea_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, uint16_t* pBuffer, uint32_t NumSpareAreaToRead) {
+HAL_StatusTypeDef HAL_NAND_Read_SpareArea_16b(NAND_HandleTypeDef*        hnand,
+                                              const NAND_AddressTypeDef* pAddress,
+                                              uint16_t*                  pBuffer,
+                                              uint32_t                   NumSpareAreaToRead) {
     uint32_t  index;
     uint32_t  tickstart;
     uint32_t  deviceaddress;
@@ -1373,7 +1382,10 @@ HAL_StatusTypeDef HAL_NAND_Read_SpareArea_16b(NAND_HandleTypeDef* hnand, const N
   * @param  NumSpareAreaTowrite   number of spare areas to write to block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Write_SpareArea_8b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint8_t* pBuffer, uint32_t NumSpareAreaTowrite) {
+HAL_StatusTypeDef HAL_NAND_Write_SpareArea_8b(NAND_HandleTypeDef*        hnand,
+                                              const NAND_AddressTypeDef* pAddress,
+                                              const uint8_t*             pBuffer,
+                                              uint32_t                   NumSpareAreaTowrite) {
     uint32_t       index;
     uint32_t       tickstart;
     uint32_t       deviceaddress;
@@ -1523,7 +1535,10 @@ HAL_StatusTypeDef HAL_NAND_Write_SpareArea_8b(NAND_HandleTypeDef* hnand, const N
   * @param  NumSpareAreaTowrite   number of spare areas to write to block
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_NAND_Write_SpareArea_16b(NAND_HandleTypeDef* hnand, const NAND_AddressTypeDef* pAddress, const uint16_t* pBuffer, uint32_t NumSpareAreaTowrite) {
+HAL_StatusTypeDef HAL_NAND_Write_SpareArea_16b(NAND_HandleTypeDef*        hnand,
+                                               const NAND_AddressTypeDef* pAddress,
+                                               const uint16_t*            pBuffer,
+                                               uint32_t                   NumSpareAreaTowrite) {
     uint32_t        index;
     uint32_t        tickstart;
     uint32_t        deviceaddress;
@@ -1762,7 +1777,8 @@ uint32_t HAL_NAND_Address_Inc(const NAND_HandleTypeDef* hnand, NAND_AddressTypeD
   * @param pCallback : pointer to the Callback function
   * @retval status
   */
-HAL_StatusTypeDef HAL_NAND_RegisterCallback(NAND_HandleTypeDef* hnand, HAL_NAND_CallbackIDTypeDef CallbackId, pNAND_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_NAND_RegisterCallback(NAND_HandleTypeDef* hnand, HAL_NAND_CallbackIDTypeDef CallbackId, pNAND_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {

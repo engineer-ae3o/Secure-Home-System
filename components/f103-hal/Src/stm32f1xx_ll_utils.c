@@ -63,27 +63,41 @@
 /** @addtogroup UTILS_LL_Private_Macros
   * @{
   */
-#define IS_LL_UTILS_SYSCLK_DIV(__VALUE__) (((__VALUE__) == LL_RCC_SYSCLK_DIV_1) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_2) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_4) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_8) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_16) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_64) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_128) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_256) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_512))
+#define IS_LL_UTILS_SYSCLK_DIV(__VALUE__)                                                                                                  \
+    (((__VALUE__) == LL_RCC_SYSCLK_DIV_1) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_2) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_4) ||               \
+     ((__VALUE__) == LL_RCC_SYSCLK_DIV_8) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_16) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_64) ||             \
+     ((__VALUE__) == LL_RCC_SYSCLK_DIV_128) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_256) || ((__VALUE__) == LL_RCC_SYSCLK_DIV_512))
 
-#define IS_LL_UTILS_APB1_DIV(__VALUE__) (((__VALUE__) == LL_RCC_APB1_DIV_1) || ((__VALUE__) == LL_RCC_APB1_DIV_2) || ((__VALUE__) == LL_RCC_APB1_DIV_4) || ((__VALUE__) == LL_RCC_APB1_DIV_8) || ((__VALUE__) == LL_RCC_APB1_DIV_16))
+#define IS_LL_UTILS_APB1_DIV(__VALUE__)                                                                                                    \
+    (((__VALUE__) == LL_RCC_APB1_DIV_1) || ((__VALUE__) == LL_RCC_APB1_DIV_2) || ((__VALUE__) == LL_RCC_APB1_DIV_4) ||                     \
+     ((__VALUE__) == LL_RCC_APB1_DIV_8) || ((__VALUE__) == LL_RCC_APB1_DIV_16))
 
-#define IS_LL_UTILS_APB2_DIV(__VALUE__) (((__VALUE__) == LL_RCC_APB2_DIV_1) || ((__VALUE__) == LL_RCC_APB2_DIV_2) || ((__VALUE__) == LL_RCC_APB2_DIV_4) || ((__VALUE__) == LL_RCC_APB2_DIV_8) || ((__VALUE__) == LL_RCC_APB2_DIV_16))
+#define IS_LL_UTILS_APB2_DIV(__VALUE__)                                                                                                    \
+    (((__VALUE__) == LL_RCC_APB2_DIV_1) || ((__VALUE__) == LL_RCC_APB2_DIV_2) || ((__VALUE__) == LL_RCC_APB2_DIV_4) ||                     \
+     ((__VALUE__) == LL_RCC_APB2_DIV_8) || ((__VALUE__) == LL_RCC_APB2_DIV_16))
 
 #if defined(RCC_CFGR_PLLMULL6_5)
-#define IS_LL_UTILS_PLLMUL_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_PLL_MUL_4) || ((__VALUE__) == LL_RCC_PLL_MUL_5) || ((__VALUE__) == LL_RCC_PLL_MUL_6) || ((__VALUE__) == LL_RCC_PLL_MUL_7) || ((__VALUE__) == LL_RCC_PLL_MUL_8) || ((__VALUE__) == LL_RCC_PLL_MUL_9) || ((__VALUE__) == LL_RCC_PLL_MUL_6_5))
+#define IS_LL_UTILS_PLLMUL_VALUE(__VALUE__)                                                                                                \
+    (((__VALUE__) == LL_RCC_PLL_MUL_4) || ((__VALUE__) == LL_RCC_PLL_MUL_5) || ((__VALUE__) == LL_RCC_PLL_MUL_6) ||                        \
+     ((__VALUE__) == LL_RCC_PLL_MUL_7) || ((__VALUE__) == LL_RCC_PLL_MUL_8) || ((__VALUE__) == LL_RCC_PLL_MUL_9) ||                        \
+     ((__VALUE__) == LL_RCC_PLL_MUL_6_5))
 #else
-#define IS_LL_UTILS_PLLMUL_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_PLL_MUL_2) || ((__VALUE__) == LL_RCC_PLL_MUL_3) || ((__VALUE__) == LL_RCC_PLL_MUL_4) || ((__VALUE__) == LL_RCC_PLL_MUL_5) || ((__VALUE__) == LL_RCC_PLL_MUL_6) || ((__VALUE__) == LL_RCC_PLL_MUL_7) || ((__VALUE__) == LL_RCC_PLL_MUL_8) || ((__VALUE__) == LL_RCC_PLL_MUL_9) || ((__VALUE__) == LL_RCC_PLL_MUL_10) || ((__VALUE__) == LL_RCC_PLL_MUL_11) || ((__VALUE__) == LL_RCC_PLL_MUL_12) || ((__VALUE__) == LL_RCC_PLL_MUL_13) || ((__VALUE__) == LL_RCC_PLL_MUL_14) || ((__VALUE__) == LL_RCC_PLL_MUL_15) || ((__VALUE__) == LL_RCC_PLL_MUL_16))
+#define IS_LL_UTILS_PLLMUL_VALUE(__VALUE__)                                                                                                \
+    (((__VALUE__) == LL_RCC_PLL_MUL_2) || ((__VALUE__) == LL_RCC_PLL_MUL_3) || ((__VALUE__) == LL_RCC_PLL_MUL_4) ||                        \
+     ((__VALUE__) == LL_RCC_PLL_MUL_5) || ((__VALUE__) == LL_RCC_PLL_MUL_6) || ((__VALUE__) == LL_RCC_PLL_MUL_7) ||                        \
+     ((__VALUE__) == LL_RCC_PLL_MUL_8) || ((__VALUE__) == LL_RCC_PLL_MUL_9) || ((__VALUE__) == LL_RCC_PLL_MUL_10) ||                       \
+     ((__VALUE__) == LL_RCC_PLL_MUL_11) || ((__VALUE__) == LL_RCC_PLL_MUL_12) || ((__VALUE__) == LL_RCC_PLL_MUL_13) ||                     \
+     ((__VALUE__) == LL_RCC_PLL_MUL_14) || ((__VALUE__) == LL_RCC_PLL_MUL_15) || ((__VALUE__) == LL_RCC_PLL_MUL_16))
 #endif /* RCC_CFGR_PLLMULL6_5 */
 
 #if defined(RCC_CFGR2_PREDIV1)
-#define IS_LL_UTILS_PREDIV_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_PREDIV_DIV_1) || ((__VALUE__) == LL_RCC_PREDIV_DIV_2) ||   \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_3) || ((__VALUE__) == LL_RCC_PREDIV_DIV_4) ||   \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_5) || ((__VALUE__) == LL_RCC_PREDIV_DIV_6) ||   \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_7) || ((__VALUE__) == LL_RCC_PREDIV_DIV_8) ||   \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_9) || ((__VALUE__) == LL_RCC_PREDIV_DIV_10) ||  \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_11) || ((__VALUE__) == LL_RCC_PREDIV_DIV_12) || \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_13) || ((__VALUE__) == LL_RCC_PREDIV_DIV_14) || \
-                                             ((__VALUE__) == LL_RCC_PREDIV_DIV_15) || ((__VALUE__) == LL_RCC_PREDIV_DIV_16))
+#define IS_LL_UTILS_PREDIV_VALUE(__VALUE__)                                                                                                \
+    (((__VALUE__) == LL_RCC_PREDIV_DIV_1) || ((__VALUE__) == LL_RCC_PREDIV_DIV_2) || ((__VALUE__) == LL_RCC_PREDIV_DIV_3) ||               \
+     ((__VALUE__) == LL_RCC_PREDIV_DIV_4) || ((__VALUE__) == LL_RCC_PREDIV_DIV_5) || ((__VALUE__) == LL_RCC_PREDIV_DIV_6) ||               \
+     ((__VALUE__) == LL_RCC_PREDIV_DIV_7) || ((__VALUE__) == LL_RCC_PREDIV_DIV_8) || ((__VALUE__) == LL_RCC_PREDIV_DIV_9) ||               \
+     ((__VALUE__) == LL_RCC_PREDIV_DIV_10) || ((__VALUE__) == LL_RCC_PREDIV_DIV_11) || ((__VALUE__) == LL_RCC_PREDIV_DIV_12) ||            \
+     ((__VALUE__) == LL_RCC_PREDIV_DIV_13) || ((__VALUE__) == LL_RCC_PREDIV_DIV_14) || ((__VALUE__) == LL_RCC_PREDIV_DIV_15) ||            \
+     ((__VALUE__) == LL_RCC_PREDIV_DIV_16))
 #else
 #define IS_LL_UTILS_PREDIV_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_PREDIV_DIV_1) || ((__VALUE__) == LL_RCC_PREDIV_DIV_2))
 #endif /*RCC_PREDIV1_DIV_2_16_SUPPORT*/
@@ -91,23 +105,28 @@
 #define IS_LL_UTILS_PLL_FREQUENCY(__VALUE__) ((__VALUE__) <= UTILS_PLL_OUTPUT_MAX)
 
 #if defined(RCC_PLL2_SUPPORT)
-#define IS_LL_UTILS_PLL2MUL_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_PLL2_MUL_8) || ((__VALUE__) == LL_RCC_PLL2_MUL_9) || ((__VALUE__) == LL_RCC_PLL2_MUL_10) || ((__VALUE__) == LL_RCC_PLL2_MUL_11) || ((__VALUE__) == LL_RCC_PLL2_MUL_12) || ((__VALUE__) == LL_RCC_PLL2_MUL_13) || ((__VALUE__) == LL_RCC_PLL2_MUL_14) || ((__VALUE__) == LL_RCC_PLL2_MUL_16) || ((__VALUE__) == LL_RCC_PLL2_MUL_20))
+#define IS_LL_UTILS_PLL2MUL_VALUE(__VALUE__)                                                                                               \
+    (((__VALUE__) == LL_RCC_PLL2_MUL_8) || ((__VALUE__) == LL_RCC_PLL2_MUL_9) || ((__VALUE__) == LL_RCC_PLL2_MUL_10) ||                    \
+     ((__VALUE__) == LL_RCC_PLL2_MUL_11) || ((__VALUE__) == LL_RCC_PLL2_MUL_12) || ((__VALUE__) == LL_RCC_PLL2_MUL_13) ||                  \
+     ((__VALUE__) == LL_RCC_PLL2_MUL_14) || ((__VALUE__) == LL_RCC_PLL2_MUL_16) || ((__VALUE__) == LL_RCC_PLL2_MUL_20))
 
-#define IS_LL_UTILS_PREDIV2_VALUE(__VALUE__) (((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_1) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_2) ||   \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_3) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_4) ||   \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_5) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_6) ||   \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_7) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_8) ||   \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_9) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_10) ||  \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_11) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_12) || \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_13) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_14) || \
-                                              ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_15) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_16))
+#define IS_LL_UTILS_PREDIV2_VALUE(__VALUE__)                                                                                               \
+    (((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_1) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_2) ||                                             \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_3) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_4) ||                                             \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_5) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_6) ||                                             \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_7) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_8) ||                                             \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_9) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_10) ||                                            \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_11) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_12) ||                                           \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_13) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_14) ||                                           \
+     ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_15) || ((__VALUE__) == LL_RCC_HSE_PREDIV2_DIV_16))
 
 #define IS_LL_UTILS_PLL2_FREQUENCY(__VALUE__) ((__VALUE__) <= UTILS_PLL2_OUTPUT_MAX)
 #endif /* RCC_PLL2_SUPPORT */
 
 #define IS_LL_UTILS_HSE_BYPASS(__STATE__) (((__STATE__) == LL_UTILS_HSEBYPASS_ON) || ((__STATE__) == LL_UTILS_HSEBYPASS_OFF))
 
-#define IS_LL_UTILS_HSE_FREQUENCY(__FREQUENCY__) (((__FREQUENCY__) >= UTILS_HSE_FREQUENCY_MIN) && ((__FREQUENCY__) <= UTILS_HSE_FREQUENCY_MAX))
+#define IS_LL_UTILS_HSE_FREQUENCY(__FREQUENCY__)                                                                                           \
+    (((__FREQUENCY__) >= UTILS_HSE_FREQUENCY_MIN) && ((__FREQUENCY__) <= UTILS_HSE_FREQUENCY_MAX))
 /**
   * @}
   */
@@ -115,15 +134,17 @@
 /** @defgroup UTILS_LL_Private_Functions UTILS Private functions
   * @{
   */
-static uint32_t    UTILS_GetPLLOutputFrequency(uint32_t                 PLL_InputFrequency,
-                                               LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct);
-static ErrorStatus UTILS_PLL_HSE_ConfigSystemClock(uint32_t PLL_InputFrequency, uint32_t HSEBypass, LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct);
+static uint32_t    UTILS_GetPLLOutputFrequency(uint32_t PLL_InputFrequency, LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct);
+static ErrorStatus UTILS_PLL_HSE_ConfigSystemClock(uint32_t                 PLL_InputFrequency,
+                                                   uint32_t                 HSEBypass,
+                                                   LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct,
+                                                   LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct);
 #if defined(RCC_PLL2_SUPPORT)
-static uint32_t UTILS_GetPLL2OutputFrequency(uint32_t                 PLL2_InputFrequency,
-                                             LL_UTILS_PLLInitTypeDef* UTILS_PLL2InitStruct);
+static uint32_t UTILS_GetPLL2OutputFrequency(uint32_t PLL2_InputFrequency, LL_UTILS_PLLInitTypeDef* UTILS_PLL2InitStruct);
 #endif /* RCC_PLL2_SUPPORT */
 static ErrorStatus UTILS_EnablePLLAndSwitchSystem(uint32_t SYSCLK_Frequency, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct);
 static ErrorStatus UTILS_PLL_IsBusy(void);
+
 /**
   * @}
   */
@@ -292,8 +313,7 @@ ErrorStatus LL_SetFlashLatency(uint32_t Frequency) {
   *          - SUCCESS: Max frequency configuration done
   *          - ERROR: Max frequency configuration not done
   */
-ErrorStatus LL_PLL_ConfigSystemClock_HSI(LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct,
-                                         LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
+ErrorStatus LL_PLL_ConfigSystemClock_HSI(LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
     ErrorStatus status  = SUCCESS;
     uint32_t    pllfreq = 0U;
 
@@ -351,7 +371,10 @@ ErrorStatus LL_PLL_ConfigSystemClock_HSI(LL_UTILS_PLLInitTypeDef* UTILS_PLLInitS
   *          - SUCCESS: Max frequency configuration done
   *          - ERROR: Max frequency configuration not done
   */
-ErrorStatus LL_PLL_ConfigSystemClock_HSE(uint32_t HSEFrequency, uint32_t HSEBypass, LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
+ErrorStatus LL_PLL_ConfigSystemClock_HSE(uint32_t                 HSEFrequency,
+                                         uint32_t                 HSEBypass,
+                                         LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct,
+                                         LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
     ErrorStatus status       = SUCCESS;
     uint32_t    pllfrequency = 0U;
 
@@ -401,7 +424,11 @@ ErrorStatus LL_PLL_ConfigSystemClock_HSE(uint32_t HSEFrequency, uint32_t HSEBypa
   *          - SUCCESS: Max frequency configuration done
   *          - ERROR: Max frequency configuration not done
   */
-ErrorStatus LL_PLL_ConfigSystemClock_PLL2(uint32_t HSEFrequency, uint32_t HSEBypass, LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct, LL_UTILS_PLLInitTypeDef* UTILS_PLL2InitStruct, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
+ErrorStatus LL_PLL_ConfigSystemClock_PLL2(uint32_t                 HSEFrequency,
+                                          uint32_t                 HSEBypass,
+                                          LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct,
+                                          LL_UTILS_PLLInitTypeDef* UTILS_PLL2InitStruct,
+                                          LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
     ErrorStatus status       = SUCCESS;
     uint32_t    pllfrequency = 0U;
 
@@ -462,7 +489,8 @@ static uint32_t UTILS_GetPLLOutputFrequency(uint32_t PLL_InputFrequency, LL_UTIL
 #if defined(RCC_CFGR2_PREDIV1)
     pllfreq = __LL_RCC_CALC_PLLCLK_FREQ(PLL_InputFrequency / (UTILS_PLLInitStruct->Prediv + 1U), UTILS_PLLInitStruct->PLLMul);
 #else
-    pllfreq = __LL_RCC_CALC_PLLCLK_FREQ(PLL_InputFrequency / ((UTILS_PLLInitStruct->Prediv >> RCC_CFGR_PLLXTPRE_Pos) + 1U), UTILS_PLLInitStruct->PLLMul);
+    pllfreq = __LL_RCC_CALC_PLLCLK_FREQ(PLL_InputFrequency / ((UTILS_PLLInitStruct->Prediv >> RCC_CFGR_PLLXTPRE_Pos) + 1U),
+                                        UTILS_PLLInitStruct->PLLMul);
 #endif /*RCC_CFGR2_PREDIV1SRC*/
     assert_param(IS_LL_UTILS_PLL_FREQUENCY(pllfreq));
 
@@ -484,7 +512,10 @@ static uint32_t UTILS_GetPLLOutputFrequency(uint32_t PLL_InputFrequency, LL_UTIL
   *          - SUCCESS: HSE configuration done
   *          - ERROR: HSE configuration not done
   */
-static ErrorStatus UTILS_PLL_HSE_ConfigSystemClock(uint32_t PLL_InputFrequency, uint32_t HSEBypass, LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct, LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
+static ErrorStatus UTILS_PLL_HSE_ConfigSystemClock(uint32_t                 PLL_InputFrequency,
+                                                   uint32_t                 HSEBypass,
+                                                   LL_UTILS_PLLInitTypeDef* UTILS_PLLInitStruct,
+                                                   LL_UTILS_ClkInitTypeDef* UTILS_ClkInitStruct) {
     ErrorStatus status = SUCCESS;
 
     /* Check if one of the PLL is enabled */

@@ -44,316 +44,300 @@ SOFTWARE.
 ///\ingroup containers
 
 namespace etl {
-//***************************************************************************
-/// The base class for array_wrapper exceptions.
-//***************************************************************************
-class array_wrapper_exception : public exception {
+    //***************************************************************************
+    /// The base class for array_wrapper exceptions.
+    //***************************************************************************
+    class array_wrapper_exception : public exception {
     public:
-    array_wrapper_exception(string_type reason_, string_type file_name_, numeric_type line_number_)
-        : exception(reason_, file_name_, line_number_) {
-    }
-};
+        array_wrapper_exception(string_type reason_, string_type file_name_, numeric_type line_number_)
+            : exception(reason_, file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup stack
-/// The exception thrown when the index is out of bounds.
-//***************************************************************************
-class array_wrapper_bounds : public array_wrapper_exception {
+    //***************************************************************************
+    ///\ingroup stack
+    /// The exception thrown when the index is out of bounds.
+    //***************************************************************************
+    class array_wrapper_bounds : public array_wrapper_exception {
     public:
-    array_wrapper_bounds(string_type file_name_, numeric_type line_number_)
-        : array_wrapper_exception(ETL_ERROR_TEXT("array_wrapper:bounds", ETL_ARRAY_WRAPPER_FILE_ID "A"), file_name_, line_number_) {
-    }
-};
+        array_wrapper_bounds(string_type file_name_, numeric_type line_number_)
+            : array_wrapper_exception(ETL_ERROR_TEXT("array_wrapper:bounds", ETL_ARRAY_WRAPPER_FILE_ID "A"), file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-/// Array wrapper.
-//***************************************************************************
-template<typename T, size_t SIZE_, T (&ARRAY_)[SIZE_]>
-class array_wrapper {
+    //***************************************************************************
+    /// Array wrapper.
+    //***************************************************************************
+    template<typename T, size_t SIZE_, T (&ARRAY_)[SIZE_]>
+    class array_wrapper {
     public:
-    typedef T                                            value_type;
-    typedef size_t                                       size_type;
-    typedef T&                                           reference;
-    typedef const T&                                     const_reference;
-    typedef T*                                           pointer;
-    typedef const T*                                     const_pointer;
-    typedef T*                                           iterator;
-    typedef const T*                                     const_iterator;
-    typedef ETL_OR_STD::reverse_iterator<iterator>       reverse_iterator;
-    typedef ETL_OR_STD::reverse_iterator<const_iterator> const_reverse_iterator;
+        typedef T                                            value_type;
+        typedef size_t                                       size_type;
+        typedef T&                                           reference;
+        typedef const T&                                     const_reference;
+        typedef T*                                           pointer;
+        typedef const T*                                     const_pointer;
+        typedef T*                                           iterator;
+        typedef const T*                                     const_iterator;
+        typedef ETL_OR_STD::reverse_iterator<iterator>       reverse_iterator;
+        typedef ETL_OR_STD::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    typedef typename etl::parameter_type<T>::type parameter_t;
+        typedef typename etl::parameter_type<T>::type parameter_t;
 
-    // Indexes for positions in the array.
-    enum {
-        SIZE     = SIZE_,
-        MAX_SIZE = SIZE_,
-        FRONT    = 0,
-        BACK     = SIZE - 1,
-        BEGIN    = 0,
-        END      = SIZE,
-        RBEGIN   = SIZE - 1,
-        REND     = -1
+        // Indexes for positions in the array.
+        enum { SIZE = SIZE_, MAX_SIZE = SIZE_, FRONT = 0, BACK = SIZE - 1, BEGIN = 0, END = SIZE, RBEGIN = SIZE - 1, REND = -1 };
+
+        //*************************************************************************
+        /// Returns a reference to the first element.
+        //*************************************************************************
+        reference front() {
+            return *&ARRAY_[FRONT];
+        }
+
+        //*************************************************************************
+        /// Returns a const reference to the first element.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reference front() const {
+            return *&ARRAY_[FRONT];
+        }
+
+        //*************************************************************************
+        /// Returns a reference to the last element.
+        //*************************************************************************
+        reference back() {
+            return *&ARRAY_[BACK];
+        }
+
+        //*************************************************************************
+        /// Returns a const reference to the last element.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reference back() const {
+            return *&ARRAY_[BACK];
+        }
+
+        //*************************************************************************
+        /// Returns a pointer to the first element of the internal storage.
+        //*************************************************************************
+        pointer data() {
+            return &ARRAY_[BEGIN];
+        }
+
+        //*************************************************************************
+        /// Returns a const pointer to the first element of the internal storage.
+        //*************************************************************************
+        ETL_CONSTEXPR const_pointer data() const {
+            return &ARRAY_[BEGIN];
+        }
+
+        //*************************************************************************
+        /// Returns an iterator to the beginning of the array.
+        //*************************************************************************
+        iterator begin() {
+            return &ARRAY_[BEGIN];
+        }
+
+        //*************************************************************************
+        /// Returns a const iterator to the beginning of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_iterator begin() const {
+            return &ARRAY_[BEGIN];
+        }
+
+        //*************************************************************************
+        /// Returns a const iterator to the beginning of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_iterator cbegin() const {
+            return &ARRAY_[BEGIN];
+        }
+
+        //*************************************************************************
+        /// Returns an iterator to the end of the array.
+        //*************************************************************************
+        iterator end() {
+            return &ARRAY_[END];
+        }
+
+        //*************************************************************************
+        /// Returns a const iterator to the end of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_iterator end() const {
+            return &ARRAY_[END];
+        }
+
+        //*************************************************************************
+        // Returns a const iterator to the end of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_iterator cend() const {
+            return &ARRAY_[END];
+        }
+
+        //*************************************************************************
+        // Returns an reverse iterator to the reverse beginning of the array.
+        //*************************************************************************
+        reverse_iterator rbegin() {
+            return reverse_iterator(&ARRAY_[END]);
+        }
+
+        //*************************************************************************
+        /// Returns a const reverse iterator to the reverse beginning of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reverse_iterator rbegin() const {
+            return const_reverse_iterator(&ARRAY_[END]);
+        }
+
+        //*************************************************************************
+        /// Returns a const reverse iterator to the reverse beginning of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reverse_iterator crbegin() const {
+            return const_reverse_iterator(&ARRAY_[END]);
+        }
+
+        //*************************************************************************
+        /// Returns a reverse iterator to the end of the array.
+        //*************************************************************************
+        reverse_iterator rend() {
+            return reverse_iterator(&ARRAY_[BEGIN]);
+        }
+
+        //*************************************************************************
+        /// Returns a const reverse iterator to the end of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reverse_iterator rend() const {
+            return const_reverse_iterator(&ARRAY_[BEGIN]);
+        }
+
+        //*************************************************************************
+        /// Returns a const reverse iterator to the end of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reverse_iterator crend() const {
+            return const_reverse_iterator(&ARRAY_[BEGIN]);
+        }
+
+        //*************************************************************************
+        /// Returns the size of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR size_t size() const {
+            return SIZE;
+        }
+
+        //*************************************************************************
+        /// Returns the maximum possible size of the array.
+        //*************************************************************************
+        ETL_CONSTEXPR size_t max_size() const {
+            return MAX_SIZE;
+        }
+
+        //*************************************************************************
+        /// Returns a reference to the indexed value.
+        //*************************************************************************
+        reference operator[](size_t i) {
+            return ARRAY_[i];
+        }
+
+        //*************************************************************************
+        /// Returns a const reference to the indexed value.
+        //*************************************************************************
+        ETL_CONSTEXPR const_reference operator[](size_t i) const {
+            return ARRAY_[i];
+        }
+
+        //*************************************************************************
+        /// Returns a reference to the indexed value.
+        //*************************************************************************
+        reference at(size_t i) {
+            ETL_ASSERT(i < SIZE, ETL_ERROR(etl::array_wrapper_bounds));
+            return ARRAY_[i];
+        }
+
+        //*************************************************************************
+        /// Returns a const reference to the indexed value.
+        //*************************************************************************
+        const_reference at(size_t i) const {
+            ETL_ASSERT(i < SIZE, ETL_ERROR(etl::array_wrapper_bounds));
+            return ARRAY_[i];
+        }
+
+        //*************************************************************************
+        /// Fills the array.
+        //*************************************************************************
+        void fill(parameter_t value) {
+            etl::fill(begin(), end(), value);
+        }
+
+        //*************************************************************************
+        /// Swaps the contents of arrays.
+        //*************************************************************************
+        template<typename U, U (&ARRAYOTHER)[SIZE_]>
+        typename etl::enable_if<etl::is_same<T, U>::value, void>::type swap(etl::array_wrapper<U, SIZE_, ARRAYOTHER>& other) {
+            using ETL_OR_STD::swap; // Allow ADL
+
+            for (size_t i = 0UL; i < SIZE; ++i) {
+                swap(ARRAY_[i], other.begin()[i]);
+            }
+        }
     };
 
     //*************************************************************************
-    /// Returns a reference to the first element.
+    /// Equality for array wrappers.
     //*************************************************************************
-    reference front() {
-        return *&ARRAY_[FRONT];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator==(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return (SIZEL == SIZER) && etl::equal(lhs.begin(), lhs.end(), rhs.begin());
     }
 
     //*************************************************************************
-    /// Returns a const reference to the first element.
+    /// Inequality for array wrapper.
     //*************************************************************************
-    ETL_CONSTEXPR const_reference front() const {
-        return *&ARRAY_[FRONT];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator!=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return !(lhs == rhs);
     }
 
     //*************************************************************************
-    /// Returns a reference to the last element.
+    /// Less-than for array wrapper.
     //*************************************************************************
-    reference back() {
-        return *&ARRAY_[BACK];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator<(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return etl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
     //*************************************************************************
-    /// Returns a const reference to the last element.
+    /// Greater-than for array wrapper.
     //*************************************************************************
-    ETL_CONSTEXPR const_reference back() const {
-        return *&ARRAY_[BACK];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator>(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return rhs < lhs;
     }
 
     //*************************************************************************
-    /// Returns a pointer to the first element of the internal storage.
+    /// Less-than-equal for array wrapper.
     //*************************************************************************
-    pointer data() {
-        return &ARRAY_[BEGIN];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator<=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return !(lhs > rhs);
     }
 
     //*************************************************************************
-    /// Returns a const pointer to the first element of the internal storage.
+    /// Greater-than-equal for array wrapper.
     //*************************************************************************
-    ETL_CONSTEXPR const_pointer data() const {
-        return &ARRAY_[BEGIN];
+    template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
+    bool operator>=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs, const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
+        return !(lhs < rhs);
     }
-
-    //*************************************************************************
-    /// Returns an iterator to the beginning of the array.
-    //*************************************************************************
-    iterator begin() {
-        return &ARRAY_[BEGIN];
-    }
-
-    //*************************************************************************
-    /// Returns a const iterator to the beginning of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_iterator begin() const {
-        return &ARRAY_[BEGIN];
-    }
-
-    //*************************************************************************
-    /// Returns a const iterator to the beginning of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_iterator cbegin() const {
-        return &ARRAY_[BEGIN];
-    }
-
-    //*************************************************************************
-    /// Returns an iterator to the end of the array.
-    //*************************************************************************
-    iterator end() {
-        return &ARRAY_[END];
-    }
-
-    //*************************************************************************
-    /// Returns a const iterator to the end of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_iterator end() const {
-        return &ARRAY_[END];
-    }
-
-    //*************************************************************************
-    // Returns a const iterator to the end of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_iterator cend() const {
-        return &ARRAY_[END];
-    }
-
-    //*************************************************************************
-    // Returns an reverse iterator to the reverse beginning of the array.
-    //*************************************************************************
-    reverse_iterator rbegin() {
-        return reverse_iterator(&ARRAY_[END]);
-    }
-
-    //*************************************************************************
-    /// Returns a const reverse iterator to the reverse beginning of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_reverse_iterator rbegin() const {
-        return const_reverse_iterator(&ARRAY_[END]);
-    }
-
-    //*************************************************************************
-    /// Returns a const reverse iterator to the reverse beginning of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_reverse_iterator crbegin() const {
-        return const_reverse_iterator(&ARRAY_[END]);
-    }
-
-    //*************************************************************************
-    /// Returns a reverse iterator to the end of the array.
-    //*************************************************************************
-    reverse_iterator rend() {
-        return reverse_iterator(&ARRAY_[BEGIN]);
-    }
-
-    //*************************************************************************
-    /// Returns a const reverse iterator to the end of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_reverse_iterator rend() const {
-        return const_reverse_iterator(&ARRAY_[BEGIN]);
-    }
-
-    //*************************************************************************
-    /// Returns a const reverse iterator to the end of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR const_reverse_iterator crend() const {
-        return const_reverse_iterator(&ARRAY_[BEGIN]);
-    }
-
-    //*************************************************************************
-    /// Returns the size of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR size_t size() const {
-        return SIZE;
-    }
-
-    //*************************************************************************
-    /// Returns the maximum possible size of the array.
-    //*************************************************************************
-    ETL_CONSTEXPR size_t max_size() const {
-        return MAX_SIZE;
-    }
-
-    //*************************************************************************
-    /// Returns a reference to the indexed value.
-    //*************************************************************************
-    reference operator[](size_t i) {
-        return ARRAY_[i];
-    }
-
-    //*************************************************************************
-    /// Returns a const reference to the indexed value.
-    //*************************************************************************
-    ETL_CONSTEXPR const_reference operator[](size_t i) const {
-        return ARRAY_[i];
-    }
-
-    //*************************************************************************
-    /// Returns a reference to the indexed value.
-    //*************************************************************************
-    reference at(size_t i) {
-        ETL_ASSERT(i < SIZE, ETL_ERROR(etl::array_wrapper_bounds));
-        return ARRAY_[i];
-    }
-
-    //*************************************************************************
-    /// Returns a const reference to the indexed value.
-    //*************************************************************************
-    const_reference at(size_t i) const {
-        ETL_ASSERT(i < SIZE, ETL_ERROR(etl::array_wrapper_bounds));
-        return ARRAY_[i];
-    }
-
-    //*************************************************************************
-    /// Fills the array.
-    //*************************************************************************
-    void fill(parameter_t value) {
-        etl::fill(begin(), end(), value);
-    }
-
-    //*************************************************************************
-    /// Swaps the contents of arrays.
-    //*************************************************************************
-    template<typename U, U (&ARRAYOTHER)[SIZE_]>
-    typename etl::enable_if<etl::is_same<T, U>::value, void>::type
-    swap(etl::array_wrapper<U, SIZE_, ARRAYOTHER>& other) {
-        using ETL_OR_STD::swap; // Allow ADL
-
-        for (size_t i = 0UL; i < SIZE; ++i) {
-            swap(ARRAY_[i], other.begin()[i]);
-        }
-    }
-};
-
-//*************************************************************************
-/// Equality for array wrappers.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator==(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-                const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return (SIZEL == SIZER) && etl::equal(lhs.begin(), lhs.end(), rhs.begin());
-}
-
-//*************************************************************************
-/// Inequality for array wrapper.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator!=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-                const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return !(lhs == rhs);
-}
-
-//*************************************************************************
-/// Less-than for array wrapper.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator<(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-               const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return etl::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-}
-
-//*************************************************************************
-/// Greater-than for array wrapper.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator>(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-               const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return rhs < lhs;
-}
-
-//*************************************************************************
-/// Less-than-equal for array wrapper.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator<=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-                const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return !(lhs > rhs);
-}
-
-//*************************************************************************
-/// Greater-than-equal for array wrapper.
-//*************************************************************************
-template<typename TL, typename TR, size_t SIZEL, size_t SIZER, TL (&ARRAYL)[SIZEL], TR (&ARRAYR)[SIZER]>
-bool operator>=(const etl::array_wrapper<TL, SIZEL, ARRAYL>& lhs,
-                const etl::array_wrapper<TR, SIZER, ARRAYR>& rhs) {
-    return !(lhs < rhs);
-}
 
 //*************************************************************************
 /// Hash function.
 //*************************************************************************
 #if ETL_USING_8BIT_TYPES
-template<typename T, size_t SIZE, T (&ARRAY)[SIZE]>
-struct hash<etl::array_wrapper<T, SIZE, ARRAY>> {
-    size_t operator()(const etl::array_wrapper<T, SIZE, ARRAY>& aw) const {
-        const uint8_t* pb = reinterpret_cast<const uint8_t*>(aw.data());
-        const uint8_t* pe = pb + (SIZE * sizeof(T));
+    template<typename T, size_t SIZE, T (&ARRAY)[SIZE]>
+    struct hash<etl::array_wrapper<T, SIZE, ARRAY>> {
+        size_t operator()(const etl::array_wrapper<T, SIZE, ARRAY>& aw) const {
+            const uint8_t* pb = reinterpret_cast<const uint8_t*>(aw.data());
+            const uint8_t* pe = pb + (SIZE * sizeof(T));
 
-        return etl::private_hash::generic_hash<size_t>(pb, pe);
-    }
-};
+            return etl::private_hash::generic_hash<size_t>(pb, pe);
+        }
+    };
 #endif
 } // namespace etl
 
@@ -361,8 +345,7 @@ struct hash<etl::array_wrapper<T, SIZE, ARRAY>> {
 /// Swap.
 //*************************************************************************
 template<typename T, size_t SIZE, T (&ARRAYL)[SIZE], T (&ARRAYR)[SIZE]>
-void swap(etl::array_wrapper<T, SIZE, ARRAYL>& lhs,
-          etl::array_wrapper<T, SIZE, ARRAYR>& rhs) {
+void swap(etl::array_wrapper<T, SIZE, ARRAYL>& lhs, etl::array_wrapper<T, SIZE, ARRAYR>& rhs) {
     lhs.swap(rhs);
 }
 

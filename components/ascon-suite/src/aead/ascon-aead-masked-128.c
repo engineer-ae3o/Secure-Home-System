@@ -24,8 +24,7 @@
 #include "core/ascon-util-snp.h"
 
 /* Initialization vector for ASCON-128 */
-static uint8_t const ASCON128_IV[8] =
-    {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
+static uint8_t const ASCON128_IV[8] = {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
 
 /* Absorb the key and nonce, and then convert the state from the
  * number of key shares into the number of data shares */
@@ -119,7 +118,14 @@ static void ascon128_masked_aead_finalize(ascon_masked_state_t* state,
     ascon_masked_key_store(tag + 8, &(state->M[4]));
 }
 
-void ascon128_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k) {
+void ascon128_masked_aead_encrypt(unsigned char*                c,
+                                  size_t*                       clen,
+                                  const unsigned char*          m,
+                                  size_t                        mlen,
+                                  const unsigned char*          ad,
+                                  size_t                        adlen,
+                                  const unsigned char*          npub,
+                                  const ascon_masked_key_128_t* k) {
     ascon_masked_state_t state;
 #if ASCON_MASKED_DATA_SHARES == 1
     ascon_state_t state_x1;
@@ -182,7 +188,14 @@ void ascon128_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned
     ascon_trng_free(&trng);
 }
 
-int ascon128_masked_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k) {
+int ascon128_masked_aead_decrypt(unsigned char*                m,
+                                 size_t*                       mlen,
+                                 const unsigned char*          c,
+                                 size_t                        clen,
+                                 const unsigned char*          ad,
+                                 size_t                        adlen,
+                                 const unsigned char*          npub,
+                                 const ascon_masked_key_128_t* k) {
     ascon_masked_state_t state;
 #if ASCON_MASKED_DATA_SHARES == 1
     ascon_state_t state_x1;

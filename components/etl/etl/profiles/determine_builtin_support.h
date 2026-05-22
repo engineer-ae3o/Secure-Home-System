@@ -63,7 +63,8 @@ SOFTWARE.
 #endif
 
 #if !defined(ETL_USING_BUILTIN_IS_TRIVIALLY_CONSTRUCTIBLE)
-#define ETL_USING_BUILTIN_IS_TRIVIALLY_CONSTRUCTIBLE (__has_builtin(__has_trivial_constructor) || __has_builtin(__is_trivially_constructible))
+#define ETL_USING_BUILTIN_IS_TRIVIALLY_CONSTRUCTIBLE                                                                                       \
+    (__has_builtin(__has_trivial_constructor) || __has_builtin(__is_trivially_constructible))
 #endif
 
 #if !defined(ETL_USING_BUILTIN_IS_TRIVIALLY_DESTRUCTIBLE)
@@ -97,15 +98,15 @@ SOFTWARE.
 #endif
 
 namespace etl {
-namespace traits {
-// Documentation: https://www.etlcpp.com/etl_traits.html
+    namespace traits {
+        // Documentation: https://www.etlcpp.com/etl_traits.html
 
-static ETL_CONSTANT bool using_builtin_is_assignable              = (ETL_USING_BUILTIN_IS_ASSIGNABLE == 1);
-static ETL_CONSTANT bool using_builtin_is_constructible           = (ETL_USING_BUILTIN_IS_CONSTRUCTIBLE == 1);
-static ETL_CONSTANT bool using_builtin_is_trivially_constructible = (ETL_USING_BUILTIN_IS_TRIVIALLY_CONSTRUCTIBLE == 1);
-static ETL_CONSTANT bool using_builtin_is_trivially_destructible  = (ETL_USING_BUILTIN_IS_TRIVIALLY_DESTRUCTIBLE == 1);
-static ETL_CONSTANT bool using_builtin_is_trivially_copyable      = (ETL_USING_BUILTIN_IS_TRIVIALLY_COPYABLE == 1);
-} // namespace traits
+        static ETL_CONSTANT bool using_builtin_is_assignable              = (ETL_USING_BUILTIN_IS_ASSIGNABLE == 1);
+        static ETL_CONSTANT bool using_builtin_is_constructible           = (ETL_USING_BUILTIN_IS_CONSTRUCTIBLE == 1);
+        static ETL_CONSTANT bool using_builtin_is_trivially_constructible = (ETL_USING_BUILTIN_IS_TRIVIALLY_CONSTRUCTIBLE == 1);
+        static ETL_CONSTANT bool using_builtin_is_trivially_destructible  = (ETL_USING_BUILTIN_IS_TRIVIALLY_DESTRUCTIBLE == 1);
+        static ETL_CONSTANT bool using_builtin_is_trivially_copyable      = (ETL_USING_BUILTIN_IS_TRIVIALLY_COPYABLE == 1);
+    } // namespace traits
 } // namespace etl
 
 #endif

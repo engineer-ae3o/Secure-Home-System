@@ -188,7 +188,7 @@ extern "C" {
 #define PHY_READ_TO 0x0000FFFFU
 #define PHY_WRITE_TO 0x0000FFFFU
 
-/* Section 3: Common PHY Registers */
+    /* Section 3: Common PHY Registers */
 
 #define PHY_BCR ((uint16_t)0x0000) /*!< Transceiver Basic Control Register   */
 #define PHY_BSR ((uint16_t)0x0001) /*!< Transceiver Basic Status Register    */
@@ -208,7 +208,7 @@ extern "C" {
 #define PHY_LINKED_STATUS ((uint16_t)0x0004)     /*!< Valid link established               */
 #define PHY_JABBER_DETECTION ((uint16_t)0x0002)  /*!< Jabber condition detected            */
 
-/* Section 4: Extended PHY Registers */
+    /* Section 4: Extended PHY Registers */
 
 #define PHY_SR ((uint16_t)0x0010)   /*!< PHY status register Offset                      */
 #define PHY_MICR ((uint16_t)0x0011) /*!< MII Interrupt Control Register                  */
@@ -224,17 +224,17 @@ extern "C" {
 #define PHY_MISR_LINK_INT_EN ((uint16_t)0x0020) /*!< Enable Interrupt on change of link status       */
 #define PHY_LINK_INTERRUPT ((uint16_t)0x2000)   /*!< PHY link status interrupt mask                  */
 
-/* ################## SPI peripheral configuration ########################## */
+    /* ################## SPI peripheral configuration ########################## */
 
-/* CRC FEATURE: Use to activate CRC feature inside HAL SPI Driver
+    /* CRC FEATURE: Use to activate CRC feature inside HAL SPI Driver
 * Activated: CRC code is present inside driver
 * Deactivated: CRC code cleaned from driver
 */
 
 #define USE_SPI_CRC 1U
 
-/* Includes ------------------------------------------------------------------*/
-/**
+    /* Includes ------------------------------------------------------------------*/
+    /**
   * @brief Include module's header file
   */
 
@@ -381,8 +381,8 @@ extern "C" {
   * @retval None
   */
 #define assert_param(expr) ((expr) ? (void)0U : assert_failed((uint8_t*)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-void assert_failed(uint8_t* file, uint32_t line);
+    /* Exported functions ------------------------------------------------------- */
+    void assert_failed(uint8_t* file, uint32_t line);
 #else
 #define assert_param(expr) ((void)0U)
 #endif /* USE_FULL_ASSERT */

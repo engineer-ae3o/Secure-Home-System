@@ -52,26 +52,14 @@ void ascon_masked_key_128_free(ascon_masked_key_128_t* masked) {
 
 void ascon_masked_key_128_randomize_with_trng(ascon_masked_key_128_t* masked, ascon_trng_state_t* trng) {
 #if ASCON_MASKED_KEY_SHARES == 2
-    ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[0]),
-                                   (ascon_masked_word_t*)&(masked->k[0]),
-                                   trng);
-    ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[1]),
-                                   (ascon_masked_word_t*)&(masked->k[1]),
-                                   trng);
+    ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[0]), (ascon_masked_word_t*)&(masked->k[0]), trng);
+    ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[1]), (ascon_masked_word_t*)&(masked->k[1]), trng);
 #elif ASCON_MASKED_KEY_SHARES == 3
-    ascon_masked_word_x3_randomize((ascon_masked_word_t*)&(masked->k[0]),
-                                   (ascon_masked_word_t*)&(masked->k[0]),
-                                   trng);
-    ascon_masked_word_x3_randomize((ascon_masked_word_t*)&(masked->k[1]),
-                                   (ascon_masked_word_t*)&(masked->k[1]),
-                                   trng);
+    ascon_masked_word_x3_randomize((ascon_masked_word_t*)&(masked->k[0]), (ascon_masked_word_t*)&(masked->k[0]), trng);
+    ascon_masked_word_x3_randomize((ascon_masked_word_t*)&(masked->k[1]), (ascon_masked_word_t*)&(masked->k[1]), trng);
 #else
-    ascon_masked_word_x4_randomize((ascon_masked_word_t*)&(masked->k[0]),
-                                   (ascon_masked_word_t*)&(masked->k[0]),
-                                   trng);
-    ascon_masked_word_x4_randomize((ascon_masked_word_t*)&(masked->k[1]),
-                                   (ascon_masked_word_t*)&(masked->k[1]),
-                                   trng);
+    ascon_masked_word_x4_randomize((ascon_masked_word_t*)&(masked->k[0]), (ascon_masked_word_t*)&(masked->k[0]), trng);
+    ascon_masked_word_x4_randomize((ascon_masked_word_t*)&(masked->k[1]), (ascon_masked_word_t*)&(masked->k[1]), trng);
 #endif
 }
 
@@ -138,21 +126,15 @@ void ascon_masked_key_160_randomize_with_trng(ascon_masked_key_160_t* masked, as
     int index;
 #if ASCON_MASKED_KEY_SHARES == 2
     for (index = 0; index < 6; ++index) {
-        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]),
-                                       (ascon_masked_word_t*)&(masked->k[index]),
-                                       trng);
+        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]), (ascon_masked_word_t*)&(masked->k[index]), trng);
     }
 #elif ASCON_MASKED_KEY_SHARES == 3
     for (index = 0; index < 6; ++index) {
-        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]),
-                                       (ascon_masked_word_t*)&(masked->k[index]),
-                                       trng);
+        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]), (ascon_masked_word_t*)&(masked->k[index]), trng);
     }
 #else
     for (index = 0; index < 6; ++index) {
-        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]),
-                                       (ascon_masked_word_t*)&(masked->k[index]),
-                                       trng);
+        ascon_masked_word_x2_randomize((ascon_masked_word_t*)&(masked->k[index]), (ascon_masked_word_t*)&(masked->k[index]), trng);
     }
 #endif
 }

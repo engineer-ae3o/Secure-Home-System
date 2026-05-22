@@ -75,6 +75,7 @@ void* pvPortMalloc(size_t xWantedSize) {
 
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -87,6 +88,7 @@ void vPortFree(void* pv) {
         (void)xTaskResumeAll();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -97,4 +99,5 @@ void vPortFree(void* pv) {
 void vPortHeapResetState(void) {
     /* No state needs to be re-initialised in heap_3. */
 }
+
 /*-----------------------------------------------------------*/

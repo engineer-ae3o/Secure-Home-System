@@ -54,11 +54,11 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
-typedef uint32_t TickType_t;
+    typedef uint32_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffffffffUL
 
 /* 32-bit tick type on a 32-bit architecture, so reads of the tick count do
@@ -77,27 +77,27 @@ typedef uint32_t TickType_t;
 /* Task utilities. */
 
 /* Called at the end of an ISR that can cause a context switch. */
-#define portEND_SWITCHING_ISR(xSwitchRequired) \
-    {                                          \
-        extern uint32_t ulPortYieldRequired;   \
-                                               \
-        if (xSwitchRequired != pdFALSE) {      \
-            ulPortYieldRequired = pdTRUE;      \
-        }                                      \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    {                                                                                                                                      \
+        extern uint32_t ulPortYieldRequired;                                                                                               \
+                                                                                                                                           \
+        if (xSwitchRequired != pdFALSE) {                                                                                                  \
+            ulPortYieldRequired = pdTRUE;                                                                                                  \
+        }                                                                                                                                  \
     }
 
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
 #define portYIELD() __asm volatile("SWI 0" ::: "memory");
 
-/*-----------------------------------------------------------
+    /*-----------------------------------------------------------
 * Critical section control
 *----------------------------------------------------------*/
 
-extern void     vPortEnterCritical(void);
-extern void     vPortExitCritical(void);
-extern uint32_t ulPortSetInterruptMask(void);
-extern void     vPortClearInterruptMask(uint32_t ulNewMaskValue);
-extern void     vPortInstallFreeRTOSVectorTable(void);
+    extern void     vPortEnterCritical(void);
+    extern void     vPortExitCritical(void);
+    extern uint32_t ulPortSetInterruptMask(void);
+    extern void     vPortClearInterruptMask(uint32_t ulNewMaskValue);
+    extern void     vPortInstallFreeRTOSVectorTable(void);
 
 /* These macros do not globally disable/enable interrupts.  They do mask off
  * interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
@@ -116,9 +116,9 @@ extern void     vPortInstallFreeRTOSVectorTable(void);
 #define portTASK_FUNCTION_PROTO(vFunction, pvParameters) void vFunction(void* pvParameters)
 #define portTASK_FUNCTION(vFunction, pvParameters) void vFunction(void* pvParameters)
 
-/* Prototype of the FreeRTOS tick handler.  This must be installed as the
+    /* Prototype of the FreeRTOS tick handler.  This must be installed as the
  * handler for whichever peripheral is used to generate the RTOS tick. */
-void FreeRTOS_Tick_Handler(void);
+    void FreeRTOS_Tick_Handler(void);
 
 /* If configUSE_TASK_FPU_SUPPORT is set to 1 (or left undefined) then tasks are
  * created without an FPU context and must call vPortTaskUsesFPU() to give
@@ -126,7 +126,7 @@ void FreeRTOS_Tick_Handler(void);
  * configUSE_TASK_FPU_SUPPORT is set to 2 then all tasks will have an FPU context
  * by default. */
 #if (configUSE_TASK_FPU_SUPPORT != 2)
-void vPortTaskUsesFPU(void);
+    void vPortTaskUsesFPU(void);
 #else
 
 /* Each task has an FPU context already, so define this function away to
@@ -149,14 +149,14 @@ void vPortTaskUsesFPU(void);
 #define portRECORD_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) |= (1UL << (uxPriority))
 #define portRESET_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) &= ~(1UL << (uxPriority))
 
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #define portGET_HIGHEST_PRIORITY(uxTopPriority, uxReadyPriorities) uxTopPriority = (31UL - (uint32_t)__builtin_clz(uxReadyPriorities))
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
 #if (configASSERT_DEFINED == 1)
-void vPortValidateInterruptPriority(void);
+    void vPortValidateInterruptPriority(void);
 #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() vPortValidateInterruptPriority()
 #endif /* configASSERT */
 
@@ -191,13 +191,18 @@ void vPortValidateInterruptPriority(void);
 #define portICCBPR_BINARY_POINT_OFFSET (0x08)
 #define portICCRPR_RUNNING_PRIORITY_OFFSET (0x14)
 
-#define portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS (configINTERRUPT_CONTROLLER_BASE_ADDRESS + configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET)
-#define portICCPMR_PRIORITY_MASK_REGISTER (*((volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)))
-#define portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET)
+#define portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS                                                                                     \
+    (configINTERRUPT_CONTROLLER_BASE_ADDRESS + configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET)
+#define portICCPMR_PRIORITY_MASK_REGISTER                                                                                                  \
+    (*((volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)))
+#define portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS                                                                                  \
+    (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET)
 #define portICCEOIR_END_OF_INTERRUPT_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCEOIR_END_OF_INTERRUPT_OFFSET)
 #define portICCPMR_PRIORITY_MASK_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)
-#define portICCBPR_BINARY_POINT_REGISTER (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCBPR_BINARY_POINT_OFFSET)))
-#define portICCRPR_RUNNING_PRIORITY_REGISTER (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCRPR_RUNNING_PRIORITY_OFFSET)))
+#define portICCBPR_BINARY_POINT_REGISTER                                                                                                   \
+    (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCBPR_BINARY_POINT_OFFSET)))
+#define portICCRPR_RUNNING_PRIORITY_REGISTER                                                                                               \
+    (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCRPR_RUNNING_PRIORITY_OFFSET)))
 
 #define portMEMORY_BARRIER() __asm volatile("" ::: "memory")
 

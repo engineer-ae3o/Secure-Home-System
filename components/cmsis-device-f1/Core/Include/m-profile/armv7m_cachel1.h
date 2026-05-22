@@ -150,8 +150,7 @@ __STATIC_FORCEINLINE void SCB_EnableDCache(void) {
     do {
         ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
         do {
-            SCB->DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) |
-                          ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk));
+            SCB->DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) | ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk));
 #if defined(__CC_ARM)
             __schedule_barrier();
 #endif
@@ -219,8 +218,8 @@ __STATIC_FORCEINLINE void SCB_DisableDCache(void) {
     do {
         locals.ways = (uint32_t)(CCSIDR_WAYS(locals.ccsidr));
         do {
-            SCB->DCCISW = (((locals.sets << SCB_DCCISW_SET_Pos) & SCB_DCCISW_SET_Msk) |
-                           ((locals.ways << SCB_DCCISW_WAY_Pos) & SCB_DCCISW_WAY_Msk));
+            SCB->DCCISW =
+                (((locals.sets << SCB_DCCISW_SET_Pos) & SCB_DCCISW_SET_Msk) | ((locals.ways << SCB_DCCISW_WAY_Pos) & SCB_DCCISW_WAY_Msk));
 #if defined(__CC_ARM)
             __schedule_barrier();
 #endif
@@ -252,8 +251,7 @@ __STATIC_FORCEINLINE void SCB_InvalidateDCache(void) {
     do {
         ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
         do {
-            SCB->DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) |
-                          ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk));
+            SCB->DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) | ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk));
 #if defined(__CC_ARM)
             __schedule_barrier();
 #endif
@@ -285,8 +283,7 @@ __STATIC_FORCEINLINE void SCB_CleanDCache(void) {
     do {
         ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
         do {
-            SCB->DCCSW = (((sets << SCB_DCCSW_SET_Pos) & SCB_DCCSW_SET_Msk) |
-                          ((ways << SCB_DCCSW_WAY_Pos) & SCB_DCCSW_WAY_Msk));
+            SCB->DCCSW = (((sets << SCB_DCCSW_SET_Pos) & SCB_DCCSW_SET_Msk) | ((ways << SCB_DCCSW_WAY_Pos) & SCB_DCCSW_WAY_Msk));
 #if defined(__CC_ARM)
             __schedule_barrier();
 #endif
@@ -318,8 +315,7 @@ __STATIC_FORCEINLINE void SCB_CleanInvalidateDCache(void) {
     do {
         ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
         do {
-            SCB->DCCISW = (((sets << SCB_DCCISW_SET_Pos) & SCB_DCCISW_SET_Msk) |
-                           ((ways << SCB_DCCISW_WAY_Pos) & SCB_DCCISW_WAY_Msk));
+            SCB->DCCISW = (((sets << SCB_DCCISW_SET_Pos) & SCB_DCCISW_SET_Msk) | ((ways << SCB_DCCISW_WAY_Pos) & SCB_DCCISW_WAY_Msk));
 #if defined(__CC_ARM)
             __schedule_barrier();
 #endif

@@ -25,8 +25,7 @@
 
 /* Logical register which may refer to an actual register, a slot on
  * the stack, or a slot in the permutation state buffer. */
-typedef struct
-{
+typedef struct {
     /* Friendly name for the logical register, not the real register. */
     const char* name;
 

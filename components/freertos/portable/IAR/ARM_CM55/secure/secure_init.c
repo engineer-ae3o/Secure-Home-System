@@ -58,6 +58,7 @@
 #define secureinitNSACR_CP10_MASK (1UL << secureinitNSACR_CP10_POS)
 #define secureinitNSACR_CP11_POS (11UL)
 #define secureinitNSACR_CP11_MASK (1UL << secureinitNSACR_CP11_POS)
+
 /*-----------------------------------------------------------*/
 
 secureportNON_SECURE_CALLABLE void SecureInit_DePrioritizeNSExceptions(void) {
@@ -74,6 +75,7 @@ secureportNON_SECURE_CALLABLE void SecureInit_DePrioritizeNSExceptions(void) {
                                  ((0x1UL << secureinitSCB_AIRCR_PRIS_POS) & secureinitSCB_AIRCR_PRIS_MASK);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 secureportNON_SECURE_CALLABLE void SecureInit_EnableNSFPUAccess(void) {
@@ -99,4 +101,5 @@ secureportNON_SECURE_CALLABLE void SecureInit_EnableNSFPUAccess(void) {
         *(secureinitFPCCR) |= (secureinitFPCCR_TS_MASK);
     }
 }
+
 /*-----------------------------------------------------------*/

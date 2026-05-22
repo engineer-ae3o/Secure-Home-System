@@ -46,25 +46,24 @@ extern "C" {
  */
 #define ASCON_RANDOM_SAVED_SEED_SIZE 32
 
-/**
+    /**
  * \brief State information for a pseudorandom number generator.
  *
  * The application should treat this structure as opaque.
  */
-typedef struct
-{
-    /** XOF state containing the accumulated SpongePRNG state */
-    ascon_xof_state_t xof;
+    typedef struct {
+        /** XOF state containing the accumulated SpongePRNG state */
+        ascon_xof_state_t xof;
 
-    /** Number of bytes that have been generated since the last re-seed */
-    uint32_t counter;
+        /** Number of bytes that have been generated since the last re-seed */
+        uint32_t counter;
 
-    /** Padding to a 64-bit word boundary.  Reseved for future use */
-    uint32_t reserved;
+        /** Padding to a 64-bit word boundary.  Reseved for future use */
+        uint32_t reserved;
 
-} ascon_random_state_t;
+    } ascon_random_state_t;
 
-/**
+    /**
  * \brief Gets a block of random data from the system.
  *
  * \param out Buffer to fill with the random data.
@@ -87,9 +86,9 @@ typedef struct
  *
  * \sa ascon_random_init()
  */
-int ascon_random(unsigned char* out, size_t outlen);
+    int ascon_random(unsigned char* out, size_t outlen);
 
-/**
+    /**
  * \brief Initializes a pseudorandom number generator from the
  * system random number source.
  *
@@ -109,9 +108,9 @@ int ascon_random(unsigned char* out, size_t outlen);
  *
  * \sa ascon_random_fetch(), ascon_random_feed()
  */
-int ascon_random_init(ascon_random_state_t* state);
+    int ascon_random_init(ascon_random_state_t* state);
 
-/**
+    /**
  * \brief Frees a pseudorandom number generator and destroys any
  * sensitive values.
  *
@@ -119,9 +118,9 @@ int ascon_random_init(ascon_random_state_t* state);
  *
  * \sa ascon_random_init()
  */
-void ascon_random_free(ascon_random_state_t* state);
+    void ascon_random_free(ascon_random_state_t* state);
 
-/**
+    /**
  * \brief Fetches data from a pseudorandom number generator.
  *
  * \param state The pseudorandom number generator state to use.
@@ -130,9 +129,9 @@ void ascon_random_free(ascon_random_state_t* state);
  *
  * \sa ascon_random_reseed()
  */
-void ascon_random_fetch(ascon_random_state_t* state, unsigned char* out, size_t outlen);
+    void ascon_random_fetch(ascon_random_state_t* state, unsigned char* out, size_t outlen);
 
-/**
+    /**
  * \brief Explicitly re-seeds a pseudorandom number generator from the
  * system random number source.
  *
@@ -147,9 +146,9 @@ void ascon_random_fetch(ascon_random_state_t* state, unsigned char* out, size_t 
  *
  * \sa ascon_random_fetch()
  */
-int ascon_random_reseed(ascon_random_state_t* state);
+    int ascon_random_reseed(ascon_random_state_t* state);
 
-/**
+    /**
  * \brief Feeds entropy into a pseudorandom number generator.
  *
  * \param state The pseudorandom number generator to feed the entropy into.
@@ -165,9 +164,9 @@ int ascon_random_reseed(ascon_random_state_t* state);
  * important.  And then only call ascon_random_fetch() when it judges
  * that the entropy pool is sufficiently populated.
  */
-void ascon_random_feed(ascon_random_state_t* state, const unsigned char* entropy, size_t size);
+    void ascon_random_feed(ascon_random_state_t* state, const unsigned char* entropy, size_t size);
 
-/**
+    /**
  * \brief Saves a seed value in non-volatile storage.
  *
  * \param state The pseudorandom number generator to save the seed for.
@@ -187,9 +186,9 @@ void ascon_random_feed(ascon_random_state_t* state, const unsigned char* entropy
  * The seed value in non-volatile storage is ASCON_RANDOM_SAVED_SEED_SIZE
  * bytes in size.
  */
-int ascon_random_save_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
+    int ascon_random_save_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
 
-/**
+    /**
  * \brief Loads a saved seed value from non-volatile storage.
  *
  * \param state The pseudorandom number generator to load the seed into.
@@ -207,7 +206,7 @@ int ascon_random_save_seed(ascon_random_state_t* state, const ascon_storage_t* s
  * PRNG won't restart in the same state if the device loses power before
  * the next explicit save.
  */
-int ascon_random_load_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
+    int ascon_random_load_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
 
 #ifdef __cplusplus
 }

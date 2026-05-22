@@ -37,8 +37,7 @@ int target_word_size = 64;
 #define INSN_STORE 0x0040
 
 /* Information about an instruction in the pipeline */
-typedef struct
-{
+typedef struct {
     const char* opcode;     /* Base opcode such as "mov", "xor", "not", etc */
     int         flags;      /* Flags that modify the instruction */
     const char* dest;       /* Destination register */
@@ -123,9 +122,10 @@ void function_footer(const char* name) {
 }
 
 static const char* map_register_to_smaller(const char* reg, int size) {
-    static const char* const map[] = {
-        REG_RAX, REG_EAX, REG_AX, REG_AL, REG_RBX, REG_EBX, REG_BX, REG_BL, REG_RCX, REG_ECX, REG_CX, REG_CL, REG_RDX, REG_EDX, REG_DX, REG_DL, REG_RSI, REG_ESI, 0, 0, REG_RDI, REG_EDI, 0, 0, REG_RBP, REG_EBP, 0, 0, 0};
-    int index = 0;
+    static const char* const map[] = {REG_RAX, REG_EAX, REG_AX,  REG_AL,  REG_RBX, REG_EBX, REG_BX,  REG_BL,  REG_RCX, REG_ECX,
+                                      REG_CX,  REG_CL,  REG_RDX, REG_EDX, REG_DX,  REG_DL,  REG_RSI, REG_ESI, 0,       0,
+                                      REG_RDI, REG_EDI, 0,       0,       REG_RBP, REG_EBP, 0,       0,       0};
+    int                      index = 0;
     while (map[index] != 0) {
         if (!strcmp(reg, map[index])) {
             const char* mapping;
@@ -151,50 +151,44 @@ static const char* map_register_to_smaller(const char* reg, int size) {
 void binop(const char* name, reg_t* reg1, reg_t* reg2) {
     live(reg1);
     live(reg2);
-    insn_t insn = {
-        .opcode = name,
+    insn_t insn = {.opcode = name,
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG
-                                          : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(reg1),
-        .src1 = get_real(reg1),
-        .src2 = get_real(reg2)};
+                   .dest = get_real(reg1),
+                   .src1 = get_real(reg1),
+                   .src2 = get_real(reg2)};
     add_insn(&insn);
     dirty(reg1);
 }
 
 void unop(const char* name, reg_t* reg) {
     live(reg);
-    insn_t insn = {
-        .opcode = name,
+    insn_t insn = {.opcode = name,
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG
-                                          : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(reg),
-        .src1 = get_real(reg)};
+                   .dest = get_real(reg),
+                   .src1 = get_real(reg)};
     add_insn(&insn);
     dirty(reg);
 }
 
 void ror(reg_t* dest, int shift) {
     live(dest);
-    insn_t insn = {
-        .opcode = "ror",
+    insn_t insn = {.opcode = "ror",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                                          : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .imm  = shift};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .imm  = shift};
     add_insn(&insn);
     dirty(dest);
 }
@@ -202,33 +196,30 @@ void ror(reg_t* dest, int shift) {
 void ror_reg(reg_t* dest, reg_t* shift) {
     live(dest);
     live(shift);
-    insn_t insn = {
-        .opcode = "ror",
+    insn_t insn = {.opcode = "ror",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .src2 = map_register_to_smaller(get_real(shift), 1)};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .src2 = map_register_to_smaller(get_real(shift), 1)};
     add_insn(&insn);
     dirty(dest);
 }
 
 void shl(reg_t* dest, int shift) {
     live(dest);
-    insn_t insn = {
-        .opcode = "shl",
+    insn_t insn = {.opcode = "shl",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                                          : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .imm  = shift};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .imm  = shift};
     add_insn(&insn);
     dirty(dest);
 }
@@ -236,33 +227,30 @@ void shl(reg_t* dest, int shift) {
 void shl_reg(reg_t* dest, reg_t* shift) {
     live(dest);
     live(shift);
-    insn_t insn = {
-        .opcode = "shl",
+    insn_t insn = {.opcode = "shl",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .src2 = map_register_to_smaller(get_real(shift), 1)};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .src2 = map_register_to_smaller(get_real(shift), 1)};
     add_insn(&insn);
     dirty(dest);
 }
 
 void shr(reg_t* dest, int shift) {
     live(dest);
-    insn_t insn = {
-        .opcode = "shr",
+    insn_t insn = {.opcode = "shr",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                                          : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .imm  = shift};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .imm  = shift};
     add_insn(&insn);
     dirty(dest);
 }
@@ -270,33 +258,30 @@ void shr(reg_t* dest, int shift) {
 void shr_reg(reg_t* dest, reg_t* shift) {
     live(dest);
     live(shift);
-    insn_t insn = {
-        .opcode = "shr",
+    insn_t insn = {.opcode = "shr",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .src2 = map_register_to_smaller(get_real(shift), 1)};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .src2 = map_register_to_smaller(get_real(shift), 1)};
     add_insn(&insn);
     dirty(dest);
 }
 
 void load_machine(const char* reg, const char* ptr, int offset) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_LOAD | INSN_HAS_IMM,
+                   .flags = INSN_LOAD | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = reg,
-        .src1 = ptr,
-        .imm  = offset};
+                   .dest = reg,
+                   .src1 = ptr,
+                   .imm  = offset};
     add_insn(&insn);
 }
 
@@ -306,35 +291,31 @@ void load(reg_t* reg, const char* ptr, int offset) {
 }
 
 void load_and_xor(reg_t* reg, const char* ptr, int offset) {
-    insn_t insn = {
-        .opcode = "xor",
+    insn_t insn = {.opcode = "xor",
 #if INTEL_SYNTAX
-        .flags = INSN_LOAD | INSN_HAS_IMM,
+                   .flags = INSN_LOAD | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = ptr,
-        .imm  = offset};
+                   .dest = get_real(reg),
+                   .src1 = ptr,
+                   .imm  = offset};
     add_insn(&insn);
     dirty(reg);
 }
 
 void load_smaller(reg_t* reg, const char* ptr, int offset, int size) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_LOAD | INSN_HAS_IMM,
+                   .flags = INSN_LOAD | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = ptr,
-        .imm  = offset};
+                   .dest = get_real(reg),
+                   .src1 = ptr,
+                   .imm  = offset};
 #if !INTEL_SYNTAX
     insn.flags &= ~INSN_SUFFIX_QUAD;
     insn.flags |= INSN_SUFFIX_LONG;
@@ -352,18 +333,16 @@ void load_smaller(reg_t* reg, const char* ptr, int offset, int size) {
 }
 
 void load_smaller_plus_reg(reg_t* reg, const char* ptr, const char* ptrplus, int size) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_LOAD | INSN_HAS_IMM,
+                   .flags = INSN_LOAD | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_LOAD | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_LOAD | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = ptr,
-        .src2 = ptrplus};
+                   .dest = get_real(reg),
+                   .src1 = ptr,
+                   .src2 = ptrplus};
 #if !INTEL_SYNTAX
     insn.flags &= ~INSN_SUFFIX_QUAD;
     insn.flags |= INSN_SUFFIX_LONG;
@@ -381,18 +360,16 @@ void load_smaller_plus_reg(reg_t* reg, const char* ptr, const char* ptrplus, int
 }
 
 void store_machine(const char* reg, const char* ptr, int offset) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_STORE | INSN_HAS_IMM,
+                   .flags = INSN_STORE | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_STORE | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_STORE | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = ptr,
-        .src1 = reg,
-        .imm  = offset};
+                   .dest = ptr,
+                   .src1 = reg,
+                   .imm  = offset};
     add_insn(&insn);
 }
 
@@ -402,69 +379,60 @@ void store(reg_t* reg, const char* ptr, int offset) {
 }
 
 void store_smaller(reg_t* reg, const char* ptr, int offset, int size) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_STORE | INSN_HAS_IMM,
+                   .flags = INSN_STORE | INSN_HAS_IMM,
 #else
-        .flags = (size == 1)
-                     ? (INSN_STORE | INSN_SUFFIX_BYTE | INSN_HAS_IMM)
-                     : ((size == 2)
-                            ? (INSN_STORE | INSN_SUFFIX_WORD | INSN_HAS_IMM)
-                            : (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)),
+                   .flags = (size == 1) ? (INSN_STORE | INSN_SUFFIX_BYTE | INSN_HAS_IMM)
+                                        : ((size == 2) ? (INSN_STORE | INSN_SUFFIX_WORD | INSN_HAS_IMM)
+                                                       : (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)),
 #endif
-        .dest = ptr,
-        .src1 = map_register_to_smaller(get_real(reg), size),
-        .imm  = offset};
+                   .dest = ptr,
+                   .src1 = map_register_to_smaller(get_real(reg), size),
+                   .imm  = offset};
     add_insn(&insn);
 }
 
 void xor_and_store(reg_t* reg, const char* ptr, int offset) {
-    insn_t insn = {
-        .opcode = "xor",
+    insn_t insn = {.opcode = "xor",
 #if INTEL_SYNTAX
-        .flags = INSN_STORE | INSN_HAS_IMM,
+                   .flags = INSN_STORE | INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32)
-                     ? (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                     : (INSN_STORE | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_STORE | INSN_SUFFIX_LONG | INSN_HAS_IMM)
+                                                     : (INSN_STORE | INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = ptr,
-        .src1 = get_real(reg),
-        .imm  = offset};
+                   .dest = ptr,
+                   .src1 = get_real(reg),
+                   .imm  = offset};
     add_insn(&insn);
 }
 
 void xor_rc(reg_t* reg, int rc) {
     live(reg);
-    insn_t insn = {
-        .opcode = "xor",
+    insn_t insn = {.opcode = "xor",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                                          : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = get_real(reg),
-        .imm  = rc};
+                   .dest = get_real(reg),
+                   .src1 = get_real(reg),
+                   .imm  = rc};
     add_insn(&insn);
     dirty(reg);
 }
 
 void xor_direct(reg_t* reg1, const char* reg2) {
     live(reg1);
-    insn_t insn = {
-        .opcode = "xor",
+    insn_t insn = {.opcode = "xor",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG
-                                          : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(reg1),
-        .src1 = get_real(reg1),
-        .src2 = reg2};
+                   .dest = get_real(reg1),
+                   .src1 = get_real(reg1),
+                   .src2 = reg2};
     add_insn(&insn);
     dirty(reg1);
 }
@@ -476,17 +444,15 @@ void move(reg_t* dest, reg_t* src) {
         live_noload(dest);
     }
     live(src);
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG
-                                          : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(src),
-        .src2 = get_real(src)};
+                   .dest = get_real(dest),
+                   .src1 = get_real(src),
+                   .src2 = get_real(src)};
     add_insn(&insn);
     dirty(dest);
 }
@@ -497,16 +463,15 @@ void move_imm(reg_t* dest, long long value) {
     } else {
         live_noload(dest);
     }
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(dest),
-        .src1 = get_real(dest),
-        .imm  = value};
+                   .dest = get_real(dest),
+                   .src1 = get_real(dest),
+                   .imm  = value};
     add_insn(&insn);
     dirty(dest);
 }
@@ -517,16 +482,15 @@ void add_imm(reg_t* reg, int value) {
     } else {
         live_noload(reg);
     }
-    insn_t insn = {
-        .opcode = (value < 0 ? "sub" : "add"),
+    insn_t insn = {.opcode = (value < 0 ? "sub" : "add"),
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = get_real(reg),
-        .imm  = (value < 0 ? (-value) : value)};
+                   .dest = get_real(reg),
+                   .src1 = get_real(reg),
+                   .imm  = (value < 0 ? (-value) : value)};
     add_insn(&insn);
     dirty(reg);
 }
@@ -537,16 +501,15 @@ int compare_imm(const char* condition, int label, reg_t* reg, int value) {
     } else {
         live_noload(reg);
     }
-    insn_t insn = {
-        .opcode = "cmp",
+    insn_t insn = {.opcode = "cmp",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = get_real(reg),
-        .src1 = get_real(reg),
-        .imm  = value};
+                   .dest = get_real(reg),
+                   .src1 = get_real(reg),
+                   .imm  = value};
     add_insn(&insn);
     return branch(condition, label);
 }
@@ -570,65 +533,54 @@ int set_label(int label) {
 }
 
 void clear_reg(const char* reg) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = INSN_HAS_IMM,
+                   .flags = INSN_HAS_IMM,
 #else
-        .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM)
-                                          : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
+                   .flags = (target_word_size == 32) ? (INSN_SUFFIX_LONG | INSN_HAS_IMM) : (INSN_SUFFIX_QUAD | INSN_HAS_IMM),
 #endif
-        .dest = reg,
-        .src1 = reg,
-        .imm  = 0};
+                   .dest = reg,
+                   .src1 = reg,
+                   .imm  = 0};
     add_insn(&insn);
 }
 
 void push(const char* reg) {
-    insn_t insn = {
-        .opcode = "push",
+    insn_t insn = {.opcode = "push",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32 && !X86_64_PLATFORM)
-                     ? INSN_SUFFIX_LONG
-                     : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32 && !X86_64_PLATFORM) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = reg,
-        .src1 = reg,
-        .imm  = 0};
+                   .dest = reg,
+                   .src1 = reg,
+                   .imm  = 0};
     add_insn(&insn);
 }
 
 void pop(const char* reg) {
-    insn_t insn = {
-        .opcode = "pop",
+    insn_t insn = {.opcode = "pop",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32 && !X86_64_PLATFORM)
-                     ? INSN_SUFFIX_LONG
-                     : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32 && !X86_64_PLATFORM) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = reg,
-        .src1 = reg,
-        .imm  = 0};
+                   .dest = reg,
+                   .src1 = reg,
+                   .imm  = 0};
     add_insn(&insn);
 }
 
 void move_direct(const char* dest, const char* src) {
-    insn_t insn = {
-        .opcode = "mov",
+    insn_t insn = {.opcode = "mov",
 #if INTEL_SYNTAX
-        .flags = 0,
+                   .flags = 0,
 #else
-        .flags = (target_word_size == 32 && !X86_64_PLATFORM)
-                     ? INSN_SUFFIX_LONG
-                     : INSN_SUFFIX_QUAD,
+                   .flags = (target_word_size == 32 && !X86_64_PLATFORM) ? INSN_SUFFIX_LONG : INSN_SUFFIX_QUAD,
 #endif
-        .dest = dest,
-        .src1 = src,
-        .src2 = src};
+                   .dest = dest,
+                   .src1 = src,
+                   .src2 = src};
     add_insn(&insn);
 }
 
@@ -707,9 +659,7 @@ void flush_pipeline(void) {
                 memmove(&(insns[index]), &(insns[index + 1]), offset * sizeof(insn_t));
                 insns[index + offset] = insn;
             } else if (offset < 0 && (index + offset) >= 0) {
-                memmove(&(insns[index + offset + 1]),
-                        &(insns[index + offset]),
-                        offset * sizeof(insn_t));
+                memmove(&(insns[index + offset + 1]), &(insns[index + offset]), offset * sizeof(insn_t));
                 insns[index + offset] = insn;
             }
         }
@@ -718,7 +668,13 @@ void flush_pipeline(void) {
     /* Write out all of the instructions */
     for (index = 0; index < num_insns; ++index) {
         const insn_t* insn = &(insns[index]);
-        printf("\t%s%s\t", insn->opcode, ((insn->flags & INSN_SUFFIX_LONG) ? "l" : ((insn->flags & INSN_SUFFIX_QUAD) ? "q" : ((insn->flags & INSN_SUFFIX_WORD) ? "w" : ((insn->flags & INSN_SUFFIX_BYTE) ? "b" : "")))));
+        printf("\t%s%s\t",
+               insn->opcode,
+               ((insn->flags & INSN_SUFFIX_LONG)
+                    ? "l"
+                    : ((insn->flags & INSN_SUFFIX_QUAD)
+                           ? "q"
+                           : ((insn->flags & INSN_SUFFIX_WORD) ? "w" : ((insn->flags & INSN_SUFFIX_BYTE) ? "b" : "")))));
         if (insn->flags & INSN_LOAD) {
             flush_load(insn);
         } else if (insn->flags & INSN_STORE) {
@@ -754,18 +710,16 @@ static void util_function_setup_i386(util_frame_t* frame, int num_args, int word
  * %rbx, %rbp, %r12, %r13, %r14, %r15 must be callee-saved.
  */
 static void util_function_setup_x86_64(util_frame_t* frame, int num_args, int word_arg, int trng_bytes) {
-    static char* const arg_regs[] = {
-        REG_RDI, REG_RSI, REG_RDX, REG_RCX, REG_R8, REG_R9, NULL};
-    static char* const callee_regs[] = {
-        REG_RBX, REG_RBP, REG_R12, REG_R13, REG_R14, REG_R15, NULL};
-    int         used_count   = 0;
-    int         frame_size   = 0;
-    int         callee_index = 0;
-    int         save_index   = 0;
-    int         posn;
-    char*       name;
-    const char* state_reg = NULL;
-    char*       trng_reg  = NULL;
+    static char* const arg_regs[]    = {REG_RDI, REG_RSI, REG_RDX, REG_RCX, REG_R8, REG_R9, NULL};
+    static char* const callee_regs[] = {REG_RBX, REG_RBP, REG_R12, REG_R13, REG_R14, REG_R15, NULL};
+    int                used_count    = 0;
+    int                frame_size    = 0;
+    int                callee_index  = 0;
+    int                save_index    = 0;
+    int                posn;
+    char*              name;
+    const char*        state_reg = NULL;
+    char*              trng_reg  = NULL;
 
     /* Initialize the frame structure */
     memset(frame, 0, sizeof(util_frame_t));

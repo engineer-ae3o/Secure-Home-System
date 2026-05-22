@@ -346,7 +346,8 @@ HAL_StatusTypeDef HAL_RCC_OscConfig(const RCC_OscInitTypeDef* RCC_OscInitStruct)
         assert_param(IS_RCC_HSE(RCC_OscInitStruct->HSEState));
 
         /* When the HSE is used as system clock or clock source for PLL in these cases it is not allowed to be disabled */
-        if ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE) || ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) && (__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE))) {
+        if ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSE) ||
+            ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) && (__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE))) {
             if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSERDY) != RESET) && (RCC_OscInitStruct->HSEState == RCC_HSE_OFF)) {
                 return HAL_ERROR;
             }
@@ -385,7 +386,9 @@ HAL_StatusTypeDef HAL_RCC_OscConfig(const RCC_OscInitTypeDef* RCC_OscInitStruct)
         assert_param(IS_RCC_CALIBRATION_VALUE(RCC_OscInitStruct->HSICalibrationValue));
 
         /* Check if HSI is used as system clock or as PLL source when PLL is selected as system clock */
-        if ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSI) || ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) && (__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSI_DIV2))) {
+        if ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_HSI) ||
+            ((__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
+             (__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSI_DIV2))) {
             /* When HSI is used as system clock it will not disabled */
             if ((__HAL_RCC_GET_FLAG(RCC_FLAG_HSIRDY) != RESET) && (RCC_OscInitStruct->HSIState != RCC_HSI_ON)) {
                 return HAL_ERROR;
@@ -532,8 +535,7 @@ HAL_StatusTypeDef HAL_RCC_OscConfig(const RCC_OscInitTypeDef* RCC_OscInitStruct)
     if ((RCC_OscInitStruct->PLL2.PLL2State) != RCC_PLL2_NONE) {
         /* This bit can not be cleared if the PLL2 clock is used indirectly as system
       clock (i.e. it is used as PLL clock entry that is used as system clock). */
-        if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) &&
-            (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
+        if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) && (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
             ((READ_BIT(RCC->CFGR2, RCC_CFGR2_PREDIV1SRC)) == RCC_CFGR2_PREDIV1SRC_PLL2)) {
             return HAL_ERROR;
         } else {
@@ -544,8 +546,7 @@ HAL_StatusTypeDef HAL_RCC_OscConfig(const RCC_OscInitTypeDef* RCC_OscInitStruct)
 
                 /* Prediv2 can be written only when the PLLI2S is disabled. */
                 /* Return an error only if new value is different from the programmed value */
-                if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON) &&
-                    (__HAL_RCC_HSE_GET_PREDIV2() != RCC_OscInitStruct->PLL2.HSEPrediv2Value)) {
+                if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON) && (__HAL_RCC_HSE_GET_PREDIV2() != RCC_OscInitStruct->PLL2.HSEPrediv2Value)) {
                     return HAL_ERROR;
                 }
 
@@ -642,8 +643,7 @@ HAL_StatusTypeDef HAL_RCC_OscConfig(const RCC_OscInitTypeDef* RCC_OscInitStruct)
                 }
 
                 /* Configure the main PLL clock source and multiplication factors. */
-                __HAL_RCC_PLL_CONFIG(RCC_OscInitStruct->PLL.PLLSource,
-                                     RCC_OscInitStruct->PLL.PLLMUL);
+                __HAL_RCC_PLL_CONFIG(RCC_OscInitStruct->PLL.PLLSource, RCC_OscInitStruct->PLL.PLLMUL);
                 /* Enable the main PLL. */
                 __HAL_RCC_PLL_ENABLE();
 
@@ -1001,7 +1001,8 @@ uint32_t HAL_RCC_GetSysClockFreq(void) {
                     /* PLLCLK = PLL2CLK / PREDIV1 * PLLMUL with PLL2CLK = HSE/PREDIV2 * PLL2MUL */
                     prediv2 = ((RCC->CFGR2 & RCC_CFGR2_PREDIV2) >> RCC_CFGR2_PREDIV2_Pos) + 1;
                     pll2mul = ((RCC->CFGR2 & RCC_CFGR2_PLL2MUL) >> RCC_CFGR2_PLL2MUL_Pos) + 2;
-                    pllclk  = (uint32_t)(((uint64_t)HSE_VALUE * (uint64_t)pll2mul * (uint64_t)pllmul) / ((uint64_t)prediv2 * (uint64_t)prediv));
+                    pllclk =
+                        (uint32_t)(((uint64_t)HSE_VALUE * (uint64_t)pll2mul * (uint64_t)pllmul) / ((uint64_t)prediv2 * (uint64_t)prediv));
                 } else {
                     /* HSE used as PLL clock source : PLLCLK = HSE/PREDIV1 * PLLMUL */
                     pllclk = (uint32_t)((HSE_VALUE * pllmul) / prediv);

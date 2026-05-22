@@ -39,293 +39,287 @@ SOFTWARE.
 #include <stdint.h>
 
 namespace etl {
-//***************************************************************************
-/// Message broker
-//***************************************************************************
-class message_broker : public etl::imessage_router {
+    //***************************************************************************
+    /// Message broker
+    //***************************************************************************
+    class message_broker : public etl::imessage_router {
     private:
-    //*******************************************
-    class subscription_node {
-        friend class message_broker;
+        //*******************************************
+        class subscription_node {
+            friend class message_broker;
 
         protected:
-        //*******************************
-        subscription_node()
-            : p_next(ETL_NULLPTR) {
-        }
-
-        //*******************************
-        void set_next(subscription_node* sub) {
-            p_next = sub;
-        }
-
-        //*******************************
-        subscription_node* get_next() const {
-            return p_next;
-        }
-
-        //*******************************
-        void terminate() {
-            set_next(ETL_NULLPTR);
-        }
-
-        //*******************************
-        void append(subscription_node* sub) {
-            if (sub != ETL_NULLPTR) {
-                sub->set_next(get_next());
+            //*******************************
+            subscription_node() : p_next(ETL_NULLPTR) {
             }
-            set_next(sub);
-        }
 
-        subscription_node* p_next;
-    };
+            //*******************************
+            void set_next(subscription_node* sub) {
+                p_next = sub;
+            }
+
+            //*******************************
+            subscription_node* get_next() const {
+                return p_next;
+            }
+
+            //*******************************
+            void terminate() {
+                set_next(ETL_NULLPTR);
+            }
+
+            //*******************************
+            void append(subscription_node* sub) {
+                if (sub != ETL_NULLPTR) {
+                    sub->set_next(get_next());
+                }
+                set_next(sub);
+            }
+
+            subscription_node* p_next;
+        };
 
     public:
-    typedef etl::span<const etl::message_id_t> message_id_span_t;
+        typedef etl::span<const etl::message_id_t> message_id_span_t;
 
-    //*******************************************
-    class subscription : public subscription_node {
+        //*******************************************
+        class subscription : public subscription_node {
         public:
-        friend class message_broker;
+            friend class message_broker;
 
-        //*******************************
-        subscription(etl::imessage_router& router_)
-            : p_router(&router_) {
-        }
+            //*******************************
+            subscription(etl::imessage_router& router_) : p_router(&router_) {
+            }
 
         private:
-        //*******************************
-        virtual message_id_span_t message_id_list() const = 0;
+            //*******************************
+            virtual message_id_span_t message_id_list() const = 0;
 
-        //*******************************
-        etl::imessage_router* get_router() const {
-            return p_router;
+            //*******************************
+            etl::imessage_router* get_router() const {
+                return p_router;
+            }
+
+            //*******************************
+            subscription* next_subscription() const {
+                return static_cast<subscription*>(get_next());
+            }
+
+            etl::imessage_router* const p_router;
+        };
+
+        using etl::imessage_router::receive;
+
+        //*******************************************
+        /// Constructor.
+        //*******************************************
+        message_broker() : imessage_router(etl::imessage_router::MESSAGE_BROKER), head() {
         }
 
-        //*******************************
-        subscription* next_subscription() const {
-            return static_cast<subscription*>(get_next());
+        //*******************************************
+        /// Constructor.
+        //*******************************************
+        message_broker(etl::imessage_router& successor_) : imessage_router(etl::imessage_router::MESSAGE_BROKER, successor_), head() {
         }
 
-        etl::imessage_router* const p_router;
-    };
+        //*******************************************
+        /// Constructor.
+        //*******************************************
+        message_broker(etl::message_router_id_t id_) : imessage_router(id_), head() {
+            ETL_ASSERT((id_ <= etl::imessage_router::MAX_MESSAGE_ROUTER) || (id_ == etl::imessage_router::MESSAGE_BROKER),
+                       ETL_ERROR(etl::message_router_illegal_id));
+        }
 
-    using etl::imessage_router::receive;
+        //*******************************************
+        /// Constructor.
+        //*******************************************
+        message_broker(etl::message_router_id_t id_, etl::imessage_router& successor_) : imessage_router(id_, successor_), head() {
+            ETL_ASSERT((id_ <= etl::imessage_router::MAX_MESSAGE_ROUTER) || (id_ == etl::imessage_router::MESSAGE_BROKER),
+                       ETL_ERROR(etl::message_router_illegal_id));
+        }
 
-    //*******************************************
-    /// Constructor.
-    //*******************************************
-    message_broker()
-        : imessage_router(etl::imessage_router::MESSAGE_BROKER), head() {
-    }
+        //*******************************************
+        /// Subscribe to the broker.
+        //*******************************************
+        void subscribe(etl::message_broker::subscription& new_sub) {
+            initialise_insertion_point(new_sub.get_router(), &new_sub);
+        }
 
-    //*******************************************
-    /// Constructor.
-    //*******************************************
-    message_broker(etl::imessage_router& successor_)
-        : imessage_router(etl::imessage_router::MESSAGE_BROKER, successor_), head() {
-    }
+        //*******************************************
+        void unsubscribe(etl::imessage_router& router) {
+            initialise_insertion_point(&router, ETL_NULLPTR);
+        }
 
-    //*******************************************
-    /// Constructor.
-    //*******************************************
-    message_broker(etl::message_router_id_t id_)
-        : imessage_router(id_), head() {
-        ETL_ASSERT((id_ <= etl::imessage_router::MAX_MESSAGE_ROUTER) || (id_ == etl::imessage_router::MESSAGE_BROKER), ETL_ERROR(etl::message_router_illegal_id));
-    }
+        //*******************************************
+        virtual void receive(const etl::imessage& msg) ETL_OVERRIDE {
+            receive(etl::imessage_router::ALL_MESSAGE_ROUTERS, msg);
+        }
 
-    //*******************************************
-    /// Constructor.
-    //*******************************************
-    message_broker(etl::message_router_id_t id_, etl::imessage_router& successor_)
-        : imessage_router(id_, successor_), head() {
-        ETL_ASSERT((id_ <= etl::imessage_router::MAX_MESSAGE_ROUTER) || (id_ == etl::imessage_router::MESSAGE_BROKER), ETL_ERROR(etl::message_router_illegal_id));
-    }
+        virtual void receive(etl::shared_message shared_msg) ETL_OVERRIDE {
+            receive(etl::imessage_router::ALL_MESSAGE_ROUTERS, shared_msg);
+        }
 
-    //*******************************************
-    /// Subscribe to the broker.
-    //*******************************************
-    void subscribe(etl::message_broker::subscription& new_sub) {
-        initialise_insertion_point(new_sub.get_router(), &new_sub);
-    }
+        //*******************************************
+        virtual void receive(etl::message_router_id_t destination_router_id, const etl::imessage& msg) ETL_OVERRIDE {
+            const etl::message_id_t id = msg.get_message_id();
 
-    //*******************************************
-    void unsubscribe(etl::imessage_router& router) {
-        initialise_insertion_point(&router, ETL_NULLPTR);
-    }
+            if (!empty()) {
+                // Scan the subscription lists.
+                subscription* sub = static_cast<subscription*>(head.get_next());
 
-    //*******************************************
-    virtual void receive(const etl::imessage& msg) ETL_OVERRIDE {
-        receive(etl::imessage_router::ALL_MESSAGE_ROUTERS, msg);
-    }
+                while (sub != ETL_NULLPTR) {
+                    message_id_span_t message_ids = sub->message_id_list();
 
-    virtual void receive(etl::shared_message shared_msg) ETL_OVERRIDE {
-        receive(etl::imessage_router::ALL_MESSAGE_ROUTERS, shared_msg);
-    }
+                    message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
 
-    //*******************************************
-    virtual void receive(etl::message_router_id_t destination_router_id,
-                         const etl::imessage&     msg) ETL_OVERRIDE {
-        const etl::message_id_t id = msg.get_message_id();
+                    if (itr != message_ids.end()) {
+                        etl::imessage_router* router = sub->get_router();
 
-        if (!empty()) {
-            // Scan the subscription lists.
-            subscription* sub = static_cast<subscription*>(head.get_next());
-
-            while (sub != ETL_NULLPTR) {
-                message_id_span_t message_ids = sub->message_id_list();
-
-                message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
-
-                if (itr != message_ids.end()) {
-                    etl::imessage_router* router = sub->get_router();
-
-                    if (destination_router_id == etl::imessage_router::ALL_MESSAGE_ROUTERS ||
-                        destination_router_id == router->get_message_router_id()) {
-                        router->receive(msg);
+                        if (destination_router_id == etl::imessage_router::ALL_MESSAGE_ROUTERS ||
+                            destination_router_id == router->get_message_router_id()) {
+                            router->receive(msg);
+                        }
                     }
-                }
 
-                sub = sub->next_subscription();
+                    sub = sub->next_subscription();
+                }
+            }
+
+            // Always pass the message on to the successor.
+            if (has_successor()) {
+                get_successor().receive(destination_router_id, msg);
             }
         }
 
-        // Always pass the message on to the successor.
-        if (has_successor()) {
-            get_successor().receive(destination_router_id, msg);
-        }
-    }
+        //*******************************************
+        virtual void receive(etl::message_router_id_t destination_router_id, etl::shared_message shared_msg) ETL_OVERRIDE {
+            const etl::message_id_t id = shared_msg.get_message().get_message_id();
 
-    //*******************************************
-    virtual void receive(etl::message_router_id_t destination_router_id,
-                         etl::shared_message      shared_msg) ETL_OVERRIDE {
-        const etl::message_id_t id = shared_msg.get_message().get_message_id();
+            if (!empty()) {
+                // Scan the subscription lists.
+                subscription* sub = static_cast<subscription*>(head.get_next());
 
-        if (!empty()) {
-            // Scan the subscription lists.
-            subscription* sub = static_cast<subscription*>(head.get_next());
+                while (sub != ETL_NULLPTR) {
+                    message_id_span_t message_ids = sub->message_id_list();
 
-            while (sub != ETL_NULLPTR) {
-                message_id_span_t message_ids = sub->message_id_list();
+                    message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
 
-                message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
+                    if (itr != message_ids.end()) {
+                        etl::imessage_router* router = sub->get_router();
 
-                if (itr != message_ids.end()) {
-                    etl::imessage_router* router = sub->get_router();
-
-                    if (destination_router_id == etl::imessage_router::ALL_MESSAGE_ROUTERS ||
-                        destination_router_id == router->get_message_router_id()) {
-                        router->receive(shared_msg);
+                        if (destination_router_id == etl::imessage_router::ALL_MESSAGE_ROUTERS ||
+                            destination_router_id == router->get_message_router_id()) {
+                            router->receive(shared_msg);
+                        }
                     }
-                }
 
-                sub = sub->next_subscription();
+                    sub = sub->next_subscription();
+                }
+            }
+
+            // Always pass the message on to a successor.
+            if (has_successor()) {
+                get_successor().receive(destination_router_id, shared_msg);
             }
         }
 
-        // Always pass the message on to a successor.
-        if (has_successor()) {
-            get_successor().receive(destination_router_id, shared_msg);
-        }
-    }
+        using imessage_router::accepts;
 
-    using imessage_router::accepts;
+        //*******************************************
+        /// Message brokers accept messages determined
+        /// by the subscribed routers.
+        //*******************************************
+        virtual bool accepts(etl::message_id_t id) const ETL_OVERRIDE {
+            if (!empty()) {
+                // Scan the subscription lists.
+                subscription* sub = static_cast<subscription*>(head.get_next());
 
-    //*******************************************
-    /// Message brokers accept messages determined
-    /// by the subscribed routers.
-    //*******************************************
-    virtual bool accepts(etl::message_id_t id) const ETL_OVERRIDE {
-        if (!empty()) {
-            // Scan the subscription lists.
-            subscription* sub = static_cast<subscription*>(head.get_next());
+                while (sub != ETL_NULLPTR) {
+                    message_id_span_t message_ids = sub->message_id_list();
 
-            while (sub != ETL_NULLPTR) {
-                message_id_span_t message_ids = sub->message_id_list();
+                    message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
 
-                message_id_span_t::iterator itr = etl::find(message_ids.begin(), message_ids.end(), id);
+                    if (itr != message_ids.end()) {
+                        etl::imessage_router* router = sub->get_router();
 
-                if (itr != message_ids.end()) {
-                    etl::imessage_router* router = sub->get_router();
-
-                    if (router->accepts(id)) {
-                        return true;
+                        if (router->accepts(id)) {
+                            return true;
+                        }
                     }
+
+                    sub = sub->next_subscription();
                 }
-
-                sub = sub->next_subscription();
             }
+
+            // Check any successor.
+            if (has_successor()) {
+                if (get_successor().accepts(id)) {
+                    return true;
+                }
+            }
+
+            return false;
+
+            //return true;
         }
 
-        // Check any successor.
-        if (has_successor()) {
-            if (get_successor().accepts(id)) {
-                return true;
-            }
+        //*******************************************
+        void clear() {
+            head.terminate();
         }
 
-        return false;
+        //********************************************
+        ETL_DEPRECATED virtual bool is_null_router() const ETL_OVERRIDE {
+            return false;
+        }
 
-        //return true;
-    }
+        //********************************************
+        virtual bool is_producer() const ETL_OVERRIDE {
+            return true;
+        }
 
-    //*******************************************
-    void clear() {
-        head.terminate();
-    }
+        //********************************************
+        virtual bool is_consumer() const ETL_OVERRIDE {
+            return true;
+        }
 
-    //********************************************
-    ETL_DEPRECATED virtual bool is_null_router() const ETL_OVERRIDE {
-        return false;
-    }
-
-    //********************************************
-    virtual bool is_producer() const ETL_OVERRIDE {
-        return true;
-    }
-
-    //********************************************
-    virtual bool is_consumer() const ETL_OVERRIDE {
-        return true;
-    }
-
-    //********************************************
-    bool empty() const {
-        return head.get_next() == ETL_NULLPTR;
-    }
+        //********************************************
+        bool empty() const {
+            return head.get_next() == ETL_NULLPTR;
+        }
 
     private:
-    //*******************************************
-    void initialise_insertion_point(const etl::imessage_router* p_router, etl::message_broker::subscription* p_new_sub) {
-        const etl::imessage_router* p_target_router = p_router;
+        //*******************************************
+        void initialise_insertion_point(const etl::imessage_router* p_router, etl::message_broker::subscription* p_new_sub) {
+            const etl::imessage_router* p_target_router = p_router;
 
-        subscription_node* p_sub          = head.get_next();
-        subscription_node* p_sub_previous = &head;
+            subscription_node* p_sub          = head.get_next();
+            subscription_node* p_sub_previous = &head;
 
-        while (p_sub != ETL_NULLPTR) {
-            // Do we already have a subscription for the router?
-            if (static_cast<subscription*>(p_sub)->get_router() == p_target_router) {
-                // Then unlink it.
-                p_sub_previous->set_next(p_sub->get_next()); // Jump over the subscription.
-                p_sub->terminate();                          // Terminate the unlinked subscription.
+            while (p_sub != ETL_NULLPTR) {
+                // Do we already have a subscription for the router?
+                if (static_cast<subscription*>(p_sub)->get_router() == p_target_router) {
+                    // Then unlink it.
+                    p_sub_previous->set_next(p_sub->get_next()); // Jump over the subscription.
+                    p_sub->terminate();                          // Terminate the unlinked subscription.
 
-                // We're done now.
-                break;
+                    // We're done now.
+                    break;
+                }
+
+                // Move on up the list.
+                p_sub          = p_sub->get_next();
+                p_sub_previous = p_sub_previous->get_next();
             }
 
-            // Move on up the list.
-            p_sub          = p_sub->get_next();
-            p_sub_previous = p_sub_previous->get_next();
+            if (p_new_sub != ETL_NULLPTR) {
+                // Link in the new subscription.
+                p_sub_previous->append(p_new_sub);
+            }
         }
 
-        if (p_new_sub != ETL_NULLPTR) {
-            // Link in the new subscription.
-            p_sub_previous->append(p_new_sub);
-        }
-    }
-
-    subscription_node head;
-};
+        subscription_node head;
+    };
 } // namespace etl
 
 #endif

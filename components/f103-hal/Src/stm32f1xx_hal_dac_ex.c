@@ -188,7 +188,8 @@ HAL_StatusTypeDef HAL_DACEx_TriangleWaveGenerate(DAC_HandleTypeDef* hdac, uint32
     hdac->State = HAL_DAC_STATE_BUSY;
 
     /* Enable the triangle wave generation for the selected DAC channel */
-    MODIFY_REG(hdac->Instance->CR, ((DAC_CR_WAVE1) | (DAC_CR_MAMP1)) << (Channel & 0x10UL), (DAC_CR_WAVE1_1 | Amplitude) << (Channel & 0x10UL));
+    MODIFY_REG(
+        hdac->Instance->CR, ((DAC_CR_WAVE1) | (DAC_CR_MAMP1)) << (Channel & 0x10UL), (DAC_CR_WAVE1_1 | Amplitude) << (Channel & 0x10UL));
 
     /* Change DAC state */
     hdac->State = HAL_DAC_STATE_READY;
@@ -241,7 +242,8 @@ HAL_StatusTypeDef HAL_DACEx_NoiseWaveGenerate(DAC_HandleTypeDef* hdac, uint32_t 
     hdac->State = HAL_DAC_STATE_BUSY;
 
     /* Enable the noise wave generation for the selected DAC channel */
-    MODIFY_REG(hdac->Instance->CR, ((DAC_CR_WAVE1) | (DAC_CR_MAMP1)) << (Channel & 0x10UL), (DAC_CR_WAVE1_0 | Amplitude) << (Channel & 0x10UL));
+    MODIFY_REG(
+        hdac->Instance->CR, ((DAC_CR_WAVE1) | (DAC_CR_MAMP1)) << (Channel & 0x10UL), (DAC_CR_WAVE1_0 | Amplitude) << (Channel & 0x10UL));
 
     /* Change DAC state */
     hdac->State = HAL_DAC_STATE_READY;

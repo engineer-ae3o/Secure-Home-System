@@ -35,28 +35,26 @@ SOFTWARE.
 #include "../type_traits.h"
 
 #if defined(ETL_IN_UNIT_TEST) || ETL_USING_STL
-  #include <memory>
+#include <memory>
 #endif
 
 ///\defgroup memory memory
 ///\ingroup etl
 
-namespace etl
-{
-  //*****************************************************************************
-  /// Gets the address of an object.
-  /// https://en.cppreference.com/w/cpp/memory/addressof
-  ///\ingroup memory
-  //*****************************************************************************
-  template <typename T>
-  ETL_CONSTEXPR17 typename etl::enable_if<!etl::is_same<T, etl::nullptr_t>::value, T>::type* addressof(T& t)
-  {
+namespace etl {
+    //*****************************************************************************
+    /// Gets the address of an object.
+    /// https://en.cppreference.com/w/cpp/memory/addressof
+    ///\ingroup memory
+    //*****************************************************************************
+    template<typename T>
+    ETL_CONSTEXPR17 typename etl::enable_if<!etl::is_same<T, etl::nullptr_t>::value, T>::type* addressof(T& t) {
 #if ETL_USING_STL && ETL_USING_CPP11
-    return std::addressof(t);
+        return std::addressof(t);
 #else
-    return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(t)));
+        return reinterpret_cast<T*>(&const_cast<char&>(reinterpret_cast<const volatile char&>(t)));
 #endif
-  }
-}
+    }
+} // namespace etl
 
 #endif

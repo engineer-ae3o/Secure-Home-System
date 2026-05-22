@@ -39,217 +39,186 @@
  * May need to modify this to include new compiler-specific defines.
  * Alternatively, define __LITTLE_ENDIAN__ or __BIG_ENDIAN__ in your
  * compiler flags when you compile this library */
-#if defined(__x86_64) || defined(__x86_64__) ||                  \
-    defined(__i386) || defined(__i386__) ||                      \
-    defined(__AVR__) || defined(__arm) || defined(__arm__) ||    \
-    defined(_M_AMD64) || defined(_M_X64) || defined(_M_IX86) ||  \
-    defined(_M_IA64) || defined(_M_ARM) || defined(_M_ARM_FP) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == 1234) ||       \
-    defined(__LITTLE_ENDIAN__)
+#if defined(__x86_64) || defined(__x86_64__) || defined(__i386) || defined(__i386__) || defined(__AVR__) || defined(__arm) ||              \
+    defined(__arm__) || defined(_M_AMD64) || defined(_M_X64) || defined(_M_IX86) || defined(_M_IA64) || defined(_M_ARM) ||                 \
+    defined(_M_ARM_FP) || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == 1234) || defined(__LITTLE_ENDIAN__)
 #define LW_UTIL_LITTLE_ENDIAN 1
-#elif (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == 4321) || \
-    defined(__BIG_ENDIAN__) || defined(__m68k__)
+#elif (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == 4321) || defined(__BIG_ENDIAN__) || defined(__m68k__)
 /* Big endian */
 #else
 #error "Cannot determine the endianess of this platform"
 #endif
 
 /* Determine if we are compiling for a 64-bit CPU */
-#if defined(__x86_64) || defined(__x86_64__) ||                 \
-    defined(__aarch64__) || defined(__ARM_ARCH_ISA_A64) ||      \
-    defined(_M_AMD64) || defined(_M_X64) || defined(_M_IA64) || \
-    (defined(__riscv) && __riscv_xlen == 64)
+#if defined(__x86_64) || defined(__x86_64__) || defined(__aarch64__) || defined(__ARM_ARCH_ISA_A64) || defined(_M_AMD64) ||                \
+    defined(_M_X64) || defined(_M_IA64) || (defined(__riscv) && __riscv_xlen == 64)
 #define LW_UTIL_CPU_IS_64BIT 1
 #endif
 
 /* Helper macros to load and store values while converting endian-ness */
 
 /* Load a big-endian 32-bit word from a byte buffer */
-#define be_load_word32(ptr)           \
-    ((((uint32_t)((ptr)[0])) << 24) | \
-     (((uint32_t)((ptr)[1])) << 16) | \
-     (((uint32_t)((ptr)[2])) << 8) |  \
-     ((uint32_t)((ptr)[3])))
+#define be_load_word32(ptr)                                                                                                                \
+    ((((uint32_t)((ptr)[0])) << 24) | (((uint32_t)((ptr)[1])) << 16) | (((uint32_t)((ptr)[2])) << 8) | ((uint32_t)((ptr)[3])))
 
 /* Store a big-endian 32-bit word into a byte buffer */
-#define be_store_word32(ptr, x)            \
-    do {                                   \
-        uint32_t _x = (x);                 \
-        (ptr)[0]    = (uint8_t)(_x >> 24); \
-        (ptr)[1]    = (uint8_t)(_x >> 16); \
-        (ptr)[2]    = (uint8_t)(_x >> 8);  \
-        (ptr)[3]    = (uint8_t)_x;         \
+#define be_store_word32(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint32_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)(_x >> 24);                                                                                                 \
+        (ptr)[1]    = (uint8_t)(_x >> 16);                                                                                                 \
+        (ptr)[2]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[3]    = (uint8_t)_x;                                                                                                         \
     } while (0)
 
 /* Load a little-endian 32-bit word from a byte buffer */
-#define le_load_word32(ptr)           \
-    ((((uint32_t)((ptr)[3])) << 24) | \
-     (((uint32_t)((ptr)[2])) << 16) | \
-     (((uint32_t)((ptr)[1])) << 8) |  \
-     ((uint32_t)((ptr)[0])))
+#define le_load_word32(ptr)                                                                                                                \
+    ((((uint32_t)((ptr)[3])) << 24) | (((uint32_t)((ptr)[2])) << 16) | (((uint32_t)((ptr)[1])) << 8) | ((uint32_t)((ptr)[0])))
 
 /* Store a little-endian 32-bit word into a byte buffer */
-#define le_store_word32(ptr, x)            \
-    do {                                   \
-        uint32_t _x = (x);                 \
-        (ptr)[0]    = (uint8_t)_x;         \
-        (ptr)[1]    = (uint8_t)(_x >> 8);  \
-        (ptr)[2]    = (uint8_t)(_x >> 16); \
-        (ptr)[3]    = (uint8_t)(_x >> 24); \
+#define le_store_word32(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint32_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)_x;                                                                                                         \
+        (ptr)[1]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[2]    = (uint8_t)(_x >> 16);                                                                                                 \
+        (ptr)[3]    = (uint8_t)(_x >> 24);                                                                                                 \
     } while (0)
 
 /* Reverses the bytes in a 32-bit word */
-#define reverse_word32(x)                       \
-    (((x) >> 24) | (((x) >> 8) & 0x0000FF00U) | \
-     (((x) << 8) & 0x00FF0000U) | ((x) << 24))
+#define reverse_word32(x) (((x) >> 24) | (((x) >> 8) & 0x0000FF00U) | (((x) << 8) & 0x00FF0000U) | ((x) << 24))
 
 /* Load a big-endian 64-bit word from a byte buffer */
-#define be_load_word64(ptr)           \
-    ((((uint64_t)((ptr)[0])) << 56) | \
-     (((uint64_t)((ptr)[1])) << 48) | \
-     (((uint64_t)((ptr)[2])) << 40) | \
-     (((uint64_t)((ptr)[3])) << 32) | \
-     (((uint64_t)((ptr)[4])) << 24) | \
-     (((uint64_t)((ptr)[5])) << 16) | \
-     (((uint64_t)((ptr)[6])) << 8) |  \
-     ((uint64_t)((ptr)[7])))
+#define be_load_word64(ptr)                                                                                                                \
+    ((((uint64_t)((ptr)[0])) << 56) | (((uint64_t)((ptr)[1])) << 48) | (((uint64_t)((ptr)[2])) << 40) | (((uint64_t)((ptr)[3])) << 32) |   \
+     (((uint64_t)((ptr)[4])) << 24) | (((uint64_t)((ptr)[5])) << 16) | (((uint64_t)((ptr)[6])) << 8) | ((uint64_t)((ptr)[7])))
 
 /* Store a big-endian 64-bit word into a byte buffer */
-#define be_store_word64(ptr, x)            \
-    do {                                   \
-        uint64_t _x = (x);                 \
-        (ptr)[0]    = (uint8_t)(_x >> 56); \
-        (ptr)[1]    = (uint8_t)(_x >> 48); \
-        (ptr)[2]    = (uint8_t)(_x >> 40); \
-        (ptr)[3]    = (uint8_t)(_x >> 32); \
-        (ptr)[4]    = (uint8_t)(_x >> 24); \
-        (ptr)[5]    = (uint8_t)(_x >> 16); \
-        (ptr)[6]    = (uint8_t)(_x >> 8);  \
-        (ptr)[7]    = (uint8_t)_x;         \
+#define be_store_word64(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint64_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)(_x >> 56);                                                                                                 \
+        (ptr)[1]    = (uint8_t)(_x >> 48);                                                                                                 \
+        (ptr)[2]    = (uint8_t)(_x >> 40);                                                                                                 \
+        (ptr)[3]    = (uint8_t)(_x >> 32);                                                                                                 \
+        (ptr)[4]    = (uint8_t)(_x >> 24);                                                                                                 \
+        (ptr)[5]    = (uint8_t)(_x >> 16);                                                                                                 \
+        (ptr)[6]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[7]    = (uint8_t)_x;                                                                                                         \
     } while (0)
 
 /* Load a little-endian 64-bit word from a byte buffer */
-#define le_load_word64(ptr)           \
-    ((((uint64_t)((ptr)[7])) << 56) | \
-     (((uint64_t)((ptr)[6])) << 48) | \
-     (((uint64_t)((ptr)[5])) << 40) | \
-     (((uint64_t)((ptr)[4])) << 32) | \
-     (((uint64_t)((ptr)[3])) << 24) | \
-     (((uint64_t)((ptr)[2])) << 16) | \
-     (((uint64_t)((ptr)[1])) << 8) |  \
-     ((uint64_t)((ptr)[0])))
+#define le_load_word64(ptr)                                                                                                                \
+    ((((uint64_t)((ptr)[7])) << 56) | (((uint64_t)((ptr)[6])) << 48) | (((uint64_t)((ptr)[5])) << 40) | (((uint64_t)((ptr)[4])) << 32) |   \
+     (((uint64_t)((ptr)[3])) << 24) | (((uint64_t)((ptr)[2])) << 16) | (((uint64_t)((ptr)[1])) << 8) | ((uint64_t)((ptr)[0])))
 
 /* Store a little-endian 64-bit word into a byte buffer */
-#define le_store_word64(ptr, x)            \
-    do {                                   \
-        uint64_t _x = (x);                 \
-        (ptr)[0]    = (uint8_t)_x;         \
-        (ptr)[1]    = (uint8_t)(_x >> 8);  \
-        (ptr)[2]    = (uint8_t)(_x >> 16); \
-        (ptr)[3]    = (uint8_t)(_x >> 24); \
-        (ptr)[4]    = (uint8_t)(_x >> 32); \
-        (ptr)[5]    = (uint8_t)(_x >> 40); \
-        (ptr)[6]    = (uint8_t)(_x >> 48); \
-        (ptr)[7]    = (uint8_t)(_x >> 56); \
+#define le_store_word64(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint64_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)_x;                                                                                                         \
+        (ptr)[1]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[2]    = (uint8_t)(_x >> 16);                                                                                                 \
+        (ptr)[3]    = (uint8_t)(_x >> 24);                                                                                                 \
+        (ptr)[4]    = (uint8_t)(_x >> 32);                                                                                                 \
+        (ptr)[5]    = (uint8_t)(_x >> 40);                                                                                                 \
+        (ptr)[6]    = (uint8_t)(_x >> 48);                                                                                                 \
+        (ptr)[7]    = (uint8_t)(_x >> 56);                                                                                                 \
     } while (0)
 
 /* Load a big-endian 16-bit word from a byte buffer */
-#define be_load_word16(ptr)          \
-    ((((uint16_t)((ptr)[0])) << 8) | \
-     ((uint16_t)((ptr)[1])))
+#define be_load_word16(ptr) ((((uint16_t)((ptr)[0])) << 8) | ((uint16_t)((ptr)[1])))
 
 /* Store a big-endian 16-bit word into a byte buffer */
-#define be_store_word16(ptr, x)           \
-    do {                                  \
-        uint16_t _x = (x);                \
-        (ptr)[0]    = (uint8_t)(_x >> 8); \
-        (ptr)[1]    = (uint8_t)_x;        \
+#define be_store_word16(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint16_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[1]    = (uint8_t)_x;                                                                                                         \
     } while (0)
 
 /* Load a little-endian 16-bit word from a byte buffer */
-#define le_load_word16(ptr)          \
-    ((((uint16_t)((ptr)[1])) << 8) | \
-     ((uint16_t)((ptr)[0])))
+#define le_load_word16(ptr) ((((uint16_t)((ptr)[1])) << 8) | ((uint16_t)((ptr)[0])))
 
 /* Store a little-endian 16-bit word into a byte buffer */
-#define le_store_word16(ptr, x)           \
-    do {                                  \
-        uint16_t _x = (x);                \
-        (ptr)[0]    = (uint8_t)_x;        \
-        (ptr)[1]    = (uint8_t)(_x >> 8); \
+#define le_store_word16(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint16_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)_x;                                                                                                         \
+        (ptr)[1]    = (uint8_t)(_x >> 8);                                                                                                  \
     } while (0)
 
 /* XOR a source byte buffer against a destination */
-#define lw_xor_block(dest, src, len)         \
-    do {                                     \
-        unsigned char*       _dest = (dest); \
-        const unsigned char* _src  = (src);  \
-        unsigned             _len  = (len);  \
-        while (_len > 0) {                   \
-            *_dest++ ^= *_src++;             \
-            --_len;                          \
-        }                                    \
+#define lw_xor_block(dest, src, len)                                                                                                       \
+    do {                                                                                                                                   \
+        unsigned char*       _dest = (dest);                                                                                               \
+        const unsigned char* _src  = (src);                                                                                                \
+        unsigned             _len  = (len);                                                                                                \
+        while (_len > 0) {                                                                                                                 \
+            *_dest++ ^= *_src++;                                                                                                           \
+            --_len;                                                                                                                        \
+        }                                                                                                                                  \
     } while (0)
 
 /* XOR two source byte buffers and put the result in a destination buffer */
-#define lw_xor_block_2_src(dest, src1, src2, len) \
-    do {                                          \
-        unsigned char*       _dest = (dest);      \
-        const unsigned char* _src1 = (src1);      \
-        const unsigned char* _src2 = (src2);      \
-        unsigned             _len  = (len);       \
-        while (_len > 0) {                        \
-            *_dest++ = *_src1++ ^ *_src2++;       \
-            --_len;                               \
-        }                                         \
+#define lw_xor_block_2_src(dest, src1, src2, len)                                                                                          \
+    do {                                                                                                                                   \
+        unsigned char*       _dest = (dest);                                                                                               \
+        const unsigned char* _src1 = (src1);                                                                                               \
+        const unsigned char* _src2 = (src2);                                                                                               \
+        unsigned             _len  = (len);                                                                                                \
+        while (_len > 0) {                                                                                                                 \
+            *_dest++ = *_src1++ ^ *_src2++;                                                                                                \
+            --_len;                                                                                                                        \
+        }                                                                                                                                  \
     } while (0)
 
 /* XOR a source byte buffer against a destination and write to another
  * destination at the same time */
-#define lw_xor_block_2_dest(dest2, dest, src, len) \
-    do {                                           \
-        unsigned char*       _dest2 = (dest2);     \
-        unsigned char*       _dest  = (dest);      \
-        const unsigned char* _src   = (src);       \
-        unsigned             _len   = (len);       \
-        while (_len > 0) {                         \
-            *_dest2++ = (*_dest++ ^= *_src++);     \
-            --_len;                                \
-        }                                          \
+#define lw_xor_block_2_dest(dest2, dest, src, len)                                                                                         \
+    do {                                                                                                                                   \
+        unsigned char*       _dest2 = (dest2);                                                                                             \
+        unsigned char*       _dest  = (dest);                                                                                              \
+        const unsigned char* _src   = (src);                                                                                               \
+        unsigned             _len   = (len);                                                                                               \
+        while (_len > 0) {                                                                                                                 \
+            *_dest2++ = (*_dest++ ^= *_src++);                                                                                             \
+            --_len;                                                                                                                        \
+        }                                                                                                                                  \
     } while (0)
 
 /* XOR two byte buffers and write to a destination which at the same
  * time copying the contents of src2 to dest2 */
-#define lw_xor_block_copy_src(dest2, dest, src1, src2, len) \
-    do {                                                    \
-        unsigned char*       _dest2 = (dest2);              \
-        unsigned char*       _dest  = (dest);               \
-        const unsigned char* _src1  = (src1);               \
-        const unsigned char* _src2  = (src2);               \
-        unsigned             _len   = (len);                \
-        while (_len > 0) {                                  \
-            unsigned char _temp = *_src2++;                 \
-            *_dest2++           = _temp;                    \
-            *_dest++            = *_src1++ ^ _temp;         \
-            --_len;                                         \
-        }                                                   \
+#define lw_xor_block_copy_src(dest2, dest, src1, src2, len)                                                                                \
+    do {                                                                                                                                   \
+        unsigned char*       _dest2 = (dest2);                                                                                             \
+        unsigned char*       _dest  = (dest);                                                                                              \
+        const unsigned char* _src1  = (src1);                                                                                              \
+        const unsigned char* _src2  = (src2);                                                                                              \
+        unsigned             _len   = (len);                                                                                               \
+        while (_len > 0) {                                                                                                                 \
+            unsigned char _temp = *_src2++;                                                                                                \
+            *_dest2++           = _temp;                                                                                                   \
+            *_dest++            = *_src1++ ^ _temp;                                                                                        \
+            --_len;                                                                                                                        \
+        }                                                                                                                                  \
     } while (0)
 
 /* XOR a source byte buffer against a destination and write to another
  * destination at the same time.  This version swaps the source value
  * into the "dest" buffer */
-#define lw_xor_block_swap(dest2, dest, src, len)  \
-    do {                                          \
-        unsigned char*       _dest2 = (dest2);    \
-        unsigned char*       _dest  = (dest);     \
-        const unsigned char* _src   = (src);      \
-        unsigned             _len   = (len);      \
-        while (_len > 0) {                        \
-            unsigned char _temp = *_src++;        \
-            *_dest2++           = *_dest ^ _temp; \
-            *_dest++            = _temp;          \
-            --_len;                               \
-        }                                         \
+#define lw_xor_block_swap(dest2, dest, src, len)                                                                                           \
+    do {                                                                                                                                   \
+        unsigned char*       _dest2 = (dest2);                                                                                             \
+        unsigned char*       _dest  = (dest);                                                                                              \
+        const unsigned char* _src   = (src);                                                                                               \
+        unsigned             _len   = (len);                                                                                               \
+        while (_len > 0) {                                                                                                                 \
+            unsigned char _temp = *_src++;                                                                                                 \
+            *_dest2++           = *_dest ^ _temp;                                                                                          \
+            *_dest++            = _temp;                                                                                                   \
+            --_len;                                                                                                                        \
+        }                                                                                                                                  \
     } while (0)
 
 /* Rotation functions need to be optimised for best performance on AVR.
@@ -266,17 +235,17 @@
 /* Rotation macros for 32-bit arguments */
 
 /* Generic left rotate */
-#define leftRotate(a, bits)                           \
-    (__extension__({                                  \
-        uint32_t _temp = (a);                         \
-        (_temp << (bits)) | (_temp >> (32 - (bits))); \
+#define leftRotate(a, bits)                                                                                                                \
+    (__extension__({                                                                                                                       \
+        uint32_t _temp = (a);                                                                                                              \
+        (_temp << (bits)) | (_temp >> (32 - (bits)));                                                                                      \
     }))
 
 /* Generic right rotate */
-#define rightRotate(a, bits)                          \
-    (__extension__({                                  \
-        uint32_t _temp = (a);                         \
-        (_temp >> (bits)) | (_temp << (32 - (bits))); \
+#define rightRotate(a, bits)                                                                                                               \
+    (__extension__({                                                                                                                       \
+        uint32_t _temp = (a);                                                                                                              \
+        (_temp >> (bits)) | (_temp << (32 - (bits)));                                                                                      \
     }))
 
 #if !LW_CRYPTO_ROTATE32_COMPOSED
@@ -484,17 +453,17 @@
 /* Rotation macros for 64-bit arguments */
 
 /* Generic left rotate */
-#define leftRotate_64(a, bits)                        \
-    (__extension__({                                  \
-        uint64_t _temp = (a);                         \
-        (_temp << (bits)) | (_temp >> (64 - (bits))); \
+#define leftRotate_64(a, bits)                                                                                                             \
+    (__extension__({                                                                                                                       \
+        uint64_t _temp = (a);                                                                                                              \
+        (_temp << (bits)) | (_temp >> (64 - (bits)));                                                                                      \
     }))
 
 /* Generic right rotate */
-#define rightRotate_64(a, bits)                       \
-    (__extension__({                                  \
-        uint64_t _temp = (a);                         \
-        (_temp >> (bits)) | (_temp << (64 - (bits))); \
+#define rightRotate_64(a, bits)                                                                                                            \
+    (__extension__({                                                                                                                       \
+        uint64_t _temp = (a);                                                                                                              \
+        (_temp >> (bits)) | (_temp << (64 - (bits)));                                                                                      \
     }))
 
 /* Left rotate by a specific number of bits.  These macros may be replaced
@@ -630,17 +599,17 @@
 #define rightRotate63_64(a) (rightRotate_64((a), 63))
 
 /* Rotate a 16-bit value left by a number of bits */
-#define leftRotate_16(a, bits)                        \
-    (__extension__({                                  \
-        uint16_t _temp = (a);                         \
-        (_temp << (bits)) | (_temp >> (16 - (bits))); \
+#define leftRotate_16(a, bits)                                                                                                             \
+    (__extension__({                                                                                                                       \
+        uint16_t _temp = (a);                                                                                                              \
+        (_temp << (bits)) | (_temp >> (16 - (bits)));                                                                                      \
     }))
 
 /* Rotate a 16-bit value right by a number of bits */
-#define rightRotate_16(a, bits)                       \
-    (__extension__({                                  \
-        uint16_t _temp = (a);                         \
-        (_temp >> (bits)) | (_temp << (16 - (bits))); \
+#define rightRotate_16(a, bits)                                                                                                            \
+    (__extension__({                                                                                                                       \
+        uint16_t _temp = (a);                                                                                                              \
+        (_temp >> (bits)) | (_temp << (16 - (bits)));                                                                                      \
     }))
 
 /* Left rotate by a specific number of bits.  These macros may be replaced
@@ -680,17 +649,17 @@
 #define rightRotate15_16(a) (rightRotate_16((a), 15))
 
 /* Rotate an 8-bit value left by a number of bits */
-#define leftRotate_8(a, bits)                        \
-    (__extension__({                                 \
-        uint8_t _temp = (a);                         \
-        (_temp << (bits)) | (_temp >> (8 - (bits))); \
+#define leftRotate_8(a, bits)                                                                                                              \
+    (__extension__({                                                                                                                       \
+        uint8_t _temp = (a);                                                                                                               \
+        (_temp << (bits)) | (_temp >> (8 - (bits)));                                                                                       \
     }))
 
 /* Rotate an 8-bit value right by a number of bits */
-#define rightRotate_8(a, bits)                       \
-    (__extension__({                                 \
-        uint8_t _temp = (a);                         \
-        (_temp >> (bits)) | (_temp << (8 - (bits))); \
+#define rightRotate_8(a, bits)                                                                                                             \
+    (__extension__({                                                                                                                       \
+        uint8_t _temp = (a);                                                                                                               \
+        (_temp >> (bits)) | (_temp << (8 - (bits)));                                                                                       \
     }))
 
 /* Left rotate by a specific number of bits.  These macros may be replaced

@@ -126,21 +126,21 @@ __STATIC_FORCEINLINE void __STRT(uint32_t value, volatile uint32_t* ptr) {
 #define __QADD __builtin_arm_qadd
 #define __QSUB __builtin_arm_qsub
 
-#define __PKHBT(ARG1, ARG2, ARG3)                                                              \
-    __extension__({                                                                            \
-        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                      \
-        __ASM("pkhbt %0, %1, %2, lsl %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3)); \
-        __RES;                                                                                 \
+#define __PKHBT(ARG1, ARG2, ARG3)                                                                                                          \
+    __extension__({                                                                                                                        \
+        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                                                                  \
+        __ASM("pkhbt %0, %1, %2, lsl %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3));                                             \
+        __RES;                                                                                                                             \
     })
 
-#define __PKHTB(ARG1, ARG2, ARG3)                                                                  \
-    __extension__({                                                                                \
-        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                          \
-        if (ARG3 == 0)                                                                             \
-            __ASM("pkhtb %0, %1, %2" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2));                    \
-        else                                                                                       \
-            __ASM("pkhtb %0, %1, %2, asr %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3)); \
-        __RES;                                                                                     \
+#define __PKHTB(ARG1, ARG2, ARG3)                                                                                                          \
+    __extension__({                                                                                                                        \
+        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                                                                  \
+        if (ARG3 == 0)                                                                                                                     \
+            __ASM("pkhtb %0, %1, %2" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2));                                                            \
+        else                                                                                                                               \
+            __ASM("pkhtb %0, %1, %2, asr %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3));                                         \
+        __RES;                                                                                                                             \
     })
 
 __STATIC_FORCEINLINE uint32_t __SXTB16_RORn(uint32_t op1, uint32_t rotate) {
@@ -231,13 +231,12 @@ __STATIC_FORCEINLINE void __set_SP(uint32_t stack) {
 __STATIC_FORCEINLINE uint32_t __get_SP_usr(void) {
     uint32_t cpsr;
     uint32_t result;
-    __ASM volatile(
-        "MRS     %0, cpsr   \n"
-        "CPS     #0x1F      \n" // no effect in USR mode
-        "MOV     %1, sp     \n"
-        "MSR     cpsr_c, %0 \n" // no effect in USR mode
-        "ISB" : "=r"(cpsr),
-        "=r"(result) : : "memory");
+    __ASM volatile("MRS     %0, cpsr   \n"
+                   "CPS     #0x1F      \n" // no effect in USR mode
+                   "MOV     %1, sp     \n"
+                   "MSR     cpsr_c, %0 \n" // no effect in USR mode
+                   "ISB" : "=r"(cpsr),
+                   "=r"(result) : : "memory");
     return result;
 }
 
@@ -246,12 +245,11 @@ __STATIC_FORCEINLINE uint32_t __get_SP_usr(void) {
  */
 __STATIC_FORCEINLINE void __set_SP_usr(uint32_t topOfProcStack) {
     uint32_t cpsr;
-    __ASM volatile(
-        "MRS     %0, cpsr   \n"
-        "CPS     #0x1F      \n" // no effect in USR mode
-        "MOV     sp, %1     \n"
-        "MSR     cpsr_c, %0 \n" // no effect in USR mode
-        "ISB" : "=r"(cpsr) : "r"(topOfProcStack) : "memory");
+    __ASM volatile("MRS     %0, cpsr   \n"
+                   "CPS     #0x1F      \n" // no effect in USR mode
+                   "MOV     sp, %1     \n"
+                   "MSR     cpsr_c, %0 \n" // no effect in USR mode
+                   "ISB" : "=r"(cpsr) : "r"(topOfProcStack) : "memory");
 }
 
 /** \brief  Get FPEXC
@@ -282,8 +280,10 @@ __STATIC_FORCEINLINE void __set_FPEXC(uint32_t fpexc) {
  * Include common core functions to access Coprocessor 15 registers
  */
 
-#define __get_CP(cp, op1, Rt, CRn, CRm, op2) __ASM volatile("MRC p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : "=r"(Rt) : : "memory")
-#define __set_CP(cp, op1, Rt, CRn, CRm, op2) __ASM volatile("MCR p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : : "r"(Rt) : "memory")
+#define __get_CP(cp, op1, Rt, CRn, CRm, op2)                                                                                               \
+    __ASM volatile("MRC p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : "=r"(Rt) : : "memory")
+#define __set_CP(cp, op1, Rt, CRn, CRm, op2)                                                                                               \
+    __ASM volatile("MCR p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : : "r"(Rt) : "memory")
 #define __get_CP64(cp, op1, Rt, CRm) __ASM volatile("MRRC p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : "=r"(Rt) : : "memory")
 #define __set_CP64(cp, op1, Rt, CRm) __ASM volatile("MCRR p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : : "r"(Rt) : "memory")
 

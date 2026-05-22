@@ -23,16 +23,14 @@
 #ifndef ASCON_SELECT_TRNG_H
 #define ASCON_SELECT_TRNG_H
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64) || \
-    defined(__CYGWIN__) || defined(__CYGWIN32__)
+#if defined(_WIN32) || defined(__WIN32__) || defined(_WIN64) || defined(__CYGWIN__) || defined(__CYGWIN32__)
 
 /* Use the Windows CryptGenRandom() function */
 #define ASCON_TRNG_WINDOWS 1
 #define ASCON_TRNG_MIXER 1
 
-#elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) ||   \
-    defined(__FreeBSD__) || defined(__unix__) || defined(__ANDROID__) || \
-    defined(__OpenBSD__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__) || defined(__unix__) ||                        \
+    defined(__ANDROID__) || defined(__OpenBSD__)
 
 /* Unix-like system with access to a /dev/urandom or /dev/random device */
 #define ASCON_TRNG_DEV_RANDOM 1
@@ -43,8 +41,7 @@
 /* Zephyr RTOS.  Use the sys_csrand_get() function if it is
  * available, or use bt_rand() if Bluetooth is enabled. */
 #include <zephyr/kernel.h>
-#if defined(CONFIG_CTR_DRBG_CSPRNG_GENERATOR) || \
-    defined(CONFIG_HARDWARE_DEVICE_CS_GENERATOR)
+#if defined(CONFIG_CTR_DRBG_CSPRNG_GENERATOR) || defined(CONFIG_HARDWARE_DEVICE_CS_GENERATOR)
 #define ASCON_TRNG_ZEPHYR_CSRAND 1
 #elif defined(CONFIG_BT)
 #define ASCON_TRNG_ZEPHYR_BTRAND 1

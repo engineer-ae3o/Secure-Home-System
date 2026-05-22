@@ -43,8 +43,7 @@ static void function_footer(const char* name) {
 }
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     const char* x0;
     const char* x1;
     const char* x2;

@@ -172,34 +172,38 @@ BaseType_t xIsPrivileged(void) /* __attribute__ (( naked )) */
         "   movne r0, #0                                    \n" /* CONTROL[0]!=0. Return false to indicate that the processor is not privileged. */
         "   moveq r0, #1                                    \n" /* CONTROL[0]==0. Return true to indicate that the processor is privileged. */
         "   bx lr                                           \n" /* Return. */
-        ::: "r0", "memory");
+        ::
+            : "r0", "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 void vRaisePrivilege(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
 {
-    __asm volatile(
-        "   .syntax unified                                 \n"
-        "                                                   \n"
-        "   mrs  r0, control                                \n" /* Read the CONTROL register. */
-        "   bic r0, #1                                      \n" /* Clear the bit 0. */
-        "   msr  control, r0                                \n" /* Write back the new CONTROL value. */
-        "   bx lr                                           \n" /* Return to the caller. */
-        ::: "r0", "memory");
+    __asm volatile("   .syntax unified                                 \n"
+                   "                                                   \n"
+                   "   mrs  r0, control                                \n" /* Read the CONTROL register. */
+                   "   bic r0, #1                                      \n" /* Clear the bit 0. */
+                   "   msr  control, r0                                \n" /* Write back the new CONTROL value. */
+                   "   bx lr                                           \n" /* Return to the caller. */
+                   ::
+                       : "r0", "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 void vResetPrivilege(void) /* __attribute__ (( naked )) */
 {
-    __asm volatile(
-        "   .syntax unified                                 \n"
-        "                                                   \n"
-        "   mrs r0, control                                 \n" /* r0 = CONTROL. */
-        "   orr r0, #1                                      \n" /* r0 = r0 | 1. */
-        "   msr control, r0                                 \n" /* CONTROL = r0. */
-        "   bx lr                                           \n" /* Return to the caller. */
-        ::: "r0", "memory");
+    __asm volatile("   .syntax unified                                 \n"
+                   "                                                   \n"
+                   "   mrs r0, control                                 \n" /* r0 = CONTROL. */
+                   "   orr r0, #1                                      \n" /* r0 = r0 | 1. */
+                   "   msr control, r0                                 \n" /* CONTROL = r0. */
+                   "   bx lr                                           \n" /* Return to the caller. */
+                   ::
+                       : "r0", "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 void vStartFirstTask(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
@@ -216,8 +220,10 @@ void vStartFirstTask(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
         "   dsb                                             \n"
         "   isb                                             \n"
         "   svc %0                                          \n" /* System call to start the first task. */
-        "   nop                                             \n" ::"i"(portSVC_START_SCHEDULER) : "memory");
+        "   nop                                             \n" ::"i"(portSVC_START_SCHEDULER)
+        : "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 uint32_t ulSetInterruptMask(void) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */
@@ -231,21 +237,24 @@ uint32_t ulSetInterruptMask(void) /* __attribute__(( naked )) PRIVILEGED_FUNCTIO
         "   dsb                                             \n"
         "   isb                                             \n"
         "   bx lr                                           \n" /* Return. */
-        ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY) : "memory");
+        ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+        : "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 void vClearInterruptMask(__attribute__((unused)) uint32_t ulMask) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */
 {
-    __asm volatile(
-        "   .syntax unified                                 \n"
-        "                                                   \n"
-        "   msr basepri, r0                                 \n" /* basepri = ulMask. */
-        "   dsb                                             \n"
-        "   isb                                             \n"
-        "   bx lr                                           \n" /* Return. */
-        ::: "memory");
+    __asm volatile("   .syntax unified                                 \n"
+                   "                                                   \n"
+                   "   msr basepri, r0                                 \n" /* basepri = ulMask. */
+                   "   dsb                                             \n"
+                   "   isb                                             \n"
+                   "   bx lr                                           \n" /* Return. */
+                   ::
+                       : "memory");
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configENABLE_MPU == 1)
@@ -447,51 +456,49 @@ void PendSV_Handler(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
 
 void SVC_Handler(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
 {
-    __asm volatile(
-        ".syntax unified                \n"
-        ".extern vPortSVCHandler_C      \n"
-        ".extern vSystemCallEnter       \n"
-        ".extern vSystemCallExit        \n"
-        "                               \n"
-        "tst lr, #4                     \n"
-        "ite eq                         \n"
-        "mrseq r0, msp                  \n"
-        "mrsne r0, psp                  \n"
-        "                               \n"
-        "ldr r1, [r0, #24]              \n"
-        "ldrb r2, [r1, #-2]             \n"
-        "cmp r2, %0                     \n"
-        "blt syscall_enter              \n"
-        "cmp r2, %1                     \n"
-        "beq syscall_exit               \n"
-        "b vPortSVCHandler_C            \n"
-        "                               \n"
-        "syscall_enter:                 \n"
-        "    mov r1, lr                 \n"
-        "    b vSystemCallEnter         \n"
-        "                               \n"
-        "syscall_exit:                  \n"
-        "    mov r1, lr                 \n"
-        "    b vSystemCallExit          \n"
-        "                               \n"
-        : /* No outputs. */
-        : "i"(NUM_SYSTEM_CALLS), "i"(portSVC_SYSTEM_CALL_EXIT)
-        : "r0", "r1", "r2", "memory");
+    __asm volatile(".syntax unified                \n"
+                   ".extern vPortSVCHandler_C      \n"
+                   ".extern vSystemCallEnter       \n"
+                   ".extern vSystemCallExit        \n"
+                   "                               \n"
+                   "tst lr, #4                     \n"
+                   "ite eq                         \n"
+                   "mrseq r0, msp                  \n"
+                   "mrsne r0, psp                  \n"
+                   "                               \n"
+                   "ldr r1, [r0, #24]              \n"
+                   "ldrb r2, [r1, #-2]             \n"
+                   "cmp r2, %0                     \n"
+                   "blt syscall_enter              \n"
+                   "cmp r2, %1                     \n"
+                   "beq syscall_exit               \n"
+                   "b vPortSVCHandler_C            \n"
+                   "                               \n"
+                   "syscall_enter:                 \n"
+                   "    mov r1, lr                 \n"
+                   "    b vSystemCallEnter         \n"
+                   "                               \n"
+                   "syscall_exit:                  \n"
+                   "    mov r1, lr                 \n"
+                   "    b vSystemCallExit          \n"
+                   "                               \n"
+                   : /* No outputs. */
+                   : "i"(NUM_SYSTEM_CALLS), "i"(portSVC_SYSTEM_CALL_EXIT)
+                   : "r0", "r1", "r2", "memory");
 }
 
 #else /* ( configENABLE_MPU == 1 ) && ( configUSE_MPU_WRAPPERS_V1 == 0 ) */
 
 void SVC_Handler(void) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */
 {
-    __asm volatile(
-        "   .syntax unified                                 \n"
-        "                                                   \n"
-        "   tst lr, #4                                      \n"
-        "   ite eq                                          \n"
-        "   mrseq r0, msp                                   \n"
-        "   mrsne r0, psp                                   \n"
-        "   ldr r1, =vPortSVCHandler_C                      \n"
-        "   bx r1                                           \n");
+    __asm volatile("   .syntax unified                                 \n"
+                   "                                                   \n"
+                   "   tst lr, #4                                      \n"
+                   "   ite eq                                          \n"
+                   "   mrseq r0, msp                                   \n"
+                   "   mrsne r0, psp                                   \n"
+                   "   ldr r1, =vPortSVCHandler_C                      \n"
+                   "   bx r1                                           \n");
 }
 
 #endif /* ( configENABLE_MPU == 1 ) && ( configUSE_MPU_WRAPPERS_V1 == 0 ) */

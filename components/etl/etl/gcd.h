@@ -36,96 +36,84 @@ SOFTWARE.
 #include "static_assert.h"
 
 namespace etl {
-//***************************************************************************
-// Greatest Common Divisor.
-// For unsigned types.
-//***************************************************************************
-template<typename T>
-ETL_NODISCARD
-    ETL_CONSTEXPR14
-    typename etl::enable_if<etl::is_unsigned<T>::value, T>::type
-    gcd(T a, T b) ETL_NOEXCEPT {
-    ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
+    //***************************************************************************
+    // Greatest Common Divisor.
+    // For unsigned types.
+    //***************************************************************************
+    template<typename T>
+    ETL_NODISCARD ETL_CONSTEXPR14 typename etl::enable_if<etl::is_unsigned<T>::value, T>::type gcd(T a, T b) ETL_NOEXCEPT {
+        ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
 
-    if ((a == 0 || b == 0)) {
-        return (a + b);
+        if ((a == 0 || b == 0)) {
+            return (a + b);
+        }
+
+        while (b != 0) {
+            T t = b;
+            b   = a % b;
+            a   = t;
+        }
+
+        return a;
     }
 
-    while (b != 0) {
-        T t = b;
-        b   = a % b;
-        a   = t;
+    //***************************************************************************
+    // Greatest Common Divisor.
+    // For signed types.
+    //***************************************************************************
+    template<typename T>
+    ETL_NODISCARD ETL_CONSTEXPR14 typename etl::enable_if<etl::is_signed<T>::value, T>::type gcd(T a, T b) ETL_NOEXCEPT {
+        ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
+
+        typedef typename etl::make_unsigned<T>::type utype;
+
+        utype ua = etl::absolute_unsigned(a);
+        utype ub = etl::absolute_unsigned(b);
+
+        return static_cast<T>(gcd(ua, ub));
     }
-
-    return a;
-}
-
-//***************************************************************************
-// Greatest Common Divisor.
-// For signed types.
-//***************************************************************************
-template<typename T>
-ETL_NODISCARD
-    ETL_CONSTEXPR14
-    typename etl::enable_if<etl::is_signed<T>::value, T>::type
-    gcd(T a, T b) ETL_NOEXCEPT {
-    ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
-
-    typedef typename etl::make_unsigned<T>::type utype;
-
-    utype ua = etl::absolute_unsigned(a);
-    utype ub = etl::absolute_unsigned(b);
-
-    return static_cast<T>(gcd(ua, ub));
-}
 
 #if ETL_USING_CPP11
 #if ETL_HAS_INITIALIZER_LIST
-//***************************************************************************
-// Greatest Common Divisor.
-// Non-recursive, using an initializer_list.
-// Top level variadic function.
-//***************************************************************************
-template<typename T, typename... TRest>
-ETL_NODISCARD
-    ETL_CONSTEXPR14
-        T
-        gcd(T first, TRest... rest) ETL_NOEXCEPT {
-    T result = first;
+    //***************************************************************************
+    // Greatest Common Divisor.
+    // Non-recursive, using an initializer_list.
+    // Top level variadic function.
+    //***************************************************************************
+    template<typename T, typename... TRest>
+    ETL_NODISCARD ETL_CONSTEXPR14 T gcd(T first, TRest... rest) ETL_NOEXCEPT {
+        T result = first;
 
-    for (T value : {rest...}) {
-        result = gcd(result, value);
+        for (T value : {rest...}) {
+            result = gcd(result, value);
 
-        if (result == 1) {
+            if (result == 1) {
+                // Early termination: if the GCD is one, it will remain one
+                // no matter what other numbers are processed.
+                return 1;
+            }
+        }
+
+        return result;
+    }
+#else
+    //***************************************************************************
+    // Greatest Common Divisor.
+    // Recursive.
+    // Top level variadic function.
+    //***************************************************************************
+    template<typename T, typename... TRest>
+    ETL_NODISCARD ETL_CONSTEXPR14 T gcd(T a, T b, TRest... rest) ETL_NOEXCEPT {
+        T gcd_ab = gcd(a, b);
+
+        if (gcd_ab == 1) {
             // Early termination: if the GCD is one, it will remain one
             // no matter what other numbers are processed.
             return 1;
+        } else {
+            return gcd(gcd_ab, rest...);
         }
     }
-
-    return result;
-}
-#else
-//***************************************************************************
-// Greatest Common Divisor.
-// Recursive.
-// Top level variadic function.
-//***************************************************************************
-template<typename T, typename... TRest>
-ETL_NODISCARD
-    ETL_CONSTEXPR14
-        T
-        gcd(T a, T b, TRest... rest) ETL_NOEXCEPT {
-    T gcd_ab = gcd(a, b);
-
-    if (gcd_ab == 1) {
-        // Early termination: if the GCD is one, it will remain one
-        // no matter what other numbers are processed.
-        return 1;
-    } else {
-        return gcd(gcd_ab, rest...);
-    }
-}
 #endif
 #endif
 } // namespace etl

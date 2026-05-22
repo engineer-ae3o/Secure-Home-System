@@ -42,8 +42,9 @@ void ascon_xofa_init(ascon_xofa_state_t* state) {
         0xa4b87d44, 0x0846d7a5, 0xb3a2dbf4, 0xaa6f1005, 0xf713e811, 0xdc451146, 0x2839e30d, 0x468cb253, 0x09e96977, 0xeb2d4297};
     memcpy(state->state.W, iv, sizeof(iv));
 #else
-    static uint8_t const iv[40] = {
-        0x44, 0x90, 0x65, 0x68, 0xb7, 0x7b, 0x98, 0x32, 0xcd, 0x8d, 0x6c, 0xae, 0x53, 0x45, 0x55, 0x32, 0xf7, 0xb5, 0x21, 0x27, 0x56, 0x42, 0x21, 0x29, 0x24, 0x68, 0x85, 0xe1, 0xde, 0x0d, 0x22, 0x5b, 0xa8, 0xcb, 0x5c, 0xe3, 0x34, 0x49, 0x97, 0x3f};
+    static uint8_t const iv[40] = {0x44, 0x90, 0x65, 0x68, 0xb7, 0x7b, 0x98, 0x32, 0xcd, 0x8d, 0x6c, 0xae, 0x53, 0x45,
+                                   0x55, 0x32, 0xf7, 0xb5, 0x21, 0x27, 0x56, 0x42, 0x21, 0x29, 0x24, 0x68, 0x85, 0xe1,
+                                   0xde, 0x0d, 0x22, 0x5b, 0xa8, 0xcb, 0x5c, 0xe3, 0x34, 0x49, 0x97, 0x3f};
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     memcpy(state->state.B, iv, sizeof(iv));
 #else
@@ -76,8 +77,9 @@ void ascon_xofa_init_fixed(ascon_xofa_state_t* state, size_t outlen) {
             0x1b16eb02, 0x0108e46d, 0xd29083f3, 0x5b9b8efd, 0x2891ae4a, 0x7ad66562, 0xee3bfc7f, 0x9dc27156, 0x16801633, 0xc61d5fa9};
         memcpy(state->state.W, iv, sizeof(iv));
 #else
-        static uint8_t const iv[40] = {
-            0x01, 0x47, 0x01, 0x94, 0xfc, 0x65, 0x28, 0xa6, 0x73, 0x8e, 0xc3, 0x8a, 0xc0, 0xad, 0xff, 0xa7, 0x2e, 0xc8, 0xe3, 0x29, 0x6c, 0x76, 0x38, 0x4c, 0xd6, 0xf6, 0xa5, 0x4d, 0x7f, 0x52, 0x37, 0x7d, 0xa1, 0x3c, 0x42, 0xa2, 0x23, 0xbe, 0x8d, 0x87};
+        static uint8_t const iv[40] = {0x01, 0x47, 0x01, 0x94, 0xfc, 0x65, 0x28, 0xa6, 0x73, 0x8e, 0xc3, 0x8a, 0xc0, 0xad,
+                                       0xff, 0xa7, 0x2e, 0xc8, 0xe3, 0x29, 0x6c, 0x76, 0x38, 0x4c, 0xd6, 0xf6, 0xa5, 0x4d,
+                                       0x7f, 0x52, 0x37, 0x7d, 0xa1, 0x3c, 0x42, 0xa2, 0x23, 0xbe, 0x8d, 0x87};
 #if defined(ASCON_BACKEND_DIRECT_XOR)
         memcpy(state->state.B, iv, sizeof(iv));
 #else
@@ -114,7 +116,8 @@ void ascon_xofa_absorb_custom(ascon_xofa_state_t* state, const unsigned char* cu
     }
 }
 
-void ascon_xofa_init_custom(ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen) {
+void ascon_xofa_init_custom(
+    ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen) {
     /* Format the initial block with the function name and output length */
     uint8_t temp[ASCON_HASHA_SIZE];
     size_t  len = function_name ? strlen(function_name) : 0;
@@ -151,8 +154,7 @@ void ascon_xofa_init_custom(ascon_xofa_state_t* state, const char* function_name
 }
 
 void ascon_xofa_reinit(ascon_xofa_state_t* state) {
-#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_DIRECT_XOR)
     ascon_xofa_init(state);
 #else
     ascon_xofa_free(state);
@@ -161,8 +163,7 @@ void ascon_xofa_reinit(ascon_xofa_state_t* state) {
 }
 
 void ascon_xofa_reinit_fixed(ascon_xofa_state_t* state, size_t outlen) {
-#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_DIRECT_XOR)
     ascon_xofa_init_fixed(state, outlen);
 #else
     ascon_xofa_free(state);
@@ -170,9 +171,9 @@ void ascon_xofa_reinit_fixed(ascon_xofa_state_t* state, size_t outlen) {
 #endif
 }
 
-void ascon_xofa_reinit_custom(ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen) {
-#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+void ascon_xofa_reinit_custom(
+    ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen) {
+#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_DIRECT_XOR)
     ascon_xofa_init_custom(state, function_name, custom, customlen, outlen);
 #else
     ascon_xofa_free(state);

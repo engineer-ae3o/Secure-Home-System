@@ -132,14 +132,13 @@ static void prvTaskExitError(void);
  * FreeRTOS handlers implemented in assembly.
  */
 extern void xPortPendSVHandler(void);
+
 /*-----------------------------------------------------------*/
 
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
     pxTopOfStack--;                   /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
@@ -154,6 +153,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -169,6 +169,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -227,6 +228,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -234,6 +236,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortYield(void) {
@@ -245,6 +248,7 @@ void vPortYield(void) {
     __DSB();
     __ISB();
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -253,6 +257,7 @@ void vPortEnterCritical(void) {
     __DSB();
     __ISB();
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -263,6 +268,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -282,6 +288,7 @@ void xPortSysTickHandler(void) {
     }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(ulPreviousMask);
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -306,6 +313,7 @@ __weak void vPortSetupTimerInterrupt(void) {
     portNVIC_SYSTICK_LOAD_REG = (configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ) - 1UL;
     portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT_CONFIG | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT);
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configUSE_TICKLESS_IDLE == 1)

@@ -56,7 +56,7 @@ extern "C" {
 
 /* ARMv8-M common port configurations. */
 #include "portmacrocommon.h"
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #ifndef configENABLE_MVE
 #define configENABLE_MVE 0

@@ -126,6 +126,7 @@
 
 #define PCCARD_STATUS_OK (uint8_t)0x58
 #define PCCARD_STATUS_WRITE_OK (uint8_t)0x50
+
 /**
   * @}
   */
@@ -162,7 +163,10 @@
   * @param  IOSpaceTiming IO space timing structure
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_PCCARD_Init(PCCARD_HandleTypeDef* hpccard, FSMC_NAND_PCC_TimingTypeDef* ComSpaceTiming, FSMC_NAND_PCC_TimingTypeDef* AttSpaceTiming, FSMC_NAND_PCC_TimingTypeDef* IOSpaceTiming) {
+HAL_StatusTypeDef HAL_PCCARD_Init(PCCARD_HandleTypeDef*        hpccard,
+                                  FSMC_NAND_PCC_TimingTypeDef* ComSpaceTiming,
+                                  FSMC_NAND_PCC_TimingTypeDef* AttSpaceTiming,
+                                  FSMC_NAND_PCC_TimingTypeDef* IOSpaceTiming) {
     /* Check the PCCARD controller state */
     if (hpccard == NULL) {
         return HAL_ERROR;
@@ -657,7 +661,8 @@ __weak void HAL_PCCARD_ITCallback(PCCARD_HandleTypeDef* hpccard) {
   * @param pCallback : pointer to the Callback function
   * @retval status
   */
-HAL_StatusTypeDef HAL_PCCARD_RegisterCallback(PCCARD_HandleTypeDef* hpccard, HAL_PCCARD_CallbackIDTypeDef CallbackId, pPCCARD_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_PCCARD_RegisterCallback(PCCARD_HandleTypeDef* hpccard, HAL_PCCARD_CallbackIDTypeDef CallbackId, pPCCARD_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {

@@ -48,9 +48,7 @@ static uint32_t     ProcessStackFreeSlot = 0xFFFFFFFFU;
 
 /// Initialize secure context memory system
 /// \return execution status (1: success, 0: error)
-__attribute__((cmse_nonsecure_entry))
-uint32_t
-TZ_InitContextSystem_S(void) {
+__attribute__((cmse_nonsecure_entry)) uint32_t TZ_InitContextSystem_S(void) {
     uint32_t n;
 
     if (__get_IPSR() == 0U) {
@@ -81,9 +79,7 @@ TZ_InitContextSystem_S(void) {
 /// \param[in]  module   identifies software modules called from non-secure mode
 /// \return value != 0 id TrustZone memory slot identifier
 /// \return value 0    no memory available or internal error
-__attribute__((cmse_nonsecure_entry))
-TZ_MemoryId_t
-TZ_AllocModuleContext_S(TZ_ModuleId_t module) {
+__attribute__((cmse_nonsecure_entry)) TZ_MemoryId_t TZ_AllocModuleContext_S(TZ_ModuleId_t module) {
     uint32_t slot;
 
     (void)module; // Ignore (fixed Stack size)
@@ -107,9 +103,7 @@ TZ_AllocModuleContext_S(TZ_ModuleId_t module) {
 /// Free context memory that was previously allocated with \ref TZ_AllocModuleContext_S
 /// \param[in]  id  TrustZone memory slot identifier
 /// \return execution status (1: success, 0: error)
-__attribute__((cmse_nonsecure_entry))
-uint32_t
-TZ_FreeModuleContext_S(TZ_MemoryId_t id) {
+__attribute__((cmse_nonsecure_entry)) uint32_t TZ_FreeModuleContext_S(TZ_MemoryId_t id) {
     uint32_t slot;
 
     if (__get_IPSR() == 0U) {
@@ -136,9 +130,7 @@ TZ_FreeModuleContext_S(TZ_MemoryId_t id) {
 /// Load secure context (called on RTOS thread context switch)
 /// \param[in]  id  TrustZone memory slot identifier
 /// \return execution status (1: success, 0: error)
-__attribute__((cmse_nonsecure_entry))
-uint32_t
-TZ_LoadContext_S(TZ_MemoryId_t id) {
+__attribute__((cmse_nonsecure_entry)) uint32_t TZ_LoadContext_S(TZ_MemoryId_t id) {
     uint32_t slot;
 
     if ((__get_IPSR() == 0U) || ((__get_CONTROL() & 2U) == 0U)) {
@@ -165,9 +157,7 @@ TZ_LoadContext_S(TZ_MemoryId_t id) {
 /// Store secure context (called on RTOS thread context switch)
 /// \param[in]  id  TrustZone memory slot identifier
 /// \return execution status (1: success, 0: error)
-__attribute__((cmse_nonsecure_entry))
-uint32_t
-TZ_StoreContext_S(TZ_MemoryId_t id) {
+__attribute__((cmse_nonsecure_entry)) uint32_t TZ_StoreContext_S(TZ_MemoryId_t id) {
     uint32_t slot;
     uint32_t sp;
 
@@ -186,8 +176,7 @@ TZ_StoreContext_S(TZ_MemoryId_t id) {
     }
 
     sp = __get_PSP();
-    if ((sp < ProcessStackInfo[slot].sp_limit) ||
-        (sp > ProcessStackInfo[slot].sp_top)) {
+    if ((sp < ProcessStackInfo[slot].sp_limit) || (sp > ProcessStackInfo[slot].sp_top)) {
         return 0U; // SP out of range
     }
     ProcessStackInfo[slot].sp = sp;

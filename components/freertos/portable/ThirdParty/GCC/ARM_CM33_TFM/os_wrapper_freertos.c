@@ -53,18 +53,17 @@ void* os_wrapper_mutex_create(void) {
 #endif
     return (void*)xMutexHandle;
 }
+
 /*-----------------------------------------------------------*/
 
-uint32_t os_wrapper_mutex_acquire(void*    handle,
-                                  uint32_t timeout) {
+uint32_t os_wrapper_mutex_acquire(void* handle, uint32_t timeout) {
     BaseType_t xRet;
 
     if (!handle) {
         return OS_WRAPPER_ERROR;
     }
 
-    xRet = xSemaphoreTake((SemaphoreHandle_t)handle,
-                          (timeout == OS_WRAPPER_WAIT_FOREVER) ? portMAX_DELAY : (TickType_t)timeout);
+    xRet = xSemaphoreTake((SemaphoreHandle_t)handle, (timeout == OS_WRAPPER_WAIT_FOREVER) ? portMAX_DELAY : (TickType_t)timeout);
 
     if (xRet != pdPASS) {
         return OS_WRAPPER_ERROR;
@@ -72,6 +71,7 @@ uint32_t os_wrapper_mutex_acquire(void*    handle,
         return OS_WRAPPER_SUCCESS;
     }
 }
+
 /*-----------------------------------------------------------*/
 
 uint32_t os_wrapper_mutex_release(void* handle) {
@@ -89,6 +89,7 @@ uint32_t os_wrapper_mutex_release(void* handle) {
         return OS_WRAPPER_SUCCESS;
     }
 }
+
 /*-----------------------------------------------------------*/
 
 uint32_t os_wrapper_mutex_delete(void* handle) {
@@ -96,4 +97,5 @@ uint32_t os_wrapper_mutex_delete(void* handle) {
 
     return OS_WRAPPER_SUCCESS;
 }
+
 /*-----------------------------------------------------------*/

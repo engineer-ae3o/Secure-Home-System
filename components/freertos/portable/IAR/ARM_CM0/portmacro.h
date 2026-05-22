@@ -54,12 +54,12 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
 #if (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS)
-typedef uint16_t TickType_t;
+    typedef uint16_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffff
 #elif (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS)
 typedef uint32_t TickType_t;
@@ -77,31 +77,31 @@ typedef uint32_t TickType_t;
 #define portSTACK_GROWTH (-1)
 #define portTICK_PERIOD_MS ((TickType_t)1000 / configTICK_RATE_HZ)
 #define portBYTE_ALIGNMENT 8
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-/* Scheduler utilities. */
-extern void vPortYield(void);
+    /* Scheduler utilities. */
+    extern void vPortYield(void);
 #define portNVIC_INT_CTRL ((volatile uint32_t*)0xe000ed04)
 #define portNVIC_PENDSVSET 0x10000000
 #define portYIELD() vPortYield()
-#define portEND_SWITCHING_ISR(xSwitchRequired)         \
-    do {                                               \
-        if (xSwitchRequired != pdFALSE) {              \
-            traceISR_EXIT_TO_SCHEDULER();              \
-            *(portNVIC_INT_CTRL) = portNVIC_PENDSVSET; \
-        } else {                                       \
-            traceISR_EXIT();                           \
-        }                                              \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    do {                                                                                                                                   \
+        if (xSwitchRequired != pdFALSE) {                                                                                                  \
+            traceISR_EXIT_TO_SCHEDULER();                                                                                                  \
+            *(portNVIC_INT_CTRL) = portNVIC_PENDSVSET;                                                                                     \
+        } else {                                                                                                                           \
+            traceISR_EXIT();                                                                                                               \
+        }                                                                                                                                  \
     } while (0)
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-/* Critical section management. */
+    /* Critical section management. */
 
-extern void     vPortEnterCritical(void);
-extern void     vPortExitCritical(void);
-extern uint32_t ulSetInterruptMaskFromISR(void);
-extern void     vClearInterruptMaskFromISR(uint32_t ulMask);
+    extern void     vPortEnterCritical(void);
+    extern void     vPortExitCritical(void);
+    extern uint32_t ulSetInterruptMaskFromISR(void);
+    extern void     vClearInterruptMaskFromISR(uint32_t ulMask);
 
 #define portDISABLE_INTERRUPTS() __asm volatile("cpsid i")
 #define portENABLE_INTERRUPTS() __asm volatile("cpsie i")
@@ -114,7 +114,7 @@ extern void     vClearInterruptMaskFromISR(uint32_t ulMask);
 
 /* Tickless idle/low power functionality. */
 #ifndef portSUPPRESS_TICKS_AND_SLEEP
-extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
+    extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
 #define portSUPPRESS_TICKS_AND_SLEEP(xExpectedIdleTime) vPortSuppressTicksAndSleep(xExpectedIdleTime)
 #endif
 /*-----------------------------------------------------------*/
@@ -131,23 +131,23 @@ extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
 #define portFORCE_INLINE inline __attribute__((always_inline))
 #endif
 
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt(void) {
-    uint32_t   ulCurrentInterrupt;
-    BaseType_t xReturn;
+    portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt(void) {
+        uint32_t   ulCurrentInterrupt;
+        BaseType_t xReturn;
 
-    /* Obtain the number of the currently executing interrupt. */
-    __asm volatile("mrs %0, ipsr" : "=r"(ulCurrentInterrupt)::"memory");
+        /* Obtain the number of the currently executing interrupt. */
+        __asm volatile("mrs %0, ipsr" : "=r"(ulCurrentInterrupt)::"memory");
 
-    if (ulCurrentInterrupt == 0) {
-        xReturn = pdFALSE;
-    } else {
-        xReturn = pdTRUE;
+        if (ulCurrentInterrupt == 0) {
+            xReturn = pdFALSE;
+        } else {
+            xReturn = pdTRUE;
+        }
+
+        return xReturn;
     }
-
-    return xReturn;
-}
 
 /*-----------------------------------------------------------*/
 

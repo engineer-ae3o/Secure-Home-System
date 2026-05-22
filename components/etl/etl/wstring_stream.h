@@ -41,7 +41,7 @@ SOFTWARE.
 #include "basic_string_stream.h"
 
 namespace etl {
-typedef etl::basic_string_stream<etl::wformat_spec, etl::iwstring, etl::wstring_view> wstring_stream;
+    typedef etl::basic_string_stream<etl::wformat_spec, etl::iwstring, etl::wstring_view> wstring_stream;
 }
 
 #endif

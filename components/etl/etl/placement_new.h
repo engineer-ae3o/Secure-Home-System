@@ -59,12 +59,14 @@ SOFTWARE.
 inline void* operator new(size_t, void* p) ETL_NOEXCEPT {
     return p;
 }
+
 inline void* operator new[](size_t, void* p) ETL_NOEXCEPT {
     return p;
 }
 
 inline void operator delete(void*, void*) ETL_NOEXCEPT {
 }
+
 inline void operator delete[](void*, void*) ETL_NOEXCEPT {
 }
 

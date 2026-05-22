@@ -134,7 +134,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* *INDENT-ON* */
+    /* *INDENT-ON* */
 
 #ifndef configUSE_C_RUNTIME_TLS_SUPPORT
 #define configUSE_C_RUNTIME_TLS_SUPPORT 0
@@ -159,7 +159,7 @@ extern "C" {
 #endif
 #endif /* if ( configUSE_C_RUNTIME_TLS_SUPPORT == 1 ) */
 
-/*
+    /*
  * Check all the required application specific macros have been defined.
  * These macros are application specific and (as downloaded) are defined
  * within FreeRTOSConfig.h.
@@ -195,8 +195,7 @@ extern "C" {
 #error Missing definition:  configUSE_TICK_HOOK must be defined in FreeRTOSConfig.h as either 1 or 0.  See the Configuration section of the FreeRTOS API documentation for details.
 #endif
 
-#if ((configTICK_TYPE_WIDTH_IN_BITS != TICK_TYPE_WIDTH_16_BITS) && \
-     (configTICK_TYPE_WIDTH_IN_BITS != TICK_TYPE_WIDTH_32_BITS) && \
+#if ((configTICK_TYPE_WIDTH_IN_BITS != TICK_TYPE_WIDTH_16_BITS) && (configTICK_TYPE_WIDTH_IN_BITS != TICK_TYPE_WIDTH_32_BITS) &&           \
      (configTICK_TYPE_WIDTH_IN_BITS != TICK_TYPE_WIDTH_64_BITS))
 #error Macro configTICK_TYPE_WIDTH_IN_BITS is defined to incorrect value.  See the Configuration section of the FreeRTOS API documentation for details.
 #endif
@@ -710,7 +709,7 @@ extern "C" {
 #define configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H 0
 #endif
 
-/* The following event macros are embedded in the kernel API calls. */
+    /* The following event macros are embedded in the kernel API calls. */
 
 #ifndef traceMOVED_TASK_TO_READY_STATE
 #define traceMOVED_TASK_TO_READY_STATE(pxTCB)
@@ -1693,7 +1692,8 @@ extern "C" {
 #endif
 
 #ifndef traceENTER_xTaskCreateStaticAffinitySet
-#define traceENTER_xTaskCreateStaticAffinitySet(pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, puxStackBuffer, pxTaskBuffer, uxCoreAffinityMask)
+#define traceENTER_xTaskCreateStaticAffinitySet(                                                                                           \
+    pxTaskCode, pcName, uxStackDepth, pvParameters, uxPriority, puxStackBuffer, pxTaskBuffer, uxCoreAffinityMask)
 #endif
 
 #ifndef traceRETURN_xTaskCreateStaticAffinitySet
@@ -2345,7 +2345,8 @@ extern "C" {
 #endif
 
 #ifndef traceENTER_xTaskGenericNotifyFromISR
-#define traceENTER_xTaskGenericNotifyFromISR(xTaskToNotify, uxIndexToNotify, ulValue, eAction, pulPreviousNotificationValue, pxHigherPriorityTaskWoken)
+#define traceENTER_xTaskGenericNotifyFromISR(                                                                                              \
+    xTaskToNotify, uxIndexToNotify, ulValue, eAction, pulPreviousNotificationValue, pxHigherPriorityTaskWoken)
 #endif
 
 #ifndef traceRETURN_xTaskGenericNotifyFromISR
@@ -2417,7 +2418,8 @@ extern "C" {
 #endif
 
 #ifndef traceENTER_xStreamBufferGenericCreate
-#define traceENTER_xStreamBufferGenericCreate(xBufferSizeBytes, xTriggerLevelBytes, xStreamBufferType, pxSendCompletedCallback, pxReceiveCompletedCallback)
+#define traceENTER_xStreamBufferGenericCreate(                                                                                             \
+    xBufferSizeBytes, xTriggerLevelBytes, xStreamBufferType, pxSendCompletedCallback, pxReceiveCompletedCallback)
 #endif
 
 #ifndef traceRETURN_xStreamBufferGenericCreate
@@ -2425,7 +2427,13 @@ extern "C" {
 #endif
 
 #ifndef traceENTER_xStreamBufferGenericCreateStatic
-#define traceENTER_xStreamBufferGenericCreateStatic(xBufferSizeBytes, xTriggerLevelBytes, xStreamBufferType, pucStreamBufferStorageArea, pxStaticStreamBuffer, pxSendCompletedCallback, pxReceiveCompletedCallback)
+#define traceENTER_xStreamBufferGenericCreateStatic(xBufferSizeBytes,                                                                      \
+                                                    xTriggerLevelBytes,                                                                    \
+                                                    xStreamBufferType,                                                                     \
+                                                    pucStreamBufferStorageArea,                                                            \
+                                                    pxStaticStreamBuffer,                                                                  \
+                                                    pxSendCompletedCallback,                                                               \
+                                                    pxReceiveCompletedCallback)
 #endif
 
 #ifndef traceRETURN_xStreamBufferGenericCreateStatic
@@ -2853,7 +2861,7 @@ extern "C" {
 
 #ifndef configRUN_TIME_COUNTER_TYPE
 
-/* Defaults to uint32_t for backward compatibility, but can be overridden in
+    /* Defaults to uint32_t for backward compatibility, but can be overridden in
  * FreeRTOSConfig.h if uint32_t is too restrictive. */
 
 #define configRUN_TIME_COUNTER_TYPE uint32_t
@@ -3092,11 +3100,11 @@ extern "C" {
  * |     |         |        | xTaskCreateRestrictedStatic |                                   |                  |           |
  * +-----+---------+--------+-----------------------------+-----------------------------------+------------------+-----------+
  */
-#define tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE                                                                            \
-    (((portUSING_MPU_WRAPPERS == 0) && (configSUPPORT_DYNAMIC_ALLOCATION == 1) && (configSUPPORT_STATIC_ALLOCATION == 1)) || \
+#define tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE                                                                                          \
+    (((portUSING_MPU_WRAPPERS == 0) && (configSUPPORT_DYNAMIC_ALLOCATION == 1) && (configSUPPORT_STATIC_ALLOCATION == 1)) ||               \
      ((portUSING_MPU_WRAPPERS == 1) && (configSUPPORT_DYNAMIC_ALLOCATION == 1)))
 
-/*
+    /*
  * In line with software engineering best practice, FreeRTOS implements a strict
  * data hiding policy, so the real structures used by FreeRTOS to maintain the
  * state of tasks, queues, semaphores, etc. are not accessible to the application
@@ -3106,46 +3114,46 @@ extern "C" {
  * real objects are used for this purpose.  The dummy list and list item
  * structures below are used for inclusion in such a dummy structure.
  */
-struct xSTATIC_LIST_ITEM {
+    struct xSTATIC_LIST_ITEM {
 #if (configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES == 1)
-    TickType_t xDummy1;
+        TickType_t xDummy1;
 #endif
-    TickType_t xDummy2;
-    void*      pvDummy3[4];
+        TickType_t xDummy2;
+        void*      pvDummy3[4];
 #if (configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES == 1)
-    TickType_t xDummy4;
+        TickType_t xDummy4;
 #endif
-};
-typedef struct xSTATIC_LIST_ITEM StaticListItem_t;
+    };
+    typedef struct xSTATIC_LIST_ITEM StaticListItem_t;
 
 #if (configUSE_MINI_LIST_ITEM == 1)
-/* See the comments above the struct xSTATIC_LIST_ITEM definition. */
-struct xSTATIC_MINI_LIST_ITEM {
+    /* See the comments above the struct xSTATIC_LIST_ITEM definition. */
+    struct xSTATIC_MINI_LIST_ITEM {
 #if (configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES == 1)
-    TickType_t xDummy1;
+        TickType_t xDummy1;
 #endif
-    TickType_t xDummy2;
-    void*      pvDummy3[2];
-};
-typedef struct xSTATIC_MINI_LIST_ITEM StaticMiniListItem_t;
+        TickType_t xDummy2;
+        void*      pvDummy3[2];
+    };
+    typedef struct xSTATIC_MINI_LIST_ITEM StaticMiniListItem_t;
 #else  /* if ( configUSE_MINI_LIST_ITEM == 1 ) */
 typedef struct xSTATIC_LIST_ITEM StaticMiniListItem_t;
 #endif /* if ( configUSE_MINI_LIST_ITEM == 1 ) */
 
-/* See the comments above the struct xSTATIC_LIST_ITEM definition. */
-typedef struct xSTATIC_LIST {
+    /* See the comments above the struct xSTATIC_LIST_ITEM definition. */
+    typedef struct xSTATIC_LIST {
 #if (configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES == 1)
-    TickType_t xDummy1;
+        TickType_t xDummy1;
 #endif
-    UBaseType_t          uxDummy2;
-    void*                pvDummy3;
-    StaticMiniListItem_t xDummy4;
+        UBaseType_t          uxDummy2;
+        void*                pvDummy3;
+        StaticMiniListItem_t xDummy4;
 #if (configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES == 1)
-    TickType_t xDummy5;
+        TickType_t xDummy5;
 #endif
-} StaticList_t;
+    } StaticList_t;
 
-/*
+    /*
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the Task structure used internally by
@@ -3158,66 +3166,66 @@ typedef struct xSTATIC_LIST {
  * are set.  Its contents are somewhat obfuscated in the hope users will
  * recognise that it would be unwise to make direct use of the structure members.
  */
-typedef struct xSTATIC_TCB {
-    void* pxDummy1;
+    typedef struct xSTATIC_TCB {
+        void* pxDummy1;
 #if (portUSING_MPU_WRAPPERS == 1)
-    xMPU_SETTINGS xDummy2;
+        xMPU_SETTINGS xDummy2;
 #endif
 #if (configUSE_CORE_AFFINITY == 1) && (configNUMBER_OF_CORES > 1)
-    UBaseType_t uxDummy26;
+        UBaseType_t uxDummy26;
 #endif
-    StaticListItem_t xDummy3[2];
-    UBaseType_t      uxDummy5;
-    void*            pxDummy6;
+        StaticListItem_t xDummy3[2];
+        UBaseType_t      uxDummy5;
+        void*            pxDummy6;
 #if (configNUMBER_OF_CORES > 1)
-    BaseType_t  xDummy23;
-    UBaseType_t uxDummy24;
+        BaseType_t  xDummy23;
+        UBaseType_t uxDummy24;
 #endif
-    uint8_t ucDummy7[configMAX_TASK_NAME_LEN];
+        uint8_t ucDummy7[configMAX_TASK_NAME_LEN];
 #if (configUSE_TASK_PREEMPTION_DISABLE == 1)
-    BaseType_t xDummy25;
+        BaseType_t xDummy25;
 #endif
 #if ((portSTACK_GROWTH > 0) || (configRECORD_STACK_HIGH_ADDRESS == 1))
-    void* pxDummy8;
+        void* pxDummy8;
 #endif
 #if (portCRITICAL_NESTING_IN_TCB == 1)
-    UBaseType_t uxDummy9;
+        UBaseType_t uxDummy9;
 #endif
 #if (configUSE_TRACE_FACILITY == 1)
-    UBaseType_t uxDummy10[2];
+        UBaseType_t uxDummy10[2];
 #endif
 #if (configUSE_MUTEXES == 1)
-    UBaseType_t uxDummy12[2];
+        UBaseType_t uxDummy12[2];
 #endif
 #if (configUSE_APPLICATION_TASK_TAG == 1)
-    void* pxDummy14;
+        void* pxDummy14;
 #endif
 #if (configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0)
-    void* pvDummy15[configNUM_THREAD_LOCAL_STORAGE_POINTERS];
+        void* pvDummy15[configNUM_THREAD_LOCAL_STORAGE_POINTERS];
 #endif
 #if (configGENERATE_RUN_TIME_STATS == 1)
-    configRUN_TIME_COUNTER_TYPE ulDummy16;
+        configRUN_TIME_COUNTER_TYPE ulDummy16;
 #endif
 #if (configUSE_C_RUNTIME_TLS_SUPPORT == 1)
-    configTLS_BLOCK_TYPE xDummy17;
+        configTLS_BLOCK_TYPE xDummy17;
 #endif
 #if (configUSE_TASK_NOTIFICATIONS == 1)
-    uint32_t ulDummy18[configTASK_NOTIFICATION_ARRAY_ENTRIES];
-    uint8_t  ucDummy19[configTASK_NOTIFICATION_ARRAY_ENTRIES];
+        uint32_t ulDummy18[configTASK_NOTIFICATION_ARRAY_ENTRIES];
+        uint8_t  ucDummy19[configTASK_NOTIFICATION_ARRAY_ENTRIES];
 #endif
 #if (tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0)
-    uint8_t uxDummy20;
+        uint8_t uxDummy20;
 #endif
 
 #if (INCLUDE_xTaskAbortDelay == 1)
-    uint8_t ucDummy21;
+        uint8_t ucDummy21;
 #endif
 #if (configUSE_POSIX_ERRNO == 1)
-    int iDummy22;
+        int iDummy22;
 #endif
-} StaticTask_t;
+    } StaticTask_t;
 
-/*
+    /*
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the Queue structure used internally by
@@ -3231,34 +3239,35 @@ typedef struct xSTATIC_TCB {
  * users will recognise that it would be unwise to make direct use of the
  * structure members.
  */
-typedef struct xSTATIC_QUEUE {
-    void* pvDummy1[3];
+    typedef struct xSTATIC_QUEUE {
+        void* pvDummy1[3];
 
-    union {
-        void*       pvDummy2;
-        UBaseType_t uxDummy2;
-    } u;
+        union {
+            void*       pvDummy2;
+            UBaseType_t uxDummy2;
+        } u;
 
-    StaticList_t xDummy3[2];
-    UBaseType_t  uxDummy4[3];
-    uint8_t      ucDummy5[2];
+        StaticList_t xDummy3[2];
+        UBaseType_t  uxDummy4[3];
+        uint8_t      ucDummy5[2];
 
 #if ((configSUPPORT_STATIC_ALLOCATION == 1) && (configSUPPORT_DYNAMIC_ALLOCATION == 1))
-    uint8_t ucDummy6;
+        uint8_t ucDummy6;
 #endif
 
 #if (configUSE_QUEUE_SETS == 1)
-    void* pvDummy7;
+        void* pvDummy7;
 #endif
 
 #if (configUSE_TRACE_FACILITY == 1)
-    UBaseType_t uxDummy8;
-    uint8_t     ucDummy9;
+        UBaseType_t uxDummy8;
+        uint8_t     ucDummy9;
 #endif
-} StaticQueue_t;
-typedef StaticQueue_t StaticSemaphore_t;
+    } StaticQueue_t;
 
-/*
+    typedef StaticQueue_t StaticSemaphore_t;
+
+    /*
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the event group structure used
@@ -3272,20 +3281,20 @@ typedef StaticQueue_t StaticSemaphore_t;
  * obfuscated in the hope users will recognise that it would be unwise to make
  * direct use of the structure members.
  */
-typedef struct xSTATIC_EVENT_GROUP {
-    TickType_t   xDummy1;
-    StaticList_t xDummy2;
+    typedef struct xSTATIC_EVENT_GROUP {
+        TickType_t   xDummy1;
+        StaticList_t xDummy2;
 
 #if (configUSE_TRACE_FACILITY == 1)
-    UBaseType_t uxDummy3;
+        UBaseType_t uxDummy3;
 #endif
 
 #if ((configSUPPORT_STATIC_ALLOCATION == 1) && (configSUPPORT_DYNAMIC_ALLOCATION == 1))
-    uint8_t ucDummy4;
+        uint8_t ucDummy4;
 #endif
-} StaticEventGroup_t;
+    } StaticEventGroup_t;
 
-/*
+    /*
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the software timer structure used
@@ -3299,19 +3308,19 @@ typedef struct xSTATIC_EVENT_GROUP {
  * the hope users will recognise that it would be unwise to make direct use of
  * the structure members.
  */
-typedef struct xSTATIC_TIMER {
-    void*            pvDummy1;
-    StaticListItem_t xDummy2;
-    TickType_t       xDummy3;
-    void*            pvDummy5;
-    TaskFunction_t   pvDummy6;
+    typedef struct xSTATIC_TIMER {
+        void*            pvDummy1;
+        StaticListItem_t xDummy2;
+        TickType_t       xDummy3;
+        void*            pvDummy5;
+        TaskFunction_t   pvDummy6;
 #if (configUSE_TRACE_FACILITY == 1)
-    UBaseType_t uxDummy7;
+        UBaseType_t uxDummy7;
 #endif
-    uint8_t ucDummy8;
-} StaticTimer_t;
+        uint8_t ucDummy8;
+    } StaticTimer_t;
 
-/*
+    /*
  * In line with software engineering best practice, especially when supplying a
  * library that is likely to change in future versions, FreeRTOS implements a
  * strict data hiding policy.  This means the stream buffer structure used
@@ -3325,21 +3334,21 @@ typedef struct xSTATIC_TIMER {
  * somewhat obfuscated in the hope users will recognise that it would be unwise
  * to make direct use of the structure members.
  */
-typedef struct xSTATIC_STREAM_BUFFER {
-    size_t  uxDummy1[4];
-    void*   pvDummy2[3];
-    uint8_t ucDummy3;
+    typedef struct xSTATIC_STREAM_BUFFER {
+        size_t  uxDummy1[4];
+        void*   pvDummy2[3];
+        uint8_t ucDummy3;
 #if (configUSE_TRACE_FACILITY == 1)
-    UBaseType_t uxDummy4;
+        UBaseType_t uxDummy4;
 #endif
 #if (configUSE_SB_COMPLETED_CALLBACK == 1)
-    void* pvDummy5[2];
+        void* pvDummy5[2];
 #endif
-    UBaseType_t uxDummy6;
-} StaticStreamBuffer_t;
+        UBaseType_t uxDummy6;
+    } StaticStreamBuffer_t;
 
-/* Message buffers are built on stream buffers. */
-typedef StaticStreamBuffer_t StaticMessageBuffer_t;
+    /* Message buffers are built on stream buffers. */
+    typedef StaticStreamBuffer_t StaticMessageBuffer_t;
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus

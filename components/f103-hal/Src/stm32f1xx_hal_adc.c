@@ -550,8 +550,8 @@ HAL_StatusTypeDef HAL_ADC_Init(ADC_HandleTypeDef* hadc) {
         /* (DMA), injected group bits (JEXTTRIG and JEXTSEL), channel internal    */
         /* measurement path bit (TSVREFE).                                        */
         if (READ_BIT(hadc->Instance->CR2,
-                     ~(ADC_CR2_ADON | ADC_CR2_DMA | ADC_CR2_SWSTART | ADC_CR2_JSWSTART | ADC_CR2_JEXTTRIG |
-                       ADC_CR2_JEXTSEL | ADC_CR2_TSVREFE)) == tmp_cr2) {
+                     ~(ADC_CR2_ADON | ADC_CR2_DMA | ADC_CR2_SWSTART | ADC_CR2_JSWSTART | ADC_CR2_JEXTTRIG | ADC_CR2_JEXTSEL |
+                       ADC_CR2_TSVREFE)) == tmp_cr2) {
             /* Set ADC error code to none */
             ADC_CLEAR_ERRORCODE(hadc);
 
@@ -614,24 +614,23 @@ HAL_StatusTypeDef HAL_ADC_DeInit(ADC_HandleTypeDef* hadc) {
 
         /* Reset register CR1 */
         CLEAR_BIT(hadc->Instance->CR1,
-                  (ADC_CR1_AWDEN | ADC_CR1_JAWDEN | ADC_CR1_DISCNUM | ADC_CR1_JDISCEN | ADC_CR1_DISCEN | ADC_CR1_JAUTO |
-                   ADC_CR1_AWDSGL | ADC_CR1_SCAN | ADC_CR1_JEOCIE | ADC_CR1_AWDIE | ADC_CR1_EOCIE | ADC_CR1_AWDCH));
+                  (ADC_CR1_AWDEN | ADC_CR1_JAWDEN | ADC_CR1_DISCNUM | ADC_CR1_JDISCEN | ADC_CR1_DISCEN | ADC_CR1_JAUTO | ADC_CR1_AWDSGL |
+                   ADC_CR1_SCAN | ADC_CR1_JEOCIE | ADC_CR1_AWDIE | ADC_CR1_EOCIE | ADC_CR1_AWDCH));
 
         /* Reset register CR2 */
         CLEAR_BIT(hadc->Instance->CR2,
-                  (ADC_CR2_TSVREFE | ADC_CR2_SWSTART | ADC_CR2_JSWSTART | ADC_CR2_EXTTRIG | ADC_CR2_EXTSEL |
-                   ADC_CR2_JEXTTRIG | ADC_CR2_JEXTSEL | ADC_CR2_ALIGN | ADC_CR2_DMA | ADC_CR2_RSTCAL | ADC_CR2_CAL |
-                   ADC_CR2_CONT | ADC_CR2_ADON));
+                  (ADC_CR2_TSVREFE | ADC_CR2_SWSTART | ADC_CR2_JSWSTART | ADC_CR2_EXTTRIG | ADC_CR2_EXTSEL | ADC_CR2_JEXTTRIG |
+                   ADC_CR2_JEXTSEL | ADC_CR2_ALIGN | ADC_CR2_DMA | ADC_CR2_RSTCAL | ADC_CR2_CAL | ADC_CR2_CONT | ADC_CR2_ADON));
 
         /* Reset register SMPR1 */
         CLEAR_BIT(hadc->Instance->SMPR1,
-                  (ADC_SMPR1_SMP17 | ADC_SMPR1_SMP16 | ADC_SMPR1_SMP15 | ADC_SMPR1_SMP14 | ADC_SMPR1_SMP13 |
-                   ADC_SMPR1_SMP12 | ADC_SMPR1_SMP11 | ADC_SMPR1_SMP10));
+                  (ADC_SMPR1_SMP17 | ADC_SMPR1_SMP16 | ADC_SMPR1_SMP15 | ADC_SMPR1_SMP14 | ADC_SMPR1_SMP13 | ADC_SMPR1_SMP12 |
+                   ADC_SMPR1_SMP11 | ADC_SMPR1_SMP10));
 
         /* Reset register SMPR2 */
         CLEAR_BIT(hadc->Instance->SMPR2,
-                  (ADC_SMPR2_SMP9 | ADC_SMPR2_SMP8 | ADC_SMPR2_SMP7 | ADC_SMPR2_SMP6 | ADC_SMPR2_SMP5 | ADC_SMPR2_SMP4 |
-                   ADC_SMPR2_SMP3 | ADC_SMPR2_SMP2 | ADC_SMPR2_SMP1 | ADC_SMPR2_SMP0));
+                  (ADC_SMPR2_SMP9 | ADC_SMPR2_SMP8 | ADC_SMPR2_SMP7 | ADC_SMPR2_SMP6 | ADC_SMPR2_SMP5 | ADC_SMPR2_SMP4 | ADC_SMPR2_SMP3 |
+                   ADC_SMPR2_SMP2 | ADC_SMPR2_SMP1 | ADC_SMPR2_SMP0));
 
         /* Reset register JOFR1 */
         CLEAR_BIT(hadc->Instance->JOFR1, ADC_JOFR1_JOFFSET1);
@@ -654,12 +653,10 @@ HAL_StatusTypeDef HAL_ADC_DeInit(ADC_HandleTypeDef* hadc) {
         CLEAR_BIT(hadc->Instance->SQR1, ADC_SQR1_L | ADC_SQR1_SQ16 | ADC_SQR1_SQ15 | ADC_SQR1_SQ14 | ADC_SQR1_SQ13);
 
         /* Reset register SQR2 */
-        CLEAR_BIT(hadc->Instance->SQR2,
-                  ADC_SQR2_SQ12 | ADC_SQR2_SQ11 | ADC_SQR2_SQ10 | ADC_SQR2_SQ9 | ADC_SQR2_SQ8 | ADC_SQR2_SQ7);
+        CLEAR_BIT(hadc->Instance->SQR2, ADC_SQR2_SQ12 | ADC_SQR2_SQ11 | ADC_SQR2_SQ10 | ADC_SQR2_SQ9 | ADC_SQR2_SQ8 | ADC_SQR2_SQ7);
 
         /* Reset register SQR3 */
-        CLEAR_BIT(hadc->Instance->SQR3,
-                  ADC_SQR3_SQ6 | ADC_SQR3_SQ5 | ADC_SQR3_SQ4 | ADC_SQR3_SQ3 | ADC_SQR3_SQ2 | ADC_SQR3_SQ1);
+        CLEAR_BIT(hadc->Instance->SQR3, ADC_SQR3_SQ6 | ADC_SQR3_SQ5 | ADC_SQR3_SQ4 | ADC_SQR3_SQ3 | ADC_SQR3_SQ2 | ADC_SQR3_SQ1);
 
         /* Reset register JSQR */
         CLEAR_BIT(hadc->Instance->JSQR, ADC_JSQR_JL | ADC_JSQR_JSQ4 | ADC_JSQR_JSQ3 | ADC_JSQR_JSQ2 | ADC_JSQR_JSQ1);
@@ -754,9 +751,7 @@ __weak void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc) {
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_ADC_RegisterCallback(ADC_HandleTypeDef*        hadc,
-                                           HAL_ADC_CallbackIDTypeDef CallbackID,
-                                           pADC_CallbackTypeDef      pCallback) {
+HAL_StatusTypeDef HAL_ADC_RegisterCallback(ADC_HandleTypeDef* hadc, HAL_ADC_CallbackIDTypeDef CallbackID, pADC_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {
@@ -1429,8 +1424,7 @@ HAL_StatusTypeDef HAL_ADC_Start_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, ui
             /* - Clear state bitfield related to regular group conversion results   */
             /* - Set state bitfield related to regular operation                    */
             ADC_STATE_CLR_SET(hadc->State,
-                              HAL_ADC_STATE_READY | HAL_ADC_STATE_REG_EOC | HAL_ADC_STATE_REG_OVR |
-                                  HAL_ADC_STATE_REG_EOSMP,
+                              HAL_ADC_STATE_READY | HAL_ADC_STATE_REG_EOC | HAL_ADC_STATE_REG_OVR | HAL_ADC_STATE_REG_EOSMP,
                               HAL_ADC_STATE_REG_BUSY);
 
             /* Set group injected state (from auto-injection) and multimode state     */
@@ -1821,34 +1815,24 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef* hadc, ADC_ChannelConf
     /* Regular sequence configuration */
     /* For Rank 1 to 6 */
     if (sConfig->Rank < 7U) {
-        MODIFY_REG(hadc->Instance->SQR3,
-                   ADC_SQR3_RK(ADC_SQR3_SQ1, sConfig->Rank),
-                   ADC_SQR3_RK(sConfig->Channel, sConfig->Rank));
+        MODIFY_REG(hadc->Instance->SQR3, ADC_SQR3_RK(ADC_SQR3_SQ1, sConfig->Rank), ADC_SQR3_RK(sConfig->Channel, sConfig->Rank));
     }
     /* For Rank 7 to 12 */
     else if (sConfig->Rank < 13U) {
-        MODIFY_REG(hadc->Instance->SQR2,
-                   ADC_SQR2_RK(ADC_SQR2_SQ7, sConfig->Rank),
-                   ADC_SQR2_RK(sConfig->Channel, sConfig->Rank));
+        MODIFY_REG(hadc->Instance->SQR2, ADC_SQR2_RK(ADC_SQR2_SQ7, sConfig->Rank), ADC_SQR2_RK(sConfig->Channel, sConfig->Rank));
     }
     /* For Rank 13 to 16 */
     else {
-        MODIFY_REG(hadc->Instance->SQR1,
-                   ADC_SQR1_RK(ADC_SQR1_SQ13, sConfig->Rank),
-                   ADC_SQR1_RK(sConfig->Channel, sConfig->Rank));
+        MODIFY_REG(hadc->Instance->SQR1, ADC_SQR1_RK(ADC_SQR1_SQ13, sConfig->Rank), ADC_SQR1_RK(sConfig->Channel, sConfig->Rank));
     }
 
     /* Channel sampling time configuration */
     /* For channels 10 to 17 */
     if (sConfig->Channel >= ADC_CHANNEL_10) {
-        MODIFY_REG(hadc->Instance->SMPR1,
-                   ADC_SMPR1(ADC_SMPR1_SMP10, sConfig->Channel),
-                   ADC_SMPR1(sConfig->SamplingTime, sConfig->Channel));
+        MODIFY_REG(hadc->Instance->SMPR1, ADC_SMPR1(ADC_SMPR1_SMP10, sConfig->Channel), ADC_SMPR1(sConfig->SamplingTime, sConfig->Channel));
     } else /* For channels 0 to 9 */
     {
-        MODIFY_REG(hadc->Instance->SMPR2,
-                   ADC_SMPR2(ADC_SMPR2_SMP0, sConfig->Channel),
-                   ADC_SMPR2(sConfig->SamplingTime, sConfig->Channel));
+        MODIFY_REG(hadc->Instance->SMPR2, ADC_SMPR2(ADC_SMPR2_SMP0, sConfig->Channel), ADC_SMPR2(sConfig->SamplingTime, sConfig->Channel));
     }
 
     /* If ADC1 Channel_16 or Channel_17 is selected, enable Temperature sensor  */

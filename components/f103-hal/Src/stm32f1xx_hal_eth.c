@@ -417,7 +417,8 @@ HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef* heth) {
         assert_param(IS_ETH_DUPLEX_MODE(heth->Init.DuplexMode));
 
         /* Set MAC Speed and Duplex Mode */
-        if (HAL_ETH_WritePHYRegister(heth, PHY_BCR, ((uint16_t)((heth->Init).DuplexMode >> 3U) | (uint16_t)((heth->Init).Speed >> 1U))) != HAL_OK) {
+        if (HAL_ETH_WritePHYRegister(heth, PHY_BCR, ((uint16_t)((heth->Init).DuplexMode >> 3U) | (uint16_t)((heth->Init).Speed >> 1U))) !=
+            HAL_OK) {
             /* In case of write timeout */
             err = ETH_ERROR;
 
@@ -485,7 +486,8 @@ HAL_StatusTypeDef HAL_ETH_DeInit(ETH_HandleTypeDef* heth) {
   * @param  TxBuffCount: Number of the used Tx desc in the list
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_ETH_DMATxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMATxDescTab, uint8_t* TxBuff, uint32_t TxBuffCount) {
+HAL_StatusTypeDef
+HAL_ETH_DMATxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMATxDescTab, uint8_t* TxBuff, uint32_t TxBuffCount) {
     uint32_t            i = 0U;
     ETH_DMADescTypeDef* dmatxdesc;
 
@@ -546,7 +548,8 @@ HAL_StatusTypeDef HAL_ETH_DMATxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADesc
   * @param  RxBuffCount: Number of the used Rx desc in the list
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_ETH_DMARxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMARxDescTab, uint8_t* RxBuff, uint32_t RxBuffCount) {
+HAL_StatusTypeDef
+HAL_ETH_DMARxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMARxDescTab, uint8_t* RxBuff, uint32_t RxBuffCount) {
     uint32_t            i = 0U;
     ETH_DMADescTypeDef* DMARxDesc;
 
@@ -1464,19 +1467,9 @@ HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef*
         /* Clear WD, PCE, PS, TE and RE bits */
         tmpreg1 &= ETH_MACCR_CLEAR_MASK;
 
-        tmpreg1 |= (uint32_t)(macconf->Watchdog |
-                              macconf->Jabber |
-                              macconf->InterFrameGap |
-                              macconf->CarrierSense |
-                              (heth->Init).Speed |
-                              macconf->ReceiveOwn |
-                              macconf->LoopbackMode |
-                              (heth->Init).DuplexMode |
-                              macconf->ChecksumOffload |
-                              macconf->RetryTransmission |
-                              macconf->AutomaticPadCRCStrip |
-                              macconf->BackOffLimit |
-                              macconf->DeferralCheck);
+        tmpreg1 |= (uint32_t)(macconf->Watchdog | macconf->Jabber | macconf->InterFrameGap | macconf->CarrierSense | (heth->Init).Speed |
+                              macconf->ReceiveOwn | macconf->LoopbackMode | (heth->Init).DuplexMode | macconf->ChecksumOffload |
+                              macconf->RetryTransmission | macconf->AutomaticPadCRCStrip | macconf->BackOffLimit | macconf->DeferralCheck);
 
         /* Write to ETHERNET MACCR */
         (heth->Instance)->MACCR = (uint32_t)tmpreg1;
@@ -1489,14 +1482,9 @@ HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef*
 
         /*----------------------- ETHERNET MACFFR Configuration --------------------*/
         /* Write to ETHERNET MACFFR */
-        (heth->Instance)->MACFFR = (uint32_t)(macconf->ReceiveAll |
-                                              macconf->SourceAddrFilter |
-                                              macconf->PassControlFrames |
-                                              macconf->BroadcastFramesReception |
-                                              macconf->DestinationAddrFilter |
-                                              macconf->PromiscuousMode |
-                                              macconf->MulticastFramesFilter |
-                                              macconf->UnicastFramesFilter);
+        (heth->Instance)->MACFFR = (uint32_t)(macconf->ReceiveAll | macconf->SourceAddrFilter | macconf->PassControlFrames |
+                                              macconf->BroadcastFramesReception | macconf->DestinationAddrFilter |
+                                              macconf->PromiscuousMode | macconf->MulticastFramesFilter | macconf->UnicastFramesFilter);
 
         /* Wait until the write operation will be taken into account :
     at least four TX_CLK/RX_CLK clock cycles */
@@ -1517,12 +1505,8 @@ HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef*
         /* Clear xx bits */
         tmpreg1 &= ETH_MACFCR_CLEAR_MASK;
 
-        tmpreg1 |= (uint32_t)((macconf->PauseTime << 16U) |
-                              macconf->ZeroQuantaPause |
-                              macconf->PauseLowThreshold |
-                              macconf->UnicastPauseFrameDetect |
-                              macconf->ReceiveFlowControl |
-                              macconf->TransmitFlowControl);
+        tmpreg1 |= (uint32_t)((macconf->PauseTime << 16U) | macconf->ZeroQuantaPause | macconf->PauseLowThreshold |
+                              macconf->UnicastPauseFrameDetect | macconf->ReceiveFlowControl | macconf->TransmitFlowControl);
 
         /* Write to ETHERNET MACFCR */
         (heth->Instance)->MACFCR = (uint32_t)tmpreg1;
@@ -1534,8 +1518,7 @@ HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef*
         (heth->Instance)->MACFCR = tmpreg1;
 
         /*----------------------- ETHERNET MACVLANTR Configuration -----------------*/
-        (heth->Instance)->MACVLANTR = (uint32_t)(macconf->VLANTagComparison |
-                                                 macconf->VLANTagIdentifier);
+        (heth->Instance)->MACVLANTR = (uint32_t)(macconf->VLANTagComparison | macconf->VLANTagIdentifier);
 
         /* Wait until the write operation will be taken into account :
     at least four TX_CLK/RX_CLK clock cycles */
@@ -1612,15 +1595,9 @@ HAL_StatusTypeDef HAL_ETH_ConfigDMA(ETH_HandleTypeDef* heth, ETH_DMAInitTypeDef*
     /* Clear xx bits */
     tmpreg1 &= ETH_DMAOMR_CLEAR_MASK;
 
-    tmpreg1 |= (uint32_t)(dmaconf->DropTCPIPChecksumErrorFrame |
-                          dmaconf->ReceiveStoreForward |
-                          dmaconf->FlushReceivedFrame |
-                          dmaconf->TransmitStoreForward |
-                          dmaconf->TransmitThresholdControl |
-                          dmaconf->ForwardErrorFrames |
-                          dmaconf->ForwardUndersizedGoodFrames |
-                          dmaconf->ReceiveThresholdControl |
-                          dmaconf->SecondFrameOperate);
+    tmpreg1 |= (uint32_t)(dmaconf->DropTCPIPChecksumErrorFrame | dmaconf->ReceiveStoreForward | dmaconf->FlushReceivedFrame |
+                          dmaconf->TransmitStoreForward | dmaconf->TransmitThresholdControl | dmaconf->ForwardErrorFrames |
+                          dmaconf->ForwardUndersizedGoodFrames | dmaconf->ReceiveThresholdControl | dmaconf->SecondFrameOperate);
 
     /* Write to ETHERNET DMAOMR */
     (heth->Instance)->DMAOMR = (uint32_t)tmpreg1;
@@ -1632,12 +1609,9 @@ HAL_StatusTypeDef HAL_ETH_ConfigDMA(ETH_HandleTypeDef* heth, ETH_DMAInitTypeDef*
     (heth->Instance)->DMAOMR = tmpreg1;
 
     /*----------------------- ETHERNET DMABMR Configuration --------------------*/
-    (heth->Instance)->DMABMR = (uint32_t)(dmaconf->AddressAlignedBeats |
-                                          dmaconf->FixedBurst |
+    (heth->Instance)->DMABMR = (uint32_t)(dmaconf->AddressAlignedBeats | dmaconf->FixedBurst |
                                           dmaconf->RxDMABurstLength | /* !! if 4xPBL is selected for Tx or Rx it is applied for the other */
-                                          dmaconf->TxDMABurstLength |
-                                          (dmaconf->DescriptorSkipLength << 2U) |
-                                          dmaconf->DMAArbitration |
+                                          dmaconf->TxDMABurstLength | (dmaconf->DescriptorSkipLength << 2U) | dmaconf->DMAArbitration |
                                           ETH_DMABMR_USP); /* Enable use of separate PBL for Rx and Tx */
 
     /* Wait until the write operation will be taken into account:
@@ -1775,19 +1749,9 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /* Set the ACS bit according to ETH AutomaticPadCRCStrip value */
     /* Set the BL bit according to ETH BackOffLimit value */
     /* Set the DC bit according to ETH DeferralCheck value */
-    tmpreg1 |= (uint32_t)(macinit.Watchdog |
-                          macinit.Jabber |
-                          macinit.InterFrameGap |
-                          macinit.CarrierSense |
-                          (heth->Init).Speed |
-                          macinit.ReceiveOwn |
-                          macinit.LoopbackMode |
-                          (heth->Init).DuplexMode |
-                          macinit.ChecksumOffload |
-                          macinit.RetryTransmission |
-                          macinit.AutomaticPadCRCStrip |
-                          macinit.BackOffLimit |
-                          macinit.DeferralCheck);
+    tmpreg1 |= (uint32_t)(macinit.Watchdog | macinit.Jabber | macinit.InterFrameGap | macinit.CarrierSense | (heth->Init).Speed |
+                          macinit.ReceiveOwn | macinit.LoopbackMode | (heth->Init).DuplexMode | macinit.ChecksumOffload |
+                          macinit.RetryTransmission | macinit.AutomaticPadCRCStrip | macinit.BackOffLimit | macinit.DeferralCheck);
 
     /* Write to ETHERNET MACCR */
     (heth->Instance)->MACCR = (uint32_t)tmpreg1;
@@ -1808,14 +1772,9 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /* Set the PM, HMC and HPF bits according to ETH MulticastFramesFilter value */
     /* Set the HUC and HPF bits according to ETH UnicastFramesFilter value */
     /* Write to ETHERNET MACFFR */
-    (heth->Instance)->MACFFR = (uint32_t)(macinit.ReceiveAll |
-                                          macinit.SourceAddrFilter |
-                                          macinit.PassControlFrames |
-                                          macinit.BroadcastFramesReception |
-                                          macinit.DestinationAddrFilter |
-                                          macinit.PromiscuousMode |
-                                          macinit.MulticastFramesFilter |
-                                          macinit.UnicastFramesFilter);
+    (heth->Instance)->MACFFR =
+        (uint32_t)(macinit.ReceiveAll | macinit.SourceAddrFilter | macinit.PassControlFrames | macinit.BroadcastFramesReception |
+                   macinit.DestinationAddrFilter | macinit.PromiscuousMode | macinit.MulticastFramesFilter | macinit.UnicastFramesFilter);
 
     /* Wait until the write operation will be taken into account:
      at least four TX_CLK/RX_CLK clock cycles */
@@ -1842,12 +1801,8 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /* Set the UP bit according to ETH UnicastPauseFrameDetect value */
     /* Set the RFE bit according to ETH ReceiveFlowControl value */
     /* Set the TFE bit according to ETH TransmitFlowControl value */
-    tmpreg1 |= (uint32_t)((macinit.PauseTime << 16U) |
-                          macinit.ZeroQuantaPause |
-                          macinit.PauseLowThreshold |
-                          macinit.UnicastPauseFrameDetect |
-                          macinit.ReceiveFlowControl |
-                          macinit.TransmitFlowControl);
+    tmpreg1 |= (uint32_t)((macinit.PauseTime << 16U) | macinit.ZeroQuantaPause | macinit.PauseLowThreshold |
+                          macinit.UnicastPauseFrameDetect | macinit.ReceiveFlowControl | macinit.TransmitFlowControl);
 
     /* Write to ETHERNET MACFCR */
     (heth->Instance)->MACFCR = (uint32_t)tmpreg1;
@@ -1861,8 +1816,7 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /*----------------------- ETHERNET MACVLANTR Configuration ----------------*/
     /* Set the ETV bit according to ETH VLANTagComparison value */
     /* Set the VL bit according to ETH VLANTagIdentifier value */
-    (heth->Instance)->MACVLANTR = (uint32_t)(macinit.VLANTagComparison |
-                                             macinit.VLANTagIdentifier);
+    (heth->Instance)->MACVLANTR = (uint32_t)(macinit.VLANTagComparison | macinit.VLANTagIdentifier);
 
     /* Wait until the write operation will be taken into account:
      at least four TX_CLK/RX_CLK clock cycles */
@@ -1901,15 +1855,9 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /* Set the FUF bit according to ETH ForwardUndersizedGoodFrames value */
     /* Set the RTC bit according to ETH ReceiveThresholdControl value */
     /* Set the OSF bit according to ETH SecondFrameOperate value */
-    tmpreg1 |= (uint32_t)(dmainit.DropTCPIPChecksumErrorFrame |
-                          dmainit.ReceiveStoreForward |
-                          dmainit.FlushReceivedFrame |
-                          dmainit.TransmitStoreForward |
-                          dmainit.TransmitThresholdControl |
-                          dmainit.ForwardErrorFrames |
-                          dmainit.ForwardUndersizedGoodFrames |
-                          dmainit.ReceiveThresholdControl |
-                          dmainit.SecondFrameOperate);
+    tmpreg1 |= (uint32_t)(dmainit.DropTCPIPChecksumErrorFrame | dmainit.ReceiveStoreForward | dmainit.FlushReceivedFrame |
+                          dmainit.TransmitStoreForward | dmainit.TransmitThresholdControl | dmainit.ForwardErrorFrames |
+                          dmainit.ForwardUndersizedGoodFrames | dmainit.ReceiveThresholdControl | dmainit.SecondFrameOperate);
 
     /* Write to ETHERNET DMAOMR */
     (heth->Instance)->DMAOMR = (uint32_t)tmpreg1;
@@ -1927,12 +1875,9 @@ static void ETH_MACDMAConfig(ETH_HandleTypeDef* heth, uint32_t err) {
     /* Set the PBL and 4*PBL bits according to ETH TxDMABurstLength value */
     /* Set the DSL bit according to ETH DesciptorSkipLength value */
     /* Set the PR and DA bits according to ETH DMAArbitration value */
-    (heth->Instance)->DMABMR = (uint32_t)(dmainit.AddressAlignedBeats |
-                                          dmainit.FixedBurst |
+    (heth->Instance)->DMABMR = (uint32_t)(dmainit.AddressAlignedBeats | dmainit.FixedBurst |
                                           dmainit.RxDMABurstLength | /* !! if 4xPBL is selected for Tx or Rx it is applied for the other */
-                                          dmainit.TxDMABurstLength |
-                                          (dmainit.DescriptorSkipLength << 2U) |
-                                          dmainit.DMAArbitration |
+                                          dmainit.TxDMABurstLength | (dmainit.DescriptorSkipLength << 2U) | dmainit.DMAArbitration |
                                           ETH_DMABMR_USP); /* Enable use of separate PBL for Rx and Tx */
 
     /* Wait until the write operation will be taken into account:

@@ -54,8 +54,7 @@ uint32_t ascon_trng_generate_32(ascon_trng_state_t* state) {
         ascon_permute6(&(state->prng));
         state->posn = 0;
     }
-#if defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_SLICED64) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+#if defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_DIRECT_XOR)
     /* Pull a word directly out of the state.  It doesn't matter if the
      * word is bit-sliced or not because any bit is as good as any other. */
     x = state->prng.W[state->posn / sizeof(uint32_t)];
@@ -70,13 +69,11 @@ uint32_t ascon_trng_generate_32(ascon_trng_state_t* state) {
 uint64_t ascon_trng_generate_64(ascon_trng_state_t* state) {
     uint64_t x;
     ascon_acquire(&(state->prng));
-    if ((state->posn + sizeof(uint64_t)) > ASCON_TRNG_MIXER_RATE ||
-        (state->posn % 8U) != 0) {
+    if ((state->posn + sizeof(uint64_t)) > ASCON_TRNG_MIXER_RATE || (state->posn % 8U) != 0) {
         ascon_permute6(&(state->prng));
         state->posn = 0;
     }
-#if defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_SLICED64) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+#if defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_DIRECT_XOR)
     /* Pull a word directly out of the state.  It doesn't matter if the
      * word is bit-sliced or not because any bit is as good as any other. */
     x = state->prng.S[state->posn / sizeof(uint64_t)];

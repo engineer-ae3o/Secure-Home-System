@@ -71,7 +71,7 @@ extern "C" {
                        "b usage_fault_dump\n");
     }
 
-    [[noreturn]] void hard_fault_dump(uint32_t* frame) {
+    [[noreturn]] void hard_fault_dump(const uint32_t* frame) {
         [[maybe_unused]] const volatile uint32_t r0   = frame[0];
         [[maybe_unused]] const volatile uint32_t r1   = frame[1];
         [[maybe_unused]] const volatile uint32_t r2   = frame[2];
@@ -82,10 +82,11 @@ extern "C" {
         [[maybe_unused]] const volatile uint32_t psr  = frame[7];
         [[maybe_unused]] const volatile uint32_t cfsr = SCB->CFSR;
         __asm volatile("bkpt #0");
-        while (1);
+        while (true) {
+        }
     }
 
-    [[noreturn]] void bus_fault_dump(uint32_t* frame) {
+    [[noreturn]] void bus_fault_dump(const uint32_t* frame) {
         [[maybe_unused]] const volatile uint32_t r0   = frame[0];
         [[maybe_unused]] const volatile uint32_t r1   = frame[1];
         [[maybe_unused]] const volatile uint32_t r2   = frame[2];
@@ -96,10 +97,11 @@ extern "C" {
         [[maybe_unused]] const volatile uint32_t cfsr = SCB->CFSR;
         [[maybe_unused]] const volatile uint32_t bfar = SCB->BFAR;
         __asm volatile("bkpt #0");
-        while (1);
+        while (true) {
+        }
     }
 
-    [[noreturn]] void usage_fault_dump(uint32_t* frame) {
+    [[noreturn]] void usage_fault_dump(const uint32_t* frame) {
         [[maybe_unused]] const volatile uint32_t r0   = frame[0];
         [[maybe_unused]] const volatile uint32_t r1   = frame[1];
         [[maybe_unused]] const volatile uint32_t r2   = frame[2];
@@ -109,12 +111,14 @@ extern "C" {
         [[maybe_unused]] const volatile uint32_t pc   = frame[6];
         [[maybe_unused]] const volatile uint32_t cfsr = SCB->CFSR;
         __asm volatile("bkpt #0");
-        while (1);
+        while (true) {
+        }
     }
 
     void vApplicationStackOverflowHook(TaskHandle_t, char*) {
         __asm volatile("bkpt #0");
-        while (1);
+        while (true) {
+        }
     }
 
     void vPortSetupTimerInterrupt() {

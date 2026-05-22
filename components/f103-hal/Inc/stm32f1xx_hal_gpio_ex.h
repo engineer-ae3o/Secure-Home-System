@@ -27,26 +27,26 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_HAL_Driver
+    /** @addtogroup STM32F1xx_HAL_Driver
   * @{
   */
 
-/** @defgroup GPIOEx GPIOEx
+    /** @defgroup GPIOEx GPIOEx
   * @{
   */
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
+    /* Exported types ------------------------------------------------------------*/
+    /* Exported constants --------------------------------------------------------*/
 
-/** @defgroup GPIOEx_Exported_Constants GPIOEx Exported Constants
+    /** @defgroup GPIOEx_Exported_Constants GPIOEx Exported Constants
   * @{
   */
 
-/** @defgroup GPIOEx_EVENTOUT EVENTOUT Cortex Configuration
+    /** @defgroup GPIOEx_EVENTOUT EVENTOUT Cortex Configuration
   * @brief This section propose definition to use the Cortex EVENTOUT signal.
   * @{
   */
 
-/** @defgroup GPIOEx_EVENTOUT_PIN EVENTOUT Pin
+    /** @defgroup GPIOEx_EVENTOUT_PIN EVENTOUT Pin
   * @{
   */
 
@@ -67,27 +67,18 @@ extern "C" {
 #define AFIO_EVENTOUT_PIN_14 AFIO_EVCR_PIN_PX14 /*!< EVENTOUT on pin 14 */
 #define AFIO_EVENTOUT_PIN_15 AFIO_EVCR_PIN_PX15 /*!< EVENTOUT on pin 15 */
 
-#define IS_AFIO_EVENTOUT_PIN(__PIN__) (((__PIN__) == AFIO_EVENTOUT_PIN_0) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_1) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_2) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_3) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_4) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_5) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_6) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_7) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_8) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_9) ||  \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_10) || \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_11) || \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_12) || \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_13) || \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_14) || \
-                                       ((__PIN__) == AFIO_EVENTOUT_PIN_15))
-/**
+#define IS_AFIO_EVENTOUT_PIN(__PIN__)                                                                                                      \
+    (((__PIN__) == AFIO_EVENTOUT_PIN_0) || ((__PIN__) == AFIO_EVENTOUT_PIN_1) || ((__PIN__) == AFIO_EVENTOUT_PIN_2) ||                     \
+     ((__PIN__) == AFIO_EVENTOUT_PIN_3) || ((__PIN__) == AFIO_EVENTOUT_PIN_4) || ((__PIN__) == AFIO_EVENTOUT_PIN_5) ||                     \
+     ((__PIN__) == AFIO_EVENTOUT_PIN_6) || ((__PIN__) == AFIO_EVENTOUT_PIN_7) || ((__PIN__) == AFIO_EVENTOUT_PIN_8) ||                     \
+     ((__PIN__) == AFIO_EVENTOUT_PIN_9) || ((__PIN__) == AFIO_EVENTOUT_PIN_10) || ((__PIN__) == AFIO_EVENTOUT_PIN_11) ||                   \
+     ((__PIN__) == AFIO_EVENTOUT_PIN_12) || ((__PIN__) == AFIO_EVENTOUT_PIN_13) || ((__PIN__) == AFIO_EVENTOUT_PIN_14) ||                  \
+     ((__PIN__) == AFIO_EVENTOUT_PIN_15))
+    /**
   * @}
   */
 
-/** @defgroup GPIOEx_EVENTOUT_PORT EVENTOUT Port
+    /** @defgroup GPIOEx_EVENTOUT_PORT EVENTOUT Port
   * @{
   */
 
@@ -97,11 +88,9 @@ extern "C" {
 #define AFIO_EVENTOUT_PORT_D AFIO_EVCR_PORT_PD /*!< EVENTOUT on port D */
 #define AFIO_EVENTOUT_PORT_E AFIO_EVCR_PORT_PE /*!< EVENTOUT on port E */
 
-#define IS_AFIO_EVENTOUT_PORT(__PORT__) (((__PORT__) == AFIO_EVENTOUT_PORT_A) || \
-                                         ((__PORT__) == AFIO_EVENTOUT_PORT_B) || \
-                                         ((__PORT__) == AFIO_EVENTOUT_PORT_C) || \
-                                         ((__PORT__) == AFIO_EVENTOUT_PORT_D) || \
-                                         ((__PORT__) == AFIO_EVENTOUT_PORT_E))
+#define IS_AFIO_EVENTOUT_PORT(__PORT__)                                                                                                    \
+    (((__PORT__) == AFIO_EVENTOUT_PORT_A) || ((__PORT__) == AFIO_EVENTOUT_PORT_B) || ((__PORT__) == AFIO_EVENTOUT_PORT_C) ||               \
+     ((__PORT__) == AFIO_EVENTOUT_PORT_D) || ((__PORT__) == AFIO_EVENTOUT_PORT_E))
 /**
   * @}
   */
@@ -475,7 +464,7 @@ extern "C" {
   */
 #define __HAL_AFIO_REMAP_SWJ_NONJTRST() AFIO_DBGAFR_CONFIG(AFIO_MAPR_SWJ_CFG_NOJNTRST)
 
-/**
+    /**
   * @brief Enable the Serial wire JTAG configuration
   * @note  NOJTAG: JTAG-DP Disabled and SW-DP Enabled
   * @retval None
@@ -808,87 +797,89 @@ extern "C" {
   * @{
   */
 #if defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6)
-#define GPIO_GET_INDEX(__GPIOx__) (((__GPIOx__) == (GPIOA)) ? 0uL : ((__GPIOx__) == (GPIOB)) ? 1uL \
-                                                                : ((__GPIOx__) == (GPIOC))   ? 2uL \
-                                                                                             : 3uL)
+#define GPIO_GET_INDEX(__GPIOx__) (((__GPIOx__) == (GPIOA)) ? 0uL : ((__GPIOx__) == (GPIOB)) ? 1uL : ((__GPIOx__) == (GPIOC)) ? 2uL : 3uL)
 #elif defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC)
-#define GPIO_GET_INDEX(__GPIOx__) (((__GPIOx__) == (GPIOA)) ? 0uL : ((__GPIOx__) == (GPIOB)) ? 1uL \
-                                                                : ((__GPIOx__) == (GPIOC))   ? 2uL \
-                                                                : ((__GPIOx__) == (GPIOD))   ? 3uL \
-                                                                                             : 4uL)
+#define GPIO_GET_INDEX(__GPIOx__)                                                                                                          \
+    (((__GPIOx__) == (GPIOA))   ? 0uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOB)) ? 1uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOC)) ? 2uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOD)) ? 3uL                                                                                                      \
+                                : 4uL)
 #elif defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F101xG) || defined(STM32F103xE) || defined(STM32F103xG)
-#define GPIO_GET_INDEX(__GPIOx__) (((__GPIOx__) == (GPIOA)) ? 0uL : ((__GPIOx__) == (GPIOB)) ? 1uL \
-                                                                : ((__GPIOx__) == (GPIOC))   ? 2uL \
-                                                                : ((__GPIOx__) == (GPIOD))   ? 3uL \
-                                                                : ((__GPIOx__) == (GPIOE))   ? 4uL \
-                                                                : ((__GPIOx__) == (GPIOF))   ? 5uL \
-                                                                                             : 6uL)
+#define GPIO_GET_INDEX(__GPIOx__)                                                                                                          \
+    (((__GPIOx__) == (GPIOA))   ? 0uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOB)) ? 1uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOC)) ? 2uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOD)) ? 3uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOE)) ? 4uL                                                                                                      \
+     : ((__GPIOx__) == (GPIOF)) ? 5uL                                                                                                      \
+                                : 6uL)
 #endif
 
-#define AFIO_REMAP_ENABLE(REMAP_PIN)  \
-    do {                              \
-        uint32_t tmpreg = AFIO->MAPR; \
-        tmpreg |= AFIO_MAPR_SWJ_CFG;  \
-        tmpreg |= REMAP_PIN;          \
-        AFIO->MAPR = tmpreg;          \
+#define AFIO_REMAP_ENABLE(REMAP_PIN)                                                                                                       \
+    do {                                                                                                                                   \
+        uint32_t tmpreg = AFIO->MAPR;                                                                                                      \
+        tmpreg |= AFIO_MAPR_SWJ_CFG;                                                                                                       \
+        tmpreg |= REMAP_PIN;                                                                                                               \
+        AFIO->MAPR = tmpreg;                                                                                                               \
     } while (0u)
 
-#define AFIO_REMAP_DISABLE(REMAP_PIN) \
-    do {                              \
-        uint32_t tmpreg = AFIO->MAPR; \
-        tmpreg |= AFIO_MAPR_SWJ_CFG;  \
-        tmpreg &= ~REMAP_PIN;         \
-        AFIO->MAPR = tmpreg;          \
+#define AFIO_REMAP_DISABLE(REMAP_PIN)                                                                                                      \
+    do {                                                                                                                                   \
+        uint32_t tmpreg = AFIO->MAPR;                                                                                                      \
+        tmpreg |= AFIO_MAPR_SWJ_CFG;                                                                                                       \
+        tmpreg &= ~REMAP_PIN;                                                                                                              \
+        AFIO->MAPR = tmpreg;                                                                                                               \
     } while (0u)
 
-#define AFIO_REMAP_PARTIAL(REMAP_PIN, REMAP_PIN_MASK) \
-    do {                                              \
-        uint32_t tmpreg = AFIO->MAPR;                 \
-        tmpreg &= ~REMAP_PIN_MASK;                    \
-        tmpreg |= AFIO_MAPR_SWJ_CFG;                  \
-        tmpreg |= REMAP_PIN;                          \
-        AFIO->MAPR = tmpreg;                          \
+#define AFIO_REMAP_PARTIAL(REMAP_PIN, REMAP_PIN_MASK)                                                                                      \
+    do {                                                                                                                                   \
+        uint32_t tmpreg = AFIO->MAPR;                                                                                                      \
+        tmpreg &= ~REMAP_PIN_MASK;                                                                                                         \
+        tmpreg |= AFIO_MAPR_SWJ_CFG;                                                                                                       \
+        tmpreg |= REMAP_PIN;                                                                                                               \
+        AFIO->MAPR = tmpreg;                                                                                                               \
     } while (0u)
 
-#define AFIO_DBGAFR_CONFIG(DBGAFR_SWJCFG) \
-    do {                                  \
-        uint32_t tmpreg = AFIO->MAPR;     \
-        tmpreg &= ~AFIO_MAPR_SWJ_CFG_Msk; \
-        tmpreg |= DBGAFR_SWJCFG;          \
-        AFIO->MAPR = tmpreg;              \
+#define AFIO_DBGAFR_CONFIG(DBGAFR_SWJCFG)                                                                                                  \
+    do {                                                                                                                                   \
+        uint32_t tmpreg = AFIO->MAPR;                                                                                                      \
+        tmpreg &= ~AFIO_MAPR_SWJ_CFG_Msk;                                                                                                  \
+        tmpreg |= DBGAFR_SWJCFG;                                                                                                           \
+        AFIO->MAPR = tmpreg;                                                                                                               \
     } while (0u)
 
-/**
+    /**
   * @}
   */
 
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/
+    /* Exported macro ------------------------------------------------------------*/
+    /* Exported functions --------------------------------------------------------*/
 
-/** @addtogroup GPIOEx_Exported_Functions
+    /** @addtogroup GPIOEx_Exported_Functions
   * @{
   */
 
-/** @addtogroup GPIOEx_Exported_Functions_Group1
+    /** @addtogroup GPIOEx_Exported_Functions_Group1
   * @{
   */
-void HAL_GPIOEx_ConfigEventout(uint32_t GPIO_PortSource, uint32_t GPIO_PinSource);
-void HAL_GPIOEx_EnableEventout(void);
-void HAL_GPIOEx_DisableEventout(void);
+    void HAL_GPIOEx_ConfigEventout(uint32_t GPIO_PortSource, uint32_t GPIO_PinSource);
+    void HAL_GPIOEx_EnableEventout(void);
+    void HAL_GPIOEx_DisableEventout(void);
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

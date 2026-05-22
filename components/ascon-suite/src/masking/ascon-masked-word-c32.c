@@ -30,11 +30,11 @@
 /** @cond ascon_masked_bit_separation */
 
 /* http://programming.sirrida.de/perm_fn.html#bit_permute_step */
-#define ascon_bit_permute_step(_y, mask, shift)     \
-    do {                                            \
-        uint32_t y = (_y);                          \
-        uint32_t t = ((y >> (shift)) ^ y) & (mask); \
-        (_y)       = (y ^ t) ^ (t << (shift));      \
+#define ascon_bit_permute_step(_y, mask, shift)                                                                                            \
+    do {                                                                                                                                   \
+        uint32_t y = (_y);                                                                                                                 \
+        uint32_t t = ((y >> (shift)) ^ y) & (mask);                                                                                        \
+        (_y)       = (y ^ t) ^ (t << (shift));                                                                                             \
     } while (0)
 
 /* Separates a 32-bit word into two 16-bit halves with all the even
@@ -45,19 +45,19 @@
  * P = [0 16 1 17 2 18 3 19 4 20 5 21 6 22 7 23 8 24
  *      9 25 10 26 11 27 12 28 13 29 14 30 15 31]
  */
-#define ascon_separate(x)                           \
-    do {                                            \
-        ascon_bit_permute_step((x), 0x22222222, 1); \
-        ascon_bit_permute_step((x), 0x0c0c0c0c, 2); \
-        ascon_bit_permute_step((x), 0x00f000f0, 4); \
-        ascon_bit_permute_step((x), 0x0000ff00, 8); \
+#define ascon_separate(x)                                                                                                                  \
+    do {                                                                                                                                   \
+        ascon_bit_permute_step((x), 0x22222222, 1);                                                                                        \
+        ascon_bit_permute_step((x), 0x0c0c0c0c, 2);                                                                                        \
+        ascon_bit_permute_step((x), 0x00f000f0, 4);                                                                                        \
+        ascon_bit_permute_step((x), 0x0000ff00, 8);                                                                                        \
     } while (0)
-#define ascon_combine(x)                             \
-    do {                                             \
-        ascon_bit_permute_step((x), 0x0000aaaa, 15); \
-        ascon_bit_permute_step((x), 0x0000cccc, 14); \
-        ascon_bit_permute_step((x), 0x0000f0f0, 12); \
-        ascon_bit_permute_step((x), 0x0000ff00, 8);  \
+#define ascon_combine(x)                                                                                                                   \
+    do {                                                                                                                                   \
+        ascon_bit_permute_step((x), 0x0000aaaa, 15);                                                                                       \
+        ascon_bit_permute_step((x), 0x0000cccc, 14);                                                                                       \
+        ascon_bit_permute_step((x), 0x0000f0f0, 12);                                                                                       \
+        ascon_bit_permute_step((x), 0x0000ff00, 8);                                                                                        \
     } while (0)
 
 /** @endcond */
@@ -268,10 +268,8 @@ void ascon_masked_word_x2_from_x3(ascon_masked_word_t* dest, const ascon_masked_
     uint32_t random1b = ascon_trng_generate_32(trng);
     dest->W[0]        = random1a ^ src->W[0];
     dest->W[1]        = random1b ^ src->W[1];
-    dest->W[2]        = (ascon_mask32_rotate_share1_0(random1a) ^ src->W[2]) ^
-                        ascon_mask32_unrotate_share2_1(src->W[4]);
-    dest->W[3]        = (ascon_mask32_rotate_share1_0(random1b) ^ src->W[3]) ^
-                        ascon_mask32_unrotate_share2_1(src->W[5]);
+    dest->W[2]        = (ascon_mask32_rotate_share1_0(random1a) ^ src->W[2]) ^ ascon_mask32_unrotate_share2_1(src->W[4]);
+    dest->W[3]        = (ascon_mask32_rotate_share1_0(random1b) ^ src->W[3]) ^ ascon_mask32_unrotate_share2_1(src->W[5]);
     dest->W[4]        = 0;
     dest->W[5]        = 0;
 #if ASCON_MASKED_MAX_SHARES >= 4
@@ -287,14 +285,10 @@ void ascon_masked_word_x2_from_x3(ascon_masked_word_t* dest, const ascon_masked_
 void ascon_masked_word_x2_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     uint32_t random1a = ascon_trng_generate_32(trng);
     uint32_t random1b = ascon_trng_generate_32(trng);
-    dest->W[0]        = random1a ^ src->W[0] ^
-                        ascon_mask32_unrotate_share2_0(src->W[4]);
-    dest->W[1]        = random1b ^ src->W[1] ^
-                        ascon_mask32_unrotate_share2_0(src->W[5]);
-    dest->W[2]        = (ascon_mask32_rotate_share1_0(random1a) ^ src->W[2]) ^
-                        ascon_mask32_unrotate_share3_1(src->W[6]);
-    dest->W[3]        = (ascon_mask32_rotate_share1_0(random1b) ^ src->W[3]) ^
-                        ascon_mask32_unrotate_share3_1(src->W[7]);
+    dest->W[0]        = random1a ^ src->W[0] ^ ascon_mask32_unrotate_share2_0(src->W[4]);
+    dest->W[1]        = random1b ^ src->W[1] ^ ascon_mask32_unrotate_share2_0(src->W[5]);
+    dest->W[2]        = (ascon_mask32_rotate_share1_0(random1a) ^ src->W[2]) ^ ascon_mask32_unrotate_share3_1(src->W[6]);
+    dest->W[3]        = (ascon_mask32_rotate_share1_0(random1b) ^ src->W[3]) ^ ascon_mask32_unrotate_share3_1(src->W[7]);
     dest->W[4]        = 0;
     dest->W[5]        = 0;
     dest->W[6]        = 0;
@@ -333,10 +327,8 @@ void ascon_masked_word_x3_load(ascon_masked_word_t* word, const uint8_t* data, a
     ascon_separate(random1b);
     ascon_separate(high);
     ascon_separate(low);
-    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[4]);
-    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[5]);
+    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^ ascon_mask32_unrotate_share2_0(word->W[4]);
+    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^ ascon_mask32_unrotate_share2_0(word->W[5]);
     high       = (random1a << 16) | (random1b & 0x0000FFFFU);
     low        = (random1a & 0xFFFF0000U) | (random1b >> 16);
     word->W[2] = ascon_mask32_rotate_share1_0(high);
@@ -409,10 +401,8 @@ void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data
     ascon_separate(random1b);
     ascon_separate(high);
     ascon_separate(low);
-    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[4]);
-    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[5]);
+    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^ ascon_mask32_unrotate_share2_0(word->W[4]);
+    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^ ascon_mask32_unrotate_share2_0(word->W[5]);
     high       = (random1a << 16) | (random1b & 0x0000FFFFU);
     low        = (random1a & 0xFFFF0000U) | (random1b >> 16);
     word->W[2] = ascon_mask32_rotate_share1_0(high);
@@ -426,10 +416,8 @@ void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data
 void ascon_masked_word_x3_store(uint8_t* data, const ascon_masked_word_t* word) {
     uint32_t high1 = (word->W[0] >> 16) | (word->W[1] & 0xFFFF0000U);
     uint32_t low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
-    uint32_t high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^
-                     ascon_mask32_unrotate_share2_0(word->W[4]);
-    uint32_t low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^
-                     ascon_mask32_unrotate_share2_0(word->W[5]);
+    uint32_t high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]);
+    uint32_t low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]);
     uint32_t high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     uint32_t low3  = (high2 & 0x0000FFFFU) | (low2 << 16);
     ascon_combine(high1);
@@ -449,10 +437,8 @@ void ascon_masked_word_x3_store_partial(uint8_t* data, unsigned size, const asco
     /* Rearrange the bits while still in masked form */
     high1 = (word->W[0] >> 16) | (word->W[1] & 0xFFFF0000U);
     low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
-    high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^
-            ascon_mask32_unrotate_share2_0(word->W[4]);
-    low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^
-            ascon_mask32_unrotate_share2_0(word->W[5]);
+    high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]);
+    low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]);
     high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     low3  = (high2 & 0x0000FFFFU) | (low2 << 16);
     ascon_combine(high1);
@@ -542,10 +528,8 @@ void ascon_masked_word_x3_from_x4(ascon_masked_word_t* dest, const ascon_masked_
     uint32_t random1b = ascon_trng_generate_32(trng);
     uint32_t random2a = ascon_trng_generate_32(trng);
     uint32_t random2b = ascon_trng_generate_32(trng);
-    dest->W[0]        = random1a ^ random2a ^ src->W[0] ^
-                        ascon_mask32_unrotate_share3_0(src->W[6]);
-    dest->W[1]        = random1b ^ random2b ^ src->W[1] ^
-                        ascon_mask32_unrotate_share3_0(src->W[7]);
+    dest->W[0]        = random1a ^ random2a ^ src->W[0] ^ ascon_mask32_unrotate_share3_0(src->W[6]);
+    dest->W[1]        = random1b ^ random2b ^ src->W[1] ^ ascon_mask32_unrotate_share3_0(src->W[7]);
     dest->W[2]        = ascon_mask32_rotate_share1_0(random1a) ^ src->W[2];
     dest->W[3]        = ascon_mask32_rotate_share1_0(random1b) ^ src->W[3];
     dest->W[4]        = ascon_mask32_rotate_share2_0(random2a) ^ src->W[4];
@@ -590,12 +574,10 @@ void ascon_masked_word_x4_load(ascon_masked_word_t* word, const uint8_t* data, a
     ascon_separate(random1b);
     ascon_separate(high);
     ascon_separate(low);
-    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[4]) ^
-                 ascon_mask32_unrotate_share3_0(word->W[6]);
-    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[5]) ^
-                 ascon_mask32_unrotate_share3_0(word->W[7]);
+    word->W[0] =
+        ((high << 16) | (low & 0x0000FFFFU)) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^ ascon_mask32_unrotate_share3_0(word->W[6]);
+    word->W[1] =
+        ((high & 0xFFFF0000U) | (low >> 16)) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^ ascon_mask32_unrotate_share3_0(word->W[7]);
     high       = (random1a << 16) | (random1b & 0x0000FFFFU);
     low        = (random1a & 0xFFFF0000U) | (random1b >> 16);
     word->W[2] = ascon_mask32_rotate_share1_0(high);
@@ -667,12 +649,10 @@ void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data
     ascon_separate(random1b);
     ascon_separate(high);
     ascon_separate(low);
-    word->W[0] = ((high << 16) | (low & 0x0000FFFFU)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[4]) ^
-                 ascon_mask32_unrotate_share3_0(word->W[6]);
-    word->W[1] = ((high & 0xFFFF0000U) | (low >> 16)) ^
-                 ascon_mask32_unrotate_share2_0(word->W[5]) ^
-                 ascon_mask32_unrotate_share3_0(word->W[7]);
+    word->W[0] =
+        ((high << 16) | (low & 0x0000FFFFU)) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^ ascon_mask32_unrotate_share3_0(word->W[6]);
+    word->W[1] =
+        ((high & 0xFFFF0000U) | (low >> 16)) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^ ascon_mask32_unrotate_share3_0(word->W[7]);
     high       = (random1a << 16) | (random1b & 0x0000FFFFU);
     low        = (random1a & 0xFFFF0000U) | (random1b >> 16);
     word->W[2] = ascon_mask32_rotate_share1_0(high);
@@ -682,11 +662,9 @@ void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data
 void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word) {
     uint32_t high1 = (word->W[0] >> 16) | (word->W[1] & 0xFFFF0000U);
     uint32_t low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
-    uint32_t high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^
-                     ascon_mask32_unrotate_share2_0(word->W[4]) ^
+    uint32_t high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^
                      ascon_mask32_unrotate_share3_0(word->W[6]);
-    uint32_t low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^
-                     ascon_mask32_unrotate_share2_0(word->W[5]) ^
+    uint32_t low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
                      ascon_mask32_unrotate_share3_0(word->W[7]);
     uint32_t high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     uint32_t low3  = (high2 & 0x0000FFFFU) | (low2 << 16);
@@ -707,11 +685,9 @@ void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const asco
     /* Rearrange the bits while still in masked form */
     high1 = (word->W[0] >> 16) | (word->W[1] & 0xFFFF0000U);
     low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
-    high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^
-            ascon_mask32_unrotate_share2_0(word->W[4]) ^
+    high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^
             ascon_mask32_unrotate_share3_0(word->W[6]);
-    low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^
-            ascon_mask32_unrotate_share2_0(word->W[5]) ^
+    low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
             ascon_mask32_unrotate_share3_0(word->W[7]);
     high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     low3  = (high2 & 0x0000FFFFU) | (low2 << 16);

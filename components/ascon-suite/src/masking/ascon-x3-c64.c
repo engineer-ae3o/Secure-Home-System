@@ -33,44 +33,42 @@
  * \param y First input variable.
  * \param z Second input variable.
  */
-#define and_not_xor(x, y, z)                                        \
-    do {                                                            \
-        x##_a ^= (~(y##_a) & z##_a);                                \
-        x##_a ^= ((y##_a) & ascon_mask64_unrotate_share1_0(z##_b)); \
-        x##_a ^= (y##_a & ascon_mask64_unrotate_share2_0(z##_c));   \
-                                                                    \
-        x##_b ^= (y##_b & ascon_mask64_rotate_share1_0(z##_a));     \
-        x##_b ^= ((~y##_b) & z##_b);                                \
-        x##_b ^= (y##_b & ascon_mask64_unrotate_share2_1(z##_c));   \
-                                                                    \
-        x##_c ^= (y##_c & ascon_mask64_rotate_share2_0(~z##_a));    \
-        x##_c ^= (y##_c & ascon_mask64_rotate_share2_1(z##_b));     \
-        x##_c ^= (y##_c | z##_c);                                   \
+#define and_not_xor(x, y, z)                                                                                                               \
+    do {                                                                                                                                   \
+        x##_a ^= (~(y##_a) & z##_a);                                                                                                       \
+        x##_a ^= ((y##_a) & ascon_mask64_unrotate_share1_0(z##_b));                                                                        \
+        x##_a ^= (y##_a & ascon_mask64_unrotate_share2_0(z##_c));                                                                          \
+                                                                                                                                           \
+        x##_b ^= (y##_b & ascon_mask64_rotate_share1_0(z##_a));                                                                            \
+        x##_b ^= ((~y##_b) & z##_b);                                                                                                       \
+        x##_b ^= (y##_b & ascon_mask64_unrotate_share2_1(z##_c));                                                                          \
+                                                                                                                                           \
+        x##_c ^= (y##_c & ascon_mask64_rotate_share2_0(~z##_a));                                                                           \
+        x##_c ^= (y##_c & ascon_mask64_rotate_share2_1(z##_b));                                                                            \
+        x##_c ^= (y##_c | z##_c);                                                                                                          \
     } while (0)
 
 /* Generate a pre-inverted round constant so that we can
  * avoid NOT'ing x2 in the S-box during the rounds */
-#define ROUND_CONSTANT(round) \
-    (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
+#define ROUND_CONSTANT(round) (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
 
 void ascon_x3_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t preserve[2]) {
-    static const uint64_t RC[12] = {
-        ROUND_CONSTANT(0),
-        ROUND_CONSTANT(1),
-        ROUND_CONSTANT(2),
-        ROUND_CONSTANT(3),
-        ROUND_CONSTANT(4),
-        ROUND_CONSTANT(5),
-        ROUND_CONSTANT(6),
-        ROUND_CONSTANT(7),
-        ROUND_CONSTANT(8),
-        ROUND_CONSTANT(9),
-        ROUND_CONSTANT(10),
-        ROUND_CONSTANT(11)};
-    uint64_t x0_a, x1_a, x2_a, x3_a, x4_a;
-    uint64_t x0_b, x1_b, x2_b, x3_b, x4_b;
-    uint64_t x0_c, x1_c, x2_c, x3_c, x4_c;
-    uint64_t t0_a, t0_b, t0_c, t1_a, t1_b, t1_c;
+    static const uint64_t RC[12] = {ROUND_CONSTANT(0),
+                                    ROUND_CONSTANT(1),
+                                    ROUND_CONSTANT(2),
+                                    ROUND_CONSTANT(3),
+                                    ROUND_CONSTANT(4),
+                                    ROUND_CONSTANT(5),
+                                    ROUND_CONSTANT(6),
+                                    ROUND_CONSTANT(7),
+                                    ROUND_CONSTANT(8),
+                                    ROUND_CONSTANT(9),
+                                    ROUND_CONSTANT(10),
+                                    ROUND_CONSTANT(11)};
+    uint64_t              x0_a, x1_a, x2_a, x3_a, x4_a;
+    uint64_t              x0_b, x1_b, x2_b, x3_b, x4_b;
+    uint64_t              x0_c, x1_c, x2_c, x3_c, x4_c;
+    uint64_t              t0_a, t0_b, t0_c, t1_a, t1_b, t1_c;
 
     /* Start with the randomness that the caller provided */
     t0_a = preserve[0];

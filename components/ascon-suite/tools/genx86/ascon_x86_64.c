@@ -32,8 +32,7 @@
 #include "x86_common.h"
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     reg_t* x0;
     reg_t* x1;
     reg_t* x2;
@@ -157,8 +156,7 @@ static void gen_permute(void) {
     const char* first_round = REG_RSI;
     reg_names   regs;
     int         round;
-    char*       reg_list[] = {
-        REG_RAX, REG_RCX, REG_RDX, REG_R8, REG_R9, REG_RBX, REG_R10, REG_R11, REG_R12, REG_R13, REG_RSI, NULL};
+    char*       reg_list[] = {REG_RAX, REG_RCX, REG_RDX, REG_R8, REG_R9, REG_RBX, REG_R10, REG_R11, REG_R12, REG_R13, REG_RSI, NULL};
 
     /* Start the register allocator */
     start_allocator(reg_list, REG_RDI, REG_RSP);

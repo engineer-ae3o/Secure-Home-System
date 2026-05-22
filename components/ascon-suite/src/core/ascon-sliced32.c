@@ -122,8 +122,7 @@ void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned
         if (posn > size) {
             posn = size;
         }
-        value = (value & (~((uint64_t)0)) << ((8U - ofs) * 8)) |
-                (value & ((((uint64_t)1) << ((8U - ofs - posn) * 8)) - 1U));
+        value = (value & (~((uint64_t)0)) << ((8U - ofs) * 8)) | (value & ((((uint64_t)1) << ((8U - ofs - posn) * 8)) - 1U));
         ascon_set_word64(state, value, offset / 8U);
         offset += posn;
         size -= posn;

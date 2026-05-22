@@ -41,8 +41,7 @@
 * \param RA Read Allocation: Set to 1 to enable cache allocation on read miss. Set to 0 to disable cache allocation on read miss.
 * \param WA Write Allocation: Set to 1 to enable cache allocation on write miss. Set to 0 to disable cache allocation on write miss.
 */
-#define ARM_MPU_ATTR_MEMORY_(NT, WB, RA, WA) \
-    ((((NT) & 1U) << 3U) | (((WB) & 1U) << 2U) | (((RA) & 1U) << 1U) | ((WA) & 1U))
+#define ARM_MPU_ATTR_MEMORY_(NT, WB, RA, WA) ((((NT) & 1U) << 3U) | (((WB) & 1U) << 2U) | (((RA) & 1U) << 1U) | ((WA) & 1U))
 
 /** \brief Device memory type non Gathering, non Re-ordering, non Early Write Acknowledgement */
 #define ARM_MPU_ATTR_DEVICE_nGnRnE (0U)
@@ -146,20 +145,16 @@
 * \param NP Non-Privileged: Set to 1 for a non-privileged memory region. Set to 0 for privileged memory region.
 * \param XN eXecute Never: Set to 1 for a non-executable memory region. Set to 0 for an executable memory region.
 */
-#define ARM_MPU_RBAR(BASE, SH, RO, NP, XN)                          \
-    (((BASE) & MPU_RBAR_BASE_Msk) |                                 \
-     (((SH) << MPU_RBAR_SH_Pos) & MPU_RBAR_SH_Msk) |                \
-     ((ARM_MPU_AP_(RO, NP) << MPU_RBAR_AP_Pos) & MPU_RBAR_AP_Msk) | \
-     (((XN) << MPU_RBAR_XN_Pos) & MPU_RBAR_XN_Msk))
+#define ARM_MPU_RBAR(BASE, SH, RO, NP, XN)                                                                                                 \
+    (((BASE) & MPU_RBAR_BASE_Msk) | (((SH) << MPU_RBAR_SH_Pos) & MPU_RBAR_SH_Msk) |                                                        \
+     ((ARM_MPU_AP_(RO, NP) << MPU_RBAR_AP_Pos) & MPU_RBAR_AP_Msk) | (((XN) << MPU_RBAR_XN_Pos) & MPU_RBAR_XN_Msk))
 
 /** \brief Region Limit Address Register value
 * \param LIMIT The limit address bits [31:5] for this memory region. The value is one extended.
 * \param IDX The attribute index to be associated with this memory region.
 */
-#define ARM_MPU_RLAR(LIMIT, IDX)                                  \
-    (((LIMIT) & MPU_RLAR_LIMIT_Msk) |                             \
-     (((IDX) << MPU_RLAR_AttrIndx_Pos) & MPU_RLAR_AttrIndx_Msk) | \
-     (MPU_RLAR_EN_Msk))
+#define ARM_MPU_RLAR(LIMIT, IDX)                                                                                                           \
+    (((LIMIT) & MPU_RLAR_LIMIT_Msk) | (((IDX) << MPU_RLAR_AttrIndx_Pos) & MPU_RLAR_AttrIndx_Msk) | (MPU_RLAR_EN_Msk))
 
 #if defined(MPU_RLAR_PXN_Pos)
 
@@ -168,11 +163,9 @@
 * \param PXN Privileged execute never. Defines whether code can be executed from this privileged region.
 * \param IDX The attribute index to be associated with this memory region.
 */
-#define ARM_MPU_RLAR_PXN(LIMIT, PXN, IDX)                         \
-    (((LIMIT) & MPU_RLAR_LIMIT_Msk) |                             \
-     (((PXN) << MPU_RLAR_PXN_Pos) & MPU_RLAR_PXN_Msk) |           \
-     (((IDX) << MPU_RLAR_AttrIndx_Pos) & MPU_RLAR_AttrIndx_Msk) | \
-     (MPU_RLAR_EN_Msk))
+#define ARM_MPU_RLAR_PXN(LIMIT, PXN, IDX)                                                                                                  \
+    (((LIMIT) & MPU_RLAR_LIMIT_Msk) | (((PXN) << MPU_RLAR_PXN_Pos) & MPU_RLAR_PXN_Msk) |                                                   \
+     (((IDX) << MPU_RLAR_AttrIndx_Pos) & MPU_RLAR_AttrIndx_Msk) | (MPU_RLAR_EN_Msk))
 
 #endif
 

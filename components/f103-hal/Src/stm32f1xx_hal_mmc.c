@@ -320,6 +320,7 @@ static void     MMC_DMAError(DMA_HandleTypeDef* hdma);
 static void     MMC_DMATxAbort(DMA_HandleTypeDef* hdma);
 static void     MMC_DMARxAbort(DMA_HandleTypeDef* hdma);
 static uint32_t MMC_PwrClassUpdate(MMC_HandleTypeDef* hmmc, uint32_t Wide);
+
 /**
   * @}
   */
@@ -578,7 +579,8 @@ __weak void HAL_MMC_MspDeInit(MMC_HandleTypeDef* hmmc) {
   * @param  Timeout: Specify timeout value
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_MMC_ReadBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, uint32_t BlockAdd, uint32_t NumberOfBlocks, uint32_t Timeout) {
+HAL_StatusTypeDef
+HAL_MMC_ReadBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, uint32_t BlockAdd, uint32_t NumberOfBlocks, uint32_t Timeout) {
     SDIO_DataInitTypeDef config;
     uint32_t             errorstate;
     uint32_t             tickstart = HAL_GetTick();
@@ -639,7 +641,8 @@ HAL_StatusTypeDef HAL_MMC_ReadBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, ui
 
         /* Poll on SDIO flags */
         dataremaining = config.DataLength;
-        while (!__HAL_MMC_GET_FLAG(hmmc, SDIO_FLAG_RXOVERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
+        while (!__HAL_MMC_GET_FLAG(hmmc,
+                                   SDIO_FLAG_RXOVERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
             if (__HAL_MMC_GET_FLAG(hmmc, SDIO_FLAG_RXFIFOHF) && (dataremaining > 0U)) {
                 /* Read data from SDIO Rx FIFO */
                 for (count = 0U; count < 8U; count++) {
@@ -753,7 +756,8 @@ HAL_StatusTypeDef HAL_MMC_ReadBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, ui
   * @param  Timeout: Specify timeout value
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_MMC_WriteBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, uint32_t BlockAdd, uint32_t NumberOfBlocks, uint32_t Timeout) {
+HAL_StatusTypeDef
+HAL_MMC_WriteBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, uint32_t BlockAdd, uint32_t NumberOfBlocks, uint32_t Timeout) {
     SDIO_DataInitTypeDef config;
     uint32_t             errorstate;
     uint32_t             tickstart = HAL_GetTick();
@@ -814,7 +818,8 @@ HAL_StatusTypeDef HAL_MMC_WriteBlocks(MMC_HandleTypeDef* hmmc, uint8_t* pData, u
 
         /* Write block(s) in polling mode */
         dataremaining = config.DataLength;
-        while (!__HAL_MMC_GET_FLAG(hmmc, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
+        while (!__HAL_MMC_GET_FLAG(hmmc,
+                                   SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
             if (__HAL_MMC_GET_FLAG(hmmc, SDIO_FLAG_TXFIFOHE) && (dataremaining > 0U)) {
                 /* Write data to SDIO Tx FIFO */
                 for (count = 0U; count < 8U; count++) {
@@ -1109,7 +1114,8 @@ HAL_StatusTypeDef HAL_MMC_ReadBlocks_DMA(MMC_HandleTypeDef* hmmc, uint8_t* pData
         MODIFY_REG(hmmc->hdmarx->Instance->CCR, DMA_CCR_DIR, hmmc->hdmarx->Init.Direction);
 
         /* Enable the DMA Channel */
-        if (HAL_DMA_Start_IT(hmmc->hdmarx, (uint32_t)&hmmc->Instance->FIFO, (uint32_t)pData, (uint32_t)(MMC_BLOCKSIZE * NumberOfBlocks) / 4) != HAL_OK) {
+        if (HAL_DMA_Start_IT(
+                hmmc->hdmarx, (uint32_t)&hmmc->Instance->FIFO, (uint32_t)pData, (uint32_t)(MMC_BLOCKSIZE * NumberOfBlocks) / 4) != HAL_OK) {
             __HAL_MMC_DISABLE_IT(hmmc, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_RXOVERR | SDIO_IT_DATAEND));
             __HAL_MMC_CLEAR_FLAG(hmmc, SDIO_STATIC_FLAGS);
             hmmc->ErrorCode = HAL_MMC_ERROR_DMA;
@@ -1237,7 +1243,8 @@ HAL_StatusTypeDef HAL_MMC_WriteBlocks_DMA(MMC_HandleTypeDef* hmmc, uint8_t* pDat
         MODIFY_REG(hmmc->hdmatx->Instance->CCR, DMA_CCR_DIR, hmmc->hdmatx->Init.Direction);
 
         /* Enable the DMA Channel */
-        if (HAL_DMA_Start_IT(hmmc->hdmatx, (uint32_t)pData, (uint32_t)&hmmc->Instance->FIFO, (uint32_t)(MMC_BLOCKSIZE * NumberOfBlocks) / 4) != HAL_OK) {
+        if (HAL_DMA_Start_IT(
+                hmmc->hdmatx, (uint32_t)pData, (uint32_t)&hmmc->Instance->FIFO, (uint32_t)(MMC_BLOCKSIZE * NumberOfBlocks) / 4) != HAL_OK) {
             __HAL_MMC_DISABLE_IT(hmmc, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_DATAEND));
             __HAL_MMC_CLEAR_FLAG(hmmc, SDIO_STATIC_FLAGS);
             hmmc->ErrorCode |= HAL_MMC_ERROR_DMA;
@@ -1454,7 +1461,8 @@ void HAL_MMC_IRQHandler(MMC_HandleTypeDef* hmmc) {
         __HAL_MMC_CLEAR_FLAG(hmmc, SDIO_STATIC_DATA_FLAGS | SDIO_FLAG_STBITERR);
 
         /* Disable all interrupts */
-        __HAL_MMC_DISABLE_IT(hmmc, SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_STBITERR);
+        __HAL_MMC_DISABLE_IT(hmmc,
+                             SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_STBITERR);
 
         hmmc->ErrorCode |= SDMMC_CmdStopTransfer(hmmc->Instance);
 

@@ -31,8 +31,7 @@
 // Locations of words in the state.  Offsets less than 64 are accessed
 // relative to the Z pointer.  Offsets 64 or greater are accessed
 // relative to the local stack space (Y pointer).
-typedef struct
-{
+typedef struct {
     // Operational location for x0, x1, x2, x3, x4.
     int loc[5];
 
@@ -437,28 +436,22 @@ void gen_ascon_x3_permutation(Code& code) {
 }
 
 /* Load a big-endian 64-bit word from a byte buffer */
-#define be_load_word64(ptr)           \
-    ((((uint64_t)((ptr)[0])) << 56) | \
-     (((uint64_t)((ptr)[1])) << 48) | \
-     (((uint64_t)((ptr)[2])) << 40) | \
-     (((uint64_t)((ptr)[3])) << 32) | \
-     (((uint64_t)((ptr)[4])) << 24) | \
-     (((uint64_t)((ptr)[5])) << 16) | \
-     (((uint64_t)((ptr)[6])) << 8) |  \
-     ((uint64_t)((ptr)[7])))
+#define be_load_word64(ptr)                                                                                                                \
+    ((((uint64_t)((ptr)[0])) << 56) | (((uint64_t)((ptr)[1])) << 48) | (((uint64_t)((ptr)[2])) << 40) | (((uint64_t)((ptr)[3])) << 32) |   \
+     (((uint64_t)((ptr)[4])) << 24) | (((uint64_t)((ptr)[5])) << 16) | (((uint64_t)((ptr)[6])) << 8) | ((uint64_t)((ptr)[7])))
 
 /* Store a big-endian 64-bit word into a byte buffer */
-#define be_store_word64(ptr, x)            \
-    do {                                   \
-        uint64_t _x = (x);                 \
-        (ptr)[0]    = (uint8_t)(_x >> 56); \
-        (ptr)[1]    = (uint8_t)(_x >> 48); \
-        (ptr)[2]    = (uint8_t)(_x >> 40); \
-        (ptr)[3]    = (uint8_t)(_x >> 32); \
-        (ptr)[4]    = (uint8_t)(_x >> 24); \
-        (ptr)[5]    = (uint8_t)(_x >> 16); \
-        (ptr)[6]    = (uint8_t)(_x >> 8);  \
-        (ptr)[7]    = (uint8_t)_x;         \
+#define be_store_word64(ptr, x)                                                                                                            \
+    do {                                                                                                                                   \
+        uint64_t _x = (x);                                                                                                                 \
+        (ptr)[0]    = (uint8_t)(_x >> 56);                                                                                                 \
+        (ptr)[1]    = (uint8_t)(_x >> 48);                                                                                                 \
+        (ptr)[2]    = (uint8_t)(_x >> 40);                                                                                                 \
+        (ptr)[3]    = (uint8_t)(_x >> 32);                                                                                                 \
+        (ptr)[4]    = (uint8_t)(_x >> 24);                                                                                                 \
+        (ptr)[5]    = (uint8_t)(_x >> 16);                                                                                                 \
+        (ptr)[6]    = (uint8_t)(_x >> 8);                                                                                                  \
+        (ptr)[7]    = (uint8_t)_x;                                                                                                         \
     } while (0)
 
 // Get a random 64-bit word.
@@ -469,9 +462,7 @@ static uint64_t get_random(void) {
         initialized = true;
     }
     // rand() produces a 31-bit number; we need a 64-bit number.
-    return ((uint64_t)rand()) |
-           (((uint64_t)rand()) << 31) |
-           (((uint64_t)rand()) << 62);
+    return ((uint64_t)rand()) | (((uint64_t)rand()) << 31) | (((uint64_t)rand()) << 62);
 }
 
 // Mask the input state.
@@ -508,16 +499,19 @@ static void unmask(unsigned char out[40], const unsigned char in[120]) {
 }
 
 bool test_ascon_x3_permutation(Code& code) {
-    static unsigned char const input[40] = {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27};
-    static unsigned char const output_12[40] = {
-        0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43, 0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c, 0x17, 0x64, 0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74, 0x96, 0xb1, 0x71, 0x75, 0xb4, 0xcb, 0x68, 0x63, 0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5};
-    static unsigned char const output_8[40] = {
-        0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed, 0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf, 0xca, 0xd7, 0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0, 0x89, 0x2a, 0x02, 0x15, 0x1f, 0x95, 0x94, 0x6e, 0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7};
-    unsigned char state[120];
-    unsigned char result[40];
-    unsigned char preserve[16];
-    int           ok;
+    static unsigned char const input[40]     = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d,
+                                                0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+                                                0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27};
+    static unsigned char const output_12[40] = {0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43, 0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c,
+                                                0x17, 0x64, 0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74, 0x96, 0xb1, 0x71, 0x75,
+                                                0xb4, 0xcb, 0x68, 0x63, 0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5};
+    static unsigned char const output_8[40]  = {0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed, 0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf,
+                                                0xca, 0xd7, 0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0, 0x89, 0x2a, 0x02, 0x15,
+                                                0x1f, 0x95, 0x94, 0x6e, 0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7};
+    unsigned char              state[120];
+    unsigned char              result[40];
+    unsigned char              preserve[16];
+    int                        ok;
     mask(state, input);
     be_store_word64(preserve, get_random());
     be_store_word64(preserve + 8, get_random());

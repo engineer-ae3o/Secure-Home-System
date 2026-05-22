@@ -180,9 +180,7 @@ static const volatile uint8_t* const pcInterruptPriorityRegisters = (const volat
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
     pxTopOfStack--;                   /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
@@ -197,6 +195,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -212,6 +211,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -255,9 +255,10 @@ BaseType_t xPortStartScheduler(void) {
 #if (configASSERT_DEFINED == 1)
     {
         volatile uint8_t        ucOriginalPriority;
-        volatile uint32_t       ulImplementedPrioBits        = 0;
-        volatile uint8_t* const pucFirstUserPriorityRegister = (volatile uint8_t* const)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
-        volatile uint8_t        ucMaxPriorityValue;
+        volatile uint32_t       ulImplementedPrioBits = 0;
+        volatile uint8_t* const pucFirstUserPriorityRegister =
+            (volatile uint8_t* const)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
+        volatile uint8_t ucMaxPriorityValue;
 
         /* Determine the maximum priority from which ISR safe FreeRTOS API
          * functions can be called.  ISR safe functions are those that end in
@@ -351,6 +352,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -358,6 +360,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -373,6 +376,7 @@ void vPortEnterCritical(void) {
         configASSERT((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -383,6 +387,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -406,6 +411,7 @@ void xPortSysTickHandler(void) {
     }
     portENABLE_INTERRUPTS();
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configUSE_TICKLESS_IDLE == 1)
@@ -636,6 +642,7 @@ __weak void vPortSetupTimerInterrupt(void) {
     portNVIC_SYSTICK_LOAD_REG = (configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ) - 1UL;
     portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT_CONFIG | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT);
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)

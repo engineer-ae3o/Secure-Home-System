@@ -32,42 +32,41 @@ SOFTWARE.
 #define __ETL_CALLBACK__
 
 namespace etl {
-//***************************************************************************
-/// A callback class designed to be multiply inherited by other client classes.
-/// The class is parametrised with a callback parameter type and a unique id.
-/// The unique id allows multiple callbacks with the same parameter type.
-///\tparam TParameter The callback parameter type.
-///\tparam ID The unique id for this callback.
-//***************************************************************************
-template<typename TParameter, const int ID>
-class callback {
+    //***************************************************************************
+    /// A callback class designed to be multiply inherited by other client classes.
+    /// The class is parametrised with a callback parameter type and a unique id.
+    /// The unique id allows multiple callbacks with the same parameter type.
+    ///\tparam TParameter The callback parameter type.
+    ///\tparam ID The unique id for this callback.
+    //***************************************************************************
+    template<typename TParameter, const int ID>
+    class callback {
     private:
-    // Creates a parameter type unique to this ID.
-    template<typename T, const int I>
-    struct parameter {
-        parameter(T value_)
-            : value(value_) {
-        }
+        // Creates a parameter type unique to this ID.
+        template<typename T, const int I>
+        struct parameter {
+            parameter(T value_) : value(value_) {
+            }
 
-        typedef T value_type;
+            typedef T value_type;
 
-        T value;
+            T value;
 
         private:
-        parameter();
-    };
+            parameter();
+        };
 
-    // Specialisation for void.
-    template<const int I>
-    struct parameter<void, I> {
-        typedef void value_type;
-    };
+        // Specialisation for void.
+        template<const int I>
+        struct parameter<void, I> {
+            typedef void value_type;
+        };
 
     public:
-    typedef parameter<TParameter, ID> type;
+        typedef parameter<TParameter, ID> type;
 
-    virtual void etl_callback(type p = type()) = 0;
-};
+        virtual void etl_callback(type p = type()) = 0;
+    };
 } // namespace etl
 
 #endif

@@ -70,8 +70,7 @@ uint32_t ascon_trng_generate_32(ascon_trng_state_t* state) {
 }
 
 uint64_t ascon_trng_generate_64(ascon_trng_state_t* state) {
-    return ((uint64_t)ascon_trng_generate_32(state)) |
-           (((uint64_t)ascon_trng_generate_32(state)) << 32);
+    return ((uint64_t)ascon_trng_generate_32(state)) | (((uint64_t)ascon_trng_generate_32(state)) << 32);
 }
 
 int ascon_trng_reseed(ascon_trng_state_t* state) {

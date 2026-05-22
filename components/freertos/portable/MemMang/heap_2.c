@@ -129,24 +129,25 @@ static void prvHeapInit(void) PRIVILEGED_FUNCTION;
  * the block.  Small blocks at the start of the list and large blocks at the end
  * of the list.
  */
-#define prvInsertBlockIntoFreeList(pxBlockToInsert)                                                                                  \
-    {                                                                                                                                \
-        BlockLink_t* pxIterator;                                                                                                     \
-        size_t       xBlockSize;                                                                                                     \
-                                                                                                                                     \
-        xBlockSize = pxBlockToInsert->xBlockSize;                                                                                    \
-                                                                                                                                     \
-        /* Iterate through the list until a block is found that has a larger size */                                                 \
-        /* than the block we are inserting. */                                                                                       \
-        for (pxIterator = &xStart; pxIterator->pxNextFreeBlock->xBlockSize < xBlockSize; pxIterator = pxIterator->pxNextFreeBlock) { \
-            /* There is nothing to do here - just iterate to the correct position. */                                                \
-        }                                                                                                                            \
-                                                                                                                                     \
-        /* Update the list to include the block being inserted in the correct */                                                     \
-        /* position. */                                                                                                              \
-        pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock;                                                              \
-        pxIterator->pxNextFreeBlock      = pxBlockToInsert;                                                                          \
+#define prvInsertBlockIntoFreeList(pxBlockToInsert)                                                                                        \
+    {                                                                                                                                      \
+        BlockLink_t* pxIterator;                                                                                                           \
+        size_t       xBlockSize;                                                                                                           \
+                                                                                                                                           \
+        xBlockSize = pxBlockToInsert->xBlockSize;                                                                                          \
+                                                                                                                                           \
+        /* Iterate through the list until a block is found that has a larger size */                                                       \
+        /* than the block we are inserting. */                                                                                             \
+        for (pxIterator = &xStart; pxIterator->pxNextFreeBlock->xBlockSize < xBlockSize; pxIterator = pxIterator->pxNextFreeBlock) {       \
+            /* There is nothing to do here - just iterate to the correct position. */                                                      \
+        }                                                                                                                                  \
+                                                                                                                                           \
+        /* Update the list to include the block being inserted in the correct */                                                           \
+        /* position. */                                                                                                                    \
+        pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock;                                                                    \
+        pxIterator->pxNextFreeBlock      = pxBlockToInsert;                                                                                \
     }
+
 /*-----------------------------------------------------------*/
 
 void* pvPortMalloc(size_t xWantedSize) {
@@ -266,6 +267,7 @@ void* pvPortMalloc(size_t xWantedSize) {
 
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -307,20 +309,22 @@ void vPortFree(void* pv) {
         }
     }
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetFreeHeapSize(void) {
     return xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortInitialiseBlocks(void) {
     /* This just exists to keep the linker quiet. */
 }
+
 /*-----------------------------------------------------------*/
 
-void* pvPortCalloc(size_t xNum,
-                   size_t xSize) {
+void* pvPortCalloc(size_t xNum, size_t xSize) {
     void* pv = NULL;
 
     if (heapMULTIPLY_WILL_OVERFLOW(xNum, xSize) == 0) {
@@ -333,6 +337,7 @@ void* pvPortCalloc(size_t xNum,
 
     return pv;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvHeapInit(void) /* PRIVILEGED_FUNCTION */
@@ -341,7 +346,8 @@ static void prvHeapInit(void) /* PRIVILEGED_FUNCTION */
     uint8_t*     pucAlignedHeap;
 
     /* Ensure the heap starts on a correctly aligned boundary. */
-    pucAlignedHeap = (uint8_t*)(((portPOINTER_SIZE_TYPE)&ucHeap[portBYTE_ALIGNMENT - 1]) & (~((portPOINTER_SIZE_TYPE)portBYTE_ALIGNMENT_MASK)));
+    pucAlignedHeap =
+        (uint8_t*)(((portPOINTER_SIZE_TYPE)&ucHeap[portBYTE_ALIGNMENT - 1]) & (~((portPOINTER_SIZE_TYPE)portBYTE_ALIGNMENT_MASK)));
 
     /* xStart is used to hold a pointer to the first item in the list of free
      * blocks.  The void cast is used to prevent compiler warnings. */
@@ -358,6 +364,7 @@ static void prvHeapInit(void) /* PRIVILEGED_FUNCTION */
     pxFirstFreeBlock->xBlockSize      = configADJUSTED_HEAP_SIZE;
     pxFirstFreeBlock->pxNextFreeBlock = &xEnd;
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -370,4 +377,5 @@ void vPortHeapResetState(void) {
 
     xHeapHasBeenInitialised = pdFALSE;
 }
+
 /*-----------------------------------------------------------*/

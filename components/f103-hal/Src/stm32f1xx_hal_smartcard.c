@@ -216,7 +216,9 @@ static void              SMARTCARD_DMATxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              SMARTCARD_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              SMARTCARD_DMATxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
 static void              SMARTCARD_DMARxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
-static HAL_StatusTypeDef SMARTCARD_WaitOnFlagUntilTimeout(SMARTCARD_HandleTypeDef* hsc, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+static HAL_StatusTypeDef
+SMARTCARD_WaitOnFlagUntilTimeout(SMARTCARD_HandleTypeDef* hsc, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+
 /**
   * @}
   */
@@ -454,7 +456,9 @@ __weak void HAL_SMARTCARD_MspDeInit(SMARTCARD_HandleTypeDef* hsc) {
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_SMARTCARD_RegisterCallback(SMARTCARD_HandleTypeDef* hsc, HAL_SMARTCARD_CallbackIDTypeDef CallbackID, pSMARTCARD_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef HAL_SMARTCARD_RegisterCallback(SMARTCARD_HandleTypeDef*        hsc,
+                                                 HAL_SMARTCARD_CallbackIDTypeDef CallbackID,
+                                                 pSMARTCARD_CallbackTypeDef      pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {
@@ -1776,7 +1780,8 @@ static void SMARTCARD_DMAError(DMA_HandleTypeDef* hdma) {
   * @param  Tickstart Tick start value
   * @retval HAL status
   */
-static HAL_StatusTypeDef SMARTCARD_WaitOnFlagUntilTimeout(SMARTCARD_HandleTypeDef* hsc, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
+static HAL_StatusTypeDef
+SMARTCARD_WaitOnFlagUntilTimeout(SMARTCARD_HandleTypeDef* hsc, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
     /* Wait until flag is set */
     while ((__HAL_SMARTCARD_GET_FLAG(hsc, Flag) ? SET : RESET) == Status) {
         /* Check for the Timeout */
@@ -2108,8 +2113,7 @@ static void SMARTCARD_SetConfig(SMARTCARD_HandleTypeDef* hsc) {
     /* Set CPHA bit according to hsc->Init.CLKPhase value */
     /* Set LBCL bit according to hsc->Init.CLKLastBit value */
     /* Set Stop Bits: Set STOP[13:12] bits according to hsc->Init.StopBits value */
-    tmpreg |= (uint32_t)(USART_CR2_CLKEN | hsc->Init.CLKPolarity |
-                         hsc->Init.CLKPhase | hsc->Init.CLKLastBit | hsc->Init.StopBits);
+    tmpreg |= (uint32_t)(USART_CR2_CLKEN | hsc->Init.CLKPolarity | hsc->Init.CLKPhase | hsc->Init.CLKLastBit | hsc->Init.StopBits);
     /* Write to USART CR2 */
     WRITE_REG(hsc->Instance->CR2, (uint32_t)tmpreg);
 
@@ -2128,8 +2132,7 @@ static void SMARTCARD_SetConfig(SMARTCARD_HandleTypeDef* hsc) {
     tmpreg = hsc->Instance->CR1;
 
     /* Clear M, PCE, PS, TE and RE bits */
-    tmpreg &= (uint32_t)~((uint32_t)(USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE |
-                                     USART_CR1_RE));
+    tmpreg &= (uint32_t)~((uint32_t)(USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE | USART_CR1_RE));
 
     /* Configure the SMARTCARD Word Length, Parity and mode:
      Set the M bits according to hsc->Init.WordLength value

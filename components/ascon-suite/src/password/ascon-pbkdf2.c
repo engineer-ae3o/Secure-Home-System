@@ -28,8 +28,7 @@
 #include <string.h>
 
 /* Determine if we need to explicitly free the XOF state between iterations */
-#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-    defined(ASCON_BACKEND_DIRECT_XOR)
+#if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || defined(ASCON_BACKEND_DIRECT_XOR)
 #define ASCON_PBKDF2_FREE_STATE 0
 #else
 #define ASCON_PBKDF2_FREE_STATE 1
@@ -42,7 +41,13 @@
  *
  * PRF(P, X) = ASCON-cXOF(X, 256, "PBKDF2", P)
  */
-static void ascon_pbkdf2_f(ascon_xof_state_t* state, unsigned char* T, unsigned char* U, const unsigned char* salt, size_t saltlen, unsigned long count, unsigned long blocknum) {
+static void ascon_pbkdf2_f(ascon_xof_state_t*   state,
+                           unsigned char*       T,
+                           unsigned char*       U,
+                           const unsigned char* salt,
+                           size_t               saltlen,
+                           unsigned long        count,
+                           unsigned long        blocknum) {
     ascon_xof_state_t state2;
     unsigned char     b[4];
     be_store_word32(b, blocknum);
@@ -75,7 +80,13 @@ static void ascon_pbkdf2_f(ascon_xof_state_t* state, unsigned char* T, unsigned 
 #endif
 }
 
-void ascon_pbkdf2(unsigned char* out, size_t outlen, const unsigned char* password, size_t passwordlen, const unsigned char* salt, size_t saltlen, unsigned long count) {
+void ascon_pbkdf2(unsigned char*       out,
+                  size_t               outlen,
+                  const unsigned char* password,
+                  size_t               passwordlen,
+                  const unsigned char* salt,
+                  size_t               saltlen,
+                  unsigned long        count) {
     ascon_xof_state_t state;
     unsigned char     U[ASCON_PBKDF2_SIZE];
     unsigned long     blocknum = 1;

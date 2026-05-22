@@ -194,9 +194,7 @@ static const volatile uint8_t* const pcInterruptPriorityRegisters = (uint8_t*)po
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
 
@@ -223,6 +221,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -238,6 +237,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void vPortSVCHandler(void) {
@@ -245,14 +245,14 @@ __asm void vPortSVCHandler(void) {
     PRESERVE8
 
     /* Get the location of the current TCB. */
-    ldr r3, = pxCurrentTCB
-                ldr r1,
-        [r3] ldr    r0, [r1]
+    ldr r3, = pxCurrentTCB ldr r1, [r3] ldr r0,
+        [r1]
         /* Pop the core registers. */
         ldmia               r0 !,
         {r4 - r11, r14} msr psp, r0 isb mov r0, #0 msr basepri, r0 bx r14
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void prvStartFirstTask(void) {
@@ -260,7 +260,8 @@ __asm void prvStartFirstTask(void) {
     PRESERVE8
 
     /* Use the NVIC offset register to locate the stack. */
-    ldr r0, = 0xE000ED08 ldr r0, [r0] ldr r0, [r0]
+    ldr r0, = 0xE000ED08 ldr r0, [r0] ldr r0,
+        [r0]
         /* Set the msp back to the start of the stack. */
         msr msp,
         r0
@@ -269,14 +270,15 @@ __asm void prvStartFirstTask(void) {
      * before the scheduler was started - which would otherwise result in the
      * unnecessary leaving of space in the SVC stack for lazy saving of FPU
      * registers. */
-            mov                 r0,
-        #0 msr                  control, r0
-                                             /* Globally enable interrupts. */
-                                             cpsie i cpsie f dsb isb
-                                                 /* Call SVC to start the first task. */
-                                svc 0 nop nop
+            mov r0,
+# 0 msr control, r0
+        /* Globally enable interrupts. */
+        cpsie i cpsie f dsb isb
+            /* Call SVC to start the first task. */
+            svc 0 nop nop
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void prvEnableVFP(void){
@@ -291,13 +293,11 @@ __asm void prvEnableVFP(void){
     /* Enable CP10 and CP11 coprocessors, then save back. */
     orr r1,
     r1,
-    #(0xf << 20)
-        str r1,
-    [r0] bx r14
-        nop
+#(0xf << 20)
+    str         r1,
+    [r0] bx r14 nop
     /* *INDENT-ON* */
-}
-/*-----------------------------------------------------------*/
+} /*-----------------------------------------------------------*/
 
 /*
  * See header file for description.
@@ -316,9 +316,10 @@ BaseType_t xPortStartScheduler(void) {
 #if (configASSERT_DEFINED == 1)
     {
         volatile uint8_t        ucOriginalPriority;
-        volatile uint32_t       ulImplementedPrioBits        = 0;
-        volatile uint8_t* const pucFirstUserPriorityRegister = (uint8_t*)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
-        volatile uint8_t        ucMaxPriorityValue;
+        volatile uint32_t       ulImplementedPrioBits = 0;
+        volatile uint8_t* const pucFirstUserPriorityRegister =
+            (uint8_t*)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
+        volatile uint8_t ucMaxPriorityValue;
 
         /* Determine the maximum priority from which ISR safe FreeRTOS API
          * functions can be called.  ISR safe functions are those that end in
@@ -416,6 +417,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -423,6 +425,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -438,6 +441,7 @@ void vPortEnterCritical(void) {
         configASSERT((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -448,6 +452,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void xPortPendSVHandler(void) {
@@ -458,17 +463,17 @@ __asm void xPortPendSVHandler(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    mrs r0, psp isb
-                /* Get the location of the current TCB. */
-                ldr r3,
-        = pxCurrentTCB
-            ldr r2,
+    mrs r0,
+        psp isb
+            /* Get the location of the current TCB. */
+            ldr            r3,
+        = pxCurrentTCB ldr r2,
         [r3]
 
         /* Is the task using the FPU context?  If so, push high vfp registers. */
         tst r14,
-        #0x10 it eq
-            vstmdbeq r0 !,
+# 0x10 it eq
+        vstmdbeq r0 !,
         {s16 - s31}
 
     /* Save the core registers. */
@@ -480,11 +485,14 @@ __asm void xPortPendSVHandler(void) {
         [r2]
 
         stmdb        sp !,
-        {r0, r3} mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY msr basepri, r0 dsb isb bl vTaskSwitchContext mov r0, #0 msr basepri, r0 ldmia sp !, {r0, r3}
+        {r0, r3} mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY msr basepri, r0 dsb isb bl vTaskSwitchContext mov r0, #0 msr basepri,
+        r0 ldmia sp !,
+        {r0, r3}
 
     /* The first item in pxCurrentTCB is the task top of stack. */
     ldr          r1,
-        [r3] ldr r0, [r1]
+        [r3] ldr r0,
+        [r1]
 
         /* Pop the core registers. */
         ldmia r0 !,
@@ -493,22 +501,22 @@ __asm void xPortPendSVHandler(void) {
     /* Is the task using the FPU context?  If so, pop the high vfp registers
      * too. */
     tst r14,
-        #0x10 it eq
-            vldmiaeq r0 !,
+# 0x10 it eq
+        vldmiaeq r0 !,
         {s16 - s31}
 
     msr psp,
-        r0
-            isb
+        r0 isb
 #ifdef WORKAROUND_PMU_CM001 /* XMC4000 specific errata */
 #if WORKAROUND_PMU_CM001 == 1
-                push{r14} pop{pc} nop
+            push{r14} pop{pc} nop
 #endif
 #endif
 
-                    bx r14
+                bx r14
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -534,6 +542,7 @@ void xPortSysTickHandler(void) {
 
     vPortClearBASEPRIFromISR();
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configUSE_TICKLESS_IDLE == 1)
@@ -775,10 +784,10 @@ __asm uint32_t vPortGetIPSR(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    mrs         r0, ipsr
-                bx r14
+    mrs r0, ipsr bx r14
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)

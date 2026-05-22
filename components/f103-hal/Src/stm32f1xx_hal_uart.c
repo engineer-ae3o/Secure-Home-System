@@ -300,8 +300,9 @@ static void              UART_DMARxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
 static HAL_StatusTypeDef UART_Transmit_IT(UART_HandleTypeDef* huart);
 static HAL_StatusTypeDef UART_EndTransmit_IT(UART_HandleTypeDef* huart);
 static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef* huart);
-static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
-static void              UART_SetConfig(UART_HandleTypeDef* huart);
+static HAL_StatusTypeDef
+UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+static void UART_SetConfig(UART_HandleTypeDef* huart);
 
 /**
   * @}
@@ -736,7 +737,8 @@ __weak void HAL_UART_MspDeInit(UART_HandleTypeDef* huart) {
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_UART_RegisterCallback(UART_HandleTypeDef* huart, HAL_UART_CallbackIDTypeDef CallbackID, pUART_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_UART_RegisterCallback(UART_HandleTypeDef* huart, HAL_UART_CallbackIDTypeDef CallbackID, pUART_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {
@@ -1196,7 +1198,8 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef* huart, uint8_t* pData, ui
                 *pdata16bits = (uint16_t)(huart->Instance->DR & 0x01FF);
                 pdata16bits++;
             } else {
-                if ((huart->Init.WordLength == UART_WORDLENGTH_9B) || ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
+                if ((huart->Init.WordLength == UART_WORDLENGTH_9B) ||
+                    ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
                     *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
                 } else {
                     *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
@@ -1538,7 +1541,8 @@ HAL_StatusTypeDef HAL_UARTEx_ReceiveToIdle(UART_HandleTypeDef* huart, uint8_t* p
                     *pdata16bits = (uint16_t)(huart->Instance->DR & (uint16_t)0x01FF);
                     pdata16bits++;
                 } else {
-                    if ((huart->Init.WordLength == UART_WORDLENGTH_9B) || ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
+                    if ((huart->Init.WordLength == UART_WORDLENGTH_9B) ||
+                        ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
                         *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
                     } else {
                         *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
@@ -2925,7 +2929,8 @@ static void UART_DMAError(DMA_HandleTypeDef* hdma) {
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
-static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
+static HAL_StatusTypeDef
+UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
     /* Wait until flag is set */
     while ((__HAL_UART_GET_FLAG(huart, Flag) ? SET : RESET) == Status) {
         /* Check for the Timeout */
@@ -3325,7 +3330,8 @@ static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef* huart) {
             /* Unused pdata16bits */
             UNUSED(pdata16bits);
 
-            if ((huart->Init.WordLength == UART_WORDLENGTH_9B) || ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
+            if ((huart->Init.WordLength == UART_WORDLENGTH_9B) ||
+                ((huart->Init.WordLength == UART_WORDLENGTH_8B) && (huart->Init.Parity == UART_PARITY_NONE))) {
                 *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
             } else {
                 *pdata8bits = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
@@ -3425,9 +3431,7 @@ static void UART_SetConfig(UART_HandleTypeDef* huart) {
                tmpreg);
 #else
     tmpreg = (uint32_t)huart->Init.WordLength | huart->Init.Parity | huart->Init.Mode;
-    MODIFY_REG(huart->Instance->CR1,
-               (uint32_t)(USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE | USART_CR1_RE),
-               tmpreg);
+    MODIFY_REG(huart->Instance->CR1, (uint32_t)(USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE | USART_CR1_RE), tmpreg);
 #endif /* USART_CR1_OVER8 */
 
     /*-------------------------- USART CR3 Configuration -----------------------*/

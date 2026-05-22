@@ -44,41 +44,35 @@
 #define __set_FPEXC(VALUE) ((void)VALUE)
 #endif
 
-#define __get_CP(cp, op1, RT, CRn, CRm, op2) \
-    ((RT) = __arm_rsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2))
+#define __get_CP(cp, op1, RT, CRn, CRm, op2) ((RT) = __arm_rsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2))
 
-#define __set_CP(cp, op1, RT, CRn, CRm, op2) \
-    (__arm_wsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2, (RT)))
+#define __set_CP(cp, op1, RT, CRn, CRm, op2) (__arm_wsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2, (RT)))
 
-#define __get_CP64(cp, op1, Rt, CRm) \
-    __ASM volatile("MRRC p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : "=r"(Rt) : : "memory")
+#define __get_CP64(cp, op1, Rt, CRm) __ASM volatile("MRRC p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : "=r"(Rt) : : "memory")
 
-#define __set_CP64(cp, op1, Rt, CRm) \
-    __ASM volatile("MCRR p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : : "r"(Rt) : "memory")
+#define __set_CP64(cp, op1, Rt, CRm) __ASM volatile("MCRR p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : : "r"(Rt) : "memory")
 
 #include "cmsis_cp15.h"
 
 __IAR_FT uint32_t __get_SP_usr(void) {
     uint32_t cpsr;
     uint32_t result;
-    __ASM volatile(
-        "MRS     %0, cpsr   \n"
-        "CPS     #0x1F      \n" // no effect in USR mode
-        "MOV     %1, sp     \n"
-        "MSR     cpsr_c, %0 \n" // no effect in USR mode
-        "ISB" : "+r"(cpsr),
-        "=r"(result)::"memory");
+    __ASM volatile("MRS     %0, cpsr   \n"
+                   "CPS     #0x1F      \n" // no effect in USR mode
+                   "MOV     %1, sp     \n"
+                   "MSR     cpsr_c, %0 \n" // no effect in USR mode
+                   "ISB" : "+r"(cpsr),
+                   "=r"(result)::"memory");
     return result;
 }
 
 __IAR_FT void __set_SP_usr(uint32_t topOfProcStack) {
     uint32_t cpsr;
-    __ASM volatile(
-        "MRS     %0, cpsr   \n"
-        "CPS     #0x1F      \n" // no effect in USR mode
-        "MOV     sp, %1     \n"
-        "MSR     cpsr_c, %0 \n" // no effect in USR mode
-        "ISB" : "+r"(cpsr) : "r"(topOfProcStack) : "memory");
+    __ASM volatile("MRS     %0, cpsr   \n"
+                   "CPS     #0x1F      \n" // no effect in USR mode
+                   "MOV     sp, %1     \n"
+                   "MSR     cpsr_c, %0 \n" // no effect in USR mode
+                   "ISB" : "+r"(cpsr) : "r"(topOfProcStack) : "memory");
 }
 
 #define __get_mode() (__get_CPSR() & 0x1FU)

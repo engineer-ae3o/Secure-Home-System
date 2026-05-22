@@ -44,17 +44,13 @@
 #define __set_FPEXC(VALUE) ((void)VALUE)
 #endif
 
-#define __get_CP(cp, op1, RT, CRn, CRm, op2) \
-    ((RT) = __arm_rsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2))
+#define __get_CP(cp, op1, RT, CRn, CRm, op2) ((RT) = __arm_rsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2))
 
-#define __set_CP(cp, op1, RT, CRn, CRm, op2) \
-    (__arm_wsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2, (RT)))
+#define __set_CP(cp, op1, RT, CRn, CRm, op2) (__arm_wsr("p" #cp ":" #op1 ":c" #CRn ":c" #CRm ":" #op2, (RT)))
 
-#define __get_CP64(cp, op1, Rt, CRm) \
-    __ASM volatile("MRRC p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : "=r"(Rt) : : "memory")
+#define __get_CP64(cp, op1, Rt, CRm) __ASM volatile("MRRC p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : "=r"(Rt) : : "memory")
 
-#define __set_CP64(cp, op1, Rt, CRm) \
-    __ASM volatile("MCRR p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : : "r"(Rt) : "memory")
+#define __set_CP64(cp, op1, Rt, CRm) __ASM volatile("MCRR p" #cp ", " #op1 ", %Q0, %R0, c" #CRm : : "r"(Rt) : "memory")
 
 __IAR_FT uint32_t __get_SP_usr(void) {
     uint32_t cpsr;

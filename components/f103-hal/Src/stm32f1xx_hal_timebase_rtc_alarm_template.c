@@ -73,6 +73,7 @@
 RTC_HandleTypeDef hRTC_Handle;
 /* Private function prototypes -----------------------------------------------*/
 void RTC_Alarm_IRQHandler(void);
+
 /* Private functions ---------------------------------------------------------*/
 
 /**

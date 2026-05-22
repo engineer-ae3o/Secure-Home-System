@@ -145,6 +145,7 @@
   */
 static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef* hcec);
 static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef* hcec);
+
 /**
   * @}
   */
@@ -610,7 +611,8 @@ HAL_StatusTypeDef HAL_CEC_UnRegisterRxCpltCallback(CEC_HandleTypeDef* hcec) {
   *              Maximum TX size is 15 bytes (1 opcode and up to 14 operands).
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_Transmit_IT(CEC_HandleTypeDef* hcec, uint8_t InitiatorAddress, uint8_t DestinationAddress, const uint8_t* pData, uint32_t Size) {
+HAL_StatusTypeDef
+HAL_CEC_Transmit_IT(CEC_HandleTypeDef* hcec, uint8_t InitiatorAddress, uint8_t DestinationAddress, const uint8_t* pData, uint32_t Size) {
     /* if the peripheral isn't already busy and if there is no previous transmission
      already pending due to arbitration lost */
     if (hcec->gState == HAL_CEC_STATE_READY) {
@@ -768,6 +770,7 @@ __weak void HAL_CEC_ErrorCallback(CEC_HandleTypeDef* hcec) {
             the HAL_CEC_ErrorCallback can be implemented in the user file
    */
 }
+
 /**
   * @}
   */

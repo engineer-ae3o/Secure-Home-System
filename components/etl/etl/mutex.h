@@ -54,42 +54,41 @@ SOFTWARE.
 #endif
 
 namespace etl {
-namespace traits {
-static ETL_CONSTANT bool has_mutex = (ETL_HAS_MUTEX == 1);
-}
+    namespace traits {
+        static ETL_CONSTANT bool has_mutex = (ETL_HAS_MUTEX == 1);
+    }
 
-//***************************************************************************
-/// lock_guard
-/// A mutex wrapper that provides an RAII mechanism for owning a mutex for
-/// the duration of a scoped block.
-//***************************************************************************
-template<typename TMutex>
-class lock_guard {
+    //***************************************************************************
+    /// lock_guard
+    /// A mutex wrapper that provides an RAII mechanism for owning a mutex for
+    /// the duration of a scoped block.
+    //***************************************************************************
+    template<typename TMutex>
+    class lock_guard {
     public:
-    typedef TMutex mutex_type;
+        typedef TMutex mutex_type;
 
-    //*****************************************************
-    /// Constructor
-    /// Locks the mutex.
-    //*****************************************************
-    explicit lock_guard(mutex_type& m_)
-        : m(m_) {
-        m.lock();
-    }
+        //*****************************************************
+        /// Constructor
+        /// Locks the mutex.
+        //*****************************************************
+        explicit lock_guard(mutex_type& m_) : m(m_) {
+            m.lock();
+        }
 
-    //*****************************************************
-    /// Destructor
-    //*****************************************************
-    ~lock_guard() {
-        m.unlock();
-    }
+        //*****************************************************
+        /// Destructor
+        //*****************************************************
+        ~lock_guard() {
+            m.unlock();
+        }
 
     private:
-    // Deleted.
-    lock_guard(const lock_guard&) ETL_DELETE;
+        // Deleted.
+        lock_guard(const lock_guard&) ETL_DELETE;
 
-    mutex_type& m;
-};
+        mutex_type& m;
+    };
 
 } // namespace etl
 

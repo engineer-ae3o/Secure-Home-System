@@ -54,12 +54,12 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
 #if (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS)
-typedef uint16_t TickType_t;
+    typedef uint16_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffff
 #elif (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS)
 typedef uint32_t TickType_t;
@@ -83,26 +83,26 @@ typedef uint32_t TickType_t;
 /* Task utilities. */
 
 /* Called at the end of an ISR that can cause a context switch. */
-#define portEND_SWITCHING_ISR(xSwitchRequired) \
-    {                                          \
-        extern uint32_t ulPortYieldRequired;   \
-                                               \
-        if (xSwitchRequired != pdFALSE) {      \
-            ulPortYieldRequired = pdTRUE;      \
-        }                                      \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    {                                                                                                                                      \
+        extern uint32_t ulPortYieldRequired;                                                                                               \
+                                                                                                                                           \
+        if (xSwitchRequired != pdFALSE) {                                                                                                  \
+            ulPortYieldRequired = pdTRUE;                                                                                                  \
+        }                                                                                                                                  \
     }
 
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
 #define portYIELD() __asm("SWI 0");
 
-/*-----------------------------------------------------------
+    /*-----------------------------------------------------------
 * Critical section control
 *----------------------------------------------------------*/
 
-extern void     vPortEnterCritical(void);
-extern void     vPortExitCritical(void);
-extern uint32_t ulPortSetInterruptMask(void);
-extern void     vPortClearInterruptMask(uint32_t ulNewMaskValue);
+    extern void     vPortEnterCritical(void);
+    extern void     vPortExitCritical(void);
+    extern uint32_t ulPortSetInterruptMask(void);
+    extern void     vPortClearInterruptMask(uint32_t ulNewMaskValue);
 
 /* These macros do not globally disable/enable interrupts.  They do mask off
  * interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
@@ -121,13 +121,13 @@ extern void     vPortClearInterruptMask(uint32_t ulNewMaskValue);
 #define portTASK_FUNCTION_PROTO(vFunction, pvParameters) void vFunction(void* pvParameters)
 #define portTASK_FUNCTION(vFunction, pvParameters) void vFunction(void* pvParameters)
 
-/* Prototype of the FreeRTOS tick handler.  This must be installed as the
+    /* Prototype of the FreeRTOS tick handler.  This must be installed as the
  * handler for whichever peripheral is used to generate the RTOS tick. */
-void FreeRTOS_Tick_Handler(void);
+    void FreeRTOS_Tick_Handler(void);
 
-/* Any task that uses the floating point unit MUST call vPortTaskUsesFPU()
+    /* Any task that uses the floating point unit MUST call vPortTaskUsesFPU()
  * before any floating point instructions are executed. */
-void vPortTaskUsesFPU(void);
+    void vPortTaskUsesFPU(void);
 #define portTASK_USES_FLOATING_POINT() vPortTaskUsesFPU()
 
 #define portLOWEST_INTERRUPT_PRIORITY (((uint32_t)configUNIQUE_INTERRUPT_PRIORITIES) - 1UL)
@@ -144,14 +144,14 @@ void vPortTaskUsesFPU(void);
 #define portRECORD_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) |= (1UL << (uxPriority))
 #define portRESET_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) &= ~(1UL << (uxPriority))
 
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #define portGET_HIGHEST_PRIORITY(uxTopPriority, uxReadyPriorities) uxTopPriority = (31 - __clz(uxReadyPriorities))
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
 #if (configASSERT_DEFINED == 1)
-void vPortValidateInterruptPriority(void);
+    void vPortValidateInterruptPriority(void);
 #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() vPortValidateInterruptPriority()
 #endif
 

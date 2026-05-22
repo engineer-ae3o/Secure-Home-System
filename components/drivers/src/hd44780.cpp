@@ -55,7 +55,7 @@ namespace lcd {
         __HAL_RCC_GPIOB_CLK_ENABLE();
 
         GPIO_InitTypeDef pin_init = {
-            .Pin   = (config::LCD_SDA.pin | config::LCD_SCL.pin),
+            .Pin   = static_cast<uint32_t>(config::LCD_SDA.pin | config::LCD_SCL.pin),
             .Mode  = GPIO_MODE_AF_OD,
             .Pull  = GPIO_PULLUP,
             .Speed = GPIO_SPEED_FREQ_HIGH,
@@ -108,7 +108,7 @@ namespace lcd {
 
         // Set the pins to analog
         GPIO_InitTypeDef pin_deinit = {
-            .Pin   = (config::LCD_SDA.pin | config::LCD_SCL.pin | config::LCD_LED.pin),
+            .Pin   = static_cast<uint32_t>(config::LCD_SDA.pin | config::LCD_SCL.pin | config::LCD_LED.pin),
             .Mode  = GPIO_MODE_ANALOG,
             .Pull  = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
@@ -166,7 +166,7 @@ namespace lcd {
         // BL is Backlight. En is Enable
         // RW is read-write. RS selects data or cmds
         // `(D7 D6 D5 D4)`   `(BL)` `(EN & RW are 0)`  `(RS)`
-        uint8_t data = (nibble << 4) | (1 << 3) | (rs & 0b1U);
+        uint8_t data = static_cast<uint8_t>(nibble << 4) | (1 << 3) | (rs & 0b1U);
         // Fuck me sideways. ST requires you to shift the address to the left by 1 place
         // For some f***ing reason, it can't be done internally. Not like it's const or some shit
         HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);

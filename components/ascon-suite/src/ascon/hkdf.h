@@ -42,45 +42,43 @@ extern "C" {
  */
 #define ASCON_HKDF_OUTPUT_SIZE 32
 
-/**
+    /**
  * \brief State for incremental generation of key material from ASCON-HKDF.
  */
-typedef struct
-{
-    /** Hashed key from ascon_hkdf_extract() */
-    unsigned char prk[ASCON_HKDF_OUTPUT_SIZE];
+    typedef struct {
+        /** Hashed key from ascon_hkdf_extract() */
+        unsigned char prk[ASCON_HKDF_OUTPUT_SIZE];
 
-    /** Last output block that was generated for ascon_hkdf_expand() */
-    unsigned char out[ASCON_HKDF_OUTPUT_SIZE];
+        /** Last output block that was generated for ascon_hkdf_expand() */
+        unsigned char out[ASCON_HKDF_OUTPUT_SIZE];
 
-    /** Counter for the next output block to generate */
-    unsigned char counter;
+        /** Counter for the next output block to generate */
+        unsigned char counter;
 
-    /** Current position in the output block */
-    unsigned char posn;
+        /** Current position in the output block */
+        unsigned char posn;
 
-} ascon_hkdf_state_t;
+    } ascon_hkdf_state_t;
 
-/**
+    /**
  * \brief State for incremental generation of key material from ASCON-HKDFA.
  */
-typedef struct
-{
-    /** Hashed key from ascon_hkdf_extract() */
-    unsigned char prk[ASCON_HKDF_OUTPUT_SIZE];
+    typedef struct {
+        /** Hashed key from ascon_hkdf_extract() */
+        unsigned char prk[ASCON_HKDF_OUTPUT_SIZE];
 
-    /** Last output block that was generated for ascon_hkdf_expand() */
-    unsigned char out[ASCON_HKDF_OUTPUT_SIZE];
+        /** Last output block that was generated for ascon_hkdf_expand() */
+        unsigned char out[ASCON_HKDF_OUTPUT_SIZE];
 
-    /** Counter for the next output block to generate */
-    unsigned char counter;
+        /** Counter for the next output block to generate */
+        unsigned char counter;
 
-    /** Current position in the output block */
-    unsigned char posn;
+        /** Current position in the output block */
+        unsigned char posn;
 
-} ascon_hkdfa_state_t;
+    } ascon_hkdfa_state_t;
 
-/**
+    /**
  * \brief Derives key material using ASCON-HKDF.
  *
  * \param out Points to the output buffer to receive the key material.
@@ -97,9 +95,16 @@ typedef struct
  *
  * \sa ascon_hkdf_extract(), ascon_hkdf_expand()
  */
-int ascon_hkdf(unsigned char* out, size_t outlen, const unsigned char* key, size_t keylen, const unsigned char* salt, size_t saltlen, const unsigned char* info, size_t infolen);
+    int ascon_hkdf(unsigned char*       out,
+                   size_t               outlen,
+                   const unsigned char* key,
+                   size_t               keylen,
+                   const unsigned char* salt,
+                   size_t               saltlen,
+                   const unsigned char* info,
+                   size_t               infolen);
 
-/**
+    /**
  * \brief Extracts entropy from a key and salt for ASCON-HKDF.
  *
  * \param state HKDF state to be initialized.
@@ -110,13 +115,9 @@ int ascon_hkdf(unsigned char* out, size_t outlen, const unsigned char* key, size
  *
  * \sa ascon_hkdf_expand(), ascon_hkdf()
  */
-void ascon_hkdf_extract(ascon_hkdf_state_t*  state,
-                        const unsigned char* key,
-                        size_t               keylen,
-                        const unsigned char* salt,
-                        size_t               saltlen);
+    void ascon_hkdf_extract(ascon_hkdf_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* salt, size_t saltlen);
 
-/**
+    /**
  * \brief Expands key material using a ASCON-HKDF state.
  *
  * \param state HKDF state to use to expand key material.
@@ -128,20 +129,16 @@ void ascon_hkdf_extract(ascon_hkdf_state_t*  state,
  * \return Zero on success or -1 if too many bytes have been generated so far.
  * There is a limit of ASCON_HKDF_OUTPUT_SIZE * 255 bytes.
  */
-int ascon_hkdf_expand(ascon_hkdf_state_t*  state,
-                      const unsigned char* info,
-                      size_t               infolen,
-                      unsigned char*       out,
-                      size_t               outlen);
+    int ascon_hkdf_expand(ascon_hkdf_state_t* state, const unsigned char* info, size_t infolen, unsigned char* out, size_t outlen);
 
-/**
+    /**
  * \brief Frees all sensitive material in a ASCON-HKDF state.
  *
  * \param state Points to the HKDF state.
  */
-void ascon_hkdf_free(ascon_hkdf_state_t* state);
+    void ascon_hkdf_free(ascon_hkdf_state_t* state);
 
-/**
+    /**
  * \brief Derives key material using ASCON-HKDFA.
  *
  * \param out Points to the output buffer to receive the key material.
@@ -158,9 +155,16 @@ void ascon_hkdf_free(ascon_hkdf_state_t* state);
  *
  * \sa ascon_hkdfa_extract(), ascon_hkdfa_expand()
  */
-int ascon_hkdfa(unsigned char* out, size_t outlen, const unsigned char* key, size_t keylen, const unsigned char* salt, size_t saltlen, const unsigned char* info, size_t infolen);
+    int ascon_hkdfa(unsigned char*       out,
+                    size_t               outlen,
+                    const unsigned char* key,
+                    size_t               keylen,
+                    const unsigned char* salt,
+                    size_t               saltlen,
+                    const unsigned char* info,
+                    size_t               infolen);
 
-/**
+    /**
  * \brief Extracts entropy from a key and salt for ASCON-HKDFA.
  *
  * \param state HKDF state to be initialized.
@@ -171,13 +175,10 @@ int ascon_hkdfa(unsigned char* out, size_t outlen, const unsigned char* key, siz
  *
  * \sa ascon_hkdfa_expand(), ascon_hkdfa()
  */
-void ascon_hkdfa_extract(ascon_hkdfa_state_t* state,
-                         const unsigned char* key,
-                         size_t               keylen,
-                         const unsigned char* salt,
-                         size_t               saltlen);
+    void
+    ascon_hkdfa_extract(ascon_hkdfa_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* salt, size_t saltlen);
 
-/**
+    /**
  * \brief Expands key material using a ASCON-HKDFA state.
  *
  * \param state HKDF state to use to expand key material.
@@ -189,18 +190,14 @@ void ascon_hkdfa_extract(ascon_hkdfa_state_t* state,
  * \return Zero on success or -1 if too many bytes have been generated so far.
  * There is a limit of ASCON_HKDF_OUTPUT_SIZE * 255 bytes.
  */
-int ascon_hkdfa_expand(ascon_hkdfa_state_t* state,
-                       const unsigned char* info,
-                       size_t               infolen,
-                       unsigned char*       out,
-                       size_t               outlen);
+    int ascon_hkdfa_expand(ascon_hkdfa_state_t* state, const unsigned char* info, size_t infolen, unsigned char* out, size_t outlen);
 
-/**
+    /**
  * \brief Frees all sensitive material in a ASCON-HKDFA state.
  *
  * \param state Points to the HKDF state.
  */
-void ascon_hkdfa_free(ascon_hkdfa_state_t* state);
+    void ascon_hkdfa_free(ascon_hkdfa_state_t* state);
 
 #ifdef __cplusplus
 }

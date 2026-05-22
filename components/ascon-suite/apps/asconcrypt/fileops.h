@@ -47,8 +47,7 @@
 #define USE_POSIX_FDS 1
 #endif
 
-typedef struct
-{
+typedef struct {
 #if defined(USE_POSIX_FDS)
     int fd;
 #else

@@ -493,7 +493,10 @@ uint32_t HAL_RTCEx_BKUPRead(RTC_HandleTypeDef* hrtc, uint32_t BackupRegister) {
   *          This parameter must be a number between 0 and 0x7F.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_RTCEx_SetSmoothCalib(RTC_HandleTypeDef* hrtc, uint32_t SmoothCalibPeriod, uint32_t SmoothCalibPlusPulses, uint32_t SmouthCalibMinusPulsesValue) {
+HAL_StatusTypeDef HAL_RTCEx_SetSmoothCalib(RTC_HandleTypeDef* hrtc,
+                                           uint32_t           SmoothCalibPeriod,
+                                           uint32_t           SmoothCalibPlusPulses,
+                                           uint32_t           SmouthCalibMinusPulsesValue) {
     /* Check input parameters */
     if (hrtc == NULL) {
         return HAL_ERROR;

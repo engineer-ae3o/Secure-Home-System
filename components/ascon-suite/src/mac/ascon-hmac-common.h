@@ -116,11 +116,7 @@ static void HMAC_CONCAT(HMAC_ALG_NAME, _absorb_key)(HMAC_STATE* state, const uns
     ascon_clean(temp, sizeof(temp));
 }
 
-void HMAC_ALG_NAME(unsigned char*       out,
-                   const unsigned char* key,
-                   size_t               keylen,
-                   const unsigned char* in,
-                   size_t               inlen) {
+void HMAC_ALG_NAME(unsigned char* out, const unsigned char* key, size_t keylen, const unsigned char* in, size_t inlen) {
     HMAC_STATE state;
     HMAC_HASH_INIT(&(state.hash));
     HMAC_CONCAT(HMAC_ALG_NAME, _absorb_key)(&state, key, keylen, HMAC_IPAD);

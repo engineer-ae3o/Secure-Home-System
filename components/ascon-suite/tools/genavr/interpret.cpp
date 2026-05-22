@@ -65,15 +65,19 @@ struct AVRState {
     }
 
     unsigned char* ptr(int reg, unsigned char offset);
+
     unsigned char* ptr_x(unsigned char offset) {
         return ptr(26, offset);
     }
+
     unsigned char* ptr_y(unsigned char offset) {
         return ptr(28, offset);
     }
+
     unsigned char* ptr_z(unsigned char offset) {
         return ptr(30, offset);
     }
+
     unsigned char* ptr_sp(unsigned char offset) {
         return ptr(32, offset);
     }
@@ -507,7 +511,8 @@ void Code::exec_setup_key(void* schedule, unsigned schedule_len, const void* key
  * \param input_len Length of the input block buffer.
  * \param tweak Tweak value for tweakable block ciphers.
  */
-void Code::exec_encrypt_block(const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak) {
+void Code::exec_encrypt_block(
+    const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak) {
     AVRState s;
     unsigned key_address    = s.alloc_buffer(key, key_len);
     unsigned output_address = s.alloc_buffer(output_len);
@@ -548,7 +553,14 @@ void Code::exec_encrypt_block(const void* key, unsigned key_len, void* output, u
  * \param tweak Points to the tweak value.
  * \param tweak_len Length of the tweak value.
  */
-void Code::exec_encrypt_block_with_tweak_ptr(const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, const void* tweak, unsigned tweak_len) {
+void Code::exec_encrypt_block_with_tweak_ptr(const void* key,
+                                             unsigned    key_len,
+                                             void*       output,
+                                             unsigned    output_len,
+                                             const void* input,
+                                             unsigned    input_len,
+                                             const void* tweak,
+                                             unsigned    tweak_len) {
     AVRState s;
     unsigned key_address    = s.alloc_buffer(key, key_len);
     unsigned output_address = s.alloc_buffer(output_len);

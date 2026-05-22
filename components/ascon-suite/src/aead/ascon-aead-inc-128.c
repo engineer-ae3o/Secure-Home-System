@@ -25,8 +25,7 @@
 #include <string.h>
 
 /* Initialization vector for ASCON-128 */
-static uint8_t const ASCON128_IV[8] =
-    {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
+static uint8_t const ASCON128_IV[8] = {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
 
 void ascon128_aead_init(ascon128_state_t* state, const unsigned char* npub, const unsigned char* k) {
     ascon_init(&(state->state));

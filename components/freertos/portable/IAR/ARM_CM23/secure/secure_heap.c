@@ -102,6 +102,7 @@ typedef struct A_BLOCK_LINK {
     struct A_BLOCK_LINK* pxNextFreeBlock; /**< The next free block in the list. */
     size_t               xBlockSize;      /**< The size of the free block. */
 } BlockLink_t;
+
 /*-----------------------------------------------------------*/
 
 /**
@@ -126,7 +127,8 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert);
  * @brief The size of the structure placed at the beginning of each allocated
  * memory block must by correctly byte aligned.
  */
-static const size_t xHeapStructSize = (sizeof(BlockLink_t) + ((size_t)(secureportBYTE_ALIGNMENT - 1))) & ~((size_t)secureportBYTE_ALIGNMENT_MASK);
+static const size_t xHeapStructSize =
+    (sizeof(BlockLink_t) + ((size_t)(secureportBYTE_ALIGNMENT - 1))) & ~((size_t)secureportBYTE_ALIGNMENT_MASK);
 
 /**
  * @brief Create a couple of list links to mark the start and end of the list.
@@ -184,6 +186,7 @@ static void prvHeapInit(void) {
     xMinimumEverFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
     xFreeBytesRemaining            = pxFirstFreeBlock->xBlockSize;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) {
@@ -233,6 +236,7 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) {
         mtCOVERAGE_TEST_MARKER();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void* pvPortMalloc(size_t xWantedSize) {
@@ -370,6 +374,7 @@ void* pvPortMalloc(size_t xWantedSize) {
     secureportASSERT((((size_t)pvReturn) & (size_t)secureportBYTE_ALIGNMENT_MASK) == 0);
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -410,14 +415,17 @@ void vPortFree(void* pv) {
         }
     }
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetFreeHeapSize(void) {
     return xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetMinimumEverFreeHeapSize(void) {
     return xMinimumEverFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/

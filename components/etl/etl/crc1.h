@@ -36,59 +36,53 @@ SOFTWARE.
 #include "binary.h"
 
 namespace etl {
-//***************************************************************************
-/// fnv_1 policy.
-/// Calculates FNV1.
-//***************************************************************************
-struct crc1_policy {
-    typedef uint8_t value_type;
+    //***************************************************************************
+    /// fnv_1 policy.
+    /// Calculates FNV1.
+    //***************************************************************************
+    struct crc1_policy {
+        typedef uint8_t value_type;
 
-    enum {
-        odd_parity  = 1,
-        even_parity = 0
+        enum { odd_parity = 1, even_parity = 0 };
+
+        //*********************************
+        value_type initial() const {
+            return even_parity;
+        }
+
+        //*********************************
+        uint8_t add(int parity, uint8_t value) const {
+            return parity ^ etl::parity(value);
+        }
+
+        //*********************************
+        uint8_t final(uint8_t parity) const {
+            return parity;
+        }
     };
 
-    //*********************************
-    value_type initial() const {
-        return even_parity;
-    }
-
-    //*********************************
-    uint8_t add(int parity, uint8_t value) const {
-        return parity ^ etl::parity(value);
-    }
-
-    //*********************************
-    uint8_t final(uint8_t parity) const {
-        return parity;
-    }
-};
-
-class crc1 : public etl::frame_check_sequence<crc1_policy> {
+    class crc1 : public etl::frame_check_sequence<crc1_policy> {
     public:
-    enum {
-        odd_parity  = crc1_policy::odd_parity,
-        even_parity = crc1_policy::even_parity
+        enum { odd_parity = crc1_policy::odd_parity, even_parity = crc1_policy::even_parity };
+
+        //*************************************************************************
+        /// Default constructor.
+        //*************************************************************************
+        crc1() {
+            this->reset();
+        }
+
+        //*************************************************************************
+        /// Constructor from range.
+        /// \param begin Start of the range.
+        /// \param end   End of the range.
+        //*************************************************************************
+        template<typename TIterator>
+        crc1(TIterator begin, const TIterator end) {
+            this->reset();
+            this->add(begin, end);
+        }
     };
-
-    //*************************************************************************
-    /// Default constructor.
-    //*************************************************************************
-    crc1() {
-        this->reset();
-    }
-
-    //*************************************************************************
-    /// Constructor from range.
-    /// \param begin Start of the range.
-    /// \param end   End of the range.
-    //*************************************************************************
-    template<typename TIterator>
-    crc1(TIterator begin, const TIterator end) {
-        this->reset();
-        this->add(begin, end);
-    }
-};
 } // namespace etl
 
 #endif

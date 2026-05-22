@@ -61,15 +61,19 @@
 /* __VALUE__ In case of oversampling by 16 and 8, BRR content must be greater than or equal to 16d. */
 #define IS_LL_USART_BRR_MIN(__VALUE__) ((__VALUE__) >= 16U)
 
-#define IS_LL_USART_DIRECTION(__VALUE__) (((__VALUE__) == LL_USART_DIRECTION_NONE) || ((__VALUE__) == LL_USART_DIRECTION_RX) || ((__VALUE__) == LL_USART_DIRECTION_TX) || ((__VALUE__) == LL_USART_DIRECTION_TX_RX))
+#define IS_LL_USART_DIRECTION(__VALUE__)                                                                                                   \
+    (((__VALUE__) == LL_USART_DIRECTION_NONE) || ((__VALUE__) == LL_USART_DIRECTION_RX) || ((__VALUE__) == LL_USART_DIRECTION_TX) ||       \
+     ((__VALUE__) == LL_USART_DIRECTION_TX_RX))
 
-#define IS_LL_USART_PARITY(__VALUE__) (((__VALUE__) == LL_USART_PARITY_NONE) || ((__VALUE__) == LL_USART_PARITY_EVEN) || ((__VALUE__) == LL_USART_PARITY_ODD))
+#define IS_LL_USART_PARITY(__VALUE__)                                                                                                      \
+    (((__VALUE__) == LL_USART_PARITY_NONE) || ((__VALUE__) == LL_USART_PARITY_EVEN) || ((__VALUE__) == LL_USART_PARITY_ODD))
 
 #define IS_LL_USART_DATAWIDTH(__VALUE__) (((__VALUE__) == LL_USART_DATAWIDTH_8B) || ((__VALUE__) == LL_USART_DATAWIDTH_9B))
 
 #define IS_LL_USART_OVERSAMPLING(__VALUE__) (((__VALUE__) == LL_USART_OVERSAMPLING_16) || ((__VALUE__) == LL_USART_OVERSAMPLING_8))
 
-#define IS_LL_USART_LASTBITCLKOUTPUT(__VALUE__) (((__VALUE__) == LL_USART_LASTCLKPULSE_NO_OUTPUT) || ((__VALUE__) == LL_USART_LASTCLKPULSE_OUTPUT))
+#define IS_LL_USART_LASTBITCLKOUTPUT(__VALUE__)                                                                                            \
+    (((__VALUE__) == LL_USART_LASTCLKPULSE_NO_OUTPUT) || ((__VALUE__) == LL_USART_LASTCLKPULSE_OUTPUT))
 
 #define IS_LL_USART_CLOCKPHASE(__VALUE__) (((__VALUE__) == LL_USART_PHASE_1EDGE) || ((__VALUE__) == LL_USART_PHASE_2EDGE))
 
@@ -77,9 +81,13 @@
 
 #define IS_LL_USART_CLOCKOUTPUT(__VALUE__) (((__VALUE__) == LL_USART_CLOCK_DISABLE) || ((__VALUE__) == LL_USART_CLOCK_ENABLE))
 
-#define IS_LL_USART_STOPBITS(__VALUE__) (((__VALUE__) == LL_USART_STOPBITS_0_5) || ((__VALUE__) == LL_USART_STOPBITS_1) || ((__VALUE__) == LL_USART_STOPBITS_1_5) || ((__VALUE__) == LL_USART_STOPBITS_2))
+#define IS_LL_USART_STOPBITS(__VALUE__)                                                                                                    \
+    (((__VALUE__) == LL_USART_STOPBITS_0_5) || ((__VALUE__) == LL_USART_STOPBITS_1) || ((__VALUE__) == LL_USART_STOPBITS_1_5) ||           \
+     ((__VALUE__) == LL_USART_STOPBITS_2))
 
-#define IS_LL_USART_HWCONTROL(__VALUE__) (((__VALUE__) == LL_USART_HWCONTROL_NONE) || ((__VALUE__) == LL_USART_HWCONTROL_RTS) || ((__VALUE__) == LL_USART_HWCONTROL_CTS) || ((__VALUE__) == LL_USART_HWCONTROL_RTS_CTS))
+#define IS_LL_USART_HWCONTROL(__VALUE__)                                                                                                   \
+    (((__VALUE__) == LL_USART_HWCONTROL_NONE) || ((__VALUE__) == LL_USART_HWCONTROL_RTS) || ((__VALUE__) == LL_USART_HWCONTROL_CTS) ||     \
+     ((__VALUE__) == LL_USART_HWCONTROL_RTS_CTS))
 
 /**
   * @}
@@ -198,16 +206,13 @@ ErrorStatus LL_USART_Init(USART_TypeDef* USARTx, const LL_USART_InitTypeDef* USA
      */
 #if defined(USART_CR1_OVER8)
         MODIFY_REG(USARTx->CR1,
-                   (USART_CR1_M | USART_CR1_PCE | USART_CR1_PS |
-                    USART_CR1_TE | USART_CR1_RE | USART_CR1_OVER8),
-                   (USART_InitStruct->DataWidth | USART_InitStruct->Parity |
-                    USART_InitStruct->TransferDirection | USART_InitStruct->OverSampling));
+                   (USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE | USART_CR1_RE | USART_CR1_OVER8),
+                   (USART_InitStruct->DataWidth | USART_InitStruct->Parity | USART_InitStruct->TransferDirection |
+                    USART_InitStruct->OverSampling));
 #else
         MODIFY_REG(USARTx->CR1,
-                   (USART_CR1_M | USART_CR1_PCE | USART_CR1_PS |
-                    USART_CR1_TE | USART_CR1_RE),
-                   (USART_InitStruct->DataWidth | USART_InitStruct->Parity |
-                    USART_InitStruct->TransferDirection));
+                   (USART_CR1_M | USART_CR1_PCE | USART_CR1_PS | USART_CR1_TE | USART_CR1_RE),
+                   (USART_InitStruct->DataWidth | USART_InitStruct->Parity | USART_InitStruct->TransferDirection));
 #endif /* USART_OverSampling_Feature */
 
         /*---------------------------- USART CR2 Configuration -----------------------
@@ -258,14 +263,9 @@ ErrorStatus LL_USART_Init(USART_TypeDef* USARTx, const LL_USART_InitTypeDef* USA
         if ((periphclk != LL_RCC_PERIPH_FREQUENCY_NO) && (USART_InitStruct->BaudRate != 0U)) {
             status = SUCCESS;
 #if defined(USART_CR1_OVER8)
-            LL_USART_SetBaudRate(USARTx,
-                                 periphclk,
-                                 USART_InitStruct->OverSampling,
-                                 USART_InitStruct->BaudRate);
+            LL_USART_SetBaudRate(USARTx, periphclk, USART_InitStruct->OverSampling, USART_InitStruct->BaudRate);
 #else
-            LL_USART_SetBaudRate(USARTx,
-                                 periphclk,
-                                 USART_InitStruct->BaudRate);
+            LL_USART_SetBaudRate(USARTx, periphclk, USART_InitStruct->BaudRate);
 #endif /* USART_OverSampling_Feature */
 
             /* Check BRR is greater than or equal to 16d */
@@ -344,8 +344,8 @@ ErrorStatus LL_USART_ClockInit(USART_TypeDef* USARTx, const LL_USART_ClockInitTy
        */
             MODIFY_REG(USARTx->CR2,
                        USART_CR2_CLKEN | USART_CR2_CPHA | USART_CR2_CPOL | USART_CR2_LBCL,
-                       USART_CR2_CLKEN | USART_ClockInitStruct->ClockPolarity |
-                           USART_ClockInitStruct->ClockPhase | USART_ClockInitStruct->LastBitClockPulse);
+                       USART_CR2_CLKEN | USART_ClockInitStruct->ClockPolarity | USART_ClockInitStruct->ClockPhase |
+                           USART_ClockInitStruct->LastBitClockPulse);
         }
     }
     /* Else (USART not in Disabled state => return ERROR */

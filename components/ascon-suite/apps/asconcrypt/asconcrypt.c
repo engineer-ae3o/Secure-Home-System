@@ -106,24 +106,23 @@ int main(int argc, char* argv[]) {
     }
 #else
 /* Simple command-line parser for systems without getopt() */
-#define GET_OPTARG(var)                   \
-    do {                                  \
-        (var) = NULL;                     \
-        if (opts[0] == '\0') {            \
-            if ((optind + 1) < argc) {    \
-                (var) = argv[optind + 1]; \
-                ++optind;                 \
-            } else {                      \
-                error = 1;                \
-            }                             \
-        } else {                          \
-            (var) = opts;                 \
-            opts  = "";                   \
-        }                                 \
+#define GET_OPTARG(var)                                                                                                                    \
+    do {                                                                                                                                   \
+        (var) = NULL;                                                                                                                      \
+        if (opts[0] == '\0') {                                                                                                             \
+            if ((optind + 1) < argc) {                                                                                                     \
+                (var) = argv[optind + 1];                                                                                                  \
+                ++optind;                                                                                                                  \
+            } else {                                                                                                                       \
+                error = 1;                                                                                                                 \
+            }                                                                                                                              \
+        } else {                                                                                                                           \
+            (var) = opts;                                                                                                                  \
+            opts  = "";                                                                                                                    \
+        }                                                                                                                                  \
     } while (0)
     int optind = 1;
-    while (optind < argc && argv[optind][0] == '-' &&
-           argv[optind][1] != '\0') {
+    while (optind < argc && argv[optind][0] == '-' && argv[optind][1] != '\0') {
         const char* opts = argv[optind] + 1;
         while ((opt = *opts++) != '\0') {
             int error = 0;
@@ -163,8 +162,7 @@ int main(int argc, char* argv[]) {
 #endif
 
     /* Validate the arguments */
-    if ((opt_mode == MODE_GENERATE && optind < argc) ||
-        (opt_mode != MODE_GENERATE && optind >= argc)) {
+    if ((opt_mode == MODE_GENERATE && optind < argc) || (opt_mode != MODE_GENERATE && optind >= argc)) {
         usage(progname);
         return 1;
     }
@@ -209,9 +207,7 @@ int main(int argc, char* argv[]) {
         }
         if (mixture) {
             /* There is a mixture of file types, so bail out */
-            fprintf(stderr,
-                    "%s: cannot determine direction; specify -e or -d\n",
-                    progname);
+            fprintf(stderr, "%s: cannot determine direction; specify -e or -d\n", progname);
             return 1;
         }
     }
@@ -332,11 +328,10 @@ static void password_error(const char* filename) {
 /* Generates a random password and writes it to keyfile */
 static int generate_password(const char* keyfile) {
     /* Uses the same ASCII encoding as https://www.aescrypt.com/ */
-    static char const pw_chars[] =
-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%$";
-    unsigned char password[DEFAULT_PASSWORD_LENGTH];
-    unsigned      posn;
-    SAFEFILE      file;
+    static char const pw_chars[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%$";
+    unsigned char     password[DEFAULT_PASSWORD_LENGTH];
+    unsigned          posn;
+    SAFEFILE          file;
 
     /* Try to open keyfile before we start */
     if (!safe_file_open_write(&file, keyfile)) {
@@ -384,8 +379,7 @@ static int read_keyfile(const char* keyfile) {
 
     /* Find the end of line marker for the first line of the file */
     posn = 0;
-    while (posn < len && full_password[posn] != '\n' &&
-           full_password[posn] != '\r') {
+    while (posn < len && full_password[posn] != '\n' && full_password[posn] != '\r') {
         if (full_password[posn] == '\0') {
             fprintf(stderr, "%s: password value contains a NUL\n", keyfile);
             return 0;
@@ -480,23 +474,23 @@ static int encrypt_file(const char* infilename, const char* outfilename) {
 
     /* Allocate the salt, key, and nonce randomly */
     memset(&siv, 0, sizeof(siv));
-    if (!ascon_random(header.salt, sizeof(header.salt)) ||
-        !ascon_random(siv.key, sizeof(siv.key) + sizeof(siv.nonce))) {
+    if (!ascon_random(header.salt, sizeof(header.salt)) || !ascon_random(siv.key, sizeof(siv.key) + sizeof(siv.nonce))) {
         fprintf(stderr, "FATAL: system random number generator does not appear to be working!\n");
         goto cleanup;
     }
     siv_copy = siv;
 
     /* Run PBKDF2 to derive the key and nonce to use to encrypt the SIV block */
-    ascon_pbkdf2(kn, sizeof(kn), (const unsigned char*)full_password, strlen(full_password), header.salt, sizeof(header.salt), ASCON_PBKDF2_ROUNDS);
+    ascon_pbkdf2(
+        kn, sizeof(kn), (const unsigned char*)full_password, strlen(full_password), header.salt, sizeof(header.salt), ASCON_PBKDF2_ROUNDS);
 
     /* Encrypt the SIV block and generate the tag */
-    ascon80pq_siv_encrypt(siv.key, &clen, siv.key, sizeof(siv.key) + sizeof(siv.nonce), (const unsigned char*)&header, sizeof(header), kn + 20, kn);
+    ascon80pq_siv_encrypt(
+        siv.key, &clen, siv.key, sizeof(siv.key) + sizeof(siv.nonce), (const unsigned char*)&header, sizeof(header), kn + 20, kn);
 
     /* Write the header and SIV block to the output file */
     exit_val = 1;
-    if (!safe_file_write(&output, &header, sizeof(header)) ||
-        !safe_file_write(&output, &siv, sizeof(siv))) {
+    if (!safe_file_write(&output, &header, sizeof(header)) || !safe_file_write(&output, &siv, sizeof(siv))) {
         exit_val = 0;
     }
 
@@ -580,9 +574,7 @@ static int decrypt_file(const char* infilename, const char* outfilename) {
     if (safe_file_read(&input, &header, sizeof(header)) != (int)sizeof(header)) {
         bad_format = 1;
     } else {
-        if (memcmp(header.header.magic, "ASCONcrypt", 10) != 0 ||
-            header.header.version[0] != 0 ||
-            header.header.version[1] != 1) {
+        if (memcmp(header.header.magic, "ASCONcrypt", 10) != 0 || header.header.version[0] != 0 || header.header.version[1] != 1) {
             bad_format = 1;
         }
     }
@@ -592,11 +584,24 @@ static int decrypt_file(const char* infilename, const char* outfilename) {
     }
 
     /* Run PBKDF2 to derive the key and nonce to use to decrypt the SIV block */
-    ascon_pbkdf2(kn, sizeof(kn), (const unsigned char*)full_password, strlen(full_password), header.header.salt, sizeof(header.header.salt), ASCON_PBKDF2_ROUNDS);
+    ascon_pbkdf2(kn,
+                 sizeof(kn),
+                 (const unsigned char*)full_password,
+                 strlen(full_password),
+                 header.header.salt,
+                 sizeof(header.header.salt),
+                 ASCON_PBKDF2_ROUNDS);
 
     /* Decrypt the SIV block and check the tag */
     siv_copy = header.siv;
-    if (ascon80pq_siv_decrypt(header.siv.key, &mlen, header.siv.key, sizeof(header.siv), (const unsigned char*)&(header.header), sizeof(header.header), kn + 20, kn) != 0) {
+    if (ascon80pq_siv_decrypt(header.siv.key,
+                              &mlen,
+                              header.siv.key,
+                              sizeof(header.siv),
+                              (const unsigned char*)&(header.header),
+                              sizeof(header.header),
+                              kn + 20,
+                              kn) != 0) {
         fprintf(stderr, "%s: password is incorrect\n", infilename);
         goto cleanup;
     }

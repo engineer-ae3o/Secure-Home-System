@@ -40,21 +40,21 @@ SOFTWARE.
 ///\ingroup maths
 
 namespace etl {
-//***************************************************************************
-///\ingroup combinations
-/// Calculates combinations.
-//***************************************************************************
-template<size_t NV, size_t KV>
-struct combinations {
-    static ETL_CONSTANT size_t value = etl::permutations<NV, KV>::value / etl::factorial<KV>::value;
-};
+    //***************************************************************************
+    ///\ingroup combinations
+    /// Calculates combinations.
+    //***************************************************************************
+    template<size_t NV, size_t KV>
+    struct combinations {
+        static ETL_CONSTANT size_t value = etl::permutations<NV, KV>::value / etl::factorial<KV>::value;
+    };
 
-template<size_t NV, size_t KV>
-ETL_CONSTANT size_t combinations<NV, KV>::value;
+    template<size_t NV, size_t KV>
+    ETL_CONSTANT size_t combinations<NV, KV>::value;
 
 #if ETL_USING_CPP17
-template<size_t NV, size_t KV>
-inline constexpr size_t combinations_v = combinations<NV, KV>::value;
+    template<size_t NV, size_t KV>
+    inline constexpr size_t combinations_v = combinations<NV, KV>::value;
 #endif
 } // namespace etl
 

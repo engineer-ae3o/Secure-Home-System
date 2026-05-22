@@ -27,42 +27,42 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_HAL_Driver
+    /** @addtogroup STM32F1xx_HAL_Driver
   * @{
   */
 
-/** @addtogroup CRC
+    /** @addtogroup CRC
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
-/** @defgroup CRC_Exported_Types CRC Exported Types
+    /* Exported types ------------------------------------------------------------*/
+    /** @defgroup CRC_Exported_Types CRC Exported Types
   * @{
   */
 
-/**
+    /**
   * @brief  CRC HAL State Structure definition
   */
-typedef enum {
-    HAL_CRC_STATE_RESET   = 0x00U, /*!< CRC not yet initialized or disabled */
-    HAL_CRC_STATE_READY   = 0x01U, /*!< CRC initialized and ready for use   */
-    HAL_CRC_STATE_BUSY    = 0x02U, /*!< CRC internal process is ongoing     */
-    HAL_CRC_STATE_TIMEOUT = 0x03U, /*!< CRC timeout state                   */
-    HAL_CRC_STATE_ERROR   = 0x04U  /*!< CRC error state                     */
-} HAL_CRC_StateTypeDef;
+    typedef enum {
+        HAL_CRC_STATE_RESET   = 0x00U, /*!< CRC not yet initialized or disabled */
+        HAL_CRC_STATE_READY   = 0x01U, /*!< CRC initialized and ready for use   */
+        HAL_CRC_STATE_BUSY    = 0x02U, /*!< CRC internal process is ongoing     */
+        HAL_CRC_STATE_TIMEOUT = 0x03U, /*!< CRC timeout state                   */
+        HAL_CRC_STATE_ERROR   = 0x04U  /*!< CRC error state                     */
+    } HAL_CRC_StateTypeDef;
 
-/**
+    /**
   * @brief  CRC Handle Structure definition
   */
-typedef struct
-{
-    CRC_TypeDef* Instance; /*!< Register base address        */
+    typedef struct {
+        CRC_TypeDef* Instance; /*!< Register base address        */
 
-    HAL_LockTypeDef Lock; /*!< CRC Locking object           */
+        HAL_LockTypeDef Lock; /*!< CRC Locking object           */
 
-    __IO HAL_CRC_StateTypeDef State; /*!< CRC communication state      */
+        __IO HAL_CRC_StateTypeDef State; /*!< CRC communication state      */
 
-} CRC_HandleTypeDef;
+    } CRC_HandleTypeDef;
+
 /**
   * @}
   */
@@ -110,64 +110,64 @@ typedef struct
   * @retval Value of the ID register
   */
 #define __HAL_CRC_GET_IDR(__HANDLE__) (((__HANDLE__)->Instance->IDR) & CRC_IDR_IDR)
-/**
+    /**
   * @}
   */
 
-/* Private macros --------------------------------------------------------*/
-/** @defgroup  CRC_Private_Macros CRC Private Macros
+    /* Private macros --------------------------------------------------------*/
+    /** @defgroup  CRC_Private_Macros CRC Private Macros
   * @{
   */
 
-/**
+    /**
   * @}
   */
 
-/* Exported functions --------------------------------------------------------*/
-/** @defgroup CRC_Exported_Functions CRC Exported Functions
+    /* Exported functions --------------------------------------------------------*/
+    /** @defgroup CRC_Exported_Functions CRC Exported Functions
   * @{
   */
 
-/* Initialization and de-initialization functions  ****************************/
-/** @defgroup CRC_Exported_Functions_Group1 Initialization and de-initialization functions
+    /* Initialization and de-initialization functions  ****************************/
+    /** @defgroup CRC_Exported_Functions_Group1 Initialization and de-initialization functions
   * @{
   */
-HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef* hcrc);
-HAL_StatusTypeDef HAL_CRC_DeInit(CRC_HandleTypeDef* hcrc);
-void              HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc);
-void              HAL_CRC_MspDeInit(CRC_HandleTypeDef* hcrc);
-/**
+    HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef* hcrc);
+    HAL_StatusTypeDef HAL_CRC_DeInit(CRC_HandleTypeDef* hcrc);
+    void              HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc);
+    void              HAL_CRC_MspDeInit(CRC_HandleTypeDef* hcrc);
+    /**
   * @}
   */
 
-/* Peripheral Control functions ***********************************************/
-/** @defgroup CRC_Exported_Functions_Group2 Peripheral Control functions
+    /* Peripheral Control functions ***********************************************/
+    /** @defgroup CRC_Exported_Functions_Group2 Peripheral Control functions
   * @{
   */
-uint32_t HAL_CRC_Accumulate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength);
-uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength);
-/**
+    uint32_t HAL_CRC_Accumulate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength);
+    uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength);
+    /**
   * @}
   */
 
-/* Peripheral State and Error functions ***************************************/
-/** @defgroup CRC_Exported_Functions_Group3 Peripheral State functions
+    /* Peripheral State and Error functions ***************************************/
+    /** @defgroup CRC_Exported_Functions_Group3 Peripheral State functions
   * @{
   */
-HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef* hcrc);
-/**
+    HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef* hcrc);
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

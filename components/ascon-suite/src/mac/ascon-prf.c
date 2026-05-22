@@ -72,10 +72,7 @@ int ascon_prf_short(unsigned char* out, size_t outlen, const unsigned char* in, 
     return 0;
 }
 
-void ascon_mac(unsigned char*       tag,
-               const unsigned char* in,
-               size_t               inlen,
-               const unsigned char* key) {
+void ascon_mac(unsigned char* tag, const unsigned char* in, size_t inlen, const unsigned char* key) {
     ascon_prf_state_t state;
     ascon_prf_fixed_init(&state, key, ASCON_MAC_TAG_SIZE);
     ascon_prf_absorb(&state, in, inlen);
@@ -83,10 +80,7 @@ void ascon_mac(unsigned char*       tag,
     ascon_prf_free(&state);
 }
 
-int ascon_mac_verify(const unsigned char* tag,
-                     const unsigned char* in,
-                     size_t               inlen,
-                     const unsigned char* key) {
+int ascon_mac_verify(const unsigned char* tag, const unsigned char* in, size_t inlen, const unsigned char* key) {
     unsigned char tag2[ASCON_MAC_TAG_SIZE];
     int           result;
     ascon_mac(tag2, in, inlen, key);

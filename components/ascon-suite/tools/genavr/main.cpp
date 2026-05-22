@@ -25,10 +25,7 @@
 #include <iostream>
 #include <cstring>
 
-enum Mode {
-    Generate,
-    Test
-};
+enum Mode { Generate, Test };
 
 static void header(std::ostream& ostream, const char* include, const char* define) {
     ostream << "#include \"" << include << "\"" << std::endl;

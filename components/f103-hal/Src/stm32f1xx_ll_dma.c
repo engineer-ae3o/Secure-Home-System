@@ -44,58 +44,40 @@
 /** @addtogroup DMA_LL_Private_Macros
   * @{
   */
-#define IS_LL_DMA_DIRECTION(__VALUE__) (((__VALUE__) == LL_DMA_DIRECTION_PERIPH_TO_MEMORY) || \
-                                        ((__VALUE__) == LL_DMA_DIRECTION_MEMORY_TO_PERIPH) || \
-                                        ((__VALUE__) == LL_DMA_DIRECTION_MEMORY_TO_MEMORY))
+#define IS_LL_DMA_DIRECTION(__VALUE__)                                                                                                     \
+    (((__VALUE__) == LL_DMA_DIRECTION_PERIPH_TO_MEMORY) || ((__VALUE__) == LL_DMA_DIRECTION_MEMORY_TO_PERIPH) ||                           \
+     ((__VALUE__) == LL_DMA_DIRECTION_MEMORY_TO_MEMORY))
 
-#define IS_LL_DMA_MODE(__VALUE__) (((__VALUE__) == LL_DMA_MODE_NORMAL) || \
-                                   ((__VALUE__) == LL_DMA_MODE_CIRCULAR))
+#define IS_LL_DMA_MODE(__VALUE__) (((__VALUE__) == LL_DMA_MODE_NORMAL) || ((__VALUE__) == LL_DMA_MODE_CIRCULAR))
 
-#define IS_LL_DMA_PERIPHINCMODE(__VALUE__) (((__VALUE__) == LL_DMA_PERIPH_INCREMENT) || \
-                                            ((__VALUE__) == LL_DMA_PERIPH_NOINCREMENT))
+#define IS_LL_DMA_PERIPHINCMODE(__VALUE__) (((__VALUE__) == LL_DMA_PERIPH_INCREMENT) || ((__VALUE__) == LL_DMA_PERIPH_NOINCREMENT))
 
-#define IS_LL_DMA_MEMORYINCMODE(__VALUE__) (((__VALUE__) == LL_DMA_MEMORY_INCREMENT) || \
-                                            ((__VALUE__) == LL_DMA_MEMORY_NOINCREMENT))
+#define IS_LL_DMA_MEMORYINCMODE(__VALUE__) (((__VALUE__) == LL_DMA_MEMORY_INCREMENT) || ((__VALUE__) == LL_DMA_MEMORY_NOINCREMENT))
 
-#define IS_LL_DMA_PERIPHDATASIZE(__VALUE__) (((__VALUE__) == LL_DMA_PDATAALIGN_BYTE) ||     \
-                                             ((__VALUE__) == LL_DMA_PDATAALIGN_HALFWORD) || \
-                                             ((__VALUE__) == LL_DMA_PDATAALIGN_WORD))
+#define IS_LL_DMA_PERIPHDATASIZE(__VALUE__)                                                                                                \
+    (((__VALUE__) == LL_DMA_PDATAALIGN_BYTE) || ((__VALUE__) == LL_DMA_PDATAALIGN_HALFWORD) || ((__VALUE__) == LL_DMA_PDATAALIGN_WORD))
 
-#define IS_LL_DMA_MEMORYDATASIZE(__VALUE__) (((__VALUE__) == LL_DMA_MDATAALIGN_BYTE) ||     \
-                                             ((__VALUE__) == LL_DMA_MDATAALIGN_HALFWORD) || \
-                                             ((__VALUE__) == LL_DMA_MDATAALIGN_WORD))
+#define IS_LL_DMA_MEMORYDATASIZE(__VALUE__)                                                                                                \
+    (((__VALUE__) == LL_DMA_MDATAALIGN_BYTE) || ((__VALUE__) == LL_DMA_MDATAALIGN_HALFWORD) || ((__VALUE__) == LL_DMA_MDATAALIGN_WORD))
 
 #define IS_LL_DMA_NBDATA(__VALUE__) ((__VALUE__) <= 0x0000FFFFU)
 
-#define IS_LL_DMA_PRIORITY(__VALUE__) (((__VALUE__) == LL_DMA_PRIORITY_LOW) ||    \
-                                       ((__VALUE__) == LL_DMA_PRIORITY_MEDIUM) || \
-                                       ((__VALUE__) == LL_DMA_PRIORITY_HIGH) ||   \
-                                       ((__VALUE__) == LL_DMA_PRIORITY_VERYHIGH))
+#define IS_LL_DMA_PRIORITY(__VALUE__)                                                                                                      \
+    (((__VALUE__) == LL_DMA_PRIORITY_LOW) || ((__VALUE__) == LL_DMA_PRIORITY_MEDIUM) || ((__VALUE__) == LL_DMA_PRIORITY_HIGH) ||           \
+     ((__VALUE__) == LL_DMA_PRIORITY_VERYHIGH))
 
 #if defined(DMA2)
-#define IS_LL_DMA_ALL_CHANNEL_INSTANCE(INSTANCE, CHANNEL) ((((INSTANCE) == DMA1) &&               \
-                                                            (((CHANNEL) == LL_DMA_CHANNEL_1) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_2) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_3) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_4) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_5) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_6) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_7))) || \
-                                                           (((INSTANCE) == DMA2) &&               \
-                                                            (((CHANNEL) == LL_DMA_CHANNEL_1) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_2) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_3) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_4) ||   \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_5))))
+#define IS_LL_DMA_ALL_CHANNEL_INSTANCE(INSTANCE, CHANNEL)                                                                                  \
+    ((((INSTANCE) == DMA1) && (((CHANNEL) == LL_DMA_CHANNEL_1) || ((CHANNEL) == LL_DMA_CHANNEL_2) || ((CHANNEL) == LL_DMA_CHANNEL_3) ||    \
+                               ((CHANNEL) == LL_DMA_CHANNEL_4) || ((CHANNEL) == LL_DMA_CHANNEL_5) || ((CHANNEL) == LL_DMA_CHANNEL_6) ||    \
+                               ((CHANNEL) == LL_DMA_CHANNEL_7))) ||                                                                        \
+     (((INSTANCE) == DMA2) && (((CHANNEL) == LL_DMA_CHANNEL_1) || ((CHANNEL) == LL_DMA_CHANNEL_2) || ((CHANNEL) == LL_DMA_CHANNEL_3) ||    \
+                               ((CHANNEL) == LL_DMA_CHANNEL_4) || ((CHANNEL) == LL_DMA_CHANNEL_5))))
 #else
-#define IS_LL_DMA_ALL_CHANNEL_INSTANCE(INSTANCE, CHANNEL) ((((INSTANCE) == DMA1) &&             \
-                                                            (((CHANNEL) == LL_DMA_CHANNEL_1) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_2) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_3) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_4) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_5) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_6) || \
-                                                             ((CHANNEL) == LL_DMA_CHANNEL_7))))
+#define IS_LL_DMA_ALL_CHANNEL_INSTANCE(INSTANCE, CHANNEL)                                                                                  \
+    ((((INSTANCE) == DMA1) && (((CHANNEL) == LL_DMA_CHANNEL_1) || ((CHANNEL) == LL_DMA_CHANNEL_2) || ((CHANNEL) == LL_DMA_CHANNEL_3) ||    \
+                               ((CHANNEL) == LL_DMA_CHANNEL_4) || ((CHANNEL) == LL_DMA_CHANNEL_5) || ((CHANNEL) == LL_DMA_CHANNEL_6) ||    \
+                               ((CHANNEL) == LL_DMA_CHANNEL_7))))
 #endif
 /**
   * @}
@@ -225,7 +207,11 @@ uint32_t LL_DMA_Init(DMA_TypeDef* DMAx, uint32_t Channel, LL_DMA_InitTypeDef* DM
    * - MemoryOrM2MDstDataSize: DMA_CCR_MSIZE[1:0] bits
    * - Priority:               DMA_CCR_PL[1:0] bits
    */
-    LL_DMA_ConfigTransfer(DMAx, Channel, DMA_InitStruct->Direction | DMA_InitStruct->Mode | DMA_InitStruct->PeriphOrM2MSrcIncMode | DMA_InitStruct->MemoryOrM2MDstIncMode | DMA_InitStruct->PeriphOrM2MSrcDataSize | DMA_InitStruct->MemoryOrM2MDstDataSize | DMA_InitStruct->Priority);
+    LL_DMA_ConfigTransfer(DMAx,
+                          Channel,
+                          DMA_InitStruct->Direction | DMA_InitStruct->Mode | DMA_InitStruct->PeriphOrM2MSrcIncMode |
+                              DMA_InitStruct->MemoryOrM2MDstIncMode | DMA_InitStruct->PeriphOrM2MSrcDataSize |
+                              DMA_InitStruct->MemoryOrM2MDstDataSize | DMA_InitStruct->Priority);
 
     /*-------------------------- DMAx CMAR Configuration -------------------------
    * Configure the memory or destination base address with parameter :

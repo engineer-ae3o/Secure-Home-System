@@ -363,12 +363,9 @@ static void masked_word_replace(int num_shares) {
 #define UNROT_1 11
 #define UNROT_2 12
 #define UNROT_3 13
-static int const convert_x2_from_x3[] = {
-    SRC_0, RANDOM_0, 0, SRC_1, ROT_1, RANDOM_0, UNROT_1, SRC_2, 0, 0};
-static int const convert_x2_from_x4[] = {
-    SRC_0, RANDOM_0, UNROT_2, SRC_2, 0, SRC_1, ROT_1, RANDOM_0, UNROT_2, SRC_3, 0, 0};
-static int const convert_x3_from_x2[] = {
-    SRC_0, RANDOM_0, RANDOM_1, 0, SRC_1, ROT_1, RANDOM_0, 0, ROT_2, RANDOM_1, 0, 0};
+static int const convert_x2_from_x3[] = {SRC_0, RANDOM_0, 0, SRC_1, ROT_1, RANDOM_0, UNROT_1, SRC_2, 0, 0};
+static int const convert_x2_from_x4[] = {SRC_0, RANDOM_0, UNROT_2, SRC_2, 0, SRC_1, ROT_1, RANDOM_0, UNROT_2, SRC_3, 0, 0};
+static int const convert_x3_from_x2[] = {SRC_0, RANDOM_0, RANDOM_1, 0, SRC_1, ROT_1, RANDOM_0, 0, ROT_2, RANDOM_1, 0, 0};
 static int const convert_x3_from_x4[] = {
     SRC_0, RANDOM_0, RANDOM_1, UNROT_3, SRC_3, 0, SRC_1, ROT_1, RANDOM_0, 0, SRC_2, ROT_2, RANDOM_1, 0, 0};
 static int const convert_x4_from_x2[] = {

@@ -57,12 +57,12 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
 #if (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS)
-typedef uint16_t TickType_t;
+    typedef uint16_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffff
 #elif (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS)
 typedef uint32_t TickType_t;
@@ -88,24 +88,24 @@ typedef uint32_t TickType_t;
 /*-----------------------------------------------------------*/
 
 /* Scheduler utilities. */
-#define portYIELD()                                     \
-    {                                                   \
-        /* Set a PendSV to request a context switch. */ \
-        portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; \
-        __DSB();                                        \
-        __ISB();                                        \
+#define portYIELD()                                                                                                                        \
+    {                                                                                                                                      \
+        /* Set a PendSV to request a context switch. */                                                                                    \
+        portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;                                                                                    \
+        __DSB();                                                                                                                           \
+        __ISB();                                                                                                                           \
     }
 
 #define portNVIC_INT_CTRL_REG (*((volatile uint32_t*)0xe000ed04))
 #define portNVIC_PENDSVSET_BIT (1UL << 28UL)
-#define portEND_SWITCHING_ISR(xSwitchRequired) \
-    do {                                       \
-        if (xSwitchRequired != pdFALSE) {      \
-            traceISR_EXIT_TO_SCHEDULER();      \
-            portYIELD();                       \
-        } else {                               \
-            traceISR_EXIT();                   \
-        }                                      \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    do {                                                                                                                                   \
+        if (xSwitchRequired != pdFALSE) {                                                                                                  \
+            traceISR_EXIT_TO_SCHEDULER();                                                                                                  \
+            portYIELD();                                                                                                                   \
+        } else {                                                                                                                           \
+            traceISR_EXIT();                                                                                                               \
+        }                                                                                                                                  \
     } while (0)
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
 
@@ -127,36 +127,36 @@ typedef uint32_t TickType_t;
 #define portRECORD_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) |= (1UL << (uxPriority))
 #define portRESET_READY_PRIORITY(uxPriority, uxReadyPriorities) (uxReadyPriorities) &= ~(1UL << (uxPriority))
 
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #define portGET_HIGHEST_PRIORITY(uxTopPriority, uxReadyPriorities) uxTopPriority = (31UL - ((uint32_t)__CLZ((uxReadyPriorities))))
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-/* Critical section management. */
-extern void vPortEnterCritical(void);
-extern void vPortExitCritical(void);
+    /* Critical section management. */
+    extern void vPortEnterCritical(void);
+    extern void vPortExitCritical(void);
 
-#define portDISABLE_INTERRUPTS()                             \
-    {                                                        \
-        __set_BASEPRI(configMAX_SYSCALL_INTERRUPT_PRIORITY); \
-        __DSB();                                             \
-        __ISB();                                             \
+#define portDISABLE_INTERRUPTS()                                                                                                           \
+    {                                                                                                                                      \
+        __set_BASEPRI(configMAX_SYSCALL_INTERRUPT_PRIORITY);                                                                               \
+        __DSB();                                                                                                                           \
+        __ISB();                                                                                                                           \
     }
 
 #define portENABLE_INTERRUPTS() __set_BASEPRI(0)
 #define portENTER_CRITICAL() vPortEnterCritical()
 #define portEXIT_CRITICAL() vPortExitCritical()
-#define portSET_INTERRUPT_MASK_FROM_ISR() \
-    __get_BASEPRI();                      \
+#define portSET_INTERRUPT_MASK_FROM_ISR()                                                                                                  \
+    __get_BASEPRI();                                                                                                                       \
     portDISABLE_INTERRUPTS()
 #define portCLEAR_INTERRUPT_MASK_FROM_ISR(x) __set_BASEPRI(x)
 /*-----------------------------------------------------------*/
 
 /* Tickless idle/low power functionality. */
 #ifndef portSUPPRESS_TICKS_AND_SLEEP
-extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
+    extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
 #define portSUPPRESS_TICKS_AND_SLEEP(xExpectedIdleTime) vPortSuppressTicksAndSleep(xExpectedIdleTime)
 #endif
 
@@ -167,10 +167,10 @@ extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
  * (which build with all the ports) will build. */
 #define portTASK_FUNCTION_PROTO(vFunction, pvParameters) void vFunction(void* pvParameters)
 #define portTASK_FUNCTION(vFunction, pvParameters) void vFunction(void* pvParameters)
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)
-void vPortValidateInterruptPriority(void);
+    void vPortValidateInterruptPriority(void);
 #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() vPortValidateInterruptPriority()
 #endif
 
@@ -183,23 +183,23 @@ void vPortValidateInterruptPriority(void);
 #define portFORCE_INLINE inline __attribute__((always_inline))
 #endif
 
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt(void) {
-    uint32_t   ulCurrentInterrupt;
-    BaseType_t xReturn;
+    portFORCE_INLINE static BaseType_t xPortIsInsideInterrupt(void) {
+        uint32_t   ulCurrentInterrupt;
+        BaseType_t xReturn;
 
-    /* Obtain the number of the currently executing interrupt. */
-    __asm volatile("mrs %0, ipsr" : "=r"(ulCurrentInterrupt)::"memory");
+        /* Obtain the number of the currently executing interrupt. */
+        __asm volatile("mrs %0, ipsr" : "=r"(ulCurrentInterrupt)::"memory");
 
-    if (ulCurrentInterrupt == 0) {
-        xReturn = pdFALSE;
-    } else {
-        xReturn = pdTRUE;
+        if (ulCurrentInterrupt == 0) {
+            xReturn = pdFALSE;
+        } else {
+            xReturn = pdTRUE;
+        }
+
+        return xReturn;
     }
-
-    return xReturn;
-}
 
 /*-----------------------------------------------------------*/
 

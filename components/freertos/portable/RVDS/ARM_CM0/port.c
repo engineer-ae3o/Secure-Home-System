@@ -139,9 +139,7 @@ static void prvTaskExitError(void);
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
     pxTopOfStack--;                   /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
@@ -156,6 +154,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -171,12 +170,14 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortSVCHandler(void) {
     /* This function is no longer used, but retained for backward
      * compatibility. */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void prvPortStartFirstTask(void) {
@@ -191,27 +192,31 @@ __asm void prvPortStartFirstTask(void) {
 
     ldr r3, = pxCurrentTCB /* Obtain location of pxCurrentTCB. */
                 ldr r1,
-        [r3] ldr    r0, [r1] /* The first item in pxCurrentTCB is the task top of stack. */
-        adds        r0,
-        #32 /* Discard everything up to r0. */
+        [r3] ldr    r0,
+        [r1] /* The first item in pxCurrentTCB is the task top of stack. */
+        adds r0,
+# 32 /* Discard everything up to r0. */
         msr psp,
         r0 /* This is now the new top of stack to use in the task. */
             movs r0,
-        #2 /* Switch to the psp stack. */
-        msr CONTROL,
-        r0
-            isb
-                pop{r0 - r5} /* Pop the registers that are saved automatically. */
-    mov         lr,
-                r5      /* lr is now in r5. */
-                pop{r3} /* The return address is now in r3. */
-    pop{r2}             /* Pop and discard the XPSR. */
-    cpsie i             /* The first task has its context and interrupts can be enabled. */
-        bx r3           /* Finally, jump to the user defined task code. */
+# 2 /* Switch to the psp stack. */
+        msr    CONTROL,
+        r0 isb pop {
+            r0 - r5
+        } /* Pop the registers that are saved automatically. */
+    mov     lr,
+            r5 /* lr is now in r5. */
+            pop {
+                r3
+            } /* The return address is now in r3. */
+    pop{r2}   /* Pop and discard the XPSR. */
+    cpsie i   /* The first task has its context and interrupts can be enabled. */
+        bx r3 /* Finally, jump to the user defined task code. */
 
         ALIGN
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -236,6 +241,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -243,6 +249,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortYield(void) {
@@ -254,6 +261,7 @@ void vPortYield(void) {
     __dsb(portSY_FULL_READ_WRITE);
     __isb(portSY_FULL_READ_WRITE);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -262,6 +270,7 @@ void vPortEnterCritical(void) {
     __dsb(portSY_FULL_READ_WRITE);
     __isb(portSY_FULL_READ_WRITE);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -272,23 +281,23 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 __asm uint32_t ulSetInterruptMaskFromISR(void) {
     /* *INDENT-OFF* */
-    mrs             r0, PRIMASK
-                            cpsid i
-                    bx lr
+    mrs r0, PRIMASK cpsid i bx lr
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void vClearInterruptMaskFromISR(uint32_t ulMask) {
     /* *INDENT-OFF* */
-    msr              PRIMASK, r0
-                     bx lr
+    msr PRIMASK, r0 bx lr
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void xPortPendSVHandler(void) {
@@ -306,7 +315,7 @@ __asm void xPortPendSVHandler(void) {
         [r3]
 
         subs r0,
-        #32 /* Make space for the remaining low registers. */
+# 32 /* Make space for the remaining low registers. */
         str r0,
         [r2] /* Save the new top of stack. */
         stmia r0 !,
@@ -314,45 +323,34 @@ __asm void xPortPendSVHandler(void) {
     mov r4,
         r8 /* Store the high registers. */
             mov r5,
-        r9
-            mov r6,
-        r10
-            mov r7,
-        r11
-            stmia r0 !,
+        r9 mov r6, r10 mov r7, r11 stmia r0 !,
         {r4 - r7}
 
-    push{r3, r14} cpsid i
-        bl vTaskSwitchContext
-            cpsie i
-                pop{r2, r3} /* lr goes in r3. r2 now holds tcb pointer. */
+    push{r3, r14} cpsid i bl vTaskSwitchContext cpsie i pop{r2, r3} /* lr goes in r3. r2 now holds tcb pointer. */
 
     ldr          r1,
-        [r2] ldr r0, [r1] /* The first item in pxCurrentTCB is the task top of stack. */
-        adds     r0,
-        #16 /* Move to the high registers. */
+        [r2] ldr r0,
+        [r1] /* The first item in pxCurrentTCB is the task top of stack. */
+        adds r0,
+# 16 /* Move to the high registers. */
         ldmia r0 !,
         {r4 - r7} /* Pop the high registers. */
-    mov r8,
-        r4
-            mov r9,
-        r5
-            mov r10,
-        r6
-            mov r11,
+    mov        r8,
+        r4 mov r9, r5 mov r10, r6 mov r11,
         r7
 
             msr psp,
         r0 /* Remember the new top of stack for the task. */
 
             subs r0,
-        #32 /* Go back for the low registers that are not automatically restored. */
+# 32 /* Go back for the low registers that are not automatically restored. */
         ldmia r0 !,
         {r4 - r7} /* Pop low registers.  */
 
     bx r3 ALIGN
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -372,6 +370,7 @@ void xPortSysTickHandler(void) {
     }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(ulPreviousMask);
 }
+
 /*-----------------------------------------------------------*/
 
 /*

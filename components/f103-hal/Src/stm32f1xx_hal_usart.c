@@ -244,7 +244,9 @@ static void              USART_DMAAbortOnError(DMA_HandleTypeDef* hdma);
 static void              USART_DMATxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              USART_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 
-static HAL_StatusTypeDef USART_WaitOnFlagUntilTimeout(USART_HandleTypeDef* husart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+static HAL_StatusTypeDef
+USART_WaitOnFlagUntilTimeout(USART_HandleTypeDef* husart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+
 /**
   * @}
   */
@@ -431,7 +433,8 @@ __weak void HAL_USART_MspDeInit(USART_HandleTypeDef* husart) {
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
 +  */
-HAL_StatusTypeDef HAL_USART_RegisterCallback(USART_HandleTypeDef* husart, HAL_USART_CallbackIDTypeDef CallbackID, pUSART_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_USART_RegisterCallback(USART_HandleTypeDef* husart, HAL_USART_CallbackIDTypeDef CallbackID, pUSART_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {
@@ -834,7 +837,8 @@ HAL_StatusTypeDef HAL_USART_Receive(USART_HandleTypeDef* husart, uint8_t* pRxDat
                 *prxdata16bits = (uint16_t)(husart->Instance->DR & (uint16_t)0x01FF);
                 prxdata16bits++;
             } else {
-                if ((husart->Init.WordLength == USART_WORDLENGTH_9B) || ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
+                if ((husart->Init.WordLength == USART_WORDLENGTH_9B) ||
+                    ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
                     *prxdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x0FF);
                 } else {
                     *prxdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x07F);
@@ -868,7 +872,8 @@ HAL_StatusTypeDef HAL_USART_Receive(USART_HandleTypeDef* husart, uint8_t* pRxDat
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_USART_TransmitReceive(USART_HandleTypeDef* husart, const uint8_t* pTxData, uint8_t* pRxData, uint16_t Size, uint32_t Timeout) {
+HAL_StatusTypeDef
+HAL_USART_TransmitReceive(USART_HandleTypeDef* husart, const uint8_t* pTxData, uint8_t* pRxData, uint16_t Size, uint32_t Timeout) {
     uint8_t*        prxdata8bits;
     uint16_t*       prxdata16bits;
     const uint8_t*  ptxdata8bits;
@@ -946,7 +951,8 @@ HAL_StatusTypeDef HAL_USART_TransmitReceive(USART_HandleTypeDef* husart, const u
                     *prxdata16bits = (uint16_t)(husart->Instance->DR & (uint16_t)0x01FF);
                     prxdata16bits++;
                 } else {
-                    if ((husart->Init.WordLength == USART_WORDLENGTH_9B) || ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
+                    if ((husart->Init.WordLength == USART_WORDLENGTH_9B) ||
+                        ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
                         *prxdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x0FF);
                     } else {
                         *prxdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x07F);
@@ -2146,7 +2152,8 @@ static void USART_DMAError(DMA_HandleTypeDef* hdma) {
   * @param  Timeout Timeout duration.
   * @retval HAL status
   */
-static HAL_StatusTypeDef USART_WaitOnFlagUntilTimeout(USART_HandleTypeDef* husart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
+static HAL_StatusTypeDef
+USART_WaitOnFlagUntilTimeout(USART_HandleTypeDef* husart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
     /* Wait until flag is set */
     while ((__HAL_USART_GET_FLAG(husart, Flag) ? SET : RESET) == Status) {
         /* Check for the Timeout */
@@ -2383,7 +2390,8 @@ static HAL_StatusTypeDef USART_Receive_IT(USART_HandleTypeDef* husart) {
             /* Unused pdata16bits */
             UNUSED(pdata16bits);
 
-            if ((husart->Init.WordLength == USART_WORDLENGTH_9B) || ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
+            if ((husart->Init.WordLength == USART_WORDLENGTH_9B) ||
+                ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
                 *pdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x00FF);
             } else {
                 *pdata8bits = (uint8_t)(husart->Instance->DR & (uint8_t)0x007F);
@@ -2463,7 +2471,8 @@ static HAL_StatusTypeDef USART_TransmitReceive_IT(USART_HandleTypeDef* husart) {
                     *pdatarx16bits = (uint16_t)(husart->Instance->DR & (uint16_t)0x01FF);
                     husart->pRxBuffPtr += 2U;
                 } else {
-                    if ((husart->Init.WordLength == USART_WORDLENGTH_9B) || ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
+                    if ((husart->Init.WordLength == USART_WORDLENGTH_9B) ||
+                        ((husart->Init.WordLength == USART_WORDLENGTH_8B) && (husart->Init.Parity == USART_PARITY_NONE))) {
                         *husart->pRxBuffPtr = (uint8_t)(husart->Instance->DR & (uint8_t)0x00FF);
                     } else {
                         *husart->pRxBuffPtr = (uint8_t)(husart->Instance->DR & (uint8_t)0x007F);
@@ -2539,8 +2548,8 @@ static void USART_SetConfig(USART_HandleTypeDef* husart) {
     /* Set CPHA bit according to husart->Init.CLKPhase value */
     /* Set LBCL bit according to husart->Init.CLKLastBit value */
     /* Set Stop Bits: Set STOP[13:12] bits according to husart->Init.StopBits value */
-    tmpreg |= (uint32_t)(USART_CLOCK_ENABLE | husart->Init.CLKPolarity |
-                         husart->Init.CLKPhase | husart->Init.CLKLastBit | husart->Init.StopBits);
+    tmpreg |=
+        (uint32_t)(USART_CLOCK_ENABLE | husart->Init.CLKPolarity | husart->Init.CLKPhase | husart->Init.CLKLastBit | husart->Init.StopBits);
     /* Write to USART CR2 */
     WRITE_REG(husart->Instance->CR2, (uint32_t)tmpreg);
 

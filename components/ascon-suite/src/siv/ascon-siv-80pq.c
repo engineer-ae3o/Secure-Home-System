@@ -81,7 +81,14 @@ static void ascon_siv_encrypt_8_80pq(ascon_state_t* state, unsigned char* dest, 
     }
 }
 
-void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+void ascon80pq_siv_encrypt(unsigned char*       c,
+                           size_t*              clen,
+                           const unsigned char* m,
+                           size_t               mlen,
+                           const unsigned char* ad,
+                           size_t               adlen,
+                           const unsigned char* npub,
+                           const unsigned char* k) {
     ascon_state_t state;
 
     /* Set the length of the returned ciphertext */
@@ -116,7 +123,14 @@ void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* 
     ascon_free(&state);
 }
 
-int ascon80pq_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+int ascon80pq_siv_decrypt(unsigned char*       m,
+                          size_t*              mlen,
+                          const unsigned char* c,
+                          size_t               clen,
+                          const unsigned char* ad,
+                          size_t               adlen,
+                          const unsigned char* npub,
+                          const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON80PQ_TAG_SIZE];
     int           result;

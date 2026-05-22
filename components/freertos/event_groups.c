@@ -60,7 +60,8 @@ typedef struct EventGroupDef_t {
 #endif
 
 #if ((configSUPPORT_STATIC_ALLOCATION == 1) && (configSUPPORT_DYNAMIC_ALLOCATION == 1))
-    uint8_t ucStaticallyAllocated; /**< Set to pdTRUE if the event group is statically allocated to ensure no attempt is made to free the memory. */
+    uint8_t
+        ucStaticallyAllocated; /**< Set to pdTRUE if the event group is statically allocated to ensure no attempt is made to free the memory. */
 #endif
 } EventGroup_t;
 
@@ -173,10 +174,8 @@ EventGroupHandle_t xEventGroupCreate(void) {
 #endif /* configSUPPORT_DYNAMIC_ALLOCATION */
        /*-----------------------------------------------------------*/
 
-EventBits_t xEventGroupSync(EventGroupHandle_t xEventGroup,
-                            const EventBits_t  uxBitsToSet,
-                            const EventBits_t  uxBitsToWaitFor,
-                            TickType_t         xTicksToWait) {
+EventBits_t
+xEventGroupSync(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToSet, const EventBits_t uxBitsToWaitFor, TickType_t xTicksToWait) {
     EventBits_t   uxOriginalBitValue, uxReturn;
     EventGroup_t* pxEventBits = xEventGroup;
     BaseType_t    xAlreadyYielded;
@@ -214,7 +213,9 @@ EventBits_t xEventGroupSync(EventGroupHandle_t xEventGroup,
                 /* Store the bits that the calling task is waiting for in the
                      * task's event list item so the kernel knows when a match is
                      * found.  Then enter the blocked state. */
-                vTaskPlaceOnUnorderedEventList(&(pxEventBits->xTasksWaitingForBits), (uxBitsToWaitFor | eventCLEAR_EVENTS_ON_EXIT_BIT | eventWAIT_FOR_ALL_BITS), xTicksToWait);
+                vTaskPlaceOnUnorderedEventList(&(pxEventBits->xTasksWaitingForBits),
+                                               (uxBitsToWaitFor | eventCLEAR_EVENTS_ON_EXIT_BIT | eventWAIT_FOR_ALL_BITS),
+                                               xTicksToWait);
 
                 /* This assignment is obsolete as uxReturn will get set after
                      * the task unblocks, but some compilers mistakenly generate a
@@ -281,6 +282,7 @@ EventBits_t xEventGroupSync(EventGroupHandle_t xEventGroup,
 
     return uxReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 EventBits_t xEventGroupWaitBits(EventGroupHandle_t xEventGroup,
@@ -413,10 +415,10 @@ EventBits_t xEventGroupWaitBits(EventGroupHandle_t xEventGroup,
 
     return uxReturn;
 }
+
 /*-----------------------------------------------------------*/
 
-EventBits_t xEventGroupClearBits(EventGroupHandle_t xEventGroup,
-                                 const EventBits_t  uxBitsToClear) {
+EventBits_t xEventGroupClearBits(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToClear) {
     EventGroup_t* pxEventBits = xEventGroup;
     EventBits_t   uxReturn;
 
@@ -444,12 +446,12 @@ EventBits_t xEventGroupClearBits(EventGroupHandle_t xEventGroup,
 
     return uxReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 #if ((configUSE_TRACE_FACILITY == 1) && (INCLUDE_xTimerPendFunctionCall == 1) && (configUSE_TIMERS == 1))
 
-BaseType_t xEventGroupClearBitsFromISR(EventGroupHandle_t xEventGroup,
-                                       const EventBits_t  uxBitsToClear) {
+BaseType_t xEventGroupClearBitsFromISR(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToClear) {
     BaseType_t xReturn;
 
     traceENTER_xEventGroupClearBitsFromISR(xEventGroup, uxBitsToClear);
@@ -485,10 +487,10 @@ EventBits_t xEventGroupGetBitsFromISR(EventGroupHandle_t xEventGroup) {
 
     return uxReturn;
 }
+
 /*-----------------------------------------------------------*/
 
-EventBits_t xEventGroupSetBits(EventGroupHandle_t xEventGroup,
-                               const EventBits_t  uxBitsToSet) {
+EventBits_t xEventGroupSetBits(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToSet) {
     ListItem_t*       pxListItem;
     ListItem_t*       pxNext;
     ListItem_t const* pxListEnd;
@@ -574,6 +576,7 @@ EventBits_t xEventGroupSetBits(EventGroupHandle_t xEventGroup,
 
     return uxReturnBits;
 }
+
 /*-----------------------------------------------------------*/
 
 void vEventGroupDelete(EventGroupHandle_t xEventGroup) {
@@ -619,11 +622,11 @@ void vEventGroupDelete(EventGroupHandle_t xEventGroup) {
 
     traceRETURN_vEventGroupDelete();
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configSUPPORT_STATIC_ALLOCATION == 1)
-BaseType_t xEventGroupGetStaticBuffer(EventGroupHandle_t   xEventGroup,
-                                      StaticEventGroup_t** ppxEventGroupBuffer) {
+BaseType_t xEventGroupGetStaticBuffer(EventGroupHandle_t xEventGroup, StaticEventGroup_t** ppxEventGroupBuffer) {
     BaseType_t    xReturn;
     EventGroup_t* pxEventBits = xEventGroup;
 
@@ -665,8 +668,7 @@ BaseType_t xEventGroupGetStaticBuffer(EventGroupHandle_t   xEventGroup,
 
 /* For internal use only - execute a 'set bits' command that was pended from
  * an interrupt. */
-void vEventGroupSetBitsCallback(void*    pvEventGroup,
-                                uint32_t ulBitsToSet) {
+void vEventGroupSetBitsCallback(void* pvEventGroup, uint32_t ulBitsToSet) {
     traceENTER_vEventGroupSetBitsCallback(pvEventGroup, ulBitsToSet);
 
     /* MISRA Ref 11.5.4 [Callback function parameter] */
@@ -676,12 +678,12 @@ void vEventGroupSetBitsCallback(void*    pvEventGroup,
 
     traceRETURN_vEventGroupSetBitsCallback();
 }
+
 /*-----------------------------------------------------------*/
 
 /* For internal use only - execute a 'clear bits' command that was pended from
  * an interrupt. */
-void vEventGroupClearBitsCallback(void*    pvEventGroup,
-                                  uint32_t ulBitsToClear) {
+void vEventGroupClearBitsCallback(void* pvEventGroup, uint32_t ulBitsToClear) {
     traceENTER_vEventGroupClearBitsCallback(pvEventGroup, ulBitsToClear);
 
     /* MISRA Ref 11.5.4 [Callback function parameter] */
@@ -691,11 +693,11 @@ void vEventGroupClearBitsCallback(void*    pvEventGroup,
 
     traceRETURN_vEventGroupClearBitsCallback();
 }
+
 /*-----------------------------------------------------------*/
 
-static BaseType_t prvTestWaitCondition(const EventBits_t uxCurrentEventBits,
-                                       const EventBits_t uxBitsToWaitFor,
-                                       const BaseType_t  xWaitForAllBits) {
+static BaseType_t
+prvTestWaitCondition(const EventBits_t uxCurrentEventBits, const EventBits_t uxBitsToWaitFor, const BaseType_t xWaitForAllBits) {
     BaseType_t xWaitConditionMet = pdFALSE;
 
     if (xWaitForAllBits == pdFALSE) {
@@ -718,19 +720,19 @@ static BaseType_t prvTestWaitCondition(const EventBits_t uxCurrentEventBits,
 
     return xWaitConditionMet;
 }
+
 /*-----------------------------------------------------------*/
 
 #if ((configUSE_TRACE_FACILITY == 1) && (INCLUDE_xTimerPendFunctionCall == 1) && (configUSE_TIMERS == 1))
 
-BaseType_t xEventGroupSetBitsFromISR(EventGroupHandle_t xEventGroup,
-                                     const EventBits_t  uxBitsToSet,
-                                     BaseType_t*        pxHigherPriorityTaskWoken) {
+BaseType_t xEventGroupSetBitsFromISR(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToSet, BaseType_t* pxHigherPriorityTaskWoken) {
     BaseType_t xReturn;
 
     traceENTER_xEventGroupSetBitsFromISR(xEventGroup, uxBitsToSet, pxHigherPriorityTaskWoken);
 
     traceEVENT_GROUP_SET_BITS_FROM_ISR(xEventGroup, uxBitsToSet);
-    xReturn = xTimerPendFunctionCallFromISR(vEventGroupSetBitsCallback, (void*)xEventGroup, (uint32_t)uxBitsToSet, pxHigherPriorityTaskWoken);
+    xReturn =
+        xTimerPendFunctionCallFromISR(vEventGroupSetBitsCallback, (void*)xEventGroup, (uint32_t)uxBitsToSet, pxHigherPriorityTaskWoken);
 
     traceRETURN_xEventGroupSetBitsFromISR(xReturn);
 
@@ -768,8 +770,7 @@ UBaseType_t uxEventGroupGetNumber(void* xEventGroup) {
 
 #if (configUSE_TRACE_FACILITY == 1)
 
-void vEventGroupSetNumber(void*       xEventGroup,
-                          UBaseType_t uxEventGroupNumber) {
+void vEventGroupSetNumber(void* xEventGroup, UBaseType_t uxEventGroupNumber) {
     traceENTER_vEventGroupSetNumber(xEventGroup, uxEventGroupNumber);
 
     /* MISRA Ref 11.5.2 [Opaque pointer] */

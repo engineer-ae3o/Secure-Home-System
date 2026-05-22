@@ -42,49 +42,46 @@
 
 #if defined(ASCON_BACKEND_DIRECT_XOR)
 
-#define ISAP_ADD_BIT(state, value, bit)             \
-    do {                                            \
-        (state)->B[0] ^= ((value) << (bit)) & 0x80; \
+#define ISAP_ADD_BIT(state, value, bit)                                                                                                    \
+    do {                                                                                                                                   \
+        (state)->B[0] ^= ((value) << (bit)) & 0x80;                                                                                        \
     } while (0)
 
 #elif defined(ASCON_BACKEND_SLICED32)
 
-#define ISAP_ADD_BIT(state, value, bit)                                       \
-    do {                                                                      \
-        (state)->W[1] ^= (((uint32_t)(value)) << (24 + (bit))) & 0x80000000U; \
+#define ISAP_ADD_BIT(state, value, bit)                                                                                                    \
+    do {                                                                                                                                   \
+        (state)->W[1] ^= (((uint32_t)(value)) << (24 + (bit))) & 0x80000000U;                                                              \
     } while (0)
 
 #elif defined(ASCON_BACKEND_SLICED64)
 
-#define ISAP_ADD_BIT(state, value, bit)                                                 \
-    do {                                                                                \
-        (state)->S[0] ^= (((uint64_t)(value)) << (56 + (bit))) & 0x8000000000000000ULL; \
+#define ISAP_ADD_BIT(state, value, bit)                                                                                                    \
+    do {                                                                                                                                   \
+        (state)->S[0] ^= (((uint64_t)(value)) << (56 + (bit))) & 0x8000000000000000ULL;                                                    \
     } while (0)
 
 #else
 
-#define ISAP_ADD_BIT(state, value, bit)                        \
-    do {                                                       \
-        uint8_t absorb = (uint8_t)(((value) << (bit)) & 0x80); \
-        ascon_add_bytes((state), &absorb, 0, 1);               \
+#define ISAP_ADD_BIT(state, value, bit)                                                                                                    \
+    do {                                                                                                                                   \
+        uint8_t absorb = (uint8_t)(((value) << (bit)) & 0x80);                                                                             \
+        ascon_add_bytes((state), &absorb, 0, 1);                                                                                           \
     } while (0)
 
 #endif
 
 /* IV string for initialising the associated data */
-static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_A)
-    [ISAP_STATE_SIZE - ISAP_NONCE_SIZE] = {
-        0x01, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
+static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_A)[ISAP_STATE_SIZE - ISAP_NONCE_SIZE] = {
+    0x01, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
 
 /* IV string for authenticating associated data */
-static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_KA)
-    [ISAP_STATE_SIZE - ISAP_KEY_SIZE] = {
-        0x02, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
+static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_KA)[ISAP_STATE_SIZE - ISAP_KEY_SIZE] = {
+    0x02, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
 
 /* IV string for encrypting payload data */
-static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_KE)
-    [ISAP_STATE_SIZE - ISAP_KEY_SIZE] = {
-        0x03, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
+static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_KE)[ISAP_STATE_SIZE - ISAP_KEY_SIZE] = {
+    0x03, ISAP_KEY_SIZE * 8, ISAP_RATE * 8, 1, ISAP_sH, ISAP_sB, ISAP_sE, ISAP_sK};
 
 /**
  * \brief Re-keys the ISAP permutation state.
@@ -96,7 +93,8 @@ static unsigned char const ISAP_CONCAT(ISAP_ALG_NAME, _IV_KE)
  *
  * The output key will be left in the leading bytes of \a state.
  */
-static void ISAP_CONCAT(ISAP_ALG_NAME, _rekey)(ascon_state_t* state, const ascon_state_t* pk, const unsigned char* data, unsigned data_len) {
+static void ISAP_CONCAT(ISAP_ALG_NAME,
+                        _rekey)(ascon_state_t* state, const ascon_state_t* pk, const unsigned char* data, unsigned data_len) {
     unsigned bit, num_bits;
 
     /* Initialize the state with the key and IV from "pk" */
@@ -122,7 +120,8 @@ static void ISAP_CONCAT(ISAP_ALG_NAME, _rekey)(ascon_state_t* state, const ascon
  * \param m Buffer to receive the input plaintext.
  * \param mlen Length of the input plaintext.
  */
-static void ISAP_CONCAT(ISAP_ALG_NAME, _encrypt)(ascon_state_t* state, const ISAP_KEY_STATE* pk, const unsigned char* npub, unsigned char* c, const unsigned char* m, size_t mlen) {
+static void ISAP_CONCAT(ISAP_ALG_NAME, _encrypt)(
+    ascon_state_t* state, const ISAP_KEY_STATE* pk, const unsigned char* npub, unsigned char* c, const unsigned char* m, size_t mlen) {
     /* Set up the re-keyed encryption key and nonce in the state */
     ISAP_CONCAT(ISAP_ALG_NAME, _rekey)
     (state, &(pk->ke), npub, ISAP_NONCE_SIZE);
@@ -153,7 +152,14 @@ static void ISAP_CONCAT(ISAP_ALG_NAME, _encrypt)(ascon_state_t* state, const ISA
  * \param c Buffer containing the ciphertext.
  * \param clen Length of the ciphertext.
  */
-static void ISAP_CONCAT(ISAP_ALG_NAME, _mac)(ascon_state_t* state, const ISAP_KEY_STATE* pk, const unsigned char* npub, const unsigned char* ad, size_t adlen, const unsigned char* c, size_t clen, unsigned char* tag) {
+static void ISAP_CONCAT(ISAP_ALG_NAME, _mac)(ascon_state_t*        state,
+                                             const ISAP_KEY_STATE* pk,
+                                             const unsigned char*  npub,
+                                             const unsigned char*  ad,
+                                             size_t                adlen,
+                                             const unsigned char*  c,
+                                             size_t                clen,
+                                             unsigned char*        tag) {
     unsigned char preserve[ISAP_STATE_SIZE - ISAP_KEY_SIZE];
 #if ISAP_KEY_SIZE != ISAP_TAG_SIZE
     unsigned char k[ISAP_KEY_SIZE];
@@ -229,8 +235,7 @@ void ISAP_CONCAT(ISAP_ALG_NAME, _aead_init)(ISAP_KEY_STATE* pk, const unsigned c
     ascon_release(&(pk->ka));
 }
 
-void ISAP_CONCAT(ISAP_ALG_NAME, _aead_load_key)(ISAP_KEY_STATE*     pk,
-                                                const unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]) {
+void ISAP_CONCAT(ISAP_ALG_NAME, _aead_load_key)(ISAP_KEY_STATE* pk, const unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]) {
     /* Load the ke and ka values directly into the permutation states */
     ascon_init(&(pk->ke));
     ascon_overwrite_bytes(&(pk->ke), k, 0, ISAP_STATE_SIZE);
@@ -240,8 +245,7 @@ void ISAP_CONCAT(ISAP_ALG_NAME, _aead_load_key)(ISAP_KEY_STATE*     pk,
     ascon_release(&(pk->ka));
 }
 
-void ISAP_CONCAT(ISAP_ALG_NAME, _aead_save_key)(ISAP_KEY_STATE* pk,
-                                                unsigned char   k[ASCON_ISAP_SAVED_KEY_SIZE]) {
+void ISAP_CONCAT(ISAP_ALG_NAME, _aead_save_key)(ISAP_KEY_STATE* pk, unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]) {
     /* Extract the ASCON state for ke and ka into the buffer */
     ascon_acquire(&(pk->ke));
     ascon_extract_bytes(&(pk->ke), k, 0, ISAP_STATE_SIZE);
@@ -260,7 +264,14 @@ void ISAP_CONCAT(ISAP_ALG_NAME, _aead_free)(ISAP_KEY_STATE* pk) {
     }
 }
 
-void ISAP_CONCAT(ISAP_ALG_NAME, _aead_encrypt)(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ISAP_KEY_STATE* pk) {
+void ISAP_CONCAT(ISAP_ALG_NAME, _aead_encrypt)(unsigned char*        c,
+                                               size_t*               clen,
+                                               const unsigned char*  m,
+                                               size_t                mlen,
+                                               const unsigned char*  ad,
+                                               size_t                adlen,
+                                               const unsigned char*  npub,
+                                               const ISAP_KEY_STATE* pk) {
     ascon_state_t state;
 
     /* Set the length of the returned ciphertext */
@@ -276,7 +287,14 @@ void ISAP_CONCAT(ISAP_ALG_NAME, _aead_encrypt)(unsigned char* c, size_t* clen, c
     ascon_free(&state);
 }
 
-int ISAP_CONCAT(ISAP_ALG_NAME, _aead_decrypt)(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ISAP_KEY_STATE* pk) {
+int ISAP_CONCAT(ISAP_ALG_NAME, _aead_decrypt)(unsigned char*        m,
+                                              size_t*               mlen,
+                                              const unsigned char*  c,
+                                              size_t                clen,
+                                              const unsigned char*  ad,
+                                              size_t                adlen,
+                                              const unsigned char*  npub,
+                                              const ISAP_KEY_STATE* pk) {
     ascon_state_t state;
     unsigned char tag[ISAP_TAG_SIZE];
     int           result;

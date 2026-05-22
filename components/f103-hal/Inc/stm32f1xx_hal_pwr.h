@@ -27,39 +27,38 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_HAL_Driver
+    /** @addtogroup STM32F1xx_HAL_Driver
   * @{
   */
 
-/** @addtogroup PWR
+    /** @addtogroup PWR
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
+    /* Exported types ------------------------------------------------------------*/
 
-/** @defgroup PWR_Exported_Types PWR Exported Types
+    /** @defgroup PWR_Exported_Types PWR Exported Types
   * @{
   */
 
-/**
+    /**
   * @brief  PWR PVD configuration structure definition
   */
-typedef struct
-{
-    uint32_t PVDLevel; /*!< PVDLevel: Specifies the PVD detection level.
+    typedef struct {
+        uint32_t PVDLevel; /*!< PVDLevel: Specifies the PVD detection level.
                             This parameter can be a value of @ref PWR_PVD_detection_level */
 
-    uint32_t Mode; /*!< Mode: Specifies the operating mode for the selected pins.
+        uint32_t Mode; /*!< Mode: Specifies the operating mode for the selected pins.
                            This parameter can be a value of @ref PWR_PVD_Mode */
-} PWR_PVDTypeDef;
+    } PWR_PVDTypeDef;
 
-/**
+    /**
   * @}
   */
 
-/* Internal constants --------------------------------------------------------*/
+    /* Internal constants --------------------------------------------------------*/
 
-/** @addtogroup PWR_Private_Constants
+    /** @addtogroup PWR_Private_Constants
   * @{
   */
 
@@ -102,11 +101,11 @@ typedef struct
 #define PWR_PVD_MODE_EVENT_FALLING 0x00020002U        /*!< Event Mode with Falling edge trigger detection */
 #define PWR_PVD_MODE_EVENT_RISING_FALLING 0x00020003U /*!< Event Mode with Rising/Falling edge trigger detection */
 
-/**
+    /**
   * @}
   */
 
-/** @defgroup PWR_WakeUp_Pins PWR WakeUp Pins
+    /** @defgroup PWR_WakeUp_Pins PWR WakeUp Pins
   * @{
   */
 
@@ -244,8 +243,8 @@ typedef struct
   * @brief  PVD EXTI line configuration: set rising & falling edge trigger.
   * @retval None.
   */
-#define __HAL_PWR_PVD_EXTI_ENABLE_RISING_FALLING_EDGE() \
-    __HAL_PWR_PVD_EXTI_ENABLE_RISING_EDGE();            \
+#define __HAL_PWR_PVD_EXTI_ENABLE_RISING_FALLING_EDGE()                                                                                    \
+    __HAL_PWR_PVD_EXTI_ENABLE_RISING_EDGE();                                                                                               \
     __HAL_PWR_PVD_EXTI_ENABLE_FALLING_EDGE();
 
 /**
@@ -253,8 +252,8 @@ typedef struct
   * This parameter can be:
   * @retval None.
   */
-#define __HAL_PWR_PVD_EXTI_DISABLE_RISING_FALLING_EDGE() \
-    __HAL_PWR_PVD_EXTI_DISABLE_RISING_EDGE();            \
+#define __HAL_PWR_PVD_EXTI_DISABLE_RISING_FALLING_EDGE()                                                                                   \
+    __HAL_PWR_PVD_EXTI_DISABLE_RISING_EDGE();                                                                                              \
     __HAL_PWR_PVD_EXTI_DISABLE_FALLING_EDGE();
 
 /**
@@ -282,87 +281,85 @@ typedef struct
 /** @defgroup PWR_Private_Macros PWR Private Macros
   * @{
   */
-#define IS_PWR_PVD_LEVEL(LEVEL) (((LEVEL) == PWR_PVDLEVEL_0) || ((LEVEL) == PWR_PVDLEVEL_1) || \
-                                 ((LEVEL) == PWR_PVDLEVEL_2) || ((LEVEL) == PWR_PVDLEVEL_3) || \
-                                 ((LEVEL) == PWR_PVDLEVEL_4) || ((LEVEL) == PWR_PVDLEVEL_5) || \
-                                 ((LEVEL) == PWR_PVDLEVEL_6) || ((LEVEL) == PWR_PVDLEVEL_7))
+#define IS_PWR_PVD_LEVEL(LEVEL)                                                                                                            \
+    (((LEVEL) == PWR_PVDLEVEL_0) || ((LEVEL) == PWR_PVDLEVEL_1) || ((LEVEL) == PWR_PVDLEVEL_2) || ((LEVEL) == PWR_PVDLEVEL_3) ||           \
+     ((LEVEL) == PWR_PVDLEVEL_4) || ((LEVEL) == PWR_PVDLEVEL_5) || ((LEVEL) == PWR_PVDLEVEL_6) || ((LEVEL) == PWR_PVDLEVEL_7))
 
-#define IS_PWR_PVD_MODE(MODE) (((MODE) == PWR_PVD_MODE_IT_RISING) || ((MODE) == PWR_PVD_MODE_IT_FALLING) ||               \
-                               ((MODE) == PWR_PVD_MODE_IT_RISING_FALLING) || ((MODE) == PWR_PVD_MODE_EVENT_RISING) ||     \
-                               ((MODE) == PWR_PVD_MODE_EVENT_FALLING) || ((MODE) == PWR_PVD_MODE_EVENT_RISING_FALLING) || \
-                               ((MODE) == PWR_PVD_MODE_NORMAL))
+#define IS_PWR_PVD_MODE(MODE)                                                                                                              \
+    (((MODE) == PWR_PVD_MODE_IT_RISING) || ((MODE) == PWR_PVD_MODE_IT_FALLING) || ((MODE) == PWR_PVD_MODE_IT_RISING_FALLING) ||            \
+     ((MODE) == PWR_PVD_MODE_EVENT_RISING) || ((MODE) == PWR_PVD_MODE_EVENT_FALLING) || ((MODE) == PWR_PVD_MODE_EVENT_RISING_FALLING) ||   \
+     ((MODE) == PWR_PVD_MODE_NORMAL))
 
 #define IS_PWR_WAKEUP_PIN(PIN) (((PIN) == PWR_WAKEUP_PIN1))
 
-#define IS_PWR_REGULATOR(REGULATOR) (((REGULATOR) == PWR_MAINREGULATOR_ON) || \
-                                     ((REGULATOR) == PWR_LOWPOWERREGULATOR_ON))
+#define IS_PWR_REGULATOR(REGULATOR) (((REGULATOR) == PWR_MAINREGULATOR_ON) || ((REGULATOR) == PWR_LOWPOWERREGULATOR_ON))
 
 #define IS_PWR_SLEEP_ENTRY(ENTRY) (((ENTRY) == PWR_SLEEPENTRY_WFI) || ((ENTRY) == PWR_SLEEPENTRY_WFE))
 
 #define IS_PWR_STOP_ENTRY(ENTRY) (((ENTRY) == PWR_STOPENTRY_WFI) || ((ENTRY) == PWR_STOPENTRY_WFE))
 
-/**
+    /**
   * @}
   */
 
-/* Exported functions --------------------------------------------------------*/
+    /* Exported functions --------------------------------------------------------*/
 
-/** @addtogroup PWR_Exported_Functions PWR Exported Functions
+    /** @addtogroup PWR_Exported_Functions PWR Exported Functions
   * @{
   */
 
-/** @addtogroup PWR_Exported_Functions_Group1 Initialization and de-initialization functions 
+    /** @addtogroup PWR_Exported_Functions_Group1 Initialization and de-initialization functions 
   * @{
   */
 
-/* Initialization and de-initialization functions *******************************/
-void HAL_PWR_DeInit(void);
-void HAL_PWR_EnableBkUpAccess(void);
-void HAL_PWR_DisableBkUpAccess(void);
+    /* Initialization and de-initialization functions *******************************/
+    void HAL_PWR_DeInit(void);
+    void HAL_PWR_EnableBkUpAccess(void);
+    void HAL_PWR_DisableBkUpAccess(void);
 
-/**
+    /**
   * @}
   */
 
-/** @addtogroup PWR_Exported_Functions_Group2 Peripheral Control functions 
+    /** @addtogroup PWR_Exported_Functions_Group2 Peripheral Control functions 
   * @{
   */
 
-/* Peripheral Control functions  ************************************************/
-void HAL_PWR_ConfigPVD(PWR_PVDTypeDef* sConfigPVD);
-/* #define HAL_PWR_ConfigPVD 12*/
-void HAL_PWR_EnablePVD(void);
-void HAL_PWR_DisablePVD(void);
+    /* Peripheral Control functions  ************************************************/
+    void HAL_PWR_ConfigPVD(PWR_PVDTypeDef* sConfigPVD);
+    /* #define HAL_PWR_ConfigPVD 12*/
+    void HAL_PWR_EnablePVD(void);
+    void HAL_PWR_DisablePVD(void);
 
-/* WakeUp pins configuration functions ****************************************/
-void HAL_PWR_EnableWakeUpPin(uint32_t WakeUpPinx);
-void HAL_PWR_DisableWakeUpPin(uint32_t WakeUpPinx);
+    /* WakeUp pins configuration functions ****************************************/
+    void HAL_PWR_EnableWakeUpPin(uint32_t WakeUpPinx);
+    void HAL_PWR_DisableWakeUpPin(uint32_t WakeUpPinx);
 
-/* Low Power modes configuration functions ************************************/
-void HAL_PWR_EnterSTOPMode(uint32_t Regulator, uint8_t STOPEntry);
-void HAL_PWR_EnterSLEEPMode(uint32_t Regulator, uint8_t SLEEPEntry);
-void HAL_PWR_EnterSTANDBYMode(void);
+    /* Low Power modes configuration functions ************************************/
+    void HAL_PWR_EnterSTOPMode(uint32_t Regulator, uint8_t STOPEntry);
+    void HAL_PWR_EnterSLEEPMode(uint32_t Regulator, uint8_t SLEEPEntry);
+    void HAL_PWR_EnterSTANDBYMode(void);
 
-void HAL_PWR_EnableSleepOnExit(void);
-void HAL_PWR_DisableSleepOnExit(void);
-void HAL_PWR_EnableSEVOnPend(void);
-void HAL_PWR_DisableSEVOnPend(void);
+    void HAL_PWR_EnableSleepOnExit(void);
+    void HAL_PWR_DisableSleepOnExit(void);
+    void HAL_PWR_EnableSEVOnPend(void);
+    void HAL_PWR_DisableSEVOnPend(void);
 
-void HAL_PWR_PVD_IRQHandler(void);
-void HAL_PWR_PVDCallback(void);
-/**
+    void HAL_PWR_PVD_IRQHandler(void);
+    void HAL_PWR_PVDCallback(void);
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

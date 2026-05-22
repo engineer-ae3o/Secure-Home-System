@@ -210,8 +210,7 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef* PeriphClkI
 
             /* Prediv2 can be written only when the PLL2 is disabled. */
             /* Return an error only if new value is different from the programmed value */
-            if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL2ON) &&
-                (__HAL_RCC_HSE_GET_PREDIV2() != PeriphClkInit->PLLI2S.HSEPrediv2Value)) {
+            if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL2ON) && (__HAL_RCC_HSE_GET_PREDIV2() != PeriphClkInit->PLLI2S.HSEPrediv2Value)) {
                 return HAL_ERROR;
             }
 
@@ -242,7 +241,8 @@ HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef* PeriphClkI
     }
 #endif /* STM32F105xC || STM32F107xC */
 
-#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
+#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
     /*------------------------------ USB clock Configuration ------------------*/
     if (((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_USB) == RCC_PERIPHCLK_USB) {
         /* Check the parameters */
@@ -300,7 +300,8 @@ void HAL_RCCEx_GetPeriphCLKConfig(RCC_PeriphCLKInitTypeDef* PeriphClkInit) {
 
 #endif /* STM32F103xE || STM32F103xG */
 
-#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
+#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
     /* Get the USB clock configuration -----------------------------------------*/
     PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_USB;
     PeriphClkInit->UsbClockSelection = __HAL_RCC_GET_USB_SOURCE();
@@ -361,8 +362,8 @@ uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint32_t PeriphClk) {
     uint32_t prediv1 = 0U, pllclk = 0U, pllmul = 0U;
     uint32_t pll2mul = 0U, pll3mul = 0U, prediv2 = 0U;
 #endif /* STM32F105xC || STM32F107xC */
-#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || \
-    defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG)
+#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
     static const uint8_t aPLLMULFactorTable[16U] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16};
     static const uint8_t aPredivFactorTable[2U]  = {1, 2};
 
@@ -374,7 +375,8 @@ uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint32_t PeriphClk) {
     assert_param(IS_RCC_PERIPHCLOCK(PeriphClk));
 
     switch (PeriphClk) {
-#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
+#if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
         case RCC_PERIPHCLK_USB: {
             /* Get RCC configuration ------------------------------------------------------*/
             temp_reg = RCC->CFGR;
@@ -551,8 +553,7 @@ HAL_StatusTypeDef HAL_RCCEx_EnablePLLI2S(RCC_PLLI2SInitTypeDef* PLLI2SInit) {
 
         /* Prediv2 can be written only when the PLL2 is disabled. */
         /* Return an error only if new value is different from the programmed value */
-        if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL2ON) &&
-            (__HAL_RCC_HSE_GET_PREDIV2() != PLLI2SInit->HSEPrediv2Value)) {
+        if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL2ON) && (__HAL_RCC_HSE_GET_PREDIV2() != PLLI2SInit->HSEPrediv2Value)) {
             return HAL_ERROR;
         }
 
@@ -655,8 +656,7 @@ HAL_StatusTypeDef HAL_RCCEx_EnablePLL2(RCC_PLL2InitTypeDef* PLL2Init) {
 
     /* This bit can not be cleared if the PLL2 clock is used indirectly as system
     clock (i.e. it is used as PLL clock entry that is used as system clock). */
-    if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) &&
-        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
+    if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) && (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
         ((READ_BIT(RCC->CFGR2, RCC_CFGR2_PREDIV1SRC)) == RCC_CFGR2_PREDIV1SRC_PLL2)) {
         return HAL_ERROR;
     } else {
@@ -666,8 +666,7 @@ HAL_StatusTypeDef HAL_RCCEx_EnablePLL2(RCC_PLL2InitTypeDef* PLL2Init) {
 
         /* Prediv2 can be written only when the PLLI2S is disabled. */
         /* Return an error only if new value is different from the programmed value */
-        if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON) &&
-            (__HAL_RCC_HSE_GET_PREDIV2() != PLL2Init->HSEPrediv2Value)) {
+        if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON) && (__HAL_RCC_HSE_GET_PREDIV2() != PLL2Init->HSEPrediv2Value)) {
             return HAL_ERROR;
         }
 
@@ -717,8 +716,7 @@ HAL_StatusTypeDef HAL_RCCEx_DisablePLL2(void) {
 
     /* This bit can not be cleared if the PLL2 clock is used indirectly as system
     clock (i.e. it is used as PLL clock entry that is used as system clock). */
-    if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) &&
-        (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
+    if ((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) && (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) &&
         ((READ_BIT(RCC->CFGR2, RCC_CFGR2_PREDIV1SRC)) == RCC_CFGR2_PREDIV1SRC_PLL2)) {
         return HAL_ERROR;
     } else {

@@ -227,8 +227,7 @@ HAL_StatusTypeDef HAL_FLASHEx_Erase(FLASH_EraseInitTypeDef* pEraseInit, uint32_t
                 *PageError = 0xFFFFFFFFU;
 
                 /* Erase by page by page to be done*/
-                for (address = pEraseInit->PageAddress;
-                     address < (pEraseInit->PageAddress + (pEraseInit->NbPages) * FLASH_PAGE_SIZE);
+                for (address = pEraseInit->PageAddress; address < (pEraseInit->PageAddress + (pEraseInit->NbPages) * FLASH_PAGE_SIZE);
                      address += FLASH_PAGE_SIZE) {
                     FLASH_PageErase(address);
 
@@ -255,8 +254,7 @@ HAL_StatusTypeDef HAL_FLASHEx_Erase(FLASH_EraseInitTypeDef* pEraseInit, uint32_t
                 *PageError = 0xFFFFFFFFU;
 
                 /* Erase page by page to be done*/
-                for (address = pEraseInit->PageAddress;
-                     address < ((pEraseInit->NbPages * FLASH_PAGE_SIZE) + pEraseInit->PageAddress);
+                for (address = pEraseInit->PageAddress; address < ((pEraseInit->NbPages * FLASH_PAGE_SIZE) + pEraseInit->PageAddress);
                      address += FLASH_PAGE_SIZE) {
                     FLASH_PageErase(address);
 

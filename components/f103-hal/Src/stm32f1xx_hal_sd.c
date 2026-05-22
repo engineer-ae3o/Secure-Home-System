@@ -302,6 +302,7 @@ static void     SD_DMAReceiveCplt(DMA_HandleTypeDef* hdma);
 static void     SD_DMAError(DMA_HandleTypeDef* hdma);
 static void     SD_DMATxAbort(DMA_HandleTypeDef* hdma);
 static void     SD_DMARxAbort(DMA_HandleTypeDef* hdma);
+
 /**
   * @}
   */
@@ -609,7 +610,8 @@ HAL_StatusTypeDef HAL_SD_ReadBlocks(SD_HandleTypeDef* hsd, uint8_t* pData, uint3
 
         /* Poll on SDIO flags */
         dataremaining = config.DataLength;
-        while (!__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_RXOVERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
+        while (
+            !__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_RXOVERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
             if (__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_RXFIFOHF) && (dataremaining > 0U)) {
                 /* Read data from SDIO Rx FIFO */
                 for (count = 0U; count < 8U; count++) {
@@ -793,7 +795,8 @@ HAL_StatusTypeDef HAL_SD_WriteBlocks(SD_HandleTypeDef* hsd, uint8_t* pData, uint
 
         /* Write block(s) in polling mode */
         dataremaining = config.DataLength;
-        while (!__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
+        while (!__HAL_SD_GET_FLAG(hsd,
+                                  SDIO_FLAG_TXUNDERR | SDIO_FLAG_DCRCFAIL | SDIO_FLAG_DTIMEOUT | SDIO_FLAG_DATAEND | SDIO_FLAG_STBITERR)) {
             if (__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_TXFIFOHE) && (dataremaining > 0U)) {
                 /* Write data to SDIO Tx FIFO */
                 for (count = 0U; count < 8U; count++) {
@@ -1092,7 +1095,8 @@ HAL_StatusTypeDef HAL_SD_ReadBlocks_DMA(SD_HandleTypeDef* hsd, uint8_t* pData, u
         MODIFY_REG(hsd->hdmarx->Instance->CCR, DMA_CCR_DIR, hsd->hdmarx->Init.Direction);
 
         /* Enable the DMA Channel */
-        if (HAL_DMA_Start_IT(hsd->hdmarx, (uint32_t)&hsd->Instance->FIFO, (uint32_t)pData, (uint32_t)(BLOCKSIZE * NumberOfBlocks) / 4U) != HAL_OK) {
+        if (HAL_DMA_Start_IT(hsd->hdmarx, (uint32_t)&hsd->Instance->FIFO, (uint32_t)pData, (uint32_t)(BLOCKSIZE * NumberOfBlocks) / 4U) !=
+            HAL_OK) {
             __HAL_SD_DISABLE_IT(hsd, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_RXOVERR | SDIO_IT_DATAEND));
             __HAL_SD_CLEAR_FLAG(hsd, SDIO_STATIC_FLAGS);
             hsd->ErrorCode |= HAL_SD_ERROR_DMA;
@@ -1224,7 +1228,8 @@ HAL_StatusTypeDef HAL_SD_WriteBlocks_DMA(SD_HandleTypeDef* hsd, uint8_t* pData, 
         MODIFY_REG(hsd->hdmatx->Instance->CCR, DMA_CCR_DIR, hsd->hdmatx->Init.Direction);
 
         /* Enable the DMA Channel */
-        if (HAL_DMA_Start_IT(hsd->hdmatx, (uint32_t)pData, (uint32_t)&hsd->Instance->FIFO, (uint32_t)(BLOCKSIZE * NumberOfBlocks) / 4U) != HAL_OK) {
+        if (HAL_DMA_Start_IT(hsd->hdmatx, (uint32_t)pData, (uint32_t)&hsd->Instance->FIFO, (uint32_t)(BLOCKSIZE * NumberOfBlocks) / 4U) !=
+            HAL_OK) {
             __HAL_SD_DISABLE_IT(hsd, (SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR));
             __HAL_SD_CLEAR_FLAG(hsd, SDIO_STATIC_FLAGS);
             hsd->ErrorCode |= HAL_SD_ERROR_DMA;
@@ -1358,7 +1363,9 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef* hsd) {
     else if (__HAL_SD_GET_FLAG(hsd, SDIO_FLAG_DATAEND) != RESET) {
         __HAL_SD_CLEAR_FLAG(hsd, SDIO_FLAG_DATAEND);
 
-        __HAL_SD_DISABLE_IT(hsd, SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_TXFIFOHE | SDIO_IT_RXFIFOHF);
+        __HAL_SD_DISABLE_IT(hsd,
+                            SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_TXFIFOHE |
+                                SDIO_IT_RXFIFOHF);
 
         hsd->Instance->DCTRL &= ~(SDIO_DCTRL_DTEN);
 
@@ -1446,7 +1453,8 @@ void HAL_SD_IRQHandler(SD_HandleTypeDef* hsd) {
         __HAL_SD_CLEAR_FLAG(hsd, SDIO_STATIC_DATA_FLAGS | SDIO_FLAG_STBITERR);
 
         /* Disable all interrupts */
-        __HAL_SD_DISABLE_IT(hsd, SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_STBITERR);
+        __HAL_SD_DISABLE_IT(hsd,
+                            SDIO_IT_DATAEND | SDIO_IT_DCRCFAIL | SDIO_IT_DTIMEOUT | SDIO_IT_TXUNDERR | SDIO_IT_RXOVERR | SDIO_IT_STBITERR);
 
         hsd->ErrorCode |= SDMMC_CmdStopTransfer(hsd->Instance);
 
@@ -2760,11 +2768,11 @@ static uint32_t SD_FindSCR(SD_HandleTypeDef* hsd, uint32_t* pSCR) {
         /* Clear all the static flags */
         __HAL_SD_CLEAR_FLAG(hsd, SDIO_STATIC_DATA_FLAGS);
 
-        *scr = (((tempscr[1] & SDMMC_0TO7BITS) << 24) | ((tempscr[1] & SDMMC_8TO15BITS) << 8) |
-                ((tempscr[1] & SDMMC_16TO23BITS) >> 8) | ((tempscr[1] & SDMMC_24TO31BITS) >> 24));
+        *scr = (((tempscr[1] & SDMMC_0TO7BITS) << 24) | ((tempscr[1] & SDMMC_8TO15BITS) << 8) | ((tempscr[1] & SDMMC_16TO23BITS) >> 8) |
+                ((tempscr[1] & SDMMC_24TO31BITS) >> 24));
         scr++;
-        *scr = (((tempscr[0] & SDMMC_0TO7BITS) << 24) | ((tempscr[0] & SDMMC_8TO15BITS) << 8) |
-                ((tempscr[0] & SDMMC_16TO23BITS) >> 8) | ((tempscr[0] & SDMMC_24TO31BITS) >> 24));
+        *scr = (((tempscr[0] & SDMMC_0TO7BITS) << 24) | ((tempscr[0] & SDMMC_8TO15BITS) << 8) | ((tempscr[0] & SDMMC_16TO23BITS) >> 8) |
+                ((tempscr[0] & SDMMC_24TO31BITS) >> 24));
     }
 
     return HAL_SD_ERROR_NONE;

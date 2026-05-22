@@ -83,7 +83,8 @@ void ascon_aead_absorb_16(ascon_state_t* state, const unsigned char* data, size_
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_encrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
+unsigned char ascon_aead_encrypt_8(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Encrypts a block of data with an ASCON state and a 16-byte rate.
@@ -98,7 +99,8 @@ unsigned char ascon_aead_encrypt_8(ascon_state_t* state, unsigned char* dest, co
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_encrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
+unsigned char ascon_aead_encrypt_16(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Decrypts a block of data with an ASCON state and an 8-byte rate.
@@ -113,7 +115,8 @@ unsigned char ascon_aead_encrypt_16(ascon_state_t* state, unsigned char* dest, c
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_decrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
+unsigned char ascon_aead_decrypt_8(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Decrypts a block of data with an ASCON state and a 16-byte rate.
@@ -128,6 +131,7 @@ unsigned char ascon_aead_decrypt_8(ascon_state_t* state, unsigned char* dest, co
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_decrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
+unsigned char ascon_aead_decrypt_16(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 #endif

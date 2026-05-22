@@ -850,21 +850,21 @@ __STATIC_FORCEINLINE void __set_FPSCR(uint32_t fpscr) {
 #define __QADD __qadd
 #define __QSUB __qsub
 
-#define __PKHBT(ARG1, ARG2, ARG3)                                                              \
-    __extension__({                                                                            \
-        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                      \
-        __ASM("pkhbt %0, %1, %2, lsl %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3)); \
-        __RES;                                                                                 \
+#define __PKHBT(ARG1, ARG2, ARG3)                                                                                                          \
+    __extension__({                                                                                                                        \
+        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                                                                  \
+        __ASM("pkhbt %0, %1, %2, lsl %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3));                                             \
+        __RES;                                                                                                                             \
     })
 
-#define __PKHTB(ARG1, ARG2, ARG3)                                                                  \
-    __extension__({                                                                                \
-        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                          \
-        if (ARG3 == 0)                                                                             \
-            __ASM("pkhtb %0, %1, %2" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2));                    \
-        else                                                                                       \
-            __ASM("pkhtb %0, %1, %2, asr %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3)); \
-        __RES;                                                                                     \
+#define __PKHTB(ARG1, ARG2, ARG3)                                                                                                          \
+    __extension__({                                                                                                                        \
+        uint32_t __RES, __ARG1 = (ARG1), __ARG2 = (ARG2);                                                                                  \
+        if (ARG3 == 0)                                                                                                                     \
+            __ASM("pkhtb %0, %1, %2" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2));                                                            \
+        else                                                                                                                               \
+            __ASM("pkhtb %0, %1, %2, asr %3" : "=r"(__RES) : "r"(__ARG1), "r"(__ARG2), "I"(ARG3));                                         \
+        __RES;                                                                                                                             \
     })
 
 __STATIC_FORCEINLINE uint32_t __SXTB16_RORn(uint32_t op1, uint32_t rotate) {

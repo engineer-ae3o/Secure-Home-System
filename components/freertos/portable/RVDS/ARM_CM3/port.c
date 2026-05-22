@@ -174,9 +174,7 @@ static const volatile uint8_t* const pcInterruptPriorityRegisters = (uint8_t*)po
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
     pxTopOfStack--;                   /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
@@ -192,6 +190,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -207,6 +206,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void vPortSVCHandler(void) {
@@ -222,11 +222,11 @@ __asm void vPortSVCHandler(void) {
         {r4 - r11} /* Pop the registers that are not automatically saved on exception entry and the critical nesting count. */
     msr psp,
         r0 /* Restore the task stack pointer. */
-            isb
-                mov r0,
-        #0 msr basepri, r0 orr r14, #0xd bx r14
+            isb mov r0,
+# 0 msr basepri, r0 orr r14, #0xd bx r14
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void prvStartFirstTask(void){
@@ -243,16 +243,11 @@ __asm void prvStartFirstTask(void){
     msr msp,
     r0
         /* Globally enable interrupts. */
-        cpsie i
-            cpsie f
-                dsb
-                    isb
-                        /* Call SVC to start the first task. */
-                            svc 0 nop
-                            nop
+        cpsie i cpsie f dsb isb
+            /* Call SVC to start the first task. */
+            svc 0 nop nop
     /* *INDENT-ON* */
-}
-/*-----------------------------------------------------------*/
+} /*-----------------------------------------------------------*/
 
 /*
  * See header file for description.
@@ -261,9 +256,10 @@ BaseType_t xPortStartScheduler(void) {
 #if (configASSERT_DEFINED == 1)
     {
         volatile uint8_t        ucOriginalPriority;
-        volatile uint32_t       ulImplementedPrioBits        = 0;
-        volatile uint8_t* const pucFirstUserPriorityRegister = (uint8_t*)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
-        volatile uint8_t        ucMaxPriorityValue;
+        volatile uint32_t       ulImplementedPrioBits = 0;
+        volatile uint8_t* const pucFirstUserPriorityRegister =
+            (uint8_t*)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
+        volatile uint8_t ucMaxPriorityValue;
 
         /* Determine the maximum priority from which ISR safe FreeRTOS API
          * functions can be called.  ISR safe functions are those that end in
@@ -356,6 +352,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -363,6 +360,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -378,6 +376,7 @@ void vPortEnterCritical(void) {
         configASSERT((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -388,6 +387,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 __asm void xPortPendSVHandler(void) {
@@ -398,9 +398,10 @@ __asm void xPortPendSVHandler(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    mrs r0, psp isb
+    mrs r0,
+        psp isb
 
-                ldr r3,
+            ldr r3,
         = pxCurrentTCB /* Get the location of the current TCB. */
             ldr r2,
         [r3]
@@ -411,18 +412,20 @@ __asm void xPortPendSVHandler(void) {
         [r2] /* Save the new top of stack into the first member of the TCB. */
 
         stmdb         sp !,
-        {r3, r14} mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY msr basepri, r0 dsb isb bl vTaskSwitchContext mov r0, #0 msr basepri, r0 ldmia sp !, {r3, r14}
+        {r3, r14} mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY msr basepri, r0 dsb isb bl vTaskSwitchContext mov r0, #0 msr basepri,
+        r0 ldmia sp !,
+        {r3, r14}
 
     ldr          r1,
-        [r3] ldr r0, [r1] /* The first item in pxCurrentTCB is the task top of stack. */
-        ldmia    r0 !,
+        [r3] ldr r0,
+        [r1] /* The first item in pxCurrentTCB is the task top of stack. */
+        ldmia r0 !,
         {r4 - r11} /* Pop the registers and the critical nesting count. */
-    msr psp,
-        r0
-            isb
-                bx r14 nop
+    msr           psp,
+        r0 isb bx r14 nop
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -448,6 +451,7 @@ void xPortSysTickHandler(void) {
 
     vPortClearBASEPRIFromISR();
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configUSE_TICKLESS_IDLE == 1)
@@ -689,10 +693,10 @@ __asm uint32_t vPortGetIPSR(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    mrs         r0, ipsr
-                bx r14
+    mrs r0, ipsr bx r14
     /* *INDENT-ON* */
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)

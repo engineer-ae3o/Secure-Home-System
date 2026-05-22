@@ -42,7 +42,7 @@
 extern "C" {
 #endif
 
-/**
+    /**
  * \brief Structure of the internal state of the ASCON permutation.
  *
  * The order of bits and bytes in the state may not match the regular
@@ -59,15 +59,15 @@ extern "C" {
  * that structure into P.  The application should call ascon_free() to
  * properly free the permutation state when it is no longer required.
  */
-typedef union {
-    uint64_t S[5];                  /**< 64-bit words of the state */
-    uint32_t W[10];                 /**< 32-bit words of the state */
-    uint8_t  B[40];                 /**< Bytes of the state */
-    void*    P[40 / sizeof(void*)]; /**< Private backend state */
+    typedef union {
+        uint64_t S[5];                  /**< 64-bit words of the state */
+        uint32_t W[10];                 /**< 32-bit words of the state */
+        uint8_t  B[40];                 /**< Bytes of the state */
+        void*    P[40 / sizeof(void*)]; /**< Private backend state */
 
-} ascon_state_t;
+    } ascon_state_t;
 
-/**
+    /**
  * \brief Initializes the words of the ASCON permutation state to zero.
  *
  * \param state The ASCON state to initialize.
@@ -82,9 +82,9 @@ typedef union {
  *
  * \sa ascon_free()
  */
-void ascon_init(ascon_state_t* state);
+    void ascon_init(ascon_state_t* state);
 
-/**
+    /**
  * \brief Frees an ASCON permutation state and attempts to destroy
  * any sensitive material.
  *
@@ -101,9 +101,9 @@ void ascon_init(ascon_state_t* state);
  *
  * \sa ascon_init()
  */
-void ascon_free(ascon_state_t* state);
+    void ascon_free(ascon_state_t* state);
 
-/**
+    /**
  * \brief Adds bytes to the ASCON state by XOR'ing them with existing bytes.
  *
  * \param state The ASCON state in "operational" form.
@@ -111,9 +111,9 @@ void ascon_free(ascon_state_t* state);
  * \param offset Offset into the state between 0 and 40 - size.
  * \param size Number of bytes to add to the state between 0 and 40.
  */
-void ascon_add_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size);
+    void ascon_add_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Overwrites existing bytes in the ASCON state.
  *
  * \param state The ASCON state in "operational" form.
@@ -121,18 +121,18 @@ void ascon_add_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset,
  * \param offset Offset into the state between 0 and 40 - size.
  * \param size Number of bytes to overwrite between 0 and 40.
  */
-void ascon_overwrite_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size);
+    void ascon_overwrite_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Overwrites a part of the ASCON state with zeroes.
  *
  * \param state The ASCON state in "operational" form.
  * \param offset Offset into the state between 0 and 40 - size.
  * \param size Number of bytes to overwrite between 0 and 40.
  */
-void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned size);
+    void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Extracts bytes from the ASCON state.
  *
  * \param state The ASCON state in "operational" form.
@@ -140,9 +140,9 @@ void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned
  * \param offset Offset into the state between 0 and 40 - size.
  * \param size Number of bytes to extract from the state between 0 and 40.
  */
-void ascon_extract_bytes(const ascon_state_t* state, uint8_t* data, unsigned offset, unsigned size);
+    void ascon_extract_bytes(const ascon_state_t* state, uint8_t* data, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Extracts bytes from the ASCON state and XOR's them with
  * input bytes to produce output bytes.
  *
@@ -152,9 +152,9 @@ void ascon_extract_bytes(const ascon_state_t* state, uint8_t* data, unsigned off
  * \param offset Offset into the state between 0 and 40 - size.
  * \param size Number of bytes to extract from the state between 0 and 40.
  */
-void ascon_extract_and_add_bytes(const ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size);
+    void ascon_extract_and_add_bytes(const ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Extracts bytes from the ASCON state and XOR's them with
  * input bytes to produce output bytes.  Also write the original
  * input bytes into the ASCON state.
@@ -171,16 +171,16 @@ void ascon_extract_and_add_bytes(const ascon_state_t* state, const uint8_t* inpu
  * typically used for AEAD decryption where the input ciphertext
  * needs to be incorporated into the state to authenticate it.
  */
-void ascon_extract_and_overwrite_bytes(ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size);
+    void ascon_extract_and_overwrite_bytes(ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size);
 
-/**
+    /**
  * \brief Permutes the ASCON state with a specified number of rounds.
  *
  * \param state The ASCON state in "operational" form.
  * \param first_round The first round to execute, between 0 and 11.
  * The number of rounds will be 12 - first_round.
  */
-void ascon_permute(ascon_state_t* state, uint8_t first_round);
+    void ascon_permute(ascon_state_t* state, uint8_t first_round);
 
 /**
  * \brief Permutes the ASCON state with 12 rounds of the permutation.
@@ -203,7 +203,7 @@ void ascon_permute(ascon_state_t* state, uint8_t first_round);
  */
 #define ascon_permute6(state) ascon_permute((state), 6)
 
-/**
+    /**
  * \brief Temporarily releases access to any shared hardware resources
  * that a permutation state was using.
  *
@@ -220,9 +220,9 @@ void ascon_permute(ascon_state_t* state, uint8_t first_round);
  *
  * \sa ascon_acquire()
  */
-void ascon_release(ascon_state_t* state);
+    void ascon_release(ascon_state_t* state);
 
-/**
+    /**
  * \brief Re-acquires access to any shared hardware resources that a
  * permutation state was using.
  *
@@ -230,9 +230,9 @@ void ascon_release(ascon_state_t* state);
  *
  * \sa ascon_release()
  */
-void ascon_acquire(ascon_state_t* state);
+    void ascon_acquire(ascon_state_t* state);
 
-/**
+    /**
  * \brief Copies the entire ASCON permutation state from a source to a
  * destination.
  *
@@ -241,7 +241,7 @@ void ascon_acquire(ascon_state_t* state);
  *
  * The destination must be acquired and the source must be released.
  */
-void ascon_copy(ascon_state_t* dest, const ascon_state_t* src);
+    void ascon_copy(ascon_state_t* dest, const ascon_state_t* src);
 
 #ifdef __cplusplus
 }

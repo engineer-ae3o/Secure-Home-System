@@ -58,22 +58,22 @@
 extern "C" {
 #endif
 
-/**
+    /**
  * \brief Masked 64-bit word with up to ASCON_MASKED_MAX_SHARES shares.
  *
  * This structure should be treated as opaque.
  */
-typedef union {
-    /** 64-bit version of the masked shares */
-    uint64_t S[ASCON_MASKED_MAX_SHARES];
+    typedef union {
+        /** 64-bit version of the masked shares */
+        uint64_t S[ASCON_MASKED_MAX_SHARES];
 
-    /** 32-bit version of the masked shares */
-    uint32_t W[ASCON_MASKED_MAX_SHARES * 2];
+        /** 32-bit version of the masked shares */
+        uint32_t W[ASCON_MASKED_MAX_SHARES * 2];
 
-    /** 8-bit version of the masked shares */
-    uint8_t B[ASCON_MASKED_MAX_SHARES * 8];
+        /** 8-bit version of the masked shares */
+        uint8_t B[ASCON_MASKED_MAX_SHARES * 8];
 
-} ascon_masked_word_t;
+    } ascon_masked_word_t;
 
 #if !defined(ASCON_MASKED_WORD_BACKEND_DIRECT_XOR)
 
@@ -323,15 +323,15 @@ typedef union {
 
 #endif /* ASCON_MASKED_WORD_BACKEND_DIRECT_XOR */
 
-/**
+    /**
  * \brief Sets a x2 masked word to zero.
  *
  * \param word The x2 masked word to set to zero.
  * \param trng TRNG to use to generate masking material.
  */
-void ascon_masked_word_x2_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 64-bit big endian value from buffer, masks it,
  * and writes it to a x2 masked word structure.
  *
@@ -341,9 +341,9 @@ void ascon_masked_word_x2_zero(ascon_masked_word_t* word, ascon_trng_state_t* tr
  *
  * \sa ascon_masked_word_x2_store()
  */
-void ascon_masked_word_x2_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 8-bit to 56-bit big endian value from buffer, masks it,
  * and writes it to a x2 masked word structure.
  *
@@ -352,9 +352,9 @@ void ascon_masked_word_x2_load(ascon_masked_word_t* word, const uint8_t* data, a
  * \param size Number of bytes to load between 1 and 7.
  * \param trng TRNG to use to generate masking material.
  */
-void ascon_masked_word_x2_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads two 32-bit big endian values from buffers, masks them,
  * and writes the result to a x2 masked word structure.
  *
@@ -366,9 +366,9 @@ void ascon_masked_word_x2_load_partial(ascon_masked_word_t* word, const uint8_t*
  * Normally ascon_masked_word_x2_load() should be used instead of this,
  * but ASCON-80pq mixes IV and key data in the same 64-bit word.
  */
-void ascon_masked_word_x2_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x2 masked word structure.
  *
  * \param data Points to the buffer to receive the 64 bits of unmasked data.
@@ -376,9 +376,9 @@ void ascon_masked_word_x2_load_32(ascon_masked_word_t* word, const uint8_t* data
  *
  * \sa ascon_masked_word_x2_load()
  */
-void ascon_masked_word_x2_store(uint8_t* data, const ascon_masked_word_t* word);
+    void ascon_masked_word_x2_store(uint8_t* data, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x2 masked word structure to a
  * partial buffer.
  *
@@ -388,9 +388,9 @@ void ascon_masked_word_x2_store(uint8_t* data, const ascon_masked_word_t* word);
  *
  * \sa ascon_masked_word_x2_load()
  */
-void ascon_masked_word_x2_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
+    void ascon_masked_word_x2_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Randomizes a x2 masked word by incorporating fresh randomness.
  *
  * \param dest Points to the destination for the randomized version.
@@ -400,52 +400,52 @@ void ascon_masked_word_x2_store_partial(uint8_t* data, unsigned size, const asco
  * The word will still have the same effective value, but this function
  * will mix in fresh randomness.
  */
-void ascon_masked_word_x2_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief XOR's a source x2 masked word against a destination x2 masked word.
  *
  * \param dest The destination masked word.
  * \param src The source masked word.
  */
-void ascon_masked_word_x2_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
+    void ascon_masked_word_x2_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
 
-/**
+    /**
  * \brief Replace part of a destination x2 masked word with part of a source.
  *
  * \param dest Destination masked word.
  * \param src Source masked word.
  * \param size Number of bytes from the top of the masked word to copy.
  */
-void ascon_masked_word_x2_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
+    void ascon_masked_word_x2_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
 
-/**
+    /**
  * \brief Converts a x3 masked word into a x2 masked word.
  *
  * \param dest The destination x2 masked word.
  * \param src The source x3 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x2_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Converts a x4 masked word into a x2 masked word.
  *
  * \param dest The destination x2 masked word.
  * \param src The source x4 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x2_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x2_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Sets a x3 masked word to zero.
  *
  * \param word The x3 masked word to set to zero.
  * \param trng TRNG to use to generate masking material.
  */
-void ascon_masked_word_x3_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 64-bit big endian value from buffer, masks it,
  * and writes it to a x3 masked word structure.
  *
@@ -455,9 +455,9 @@ void ascon_masked_word_x3_zero(ascon_masked_word_t* word, ascon_trng_state_t* tr
  *
  * \sa ascon_masked_word_x3_store()
  */
-void ascon_masked_word_x3_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 8-bit to 56-bit big endian value from buffer, masks it,
  * and writes it to a x3 masked word structure.
  *
@@ -466,9 +466,9 @@ void ascon_masked_word_x3_load(ascon_masked_word_t* word, const uint8_t* data, a
  * \param size Number of bytes to load between 1 and 7.
  * \param trng TRNG to use to generate masking material.
  */
-void ascon_masked_word_x3_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads two 32-bit big endian values from buffers, masks them,
  * and writes the result to a x3 masked word structure.
  *
@@ -480,9 +480,9 @@ void ascon_masked_word_x3_load_partial(ascon_masked_word_t* word, const uint8_t*
  * Normally ascon_masked_word_x3_load() should be used instead of this,
  * but ASCON-80pq mixes IV and key data in the same 64-bit word.
  */
-void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x3 masked word structure.
  *
  * \param data Points to the buffer to receive the 64 bits of unmasked data.
@@ -490,9 +490,9 @@ void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data
  *
  * \sa ascon_masked_word_x3_load()
  */
-void ascon_masked_word_x3_store(uint8_t* data, const ascon_masked_word_t* word);
+    void ascon_masked_word_x3_store(uint8_t* data, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x3 masked word structure to a
  * partial buffer.
  *
@@ -502,9 +502,9 @@ void ascon_masked_word_x3_store(uint8_t* data, const ascon_masked_word_t* word);
  *
  * \sa ascon_masked_word_x3_load()
  */
-void ascon_masked_word_x3_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
+    void ascon_masked_word_x3_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Randomizes a x3 masked word by incorporating fresh randomness.
  *
  * \param dest Points to the destination for the randomized version.
@@ -514,52 +514,52 @@ void ascon_masked_word_x3_store_partial(uint8_t* data, unsigned size, const asco
  * The word will still have the same effective value, but this function
  * will mix in fresh randomness.
  */
-void ascon_masked_word_x3_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief XOR's a source x3 masked word against a destination x3 masked word.
  *
  * \param dest The destination masked word.
  * \param src The source masked word.
  */
-void ascon_masked_word_x3_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
+    void ascon_masked_word_x3_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
 
-/**
+    /**
  * \brief Replace part of a destination x3 masked word with part of a source.
  *
  * \param dest Destination masked word.
  * \param src Source masked word.
  * \param size Number of bytes from the top of the masked word to copy.
  */
-void ascon_masked_word_x3_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
+    void ascon_masked_word_x3_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
 
-/**
+    /**
  * \brief Converts a x2 masked word into a x3 masked word.
  *
  * \param dest The destination x3 masked word.
  * \param src The source x2 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x3_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Converts a x4 masked word into a x3 masked word.
  *
  * \param dest The destination x3 masked word.
  * \param src The source x4 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x3_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x3_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Sets a x4 masked word to zero.
  *
  * \param word The x4 masked word to set to zero.
  * \param trng TRNG to use to generate masking material.
  */
-void ascon_masked_word_x4_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 64-bit big endian value from buffer, masks it,
  * and writes it to a x4 masked word structure.
  *
@@ -569,9 +569,9 @@ void ascon_masked_word_x4_zero(ascon_masked_word_t* word, ascon_trng_state_t* tr
  *
  * \sa ascon_masked_word_x4_store()
  */
-void ascon_masked_word_x4_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads a 8-bit to 56-bit big endian value from buffer, masks it,
  * and writes it to a x4 masked word structure.
  *
@@ -582,9 +582,9 @@ void ascon_masked_word_x4_load(ascon_masked_word_t* word, const uint8_t* data, a
  *
  * \sa ascon_masked_word_x4_store()
  */
-void ascon_masked_word_x4_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Loads two 32-bit big endian values from buffers, masks them,
  * and writes the result to a x4 masked word structure.
  *
@@ -596,9 +596,9 @@ void ascon_masked_word_x4_load_partial(ascon_masked_word_t* word, const uint8_t*
  * Normally ascon_masked_word_x4_load() should be used instead of this,
  * but ASCON-80pq mixes IV and key data in the same 64-bit word.
  */
-void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x4 masked word structure.
  *
  * \param data Points to the buffer to receive the 64 bits of unmasked data.
@@ -606,9 +606,9 @@ void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data
  *
  * \sa ascon_masked_word_x4_load()
  */
-void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word);
+    void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Unmasks and stores the contents of a x4 masked word structure to a
  * partial buffer.
  *
@@ -618,9 +618,9 @@ void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word);
  *
  * \sa ascon_masked_word_x4_load()
  */
-void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
+    void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word);
 
-/**
+    /**
  * \brief Randomizes a x4 masked word by incorporating fresh randomness.
  *
  * \param dest Points to the destination for the randomized version.
@@ -630,57 +630,57 @@ void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const asco
  * The word will still have the same effective value, but this function
  * will mix in fresh randomness.
  */
-void ascon_masked_word_x4_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief XOR's a source x4 masked word against a destination x4 masked word.
  *
  * \param dest The destination masked word.
  * \param src The source masked word.
  */
-void ascon_masked_word_x4_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
+    void ascon_masked_word_x4_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src);
 
-/**
+    /**
  * \brief Replace part of a destination x4 masked word with part of a source.
  *
  * \param dest Destination masked word.
  * \param src Source masked word.
  * \param size Number of bytes from the top of the masked word to copy.
  */
-void ascon_masked_word_x4_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
+    void ascon_masked_word_x4_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size);
 
-/**
+    /**
  * \brief Converts a x2 masked word into a x4 masked word.
  *
  * \param dest The destination x4 masked word.
  * \param src The source x2 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x4_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Converts a x3 masked word into a x4 masked word.
  *
  * \param dest The destination x4 masked word.
  * \param src The source x3 masked word.  May be the same as \a dest.
  * \param trng TRNG to use to randomize the state.
  */
-void ascon_masked_word_x4_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
+    void ascon_masked_word_x4_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Adds a padding marker to a masked word.
  *
  * \param word The masked word to be padded.
  * \param offset Offset of the padding marker (0 to 7).
  */
-void ascon_masked_word_pad(ascon_masked_word_t* word, unsigned offset);
+    void ascon_masked_word_pad(ascon_masked_word_t* word, unsigned offset);
 
-/**
+    /**
  * \brief Adds a separator marker to a masked word.
  *
  * \param word The masked word to add the separator marker to.
  */
-void ascon_masked_word_separator(ascon_masked_word_t* word);
+    void ascon_masked_word_separator(ascon_masked_word_t* word);
 
 #ifdef __cplusplus
 }

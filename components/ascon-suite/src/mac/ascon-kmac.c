@@ -41,8 +41,9 @@ static void ascon_kmac_init_precomputed(ascon_xof_state_t* state) {
         0xc1527f1e, 0x72148bc5, 0x558b5aa2, 0x32c34a2f, 0xa4c309c5, 0x4f5ff49c, 0xc6a13642, 0x9932c188, 0x36a2c6d9, 0x0e693f03};
     memcpy(state->state.W, iv, sizeof(iv));
 #else
-    static uint8_t const iv[40] = {
-        0x7a, 0x09, 0x13, 0x24, 0x95, 0xdf, 0xa1, 0x76, 0x1b, 0x19, 0xe0, 0x4f, 0x31, 0xcc, 0x4c, 0xae, 0x64, 0xba, 0x72, 0xaf, 0xaa, 0x61, 0xd2, 0xb1, 0xd2, 0x96, 0x4e, 0x09, 0xa5, 0x16, 0x90, 0x84, 0x05, 0xbc, 0x6c, 0x86, 0x5a, 0xbe, 0x51, 0x4b};
+    static uint8_t const iv[40] = {0x7a, 0x09, 0x13, 0x24, 0x95, 0xdf, 0xa1, 0x76, 0x1b, 0x19, 0xe0, 0x4f, 0x31, 0xcc,
+                                   0x4c, 0xae, 0x64, 0xba, 0x72, 0xaf, 0xaa, 0x61, 0xd2, 0xb1, 0xd2, 0x96, 0x4e, 0x09,
+                                   0xa5, 0x16, 0x90, 0x84, 0x05, 0xbc, 0x6c, 0x86, 0x5a, 0xbe, 0x51, 0x4b};
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     memcpy(state->state.B, iv, sizeof(iv));
 #else
@@ -55,7 +56,14 @@ static void ascon_kmac_init_precomputed(ascon_xof_state_t* state) {
     state->mode  = 0;
 }
 
-void ascon_kmac(const unsigned char* key, size_t keylen, const unsigned char* in, size_t inlen, const unsigned char* custom, size_t customlen, unsigned char* out, size_t outlen) {
+void ascon_kmac(const unsigned char* key,
+                size_t               keylen,
+                const unsigned char* in,
+                size_t               inlen,
+                const unsigned char* custom,
+                size_t               customlen,
+                unsigned char*       out,
+                size_t               outlen) {
     ascon_kmac_state_t state;
     ascon_kmac_init(&state, key, keylen, custom, customlen, outlen);
     ascon_xof_absorb(&(state.xof), in, inlen);
@@ -63,7 +71,8 @@ void ascon_kmac(const unsigned char* key, size_t keylen, const unsigned char* in
     ascon_kmac_free(&state);
 }
 
-void ascon_kmac_init(ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
+void ascon_kmac_init(
+    ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     if (outlen == ASCON_KMAC_SIZE) {
         ascon_kmac_init_precomputed(&(state->xof));
         ascon_xof_absorb_custom(&(state->xof), custom, customlen);
@@ -73,7 +82,8 @@ void ascon_kmac_init(ascon_kmac_state_t* state, const unsigned char* key, size_t
     ascon_xof_absorb(&(state->xof), key, keylen);
 }
 
-void ascon_kmac_reinit(ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
+void ascon_kmac_reinit(
+    ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     ascon_kmac_free(state);
     ascon_kmac_init(state, key, keylen, custom, customlen, outlen);
 }

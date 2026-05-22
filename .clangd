@@ -1,24 +1,94 @@
+---
 CompileFlags:
-    CompilationDatabase: build/
-
-Diagnostics:
-    UnusedIncludes: Strict
-    ClangTidy:
-        Add:
-            - bugprone-*
-            - modernize-*
-            - performance-*
-            - readability-*
-            - clang-analyzer-*
-        Remove:
-            - modernize-use-trailing-return-type
-            - readability-braces-around-statements
-            - readability-magic-numbers
+  Add:
+    - "--target=arm-none-eabi"
+    - "-mcpu=cortex-m3"
+    - "-mthumb"
+    - "-mfloat-abi=soft"
+  Remove:
+    - "-Wmain"
+    - "-fmodules-ts"
+    - "-fmodule-mapper=*"
+    - "-fdeps-file=*"
+    - "-fdeps-target=*"
+    - "-fdeps-format=*"
+    - "-fstack-usage"
+    - "-fstrict-overflow"
+    - "-Wlogical-op"
+    - "-Wduplicated-cond"
+    - "-Wduplicated-branches"
+    - "-Wstrict-null-sentinel"
+    - "-Wnoexcept"
+  Compiler: arm-none-eabi-g++
 
 Index:
-    Background: Build
+  Background: Build
+  StandardLibrary: Yes
+
+Hover:
+  ShowAKA: Yes
+
+Completion:
+  AllScopes: Yes
 
 InlayHints:
-    Enabled: true
-    ParameterNames: true
-    DeducedTypes: true
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+  BlockEnd: No
+
+---
+If:
+  PathMatch: ["main/.*", "components/drivers/.*"]
+
+Diagnostics:
+  UnusedIncludes: None
+  ClangTidy:
+    Add:
+      - bugprone-*
+      - readability-*
+      - modernize-*
+      - performance-*
+      - portability-*
+      - clang-analyzer-*
+      - cppcoreguidelines-*
+    Remove:
+      - readability-magic-numbers
+      - performance-no-int-to-ptr
+      - cppcoreguidelines-avoid-c-arrays
+      - modernize-avoid-c-arrays
+      - cppcoreguidelines-pro-bounds-constant-array-index
+      - cppcoreguidelines-avoid-magic-numbers
+      - cppcoreguidelines-pro-type-reinterpret-cast
+      - cppcoreguidelines-pro-type-cstyle-cast
+      - cppcoreguidelines-avoid-non-const-global-variables
+      - cppcoreguidelines-avoid-do-while
+      - cppcoreguidelines-pro-bounds-pointer-arithmetic
+      - cppcoreguidelines-pro-bounds-array-to-pointer-decay
+      - cppcoreguidelines-pro-type-vararg
+      - hicpp-signed-bitwise
+      - readability-identifier-length
+      - modernize-use-trailing-return-type
+      - readability-uppercase-literal-suffix
+      - bugprone-easily-swappable-parameters
+    CheckOptions:
+      readability-function-cognitive-complexity.Threshold: "30"
+      cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: "true"
+      modernize-use-default-member-init.UseAssignment: "true"
+
+---
+If:
+  PathMatch:
+    - "components/freertos/.*"
+    - "components/f103-hal/.*"
+    - "components/littlefs/.*"
+    - "components/cmsis-device-f1/.*"
+    - "components/etl/.*"
+    - "components/ascon-suite/.*"
+
+Diagnostics:
+  UnusedIncludes: None
+  ClangTidy:
+    Remove: ["*"]
+  Suppress: "*"

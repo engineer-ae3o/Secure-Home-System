@@ -54,88 +54,87 @@ SOFTWARE.
 #define ETL_OBJECT_GET_DEBUG_COUNT(object) object.etl_debug_count.get()
 
 namespace etl {
-//***************************************************************************
-/// Used to count instances.
-/// Asserts if the count is decremented below zero.
-/// Asserts if the count is not zero when destructed.
-/// Does nothing in a non-debug build.
-///\ingroup reference
-//***************************************************************************
-class debug_count {
+    //***************************************************************************
+    /// Used to count instances.
+    /// Asserts if the count is decremented below zero.
+    /// Asserts if the count is not zero when destructed.
+    /// Does nothing in a non-debug build.
+    ///\ingroup reference
+    //***************************************************************************
+    class debug_count {
     public:
-    debug_count()
-        : count(0) {
-    }
+        debug_count() : count(0) {
+        }
 
-    ~debug_count() {
-        assert(count == 0);
-    }
+        ~debug_count() {
+            assert(count == 0);
+        }
 
-    debug_count& operator++() {
-        ++count;
-        return *this;
-    }
+        debug_count& operator++() {
+            ++count;
+            return *this;
+        }
 
-    debug_count& operator--() {
-        --count;
-        assert(count >= 0);
-        return *this;
-    }
+        debug_count& operator--() {
+            --count;
+            assert(count >= 0);
+            return *this;
+        }
 
-    template<typename T>
-    debug_count& operator+=(T n) {
-        count += int32_t(n);
-        return *this;
-    }
+        template<typename T>
+        debug_count& operator+=(T n) {
+            count += int32_t(n);
+            return *this;
+        }
 
-    template<typename T>
-    debug_count& operator-=(T n) {
-        count -= int32_t(n);
-        return *this;
-    }
+        template<typename T>
+        debug_count& operator-=(T n) {
+            count -= int32_t(n);
+            return *this;
+        }
 
-    debug_count& operator=(const debug_count& other) {
-        count.store(other.count.load());
+        debug_count& operator=(const debug_count& other) {
+            count.store(other.count.load());
 
-        return *this;
-    }
+            return *this;
+        }
 
 #if ETL_HAS_ATOMIC
-    void swap(debug_count& other) ETL_NOEXCEPT // NOT ATOMIC
-    {
-        int32_t temp = other.count.load();
-        other.count.store(count.load());
-        count.store(temp);
-    }
+        void swap(debug_count& other) ETL_NOEXCEPT // NOT ATOMIC
+        {
+            int32_t temp = other.count.load();
+            other.count.store(count.load());
+            count.store(temp);
+        }
 #else
-    void swap(debug_count& other) ETL_NOEXCEPT {
-        swap(count, other.count);
-    }
+        void swap(debug_count& other) ETL_NOEXCEPT {
+            swap(count, other.count);
+        }
 #endif
 
-    operator int32_t() const {
-        return count;
-    }
+        operator int32_t() const {
+            return count;
+        }
 
-    int32_t get() const {
-        return int32_t(count);
-    }
+        int32_t get() const {
+            return int32_t(count);
+        }
 
-    void set(int32_t n) {
-        count = n;
-    }
+        void set(int32_t n) {
+            count = n;
+        }
 
-    void clear() {
-        count = 0;
-    }
+        void clear() {
+            count = 0;
+        }
 
     private:
 #if ETL_HAS_ATOMIC
-    etl::atomic_int32_t count;
+        etl::atomic_int32_t count;
 #else
-    int32_t count;
+        int32_t count;
 #endif
-};
+    };
 } // namespace etl
 
 inline void swap(etl::debug_count& lhs, etl::debug_count& rhs) {
@@ -155,8 +154,7 @@ inline void swap(etl::debug_count& lhs, etl::debug_count& rhs) {
 #define ETL_OBJECT_GET_DEBUG_COUNT(object) ETL_DO_NOTHING
 
 namespace etl {
-class debug_count {
-};
+    class debug_count {};
 } // namespace etl
 #endif // ETL_DEBUG_COUNT
 

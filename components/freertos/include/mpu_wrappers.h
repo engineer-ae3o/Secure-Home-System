@@ -261,13 +261,18 @@
 #define vRevokeAccessToQueueSet(xTask, xQueueSetToRevokeAccess) vRevokeAccessToKernelObject((xTask), (int32_t)(xQueueSetToRevokeAccess))
 
 #define vGrantAccessToEventGroup(xTask, xEventGroupToGrantAccess) vGrantAccessToKernelObject((xTask), (int32_t)(xEventGroupToGrantAccess))
-#define vRevokeAccessToEventGroup(xTask, xEventGroupToRevokeAccess) vRevokeAccessToKernelObject((xTask), (int32_t)(xEventGroupToRevokeAccess))
+#define vRevokeAccessToEventGroup(xTask, xEventGroupToRevokeAccess)                                                                        \
+    vRevokeAccessToKernelObject((xTask), (int32_t)(xEventGroupToRevokeAccess))
 
-#define vGrantAccessToStreamBuffer(xTask, xStreamBufferToGrantAccess) vGrantAccessToKernelObject((xTask), (int32_t)(xStreamBufferToGrantAccess))
-#define vRevokeAccessToStreamBuffer(xTask, xStreamBufferToRevokeAccess) vRevokeAccessToKernelObject((xTask), (int32_t)(xStreamBufferToRevokeAccess))
+#define vGrantAccessToStreamBuffer(xTask, xStreamBufferToGrantAccess)                                                                      \
+    vGrantAccessToKernelObject((xTask), (int32_t)(xStreamBufferToGrantAccess))
+#define vRevokeAccessToStreamBuffer(xTask, xStreamBufferToRevokeAccess)                                                                    \
+    vRevokeAccessToKernelObject((xTask), (int32_t)(xStreamBufferToRevokeAccess))
 
-#define vGrantAccessToMessageBuffer(xTask, xMessageBufferToGrantAccess) vGrantAccessToKernelObject((xTask), (int32_t)(xMessageBufferToGrantAccess))
-#define vRevokeAccessToMessageBuffer(xTask, xMessageBufferToRevokeAccess) vRevokeAccessToKernelObject((xTask), (int32_t)(xMessageBufferToRevokeAccess))
+#define vGrantAccessToMessageBuffer(xTask, xMessageBufferToGrantAccess)                                                                    \
+    vGrantAccessToKernelObject((xTask), (int32_t)(xMessageBufferToGrantAccess))
+#define vRevokeAccessToMessageBuffer(xTask, xMessageBufferToRevokeAccess)                                                                  \
+    vRevokeAccessToKernelObject((xTask), (int32_t)(xMessageBufferToRevokeAccess))
 
 #define vGrantAccessToTimer(xTask, xTimerToGrantAccess) vGrantAccessToKernelObject((xTask), (int32_t)(xTimerToGrantAccess))
 #define vRevokeAccessToTimer(xTask, xTimerToRevokeAccess) vRevokeAccessToKernelObject((xTask), (int32_t)(xTimerToRevokeAccess))

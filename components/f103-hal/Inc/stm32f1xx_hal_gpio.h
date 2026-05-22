@@ -27,44 +27,41 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_HAL_Driver
+    /** @addtogroup STM32F1xx_HAL_Driver
   * @{
   */
 
-/** @addtogroup GPIO
+    /** @addtogroup GPIO
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
-/** @defgroup GPIO_Exported_Types GPIO Exported Types
+    /* Exported types ------------------------------------------------------------*/
+    /** @defgroup GPIO_Exported_Types GPIO Exported Types
   * @{
   */
 
-/**
+    /**
   * @brief GPIO Init structure definition
   */
-typedef struct
-{
-    uint32_t Pin; /*!< Specifies the GPIO pins to be configured.
+    typedef struct {
+        uint32_t Pin; /*!< Specifies the GPIO pins to be configured.
                            This parameter can be any value of @ref GPIO_pins_define */
 
-    uint32_t Mode; /*!< Specifies the operating mode for the selected pins.
+        uint32_t Mode; /*!< Specifies the operating mode for the selected pins.
                            This parameter can be a value of @ref GPIO_mode_define */
 
-    uint32_t Pull; /*!< Specifies the Pull-up or Pull-Down activation for the selected pins.
+        uint32_t Pull; /*!< Specifies the Pull-up or Pull-Down activation for the selected pins.
                            This parameter can be a value of @ref GPIO_pull_define */
 
-    uint32_t Speed; /*!< Specifies the speed for the selected pins.
+        uint32_t Speed; /*!< Specifies the speed for the selected pins.
                            This parameter can be a value of @ref GPIO_speed_define */
-} GPIO_InitTypeDef;
+    } GPIO_InitTypeDef;
 
-/**
+    /**
   * @brief  GPIO Bit SET and Bit RESET enumeration
   */
-typedef enum {
-    GPIO_PIN_RESET = 0u,
-    GPIO_PIN_SET
-} GPIO_PinState;
+    typedef enum { GPIO_PIN_RESET = 0u, GPIO_PIN_SET } GPIO_PinState;
+
 /**
   * @}
   */
@@ -210,31 +207,31 @@ typedef enum {
 /* Include GPIO HAL Extension module */
 #include "stm32f1xx_hal_gpio_ex.h"
 
-/* Exported functions --------------------------------------------------------*/
-/** @addtogroup GPIO_Exported_Functions
+    /* Exported functions --------------------------------------------------------*/
+    /** @addtogroup GPIO_Exported_Functions
   * @{
   */
 
-/** @addtogroup GPIO_Exported_Functions_Group1
+    /** @addtogroup GPIO_Exported_Functions_Group1
   * @{
   */
-/* Initialization and de-initialization functions *****************************/
-void HAL_GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef* GPIO_Init);
-void HAL_GPIO_DeInit(GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
-/**
+    /* Initialization and de-initialization functions *****************************/
+    void HAL_GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef* GPIO_Init);
+    void HAL_GPIO_DeInit(GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
+    /**
   * @}
   */
 
-/** @addtogroup GPIO_Exported_Functions_Group2
+    /** @addtogroup GPIO_Exported_Functions_Group2
   * @{
   */
-/* IO operation functions *****************************************************/
-GPIO_PinState     HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
-void              HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
-void              HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
-HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
-void              HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin);
-void              HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+    /* IO operation functions *****************************************************/
+    GPIO_PinState     HAL_GPIO_ReadPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    void              HAL_GPIO_WritePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
+    void              HAL_GPIO_TogglePin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+    void              HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin);
+    void              HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /**
   * @}
@@ -260,40 +257,31 @@ void              HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
   */
 #define IS_GPIO_PIN_ACTION(ACTION) (((ACTION) == GPIO_PIN_RESET) || ((ACTION) == GPIO_PIN_SET))
 #define IS_GPIO_PIN(PIN) (((((uint32_t)PIN) & GPIO_PIN_MASK) != 0x00u) && ((((uint32_t)PIN) & ~GPIO_PIN_MASK) == 0x00u))
-#define IS_GPIO_MODE(MODE) (((MODE) == GPIO_MODE_INPUT) ||              \
-                            ((MODE) == GPIO_MODE_OUTPUT_PP) ||          \
-                            ((MODE) == GPIO_MODE_OUTPUT_OD) ||          \
-                            ((MODE) == GPIO_MODE_AF_PP) ||              \
-                            ((MODE) == GPIO_MODE_AF_OD) ||              \
-                            ((MODE) == GPIO_MODE_IT_RISING) ||          \
-                            ((MODE) == GPIO_MODE_IT_FALLING) ||         \
-                            ((MODE) == GPIO_MODE_IT_RISING_FALLING) ||  \
-                            ((MODE) == GPIO_MODE_EVT_RISING) ||         \
-                            ((MODE) == GPIO_MODE_EVT_FALLING) ||        \
-                            ((MODE) == GPIO_MODE_EVT_RISING_FALLING) || \
-                            ((MODE) == GPIO_MODE_ANALOG))
-#define IS_GPIO_SPEED(SPEED) (((SPEED) == GPIO_SPEED_FREQ_LOW) || \
-                              ((SPEED) == GPIO_SPEED_FREQ_MEDIUM) || ((SPEED) == GPIO_SPEED_FREQ_HIGH))
-#define IS_GPIO_PULL(PULL) (((PULL) == GPIO_NOPULL) || ((PULL) == GPIO_PULLUP) || \
-                            ((PULL) == GPIO_PULLDOWN))
-/**
+#define IS_GPIO_MODE(MODE)                                                                                                                 \
+    (((MODE) == GPIO_MODE_INPUT) || ((MODE) == GPIO_MODE_OUTPUT_PP) || ((MODE) == GPIO_MODE_OUTPUT_OD) || ((MODE) == GPIO_MODE_AF_PP) ||   \
+     ((MODE) == GPIO_MODE_AF_OD) || ((MODE) == GPIO_MODE_IT_RISING) || ((MODE) == GPIO_MODE_IT_FALLING) ||                                 \
+     ((MODE) == GPIO_MODE_IT_RISING_FALLING) || ((MODE) == GPIO_MODE_EVT_RISING) || ((MODE) == GPIO_MODE_EVT_FALLING) ||                   \
+     ((MODE) == GPIO_MODE_EVT_RISING_FALLING) || ((MODE) == GPIO_MODE_ANALOG))
+#define IS_GPIO_SPEED(SPEED) (((SPEED) == GPIO_SPEED_FREQ_LOW) || ((SPEED) == GPIO_SPEED_FREQ_MEDIUM) || ((SPEED) == GPIO_SPEED_FREQ_HIGH))
+#define IS_GPIO_PULL(PULL) (((PULL) == GPIO_NOPULL) || ((PULL) == GPIO_PULLUP) || ((PULL) == GPIO_PULLDOWN))
+    /**
   * @}
   */
 
-/* Private functions ---------------------------------------------------------*/
-/** @defgroup GPIO_Private_Functions GPIO Private Functions
+    /* Private functions ---------------------------------------------------------*/
+    /** @defgroup GPIO_Private_Functions GPIO Private Functions
   * @{
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

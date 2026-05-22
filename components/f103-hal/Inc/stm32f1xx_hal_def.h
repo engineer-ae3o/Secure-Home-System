@@ -30,25 +30,17 @@ extern "C" {
 #include "Legacy/stm32_hal_legacy.h"
 #include <stddef.h>
 
-/* Exported types ------------------------------------------------------------*/
+    /* Exported types ------------------------------------------------------------*/
 
-/**
+    /**
   * @brief  HAL Status structures definition
   */
-typedef enum {
-    HAL_OK      = 0x00U,
-    HAL_ERROR   = 0x01U,
-    HAL_BUSY    = 0x02U,
-    HAL_TIMEOUT = 0x03U
-} HAL_StatusTypeDef;
+    typedef enum { HAL_OK = 0x00U, HAL_ERROR = 0x01U, HAL_BUSY = 0x02U, HAL_TIMEOUT = 0x03U } HAL_StatusTypeDef;
 
-/**
+    /**
   * @brief  HAL Lock structures definition
   */
-typedef enum {
-    HAL_UNLOCKED = 0x00U,
-    HAL_LOCKED   = 0x01U
-} HAL_LockTypeDef;
+    typedef enum { HAL_UNLOCKED = 0x00U, HAL_LOCKED = 0x01U } HAL_LockTypeDef;
 
 /* Exported macro ------------------------------------------------------------*/
 #define HAL_MAX_DELAY 0xFFFFFFFFU
@@ -56,10 +48,10 @@ typedef enum {
 #define HAL_IS_BIT_SET(REG, BIT) (((REG) & (BIT)) != 0U)
 #define HAL_IS_BIT_CLR(REG, BIT) (((REG) & (BIT)) == 0U)
 
-#define __HAL_LINKDMA(__HANDLE__, __PPP_DMA_FIELD__, __DMA_HANDLE__) \
-    do {                                                             \
-        (__HANDLE__)->__PPP_DMA_FIELD__ = &(__DMA_HANDLE__);         \
-        (__DMA_HANDLE__).Parent         = (__HANDLE__);              \
+#define __HAL_LINKDMA(__HANDLE__, __PPP_DMA_FIELD__, __DMA_HANDLE__)                                                                       \
+    do {                                                                                                                                   \
+        (__HANDLE__)->__PPP_DMA_FIELD__ = &(__DMA_HANDLE__);                                                                               \
+        (__DMA_HANDLE__).Parent         = (__HANDLE__);                                                                                    \
     } while (0U)
 
 #if !defined(UNUSED)
@@ -87,18 +79,18 @@ typedef enum {
 /* Reserved for future use */
 #error "USE_RTOS should be 0 in the current HAL release"
 #else
-#define __HAL_LOCK(__HANDLE__)                  \
-    do {                                        \
-        if ((__HANDLE__)->Lock == HAL_LOCKED) { \
-            return HAL_BUSY;                    \
-        } else {                                \
-            (__HANDLE__)->Lock = HAL_LOCKED;    \
-        }                                       \
+#define __HAL_LOCK(__HANDLE__)                                                                                                             \
+    do {                                                                                                                                   \
+        if ((__HANDLE__)->Lock == HAL_LOCKED) {                                                                                            \
+            return HAL_BUSY;                                                                                                               \
+        } else {                                                                                                                           \
+            (__HANDLE__)->Lock = HAL_LOCKED;                                                                                               \
+        }                                                                                                                                  \
     } while (0U)
 
-#define __HAL_UNLOCK(__HANDLE__)           \
-    do {                                   \
-        (__HANDLE__)->Lock = HAL_UNLOCKED; \
+#define __HAL_UNLOCK(__HANDLE__)                                                                                                           \
+    do {                                                                                                                                   \
+        (__HANDLE__)->Lock = HAL_UNLOCKED;                                                                                                 \
     } while (0U)
 #endif /* USE_RTOS */
 

@@ -34,37 +34,37 @@
 extern "C" {
 #endif
 
-/**
+    /**
  * \brief Information about how to access non-volatile storage.
  */
-typedef struct ascon_storage_s ascon_storage_t;
-
-/**
- * \brief Information about how to access non-volatile storage.
- */
-struct ascon_storage_s {
-    /** Size of a page in non-volatile storage, which is the minimum
-     *  writable unit.  The minimum readable unit is assumed to be 1. */
-    size_t page_size;
-
-    /** Size of an erase block in non-volatile storage, which is the
-     *  minimum erasable unit.  Set to zero if the storage does not
-     *  need to be erased before it is written; e.g. EEPROM. */
-    size_t erase_size;
-
-    /** Address within non-volatile storage of where the data begins. */
-    size_t address;
-
-    /** Size of the non-voltage storage area.  This must be a multiple of
-     *  page_size and erase_size. */
-    size_t size;
-
-    /** Non-zero if partial writes are allowed without erasing first.
-     *  Used with flash memory that supports converting 1 bits to 0 bits,
-     *  while leaving existing 0 bits as-is. */
-    int partial_writes;
+    typedef struct ascon_storage_s ascon_storage_t;
 
     /**
+ * \brief Information about how to access non-volatile storage.
+ */
+    struct ascon_storage_s {
+        /** Size of a page in non-volatile storage, which is the minimum
+     *  writable unit.  The minimum readable unit is assumed to be 1. */
+        size_t page_size;
+
+        /** Size of an erase block in non-volatile storage, which is the
+     *  minimum erasable unit.  Set to zero if the storage does not
+     *  need to be erased before it is written; e.g. EEPROM. */
+        size_t erase_size;
+
+        /** Address within non-volatile storage of where the data begins. */
+        size_t address;
+
+        /** Size of the non-voltage storage area.  This must be a multiple of
+     *  page_size and erase_size. */
+        size_t size;
+
+        /** Non-zero if partial writes are allowed without erasing first.
+     *  Used with flash memory that supports converting 1 bits to 0 bits,
+     *  while leaving existing 0 bits as-is. */
+        int partial_writes;
+
+        /**
      * \brief Reads data from non-volatile storage.
      *
      * \param storage Points to the non-volatile storage information block.
@@ -74,9 +74,9 @@ struct ascon_storage_s {
      *
      * \return The number of bytes that were read, or -1 on error.
      */
-    int (*read)(const ascon_storage_t* storage, size_t offset, unsigned char* data, size_t size);
+        int (*read)(const ascon_storage_t* storage, size_t offset, unsigned char* data, size_t size);
 
-    /**
+        /**
      * \brief Writes data to non-volatile storage.
      *
      * \param storage Points to the non-volatile storage information block.
@@ -93,8 +93,8 @@ struct ascon_storage_s {
      * defined by \a offset and \a size will be erased with nothing
      * written over the top.
      */
-    int (*write)(const ascon_storage_t* storage, size_t offset, const unsigned char* data, size_t size, int erase);
-};
+        int (*write)(const ascon_storage_t* storage, size_t offset, const unsigned char* data, size_t size, int erase);
+    };
 
 #ifdef __cplusplus
 }

@@ -41,8 +41,9 @@ static void ascon_kmaca_init_precomputed(ascon_xofa_state_t* state) {
         0xbee180ac, 0x183115c5, 0xb305f090, 0xe2df0893, 0xbab1a2bb, 0xebeab094, 0xf8c3d604, 0xfc1c17f4, 0x869edbd4, 0xaf21e5e3};
     memcpy(state->state.W, iv, sizeof(iv));
 #else
-    static uint8_t const iv[40] = {
-        0x47, 0xd4, 0x5e, 0x03, 0x42, 0x22, 0xe4, 0x72, 0xed, 0x0d, 0xa2, 0xbb, 0x55, 0x80, 0xc3, 0x0a, 0xed, 0xce, 0xed, 0x89, 0xce, 0x04, 0xc7, 0x65, 0xff, 0xe0, 0x52, 0xa5, 0x53, 0x3e, 0xaa, 0x30, 0xc8, 0xbe, 0x49, 0x56, 0xf9, 0x67, 0xf9, 0x1a};
+    static uint8_t const iv[40] = {0x47, 0xd4, 0x5e, 0x03, 0x42, 0x22, 0xe4, 0x72, 0xed, 0x0d, 0xa2, 0xbb, 0x55, 0x80,
+                                   0xc3, 0x0a, 0xed, 0xce, 0xed, 0x89, 0xce, 0x04, 0xc7, 0x65, 0xff, 0xe0, 0x52, 0xa5,
+                                   0x53, 0x3e, 0xaa, 0x30, 0xc8, 0xbe, 0x49, 0x56, 0xf9, 0x67, 0xf9, 0x1a};
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     memcpy(state->state.B, iv, sizeof(iv));
 #else
@@ -55,7 +56,14 @@ static void ascon_kmaca_init_precomputed(ascon_xofa_state_t* state) {
     state->mode  = 0;
 }
 
-void ascon_kmaca(const unsigned char* key, size_t keylen, const unsigned char* in, size_t inlen, const unsigned char* custom, size_t customlen, unsigned char* out, size_t outlen) {
+void ascon_kmaca(const unsigned char* key,
+                 size_t               keylen,
+                 const unsigned char* in,
+                 size_t               inlen,
+                 const unsigned char* custom,
+                 size_t               customlen,
+                 unsigned char*       out,
+                 size_t               outlen) {
     ascon_kmaca_state_t state;
     ascon_kmaca_init(&state, key, keylen, custom, customlen, outlen);
     ascon_xofa_absorb(&(state.xof), in, inlen);
@@ -63,7 +71,8 @@ void ascon_kmaca(const unsigned char* key, size_t keylen, const unsigned char* i
     ascon_kmaca_free(&state);
 }
 
-void ascon_kmaca_init(ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
+void ascon_kmaca_init(
+    ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     if (outlen == ASCON_KMACA_SIZE) {
         ascon_kmaca_init_precomputed(&(state->xof));
         ascon_xofa_absorb_custom(&(state->xof), custom, customlen);
@@ -73,7 +82,8 @@ void ascon_kmaca_init(ascon_kmaca_state_t* state, const unsigned char* key, size
     ascon_xofa_absorb(&(state->xof), key, keylen);
 }
 
-void ascon_kmaca_reinit(ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
+void ascon_kmaca_reinit(
+    ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     ascon_kmaca_free(state);
     ascon_kmaca_init(state, key, keylen, custom, customlen, outlen);
 }

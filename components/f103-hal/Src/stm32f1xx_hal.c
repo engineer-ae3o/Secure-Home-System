@@ -59,7 +59,9 @@
 #define __STM32F1xx_HAL_VERSION_SUB1 (0x01U) /*!< [23:16] sub1 version */
 #define __STM32F1xx_HAL_VERSION_SUB2 (0x0AU) /*!< [15:8]  sub2 version */
 #define __STM32F1xx_HAL_VERSION_RC (0x00U)   /*!< [7:0]  release candidate */
-#define __STM32F1xx_HAL_VERSION ((__STM32F1xx_HAL_VERSION_MAIN << 24) | (__STM32F1xx_HAL_VERSION_SUB1 << 16) | (__STM32F1xx_HAL_VERSION_SUB2 << 8) | (__STM32F1xx_HAL_VERSION_RC))
+#define __STM32F1xx_HAL_VERSION                                                                                                            \
+    ((__STM32F1xx_HAL_VERSION_MAIN << 24) | (__STM32F1xx_HAL_VERSION_SUB1 << 16) | (__STM32F1xx_HAL_VERSION_SUB2 << 8) |                   \
+     (__STM32F1xx_HAL_VERSION_RC))
 
 #define IDCODE_DEVID_MASK 0x00000FFFU
 
@@ -76,6 +78,7 @@
 __IO uint32_t       uwTick;
 uint32_t            uwTickPrio = (1UL << __NVIC_PRIO_BITS); /* Invalid PRIO */
 HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;     /* 1KHz */
+
 /**
   * @}
   */
@@ -139,9 +142,8 @@ HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;     /* 1KHz */
 HAL_StatusTypeDef HAL_Init(void) {
     /* Configure Flash prefetch */
 #if (PREFETCH_ENABLE != 0)
-#if defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F101xE) || defined(STM32F101xG) || \
-    defined(STM32F102x6) || defined(STM32F102xB) ||                                                 \
-    defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG) || \
+#if defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F101xE) || defined(STM32F101xG) || defined(STM32F102x6) ||                \
+    defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG) ||                \
     defined(STM32F105xC) || defined(STM32F107xC)
 
     /* Prefetch buffer is not available on value line devices */

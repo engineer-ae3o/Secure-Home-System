@@ -52,25 +52,25 @@ SOFTWARE.
 #define ETL_VERSION_VALUE ((ETL_VERSION_MAJOR * 10000) + (ETL_VERSION_MINOR * 100) + ETL_VERSION_PATCH)
 
 namespace etl {
-namespace traits {
-static ETL_CONSTANT long version       = ETL_VERSION_VALUE;
-static ETL_CONSTANT long version_major = ETL_VERSION_MAJOR;
-static ETL_CONSTANT long version_minor = ETL_VERSION_MINOR;
-static ETL_CONSTANT long version_patch = ETL_VERSION_PATCH;
+    namespace traits {
+        static ETL_CONSTANT long version       = ETL_VERSION_VALUE;
+        static ETL_CONSTANT long version_major = ETL_VERSION_MAJOR;
+        static ETL_CONSTANT long version_minor = ETL_VERSION_MINOR;
+        static ETL_CONSTANT long version_patch = ETL_VERSION_PATCH;
 
 #if ETL_USING_CPP11
-static constexpr const char*    version_string  = ETL_VERSION;
-static constexpr const wchar_t* version_wstring = ETL_VERSION_W;
+        static constexpr const char*    version_string  = ETL_VERSION;
+        static constexpr const wchar_t* version_wstring = ETL_VERSION_W;
 #if ETL_HAS_NATIVE_CHAR8_T
-static constexpr const char8_t* version_u8string = ETL_VERSION_U8;
+        static constexpr const char8_t* version_u8string = ETL_VERSION_U8;
 #endif
-static constexpr const char16_t* version_u16string = ETL_VERSION_U16;
-static constexpr const char32_t* version_u32string = ETL_VERSION_U32;
+        static constexpr const char16_t* version_u16string = ETL_VERSION_U16;
+        static constexpr const char32_t* version_u32string = ETL_VERSION_U32;
 #else
-static const char*    version_string  = ETL_VERSION;
-static const wchar_t* version_wstring = ETL_VERSION_W;
+        static const char*    version_string  = ETL_VERSION;
+        static const wchar_t* version_wstring = ETL_VERSION_W;
 #endif
-} // namespace traits
+    } // namespace traits
 } // namespace etl
 
 #endif

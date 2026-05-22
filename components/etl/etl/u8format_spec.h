@@ -38,7 +38,7 @@ SOFTWARE.
 #include "u8string.h"
 
 namespace etl {
-typedef etl::basic_format_spec<etl::iu8string> u8format_spec;
+    typedef etl::basic_format_spec<etl::iu8string> u8format_spec;
 }
 
 #endif

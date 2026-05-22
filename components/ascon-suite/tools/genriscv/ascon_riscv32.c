@@ -67,8 +67,7 @@ static void function_footer(const char* name) {
 }
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     const char* x0;
     const char* x1;
     const char* x2;
@@ -171,9 +170,8 @@ static void gen_sbox_odd(const reg_names* regs) {
 /* Generate the code for a single ASCON round */
 static void gen_round(const reg_names* regs, int round) {
     /* Sliced round constants for all rounds */
-    static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
-    const char* even;
+    static const unsigned char RC[12 * 2] = {12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    const char*                even;
 
     /* Apply the round constant to x2_e, and also NOT it in the process */
     printf(INSN(xori) "%s, %s, %d\n", regs->x2_e, regs->x2_e, ~((int)(RC[round * 2])));

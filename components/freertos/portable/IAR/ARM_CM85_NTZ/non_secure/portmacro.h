@@ -33,9 +33,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* *INDENT-ON* */
+    /* *INDENT-ON* */
 
-/*------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------
  * Port specific definitions.
  *
  * The settings in this file configure FreeRTOS correctly for the given hardware

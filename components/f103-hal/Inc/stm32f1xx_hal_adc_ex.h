@@ -27,20 +27,20 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal_def.h"
 
-/** @addtogroup STM32F1xx_HAL_Driver
+    /** @addtogroup STM32F1xx_HAL_Driver
   * @{
   */
 
-/** @addtogroup ADCEx
+    /** @addtogroup ADCEx
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
-/** @defgroup ADCEx_Exported_Types ADCEx Exported Types
+    /* Exported types ------------------------------------------------------------*/
+    /** @defgroup ADCEx_Exported_Types ADCEx Exported Types
   * @{
   */
 
-/** 
+    /** 
   * @brief  ADC Configuration injected Channel structure definition
   * @note   Parameters of this structure are shared within 2 scopes:
   *          - Scope channel: InjectedChannel, InjectedRank, InjectedSamplingTime, InjectedOffset
@@ -51,19 +51,18 @@ extern "C" {
   *          - For all parameters: ADC disabled (this is the only possible ADC state to modify parameter 'ExternalTrigInjecConv')
   *          - For all except parameters 'ExternalTrigInjecConv': ADC enabled without conversion on going on injected group.
   */
-typedef struct
-{
-    uint32_t        InjectedChannel;               /*!< Selection of ADC channel to configure
+    typedef struct {
+        uint32_t InjectedChannel;      /*!< Selection of ADC channel to configure
                                                        This parameter can be a value of @ref ADC_channels
                                                        Note: Depending on devices, some channels may not be available on package pins. Refer to device datasheet for channels availability.
                                                        Note: On STM32F1 devices with several ADC: Only ADC1 can access internal measurement channels (VrefInt/TempSensor)
                                                        Note: On STM32F10xx8 and STM32F10xxB devices: A low-amplitude voltage glitch may be generated (on ADC input 0) on the PA0 pin, when the ADC is converting with injection trigger.
                                                              It is advised to distribute the analog channels so that Channel 0 is configured as an injected channel.
                                                              Refer to errata sheet of these devices for more details. */
-    uint32_t        InjectedRank;                  /*!< Rank in the injected group sequencer
+        uint32_t InjectedRank;         /*!< Rank in the injected group sequencer
                                                        This parameter must be a value of @ref ADCEx_injected_rank
                                                        Note: In case of need to disable a channel or change order of conversion sequencer, rank containing a previous channel setting can be overwritten by the new channel setting (or parameter number of conversions can be adjusted) */
-    uint32_t        InjectedSamplingTime;          /*!< Sampling time value to be set for the selected channel.
+        uint32_t InjectedSamplingTime; /*!< Sampling time value to be set for the selected channel.
                                                        Unit: ADC clock cycles
                                                        Conversion time is the addition of sampling time and processing time (12.5 ADC clock cycles at ADC resolution 12 bits).
                                                        This parameter can be a value of @ref ADC_sampling_times
@@ -72,23 +71,25 @@ typedef struct
                                                        Note: In case of usage of internal measurement channels (VrefInt/TempSensor),
                                                              sampling time constraints must be respected (sampling time can be adjusted in function of ADC clock frequency and sampling time setting)
                                                              Refer to device datasheet for timings values, parameters TS_vrefint, TS_temp (values rough order: 5us to 17.1us min). */
-    uint32_t        InjectedOffset;                /*!< Defines the offset to be subtracted from the raw converted data (for channels set on injected group only).
+        uint32_t
+            InjectedOffset; /*!< Defines the offset to be subtracted from the raw converted data (for channels set on injected group only).
                                                        Offset value must be a positive number.
                                                        Depending of ADC resolution selected (12, 10, 8 or 6 bits),
                                                        this parameter must be a number between Min_Data = 0x000 and Max_Data = 0xFFF, 0x3FF, 0xFF or 0x3F respectively. */
-    uint32_t        InjectedNbrOfConversion;       /*!< Specifies the number of ranks that will be converted within the injected group sequencer.
+        uint32_t InjectedNbrOfConversion; /*!< Specifies the number of ranks that will be converted within the injected group sequencer.
                                                        To use the injected group sequencer and convert several ranks, parameter 'ScanConvMode' must be enabled.
                                                        This parameter must be a number between Min_Data = 1 and Max_Data = 4.
                                                        Caution: this setting impacts the entire injected group. Therefore, call of HAL_ADCEx_InjectedConfigChannel() to
                                                                 configure a channel on injected group can impact the configuration of other channels previously set. */
-    FunctionalState InjectedDiscontinuousConvMode; /*!< Specifies whether the conversions sequence of injected group is performed in Complete-sequence/Discontinuous-sequence (main sequence subdivided in successive parts).
+        FunctionalState
+            InjectedDiscontinuousConvMode; /*!< Specifies whether the conversions sequence of injected group is performed in Complete-sequence/Discontinuous-sequence (main sequence subdivided in successive parts).
                                                        Discontinuous mode is used only if sequencer is enabled (parameter 'ScanConvMode'). If sequencer is disabled, this parameter is discarded.
                                                        Discontinuous mode can be enabled only if continuous mode is disabled. If continuous mode is enabled, this parameter setting is discarded.
                                                        This parameter can be set to ENABLE or DISABLE.
                                                        Note: For injected group, number of discontinuous ranks increment is fixed to one-by-one.
                                                        Caution: this setting impacts the entire injected group. Therefore, call of HAL_ADCEx_InjectedConfigChannel() to
                                                                 configure a channel on injected group can impact the configuration of other channels previously set. */
-    FunctionalState AutoInjectedConv;              /*!< Enables or disables the selected ADC automatic injected group conversion after regular one
+        FunctionalState AutoInjectedConv;  /*!< Enables or disables the selected ADC automatic injected group conversion after regular one
                                                        This parameter can be set to ENABLE or DISABLE.
                                                        Note: To use Automatic injected conversion, discontinuous mode must be disabled ('DiscontinuousConvMode' and 'InjectedDiscontinuousConvMode' set to DISABLE)
                                                        Note: To use Automatic injected conversion, injected group external triggers must be disabled ('ExternalTrigInjecConv' set to ADC_SOFTWARE_START)
@@ -96,7 +97,7 @@ typedef struct
                                                              To maintain JAUTO always enabled, DMA must be configured in circular mode.
                                                        Caution: this setting impacts the entire injected group. Therefore, call of HAL_ADCEx_InjectedConfigChannel() to
                                                                 configure a channel on injected group can impact the configuration of other channels previously set. */
-    uint32_t        ExternalTrigInjecConv;         /*!< Selects the external event used to trigger the conversion start of injected group.
+        uint32_t        ExternalTrigInjecConv; /*!< Selects the external event used to trigger the conversion start of injected group.
                                                        If set to ADC_INJECTED_SOFTWARE_START, external triggers are disabled.
                                                        If set to external trigger source, triggering is on event rising edge.
                                                        This parameter can be a value of @ref ADCEx_External_trigger_source_Injected
@@ -104,17 +105,17 @@ typedef struct
                                                              If ADC is enabled, this parameter setting is bypassed without error reporting (as it can be the expected behaviour in case of another parameter update on the fly)
                                                        Caution: this setting impacts the entire injected group. Therefore, call of HAL_ADCEx_InjectedConfigChannel() to
                                                                 configure a channel on injected group can impact the configuration of other channels previously set. */
-} ADC_InjectionConfTypeDef;
+    } ADC_InjectionConfTypeDef;
 
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-/** 
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+    /** 
   * @brief  Structure definition of ADC multimode
   * @note   The setting of these parameters with function HAL_ADCEx_MultiModeConfigChannel() is conditioned to ADCs state (both ADCs of the common group).
   *         State of ADCs of the common group must be: disabled.
   */
-typedef struct
-{
-    uint32_t Mode; /*!< Configures the ADC to operate in independent or multi mode. 
+    typedef struct {
+        uint32_t Mode; /*!< Configures the ADC to operate in independent or multi mode. 
                                    This parameter can be a value of @ref ADCEx_Common_mode
                                    Note: In dual mode, a change of channel configuration generates a restart that can produce a loss of synchronization. It is recommended to disable dual mode before any configuration change.
                                    Note: In case of simultaneous mode used: Exactly the same sampling time should be configured for the 2 channels that will be sampled simultaneously by ACD1 and ADC2.
@@ -124,7 +125,7 @@ typedef struct
                                            - Parameter 'DMAAccessMode': On STM32F1, this parameter is fixed to 1 DMA channel (one DMA channel for both ADC, DMA of ADC master). On other STM32 devices with several ADC, this is equivalent to parameter 'ADC_DMAACCESSMODE_12_10_BITS'.
                                            - Parameter 'TwoSamplingDelay': On STM32F1, this parameter is fixed to 7 or 14 ADC clock cycles depending on fast or slow interleaved mode selected. On other STM32 devices with several ADC, this is equivalent to parameter 'ADC_TWOSAMPLINGDELAY_7CYCLES' (for fast interleaved mode). */
 
-} ADC_MultiModeTypeDef;
+    } ADC_MultiModeTypeDef;
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
 /**
@@ -242,24 +243,36 @@ typedef struct
 #endif /* STM32F101xE || STM32F103xE || STM32F103xG || STM32F105xC || STM32F107xC */
 
 #define ADC_INJECTED_SOFTWARE_START ADC1_2_3_JSWSTART
-/**
+    /**
   * @}
   */
 
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
 /** @defgroup ADCEx_Common_mode ADC Extended Dual ADC Mode
   * @{
   */
-#define ADC_MODE_INDEPENDENT 0x00000000U                                                                /*!< ADC dual mode disabled (ADC independent mode) */
-#define ADC_DUALMODE_REGSIMULT_INJECSIMULT ((uint32_t)(ADC_CR1_DUALMOD_0))                              /*!< ADC dual mode enabled: Combined regular simultaneous + injected simultaneous mode, on groups regular and injected */
-#define ADC_DUALMODE_REGSIMULT_ALTERTRIG ((uint32_t)(ADC_CR1_DUALMOD_1))                                /*!< ADC dual mode enabled: Combined regular simultaneous + alternate trigger mode, on groups regular and injected */
-#define ADC_DUALMODE_INJECSIMULT_INTERLFAST ((uint32_t)(ADC_CR1_DUALMOD_1 | ADC_CR1_DUALMOD_0))         /*!< ADC dual mode enabled: Combined injected simultaneous + fast interleaved mode, on groups regular and injected (delay between ADC sampling phases: 7 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
-#define ADC_DUALMODE_INJECSIMULT_INTERLSLOW ((uint32_t)(ADC_CR1_DUALMOD_2))                             /*!< ADC dual mode enabled: Combined injected simultaneous + slow Interleaved mode, on groups regular and injected (delay between ADC sampling phases: 14 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
-#define ADC_DUALMODE_INJECSIMULT ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_0))                    /*!< ADC dual mode enabled: Injected simultaneous mode, on group injected */
-#define ADC_DUALMODE_REGSIMULT ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_1))                      /*!< ADC dual mode enabled: Regular simultaneous mode, on group regular */
-#define ADC_DUALMODE_INTERLFAST ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_1 | ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Fast interleaved mode, on group regular (delay between ADC sampling phases: 7 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
-#define ADC_DUALMODE_INTERLSLOW ((uint32_t)(ADC_CR1_DUALMOD_3))                                         /*!< ADC dual mode enabled: Slow interleaved mode, on group regular (delay between ADC sampling phases: 14 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
-#define ADC_DUALMODE_ALTERTRIG ((uint32_t)(ADC_CR1_DUALMOD_3 | ADC_CR1_DUALMOD_0))                      /*!< ADC dual mode enabled: Alternate trigger mode, on group injected */
+#define ADC_MODE_INDEPENDENT 0x00000000U /*!< ADC dual mode disabled (ADC independent mode) */
+#define ADC_DUALMODE_REGSIMULT_INJECSIMULT                                                                                                 \
+    ((uint32_t)(ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Combined regular simultaneous + injected simultaneous mode, on groups regular and injected */
+#define ADC_DUALMODE_REGSIMULT_ALTERTRIG                                                                                                   \
+    ((uint32_t)(ADC_CR1_DUALMOD_1)) /*!< ADC dual mode enabled: Combined regular simultaneous + alternate trigger mode, on groups regular and injected */
+#define ADC_DUALMODE_INJECSIMULT_INTERLFAST                                                                                                \
+    ((uint32_t)(ADC_CR1_DUALMOD_1 |                                                                                                        \
+                ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Combined injected simultaneous + fast interleaved mode, on groups regular and injected (delay between ADC sampling phases: 7 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
+#define ADC_DUALMODE_INJECSIMULT_INTERLSLOW                                                                                                \
+    ((uint32_t)(ADC_CR1_DUALMOD_2)) /*!< ADC dual mode enabled: Combined injected simultaneous + slow Interleaved mode, on groups regular and injected (delay between ADC sampling phases: 14 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
+#define ADC_DUALMODE_INJECSIMULT                                                                                                           \
+    ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Injected simultaneous mode, on group injected */
+#define ADC_DUALMODE_REGSIMULT                                                                                                             \
+    ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_1)) /*!< ADC dual mode enabled: Regular simultaneous mode, on group regular */
+#define ADC_DUALMODE_INTERLFAST                                                                                                            \
+    ((uint32_t)(ADC_CR1_DUALMOD_2 | ADC_CR1_DUALMOD_1 |                                                                                    \
+                ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Fast interleaved mode, on group regular (delay between ADC sampling phases: 7 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
+#define ADC_DUALMODE_INTERLSLOW                                                                                                            \
+    ((uint32_t)(ADC_CR1_DUALMOD_3)) /*!< ADC dual mode enabled: Slow interleaved mode, on group regular (delay between ADC sampling phases: 14 ADC clock cycles (equivalent to parameter "TwoSamplingDelay" set to "ADC_TWOSAMPLINGDELAY_7CYCLES" on other STM32 devices)) */
+#define ADC_DUALMODE_ALTERTRIG                                                                                                             \
+    ((uint32_t)(ADC_CR1_DUALMOD_3 | ADC_CR1_DUALMOD_0)) /*!< ADC dual mode enabled: Alternate trigger mode, on group injected */
 /**
   * @}
   */
@@ -373,13 +386,12 @@ typedef struct
   * @retval External trigger to be programmed into EXTSEL bits of CR2 register
   */
 #if defined(STM32F103xE) || defined(STM32F103xG)
-#define ADC_CFGR_EXTSEL(__HANDLE__, __EXT_TRIG_CONV__)                                                                           \
-    (((((__HANDLE__)->Instance) == ADC3)) ? (((__EXT_TRIG_CONV__) == ADC_EXTERNALTRIGCONV_T8_TRGO) ? (ADC3_EXTERNALTRIG_T8_TRGO) \
-                                                                                                   : (__EXT_TRIG_CONV__))        \
-                                          : (__EXT_TRIG_CONV__))
+#define ADC_CFGR_EXTSEL(__HANDLE__, __EXT_TRIG_CONV__)                                                                                     \
+    (((((__HANDLE__)->Instance) == ADC3))                                                                                                  \
+         ? (((__EXT_TRIG_CONV__) == ADC_EXTERNALTRIGCONV_T8_TRGO) ? (ADC3_EXTERNALTRIG_T8_TRGO) : (__EXT_TRIG_CONV__))                     \
+         : (__EXT_TRIG_CONV__))
 #else
-#define ADC_CFGR_EXTSEL(__HANDLE__, __EXT_TRIG_CONV__) \
-    (__EXT_TRIG_CONV__)
+#define ADC_CFGR_EXTSEL(__HANDLE__, __EXT_TRIG_CONV__) (__EXT_TRIG_CONV__)
 #endif /* STM32F103xE || STM32F103xG */
 
 /**
@@ -393,13 +405,12 @@ typedef struct
   * @retval External trigger to be programmed into JEXTSEL bits of CR2 register
   */
 #if defined(STM32F103xE) || defined(STM32F103xG)
-#define ADC_CFGR_JEXTSEL(__HANDLE__, __EXT_TRIG_INJECTCONV__)                                                                                  \
-    (((((__HANDLE__)->Instance) == ADC3)) ? (((__EXT_TRIG_INJECTCONV__) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) ? (ADC3_EXTERNALTRIGINJEC_T8_CC4) \
-                                                                                                             : (__EXT_TRIG_INJECTCONV__))      \
-                                          : (__EXT_TRIG_INJECTCONV__))
+#define ADC_CFGR_JEXTSEL(__HANDLE__, __EXT_TRIG_INJECTCONV__)                                                                              \
+    (((((__HANDLE__)->Instance) == ADC3))                                                                                                  \
+         ? (((__EXT_TRIG_INJECTCONV__) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) ? (ADC3_EXTERNALTRIGINJEC_T8_CC4) : (__EXT_TRIG_INJECTCONV__)) \
+         : (__EXT_TRIG_INJECTCONV__))
 #else
-#define ADC_CFGR_JEXTSEL(__HANDLE__, __EXT_TRIG_INJECTCONV__) \
-    (__EXT_TRIG_INJECTCONV__)
+#define ADC_CFGR_JEXTSEL(__HANDLE__, __EXT_TRIG_INJECTCONV__) (__EXT_TRIG_INJECTCONV__)
 #endif /* STM32F103xE || STM32F103xG */
 
 /**
@@ -407,13 +418,12 @@ typedef struct
   * @param __HANDLE__: ADC handle
   * @retval Multimode state: RESET if multimode is disabled, other value if multimode is enabled
   */
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-#define ADC_MULTIMODE_IS_ENABLE(__HANDLE__)                                                                     \
-    (((((__HANDLE__)->Instance) == ADC1) || (((__HANDLE__)->Instance) == ADC2)) ? (ADC1->CR1 & ADC_CR1_DUALMOD) \
-                                                                                : (RESET))
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+#define ADC_MULTIMODE_IS_ENABLE(__HANDLE__)                                                                                                \
+    (((((__HANDLE__)->Instance) == ADC1) || (((__HANDLE__)->Instance) == ADC2)) ? (ADC1->CR1 & ADC_CR1_DUALMOD) : (RESET))
 #else
-#define ADC_MULTIMODE_IS_ENABLE(__HANDLE__) \
-    (RESET)
+#define ADC_MULTIMODE_IS_ENABLE(__HANDLE__) (RESET)
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
 /**
@@ -421,13 +431,12 @@ typedef struct
   * @param __HANDLE__: ADC handle
   * @retval None
   */
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-#define ADC_NONMULTIMODE_OR_MULTIMODEMASTER(__HANDLE__)                              \
-    (((((__HANDLE__)->Instance) == ADC2)) ? ((ADC1->CR1 & ADC_CR1_DUALMOD) == RESET) \
-                                          : (!RESET))
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+#define ADC_NONMULTIMODE_OR_MULTIMODEMASTER(__HANDLE__)                                                                                    \
+    (((((__HANDLE__)->Instance) == ADC2)) ? ((ADC1->CR1 & ADC_CR1_DUALMOD) == RESET) : (!RESET))
 #else
-#define ADC_NONMULTIMODE_OR_MULTIMODEMASTER(__HANDLE__) \
-    (!RESET)
+#define ADC_NONMULTIMODE_OR_MULTIMODEMASTER(__HANDLE__) (!RESET)
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
 /**
@@ -435,24 +444,23 @@ typedef struct
   * @param __HANDLE__: ADC handle
   * @retval None
   */
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-#define ADC_MULTIMODE_AUTO_INJECTED(__HANDLE__)                                                               \
-    (((((__HANDLE__)->Instance) == ADC1) || (((__HANDLE__)->Instance) == ADC2)) ? (ADC1->CR1 & ADC_CR1_JAUTO) \
-                                                                                : (RESET))
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+#define ADC_MULTIMODE_AUTO_INJECTED(__HANDLE__)                                                                                            \
+    (((((__HANDLE__)->Instance) == ADC1) || (((__HANDLE__)->Instance) == ADC2)) ? (ADC1->CR1 & ADC_CR1_JAUTO) : (RESET))
 #else
-#define ADC_MULTIMODE_AUTO_INJECTED(__HANDLE__) \
-    (RESET)
+#define ADC_MULTIMODE_AUTO_INJECTED(__HANDLE__) (RESET)
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
 /**
   * @brief Set handle of the other ADC sharing the common multimode settings
   * @param __HANDLE__: ADC handle
   * @param __HANDLE_OTHER_ADC__: other ADC handle
   * @retval None
   */
-#define ADC_COMMON_ADC_OTHER(__HANDLE__, __HANDLE_OTHER_ADC__) \
-    ((__HANDLE_OTHER_ADC__)->Instance = ADC2)
+#define ADC_COMMON_ADC_OTHER(__HANDLE__, __HANDLE_OTHER_ADC__) ((__HANDLE_OTHER_ADC__)->Instance = ADC2)
 
 /**
   * @brief Set handle of the ADC slave associated to the ADC master
@@ -462,198 +470,167 @@ typedef struct
   * @param __HANDLE_SLAVE__: ADC slave handle
   * @retval None
   */
-#define ADC_MULTI_SLAVE(__HANDLE_MASTER__, __HANDLE_SLAVE__) \
-    ((__HANDLE_SLAVE__)->Instance = ADC2)
+#define ADC_MULTI_SLAVE(__HANDLE_MASTER__, __HANDLE_SLAVE__) ((__HANDLE_SLAVE__)->Instance = ADC2)
 
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
-#define IS_ADC_INJECTED_RANK(CHANNEL) (((CHANNEL) == ADC_INJECTED_RANK_1) || \
-                                       ((CHANNEL) == ADC_INJECTED_RANK_2) || \
-                                       ((CHANNEL) == ADC_INJECTED_RANK_3) || \
-                                       ((CHANNEL) == ADC_INJECTED_RANK_4))
+#define IS_ADC_INJECTED_RANK(CHANNEL)                                                                                                      \
+    (((CHANNEL) == ADC_INJECTED_RANK_1) || ((CHANNEL) == ADC_INJECTED_RANK_2) || ((CHANNEL) == ADC_INJECTED_RANK_3) ||                     \
+     ((CHANNEL) == ADC_INJECTED_RANK_4))
 
-#define IS_ADC_EXTTRIGINJEC_EDGE(EDGE) (((EDGE) == ADC_EXTERNALTRIGINJECCONV_EDGE_NONE) || \
-                                        ((EDGE) == ADC_EXTERNALTRIGINJECCONV_EDGE_RISING))
+#define IS_ADC_EXTTRIGINJEC_EDGE(EDGE)                                                                                                     \
+    (((EDGE) == ADC_EXTERNALTRIGINJECCONV_EDGE_NONE) || ((EDGE) == ADC_EXTERNALTRIGINJECCONV_EDGE_RISING))
 
 /** @defgroup ADCEx_injected_nb_conv_verification ADCEx injected nb conv verification
   * @{
   */
 #define IS_ADC_INJECTED_NB_CONV(LENGTH) (((LENGTH) >= 1U) && ((LENGTH) <= 4U))
-/**
+    /**
   * @}
   */
 
-#if defined(STM32F100xB) || defined(STM32F100xE) || defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC)
-#define IS_ADC_EXTTRIG(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||  \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || \
-                                 ((REGTRIG) == ADC_SOFTWARE_START))
+#if defined(STM32F100xB) || defined(STM32F100xE) || defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F102x6) ||                \
+    defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC)
+#define IS_ADC_EXTTRIG(REGTRIG)                                                                                                            \
+    (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||                                          \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || ((REGTRIG) == ADC_SOFTWARE_START))
 #endif
 #if defined(STM32F101xE)
-#define IS_ADC_EXTTRIG(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||  \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_TRGO) ||  \
-                                 ((REGTRIG) == ADC_SOFTWARE_START))
+#define IS_ADC_EXTTRIG(REGTRIG)                                                                                                            \
+    (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||                                          \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) ||                                         \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_TRGO) || ((REGTRIG) == ADC_SOFTWARE_START))
 #endif
 #if defined(STM32F101xG)
-#define IS_ADC_EXTTRIG(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||  \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || \
-                                 ((REGTRIG) == ADC_SOFTWARE_START))
+#define IS_ADC_EXTTRIG(REGTRIG)                                                                                                            \
+    (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||                                          \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || ((REGTRIG) == ADC_SOFTWARE_START))
 #endif
 #if defined(STM32F103xE) || defined(STM32F103xG)
-#define IS_ADC_EXTTRIG(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||  \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) || \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC3) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T5_CC1) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T5_CC3) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC3) ||   \
-                                 ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_TRGO) ||  \
-                                 ((REGTRIG) == ADC_SOFTWARE_START))
+#define IS_ADC_EXTTRIG(REGTRIG)                                                                                                            \
+    (((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC2) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC2) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_TRGO) ||                                          \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T4_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_EXT_IT11) ||                                         \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T3_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T2_CC3) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_CC1) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T5_CC1) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T5_CC3) || ((REGTRIG) == ADC_EXTERNALTRIGCONV_T1_CC3) ||                                           \
+     ((REGTRIG) == ADC_EXTERNALTRIGCONV_T8_TRGO) || ((REGTRIG) == ADC_SOFTWARE_START))
 #endif
 
-#if defined(STM32F100xB) || defined(STM32F100xE) || defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC)
-#define IS_ADC_EXTTRIGINJEC(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) ||  \
-                                      ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
+#if defined(STM32F100xB) || defined(STM32F100xE) || defined(STM32F101x6) || defined(STM32F101xB) || defined(STM32F102x6) ||                \
+    defined(STM32F102xB) || defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC)
+#define IS_ADC_EXTTRIGINJEC(REGTRIG)                                                                                                       \
+    (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||                               \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) || ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
 #endif
 #if defined(STM32F101xE)
-#define IS_ADC_EXTTRIGINJEC(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) ||   \
-                                      ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
+#define IS_ADC_EXTTRIGINJEC(REGTRIG)                                                                                                       \
+    (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||                               \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) ||                                \
+     ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
 #endif
 #if defined(STM32F101xG)
-#define IS_ADC_EXTTRIGINJEC(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) ||  \
-                                      ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
+#define IS_ADC_EXTTRIGINJEC(REGTRIG)                                                                                                       \
+    (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||                               \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) || ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
 #endif
 #if defined(STM32F103xE) || defined(STM32F103xG)
-#define IS_ADC_EXTTRIGINJEC(REGTRIG) (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) || \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_CC3) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC2) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) ||   \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) ||  \
-                                      ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) ||   \
-                                      ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
+#define IS_ADC_EXTTRIGINJEC(REGTRIG)                                                                                                       \
+    (((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T2_CC1) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T3_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_TRGO) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15) ||                               \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T4_CC3) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC2) ||                                 \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_TRGO) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T5_CC4) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_CC4) || ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T1_TRGO) ||                                \
+     ((REGTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC4) || ((REGTRIG) == ADC_INJECTED_SOFTWARE_START))
 #endif
 
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-#define IS_ADC_MODE(MODE) (((MODE) == ADC_MODE_INDEPENDENT) ||                \
-                           ((MODE) == ADC_DUALMODE_REGSIMULT_INJECSIMULT) ||  \
-                           ((MODE) == ADC_DUALMODE_REGSIMULT_ALTERTRIG) ||    \
-                           ((MODE) == ADC_DUALMODE_INJECSIMULT_INTERLFAST) || \
-                           ((MODE) == ADC_DUALMODE_INJECSIMULT_INTERLSLOW) || \
-                           ((MODE) == ADC_DUALMODE_INJECSIMULT) ||            \
-                           ((MODE) == ADC_DUALMODE_REGSIMULT) ||              \
-                           ((MODE) == ADC_DUALMODE_INTERLFAST) ||             \
-                           ((MODE) == ADC_DUALMODE_INTERLSLOW) ||             \
-                           ((MODE) == ADC_DUALMODE_ALTERTRIG))
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+#define IS_ADC_MODE(MODE)                                                                                                                  \
+    (((MODE) == ADC_MODE_INDEPENDENT) || ((MODE) == ADC_DUALMODE_REGSIMULT_INJECSIMULT) || ((MODE) == ADC_DUALMODE_REGSIMULT_ALTERTRIG) || \
+     ((MODE) == ADC_DUALMODE_INJECSIMULT_INTERLFAST) || ((MODE) == ADC_DUALMODE_INJECSIMULT_INTERLSLOW) ||                                 \
+     ((MODE) == ADC_DUALMODE_INJECSIMULT) || ((MODE) == ADC_DUALMODE_REGSIMULT) || ((MODE) == ADC_DUALMODE_INTERLFAST) ||                  \
+     ((MODE) == ADC_DUALMODE_INTERLSLOW) || ((MODE) == ADC_DUALMODE_ALTERTRIG))
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
-/**
+    /**
   * @}
   */
 
-/* Exported functions --------------------------------------------------------*/
-/** @addtogroup ADCEx_Exported_Functions
+    /* Exported functions --------------------------------------------------------*/
+    /** @addtogroup ADCEx_Exported_Functions
   * @{
   */
 
-/* IO operation functions  *****************************************************/
-/** @addtogroup ADCEx_Exported_Functions_Group1
+    /* IO operation functions  *****************************************************/
+    /** @addtogroup ADCEx_Exported_Functions_Group1
   * @{
   */
 
-/* ADC calibration */
-HAL_StatusTypeDef HAL_ADCEx_Calibration_Start(ADC_HandleTypeDef* hadc);
+    /* ADC calibration */
+    HAL_StatusTypeDef HAL_ADCEx_Calibration_Start(ADC_HandleTypeDef* hadc);
 
-/* Blocking mode: Polling */
-HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc);
-HAL_StatusTypeDef HAL_ADCEx_InjectedStop(ADC_HandleTypeDef* hadc);
-HAL_StatusTypeDef HAL_ADCEx_InjectedPollForConversion(ADC_HandleTypeDef* hadc, uint32_t Timeout);
+    /* Blocking mode: Polling */
+    HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc);
+    HAL_StatusTypeDef HAL_ADCEx_InjectedStop(ADC_HandleTypeDef* hadc);
+    HAL_StatusTypeDef HAL_ADCEx_InjectedPollForConversion(ADC_HandleTypeDef* hadc, uint32_t Timeout);
 
-/* Non-blocking mode: Interruption */
-HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc);
-HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc);
+    /* Non-blocking mode: Interruption */
+    HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc);
+    HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc);
 
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-/* ADC multimode */
-HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
-HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc);
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+    /* ADC multimode */
+    HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
+    HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc);
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
-/* ADC retrieve conversion value intended to be used with polling or interruption */
-uint32_t HAL_ADCEx_InjectedGetValue(ADC_HandleTypeDef* hadc, uint32_t InjectedRank);
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-uint32_t HAL_ADCEx_MultiModeGetValue(ADC_HandleTypeDef* hadc);
+    /* ADC retrieve conversion value intended to be used with polling or interruption */
+    uint32_t HAL_ADCEx_InjectedGetValue(ADC_HandleTypeDef* hadc, uint32_t InjectedRank);
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+    uint32_t HAL_ADCEx_MultiModeGetValue(ADC_HandleTypeDef* hadc);
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
 
-/* ADC IRQHandler and Callbacks used in non-blocking modes (Interruption) */
-void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc);
-/**
+    /* ADC IRQHandler and Callbacks used in non-blocking modes (Interruption) */
+    void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef* hadc);
+    /**
   * @}
   */
 
-/* Peripheral Control functions ***********************************************/
-/** @addtogroup ADCEx_Exported_Functions_Group2
+    /* Peripheral Control functions ***********************************************/
+    /** @addtogroup ADCEx_Exported_Functions_Group2
   * @{
   */
-HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_InjectionConfTypeDef* sConfigInjected);
-#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) || defined(STM32F103xG)
-HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_MultiModeTypeDef* multimode);
+    HAL_StatusTypeDef HAL_ADCEx_InjectedConfigChannel(ADC_HandleTypeDef* hadc, ADC_InjectionConfTypeDef* sConfigInjected);
+#if defined(STM32F103x6) || defined(STM32F103xB) || defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F103xE) ||                \
+    defined(STM32F103xG)
+    HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_MultiModeTypeDef* multimode);
 #endif /* defined STM32F103x6 || defined STM32F103xB || defined STM32F105xC || defined STM32F107xC || defined STM32F103xE || defined STM32F103xG */
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

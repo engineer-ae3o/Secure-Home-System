@@ -38,7 +38,8 @@
 #endif
 
 #ifndef configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET
-#error "configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
+#error                                                                                                                                     \
+    "configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif
 
 #ifndef configUNIQUE_INTERRUPT_PRIORITIES
@@ -58,13 +59,15 @@
 #endif
 
 #if configMAX_API_CALL_INTERRUPT_PRIORITY > configUNIQUE_INTERRUPT_PRIORITIES
-#error "configMAX_API_CALL_INTERRUPT_PRIORITY must be less than or equal to configUNIQUE_INTERRUPT_PRIORITIES as the lower the numeric priority value the higher the logical interrupt priority"
+#error                                                                                                                                     \
+    "configMAX_API_CALL_INTERRUPT_PRIORITY must be less than or equal to configUNIQUE_INTERRUPT_PRIORITIES as the lower the numeric priority value the higher the logical interrupt priority"
 #endif
 
 #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
 /* Check the configuration. */
 #if (configMAX_PRIORITIES > 32)
-#error "configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice."
+#error                                                                                                                                     \
+    "configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice."
 #endif
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
@@ -95,7 +98,8 @@
 #define portPRIORITY_SHIFT 0
 #define portMAX_BINARY_POINT_VALUE 0
 #else /* if configUNIQUE_INTERRUPT_PRIORITIES == 16 */
-#error "Invalid configUNIQUE_INTERRUPT_PRIORITIES setting.  configUNIQUE_INTERRUPT_PRIORITIES must be set to the number of unique priorities implemented by the target hardware"
+#error                                                                                                                                     \
+    "Invalid configUNIQUE_INTERRUPT_PRIORITIES setting.  configUNIQUE_INTERRUPT_PRIORITIES must be set to the number of unique priorities implemented by the target hardware"
 #endif /* if configUNIQUE_INTERRUPT_PRIORITIES == 16 */
 
 /* A critical section is exited when the critical section nesting count reaches
@@ -119,13 +123,18 @@
 #define portICCEOIR_END_OF_INTERRUPT_OFFSET (0x10)
 #define portICCBPR_BINARY_POINT_OFFSET (0x08)
 #define portICCRPR_RUNNING_PRIORITY_OFFSET (0x14)
-#define portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS (configINTERRUPT_CONTROLLER_BASE_ADDRESS + configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET)
-#define portICCPMR_PRIORITY_MASK_REGISTER (*((volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)))
-#define portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET)
+#define portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS                                                                                     \
+    (configINTERRUPT_CONTROLLER_BASE_ADDRESS + configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET)
+#define portICCPMR_PRIORITY_MASK_REGISTER                                                                                                  \
+    (*((volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)))
+#define portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS                                                                                  \
+    (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCIAR_INTERRUPT_ACKNOWLEDGE_OFFSET)
 #define portICCEOIR_END_OF_INTERRUPT_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCEOIR_END_OF_INTERRUPT_OFFSET)
 #define portICCPMR_PRIORITY_MASK_REGISTER_ADDRESS (portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCPMR_PRIORITY_MASK_OFFSET)
-#define portICCBPR_BINARY_POINT_REGISTER (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCBPR_BINARY_POINT_OFFSET)))
-#define portICCRPR_RUNNING_PRIORITY_REGISTER (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCRPR_RUNNING_PRIORITY_OFFSET)))
+#define portICCBPR_BINARY_POINT_REGISTER                                                                                                   \
+    (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCBPR_BINARY_POINT_OFFSET)))
+#define portICCRPR_RUNNING_PRIORITY_REGISTER                                                                                               \
+    (*((const volatile uint32_t*)(portINTERRUPT_CONTROLLER_CPU_INTERFACE_ADDRESS + portICCRPR_RUNNING_PRIORITY_OFFSET)))
 
 /* Used by portASSERT_IF_INTERRUPT_PRIORITY_INVALID() when ensuring the binary
  * point is zero. */
@@ -144,13 +153,13 @@
 #define portAPSR_USER_MODE (0x10)
 
 /* Macro to unmask all interrupt priorities. */
-#define portCLEAR_INTERRUPT_MASK()                            \
-    {                                                         \
-        __disable_irq();                                      \
-        portICCPMR_PRIORITY_MASK_REGISTER = portUNMASK_VALUE; \
-        __asm("DSB        \n"                                 \
-              "ISB        \n");                               \
-        __enable_irq();                                       \
+#define portCLEAR_INTERRUPT_MASK()                                                                                                         \
+    {                                                                                                                                      \
+        __disable_irq();                                                                                                                   \
+        portICCPMR_PRIORITY_MASK_REGISTER = portUNMASK_VALUE;                                                                              \
+        __asm("DSB        \n"                                                                                                              \
+              "ISB        \n");                                                                                                            \
+        __enable_irq();                                                                                                                    \
     }
 
 /*-----------------------------------------------------------*/
@@ -199,9 +208,7 @@ uint32_t ulPortInterruptNesting = 0UL;
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Setup the initial stack of the task.  The stack is set exactly as
      * expected by the portRESTORE_CONTEXT() macro.
      *
@@ -269,6 +276,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -284,6 +292,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 BaseType_t xPortStartScheduler(void) {
@@ -315,6 +324,7 @@ BaseType_t xPortStartScheduler(void) {
      * possible value. */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -322,6 +332,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(ulCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -342,6 +353,7 @@ void vPortEnterCritical(void) {
         configASSERT(ulPortInterruptNesting == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -359,6 +371,7 @@ void vPortExitCritical(void) {
         }
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void FreeRTOS_Tick_Handler(void) {
@@ -380,6 +393,7 @@ void FreeRTOS_Tick_Handler(void) {
     portCLEAR_INTERRUPT_MASK();
     configCLEAR_TICK_INTERRUPT();
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortTaskUsesFPU(void) {
@@ -392,6 +406,7 @@ void vPortTaskUsesFPU(void) {
     /* Initialise the floating point status register. */
     __asm("FMXR    FPSCR, ulInitialFPSCR");
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortClearInterruptMask(uint32_t ulNewMaskValue) {
@@ -399,6 +414,7 @@ void vPortClearInterruptMask(uint32_t ulNewMaskValue) {
         portCLEAR_INTERRUPT_MASK();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 uint32_t ulPortSetInterruptMask(void) {
@@ -420,6 +436,7 @@ uint32_t ulPortSetInterruptMask(void) {
 
     return ulReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)

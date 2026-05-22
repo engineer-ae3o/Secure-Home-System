@@ -65,10 +65,10 @@
 #define IS_LL_RTC_HOUR24(__HOUR__) ((__HOUR__) <= 23U)
 #define IS_LL_RTC_MINUTES(__MINUTES__) ((__MINUTES__) <= 59U)
 #define IS_LL_RTC_SECONDS(__SECONDS__) ((__SECONDS__) <= 59U)
-#define IS_LL_RTC_CALIB_OUTPUT(__OUTPUT__) (((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_NONE) ||     \
-                                            ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_RTCCLOCK) || \
-                                            ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_ALARM) ||    \
-                                            ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_SECOND))
+#define IS_LL_RTC_CALIB_OUTPUT(__OUTPUT__)                                                                                                 \
+    (((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_NONE) || ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_RTCCLOCK) ||                                       \
+     ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_ALARM) || ((__OUTPUT__) == LL_RTC_CALIB_OUTPUT_SECOND))
+
 /**
   * @}
   */
@@ -229,8 +229,7 @@ ErrorStatus LL_RTC_TIME_Init(RTC_TypeDef* RTCx, uint32_t RTC_Format, LL_RTC_Time
     if (LL_RTC_EnterInitMode(RTCx) != ERROR) {
         /* Check the input parameters format */
         if (RTC_Format == LL_RTC_FORMAT_BIN) {
-            counter_time = (uint32_t)(((uint32_t)RTC_TimeStruct->Hours * 3600U) +
-                                      ((uint32_t)RTC_TimeStruct->Minutes * 60U) +
+            counter_time = (uint32_t)(((uint32_t)RTC_TimeStruct->Hours * 3600U) + ((uint32_t)RTC_TimeStruct->Minutes * 60U) +
                                       ((uint32_t)RTC_TimeStruct->Seconds));
             LL_RTC_TIME_Set(RTCx, counter_time);
         } else {
@@ -294,9 +293,9 @@ ErrorStatus LL_RTC_ALARM_Init(RTC_TypeDef* RTCx, uint32_t RTC_Format, LL_RTC_Ala
     if (LL_RTC_EnterInitMode(RTCx) != ERROR) {
         /* Check the input parameters format */
         if (RTC_Format == LL_RTC_FORMAT_BIN) {
-            counter_alarm = (uint32_t)(((uint32_t)RTC_AlarmStruct->AlarmTime.Hours * 3600U) +
-                                       ((uint32_t)RTC_AlarmStruct->AlarmTime.Minutes * 60U) +
-                                       ((uint32_t)RTC_AlarmStruct->AlarmTime.Seconds));
+            counter_alarm =
+                (uint32_t)(((uint32_t)RTC_AlarmStruct->AlarmTime.Hours * 3600U) + ((uint32_t)RTC_AlarmStruct->AlarmTime.Minutes * 60U) +
+                           ((uint32_t)RTC_AlarmStruct->AlarmTime.Seconds));
             LL_RTC_ALARM_Set(RTCx, counter_alarm);
         } else {
             counter_alarm = (((uint32_t)(__LL_RTC_CONVERT_BCD2BIN(RTC_AlarmStruct->AlarmTime.Hours)) * 3600U) +

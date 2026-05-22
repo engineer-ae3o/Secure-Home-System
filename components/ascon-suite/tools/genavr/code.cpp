@@ -157,18 +157,28 @@ Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char off
     return shuffle(pattern);
 }
 
-Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5) const {
-    unsigned char pattern[6] = {
-        offset0, offset1, offset2, offset3, offset4, offset5};
+Reg Reg::shuffle(unsigned char offset0,
+                 unsigned char offset1,
+                 unsigned char offset2,
+                 unsigned char offset3,
+                 unsigned char offset4,
+                 unsigned char offset5) const {
+    unsigned char pattern[6] = {offset0, offset1, offset2, offset3, offset4, offset5};
     if (size() != 6) {
         throw new std::invalid_argument("not a 48-bit register");
     }
     return shuffle(pattern);
 }
 
-Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5, unsigned char offset6, unsigned char offset7) const {
-    unsigned char pattern[8] = {
-        offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7};
+Reg Reg::shuffle(unsigned char offset0,
+                 unsigned char offset1,
+                 unsigned char offset2,
+                 unsigned char offset3,
+                 unsigned char offset4,
+                 unsigned char offset5,
+                 unsigned char offset6,
+                 unsigned char offset7) const {
+    unsigned char pattern[8] = {offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7};
     if (size() != 8) {
         throw new std::invalid_argument("not a 64-bit register");
     }
@@ -784,8 +794,7 @@ void Code::lsl(const Reg& reg, unsigned bits) {
             lsr(temp, 1);
             --bits;
         }
-        moveHighFirst(Reg(reg, count, reg.size() - count),
-                      Reg(temp, 0, reg.size() - count));
+        moveHighFirst(Reg(reg, count, reg.size() - count), Reg(temp, 0, reg.size() - count));
         move(Reg(reg, 0, count), 0);
     }
 }
@@ -868,8 +877,7 @@ void Code::lsr(const Reg& reg, unsigned bits) {
             lsl(temp, 1);
             --bits;
         }
-        move(Reg(reg, 0, reg.size() - count),
-             Reg(temp, 1, reg.size() - count));
+        move(Reg(reg, 0, reg.size() - count), Reg(temp, 1, reg.size() - count));
         move(Reg(reg, reg.size() - count, count), 0);
     }
 }
@@ -991,12 +999,10 @@ void Code::move(const Reg& reg1, const Reg& reg2, bool zeroFill) {
         if (reg1.reg(index) == reg2.reg(index)) {
             continue; // Already in the destination.
         }
-        if (isRegPair(reg1, index) && isRegPair(reg2, index) &&
-            hasFlag(MoveWord)) {
+        if (isRegPair(reg1, index) && isRegPair(reg2, index) && hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index), reg2.reg(index));
             ++index;
-        } else if (isRevRegPair(reg1, index) && isRevRegPair(reg2, index) &&
-                   hasFlag(MoveWord)) {
+        } else if (isRevRegPair(reg1, index) && isRevRegPair(reg2, index) && hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index) - 1, reg2.reg(index) - 1);
             ++index;
         } else {
@@ -1057,15 +1063,10 @@ void Code::moveHighFirst(const Reg& reg1, const Reg& reg2) {
         if (reg1.reg(index) == reg2.reg(index)) {
             continue; // Already in the destination.
         }
-        if (isRegPair(reg1, index - 1) &&
-            isRegPair(reg2, index - 1) &&
-            noOverlap(reg1, reg2, index - 1) &&
-            hasFlag(MoveWord)) {
+        if (isRegPair(reg1, index - 1) && isRegPair(reg2, index - 1) && noOverlap(reg1, reg2, index - 1) && hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index - 1), reg2.reg(index - 1));
             --index;
-        } else if (isRevRegPair(reg1, index - 1) &&
-                   isRevRegPair(reg2, index - 1) &&
-                   noOverlap(reg1, reg2, index - 1) &&
+        } else if (isRevRegPair(reg1, index - 1) && isRevRegPair(reg2, index - 1) && noOverlap(reg1, reg2, index - 1) &&
                    hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index), reg2.reg(index));
             --index;

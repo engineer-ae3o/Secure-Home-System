@@ -23,7 +23,8 @@
 #include "ascon-aead-common.h"
 #include "core/ascon-util-snp.h"
 
-int ascon_aead_check_tag(unsigned char* plaintext, size_t plaintext_len, const unsigned char* tag1, const unsigned char* tag2, size_t size) {
+int ascon_aead_check_tag(
+    unsigned char* plaintext, size_t plaintext_len, const unsigned char* tag1, const unsigned char* tag2, size_t size) {
     /* Set "accum" to -1 if the tags match, or 0 if they don't match */
     int accum = 0;
     while (size > 0) {
@@ -74,7 +75,8 @@ void ascon_aead_absorb_16(ascon_state_t* state, const unsigned char* data, size_
     }
 }
 
-unsigned char ascon_aead_encrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
+unsigned char ascon_aead_encrypt_8(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
     /* Deal with a partial left-over block from last time */
     if (partial != 0) {
         size_t temp = 8U - partial;
@@ -105,7 +107,8 @@ unsigned char ascon_aead_encrypt_8(ascon_state_t* state, unsigned char* dest, co
     return (unsigned char)len;
 }
 
-unsigned char ascon_aead_encrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
+unsigned char ascon_aead_encrypt_16(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
     /* Deal with a partial left-over block from last time */
     if (partial != 0) {
         size_t temp = 16U - partial;
@@ -136,7 +139,8 @@ unsigned char ascon_aead_encrypt_16(ascon_state_t* state, unsigned char* dest, c
     return (unsigned char)len;
 }
 
-unsigned char ascon_aead_decrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
+unsigned char ascon_aead_decrypt_8(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
     /* Deal with a partial left-over block from last time */
     if (partial != 0) {
         size_t temp = 8U - partial;
@@ -167,7 +171,8 @@ unsigned char ascon_aead_decrypt_8(ascon_state_t* state, unsigned char* dest, co
     return (unsigned char)len;
 }
 
-unsigned char ascon_aead_decrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
+unsigned char ascon_aead_decrypt_16(
+    ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial) {
     /* Deal with a partial left-over block from last time */
     if (partial != 0) {
         size_t temp = 16U - partial;

@@ -56,7 +56,7 @@ extern "C" {
 
 /* ARMv8-M common port configurations. */
 #include "portmacrocommon.h"
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configTOTAL_MPU_REGIONS == 16)
 #error 16 MPU regions are not yet supported for this port.

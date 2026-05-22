@@ -41,251 +41,152 @@ extern "C" {
   * @{
   */
 #define IS_ETH_PHY_ADDRESS(ADDRESS) ((ADDRESS) <= 0x20U)
-#define IS_ETH_AUTONEGOTIATION(CMD) (((CMD) == ETH_AUTONEGOTIATION_ENABLE) || \
-                                     ((CMD) == ETH_AUTONEGOTIATION_DISABLE))
-#define IS_ETH_SPEED(SPEED) (((SPEED) == ETH_SPEED_10M) || \
-                             ((SPEED) == ETH_SPEED_100M))
-#define IS_ETH_DUPLEX_MODE(MODE) (((MODE) == ETH_MODE_FULLDUPLEX) || \
-                                  ((MODE) == ETH_MODE_HALFDUPLEX))
-#define IS_ETH_RX_MODE(MODE) (((MODE) == ETH_RXPOLLING_MODE) || \
-                              ((MODE) == ETH_RXINTERRUPT_MODE))
-#define IS_ETH_CHECKSUM_MODE(MODE) (((MODE) == ETH_CHECKSUM_BY_HARDWARE) || \
-                                    ((MODE) == ETH_CHECKSUM_BY_SOFTWARE))
-#define IS_ETH_MEDIA_INTERFACE(MODE) (((MODE) == ETH_MEDIA_INTERFACE_MII) || \
-                                      ((MODE) == ETH_MEDIA_INTERFACE_RMII))
-#define IS_ETH_WATCHDOG(CMD) (((CMD) == ETH_WATCHDOG_ENABLE) || \
-                              ((CMD) == ETH_WATCHDOG_DISABLE))
-#define IS_ETH_JABBER(CMD) (((CMD) == ETH_JABBER_ENABLE) || \
-                            ((CMD) == ETH_JABBER_DISABLE))
-#define IS_ETH_INTER_FRAME_GAP(GAP) (((GAP) == ETH_INTERFRAMEGAP_96BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_88BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_80BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_72BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_64BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_56BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_48BIT) || \
-                                     ((GAP) == ETH_INTERFRAMEGAP_40BIT))
-#define IS_ETH_CARRIER_SENSE(CMD) (((CMD) == ETH_CARRIERSENCE_ENABLE) || \
-                                   ((CMD) == ETH_CARRIERSENCE_DISABLE))
-#define IS_ETH_RECEIVE_OWN(CMD) (((CMD) == ETH_RECEIVEOWN_ENABLE) || \
-                                 ((CMD) == ETH_RECEIVEOWN_DISABLE))
-#define IS_ETH_LOOPBACK_MODE(CMD) (((CMD) == ETH_LOOPBACKMODE_ENABLE) || \
-                                   ((CMD) == ETH_LOOPBACKMODE_DISABLE))
-#define IS_ETH_CHECKSUM_OFFLOAD(CMD) (((CMD) == ETH_CHECKSUMOFFLAOD_ENABLE) || \
-                                      ((CMD) == ETH_CHECKSUMOFFLAOD_DISABLE))
-#define IS_ETH_RETRY_TRANSMISSION(CMD) (((CMD) == ETH_RETRYTRANSMISSION_ENABLE) || \
-                                        ((CMD) == ETH_RETRYTRANSMISSION_DISABLE))
-#define IS_ETH_AUTOMATIC_PADCRC_STRIP(CMD) (((CMD) == ETH_AUTOMATICPADCRCSTRIP_ENABLE) || \
-                                            ((CMD) == ETH_AUTOMATICPADCRCSTRIP_DISABLE))
-#define IS_ETH_BACKOFF_LIMIT(LIMIT) (((LIMIT) == ETH_BACKOFFLIMIT_10) || \
-                                     ((LIMIT) == ETH_BACKOFFLIMIT_8) ||  \
-                                     ((LIMIT) == ETH_BACKOFFLIMIT_4) ||  \
-                                     ((LIMIT) == ETH_BACKOFFLIMIT_1))
-#define IS_ETH_DEFERRAL_CHECK(CMD) (((CMD) == ETH_DEFFERRALCHECK_ENABLE) || \
-                                    ((CMD) == ETH_DEFFERRALCHECK_DISABLE))
-#define IS_ETH_RECEIVE_ALL(CMD) (((CMD) == ETH_RECEIVEALL_ENABLE) || \
-                                 ((CMD) == ETH_RECEIVEAll_DISABLE))
-#define IS_ETH_SOURCE_ADDR_FILTER(CMD) (((CMD) == ETH_SOURCEADDRFILTER_NORMAL_ENABLE) ||  \
-                                        ((CMD) == ETH_SOURCEADDRFILTER_INVERSE_ENABLE) || \
-                                        ((CMD) == ETH_SOURCEADDRFILTER_DISABLE))
-#define IS_ETH_CONTROL_FRAMES(PASS) (((PASS) == ETH_PASSCONTROLFRAMES_BLOCKALL) ||   \
-                                     ((PASS) == ETH_PASSCONTROLFRAMES_FORWARDALL) || \
-                                     ((PASS) == ETH_PASSCONTROLFRAMES_FORWARDPASSEDADDRFILTER))
-#define IS_ETH_BROADCAST_FRAMES_RECEPTION(CMD) (((CMD) == ETH_BROADCASTFRAMESRECEPTION_ENABLE) || \
-                                                ((CMD) == ETH_BROADCASTFRAMESRECEPTION_DISABLE))
-#define IS_ETH_DESTINATION_ADDR_FILTER(FILTER) (((FILTER) == ETH_DESTINATIONADDRFILTER_NORMAL) || \
-                                                ((FILTER) == ETH_DESTINATIONADDRFILTER_INVERSE))
-#define IS_ETH_PROMISCUOUS_MODE(CMD) (((CMD) == ETH_PROMISCUOUS_MODE_ENABLE) || \
-                                      ((CMD) == ETH_PROMISCUOUS_MODE_DISABLE))
-#define IS_ETH_MULTICAST_FRAMES_FILTER(FILTER) (((FILTER) == ETH_MULTICASTFRAMESFILTER_PERFECTHASHTABLE) || \
-                                                ((FILTER) == ETH_MULTICASTFRAMESFILTER_HASHTABLE) ||        \
-                                                ((FILTER) == ETH_MULTICASTFRAMESFILTER_PERFECT) ||          \
-                                                ((FILTER) == ETH_MULTICASTFRAMESFILTER_NONE))
-#define IS_ETH_UNICAST_FRAMES_FILTER(FILTER) (((FILTER) == ETH_UNICASTFRAMESFILTER_PERFECTHASHTABLE) || \
-                                              ((FILTER) == ETH_UNICASTFRAMESFILTER_HASHTABLE) ||        \
-                                              ((FILTER) == ETH_UNICASTFRAMESFILTER_PERFECT))
+#define IS_ETH_AUTONEGOTIATION(CMD) (((CMD) == ETH_AUTONEGOTIATION_ENABLE) || ((CMD) == ETH_AUTONEGOTIATION_DISABLE))
+#define IS_ETH_SPEED(SPEED) (((SPEED) == ETH_SPEED_10M) || ((SPEED) == ETH_SPEED_100M))
+#define IS_ETH_DUPLEX_MODE(MODE) (((MODE) == ETH_MODE_FULLDUPLEX) || ((MODE) == ETH_MODE_HALFDUPLEX))
+#define IS_ETH_RX_MODE(MODE) (((MODE) == ETH_RXPOLLING_MODE) || ((MODE) == ETH_RXINTERRUPT_MODE))
+#define IS_ETH_CHECKSUM_MODE(MODE) (((MODE) == ETH_CHECKSUM_BY_HARDWARE) || ((MODE) == ETH_CHECKSUM_BY_SOFTWARE))
+#define IS_ETH_MEDIA_INTERFACE(MODE) (((MODE) == ETH_MEDIA_INTERFACE_MII) || ((MODE) == ETH_MEDIA_INTERFACE_RMII))
+#define IS_ETH_WATCHDOG(CMD) (((CMD) == ETH_WATCHDOG_ENABLE) || ((CMD) == ETH_WATCHDOG_DISABLE))
+#define IS_ETH_JABBER(CMD) (((CMD) == ETH_JABBER_ENABLE) || ((CMD) == ETH_JABBER_DISABLE))
+#define IS_ETH_INTER_FRAME_GAP(GAP)                                                                                                        \
+    (((GAP) == ETH_INTERFRAMEGAP_96BIT) || ((GAP) == ETH_INTERFRAMEGAP_88BIT) || ((GAP) == ETH_INTERFRAMEGAP_80BIT) ||                     \
+     ((GAP) == ETH_INTERFRAMEGAP_72BIT) || ((GAP) == ETH_INTERFRAMEGAP_64BIT) || ((GAP) == ETH_INTERFRAMEGAP_56BIT) ||                     \
+     ((GAP) == ETH_INTERFRAMEGAP_48BIT) || ((GAP) == ETH_INTERFRAMEGAP_40BIT))
+#define IS_ETH_CARRIER_SENSE(CMD) (((CMD) == ETH_CARRIERSENCE_ENABLE) || ((CMD) == ETH_CARRIERSENCE_DISABLE))
+#define IS_ETH_RECEIVE_OWN(CMD) (((CMD) == ETH_RECEIVEOWN_ENABLE) || ((CMD) == ETH_RECEIVEOWN_DISABLE))
+#define IS_ETH_LOOPBACK_MODE(CMD) (((CMD) == ETH_LOOPBACKMODE_ENABLE) || ((CMD) == ETH_LOOPBACKMODE_DISABLE))
+#define IS_ETH_CHECKSUM_OFFLOAD(CMD) (((CMD) == ETH_CHECKSUMOFFLAOD_ENABLE) || ((CMD) == ETH_CHECKSUMOFFLAOD_DISABLE))
+#define IS_ETH_RETRY_TRANSMISSION(CMD) (((CMD) == ETH_RETRYTRANSMISSION_ENABLE) || ((CMD) == ETH_RETRYTRANSMISSION_DISABLE))
+#define IS_ETH_AUTOMATIC_PADCRC_STRIP(CMD) (((CMD) == ETH_AUTOMATICPADCRCSTRIP_ENABLE) || ((CMD) == ETH_AUTOMATICPADCRCSTRIP_DISABLE))
+#define IS_ETH_BACKOFF_LIMIT(LIMIT)                                                                                                        \
+    (((LIMIT) == ETH_BACKOFFLIMIT_10) || ((LIMIT) == ETH_BACKOFFLIMIT_8) || ((LIMIT) == ETH_BACKOFFLIMIT_4) ||                             \
+     ((LIMIT) == ETH_BACKOFFLIMIT_1))
+#define IS_ETH_DEFERRAL_CHECK(CMD) (((CMD) == ETH_DEFFERRALCHECK_ENABLE) || ((CMD) == ETH_DEFFERRALCHECK_DISABLE))
+#define IS_ETH_RECEIVE_ALL(CMD) (((CMD) == ETH_RECEIVEALL_ENABLE) || ((CMD) == ETH_RECEIVEAll_DISABLE))
+#define IS_ETH_SOURCE_ADDR_FILTER(CMD)                                                                                                     \
+    (((CMD) == ETH_SOURCEADDRFILTER_NORMAL_ENABLE) || ((CMD) == ETH_SOURCEADDRFILTER_INVERSE_ENABLE) ||                                    \
+     ((CMD) == ETH_SOURCEADDRFILTER_DISABLE))
+#define IS_ETH_CONTROL_FRAMES(PASS)                                                                                                        \
+    (((PASS) == ETH_PASSCONTROLFRAMES_BLOCKALL) || ((PASS) == ETH_PASSCONTROLFRAMES_FORWARDALL) ||                                         \
+     ((PASS) == ETH_PASSCONTROLFRAMES_FORWARDPASSEDADDRFILTER))
+#define IS_ETH_BROADCAST_FRAMES_RECEPTION(CMD)                                                                                             \
+    (((CMD) == ETH_BROADCASTFRAMESRECEPTION_ENABLE) || ((CMD) == ETH_BROADCASTFRAMESRECEPTION_DISABLE))
+#define IS_ETH_DESTINATION_ADDR_FILTER(FILTER)                                                                                             \
+    (((FILTER) == ETH_DESTINATIONADDRFILTER_NORMAL) || ((FILTER) == ETH_DESTINATIONADDRFILTER_INVERSE))
+#define IS_ETH_PROMISCUOUS_MODE(CMD) (((CMD) == ETH_PROMISCUOUS_MODE_ENABLE) || ((CMD) == ETH_PROMISCUOUS_MODE_DISABLE))
+#define IS_ETH_MULTICAST_FRAMES_FILTER(FILTER)                                                                                             \
+    (((FILTER) == ETH_MULTICASTFRAMESFILTER_PERFECTHASHTABLE) || ((FILTER) == ETH_MULTICASTFRAMESFILTER_HASHTABLE) ||                      \
+     ((FILTER) == ETH_MULTICASTFRAMESFILTER_PERFECT) || ((FILTER) == ETH_MULTICASTFRAMESFILTER_NONE))
+#define IS_ETH_UNICAST_FRAMES_FILTER(FILTER)                                                                                               \
+    (((FILTER) == ETH_UNICASTFRAMESFILTER_PERFECTHASHTABLE) || ((FILTER) == ETH_UNICASTFRAMESFILTER_HASHTABLE) ||                          \
+     ((FILTER) == ETH_UNICASTFRAMESFILTER_PERFECT))
 #define IS_ETH_PAUSE_TIME(TIME) ((TIME) <= 0xFFFFU)
-#define IS_ETH_ZEROQUANTA_PAUSE(CMD) (((CMD) == ETH_ZEROQUANTAPAUSE_ENABLE) || \
-                                      ((CMD) == ETH_ZEROQUANTAPAUSE_DISABLE))
-#define IS_ETH_PAUSE_LOW_THRESHOLD(THRESHOLD) (((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS4) ||   \
-                                               ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS28) ||  \
-                                               ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS144) || \
-                                               ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS256))
-#define IS_ETH_UNICAST_PAUSE_FRAME_DETECT(CMD) (((CMD) == ETH_UNICASTPAUSEFRAMEDETECT_ENABLE) || \
-                                                ((CMD) == ETH_UNICASTPAUSEFRAMEDETECT_DISABLE))
-#define IS_ETH_RECEIVE_FLOWCONTROL(CMD) (((CMD) == ETH_RECEIVEFLOWCONTROL_ENABLE) || \
-                                         ((CMD) == ETH_RECEIVEFLOWCONTROL_DISABLE))
-#define IS_ETH_TRANSMIT_FLOWCONTROL(CMD) (((CMD) == ETH_TRANSMITFLOWCONTROL_ENABLE) || \
-                                          ((CMD) == ETH_TRANSMITFLOWCONTROL_DISABLE))
-#define IS_ETH_VLAN_TAG_COMPARISON(COMPARISON) (((COMPARISON) == ETH_VLANTAGCOMPARISON_12BIT) || \
-                                                ((COMPARISON) == ETH_VLANTAGCOMPARISON_16BIT))
+#define IS_ETH_ZEROQUANTA_PAUSE(CMD) (((CMD) == ETH_ZEROQUANTAPAUSE_ENABLE) || ((CMD) == ETH_ZEROQUANTAPAUSE_DISABLE))
+#define IS_ETH_PAUSE_LOW_THRESHOLD(THRESHOLD)                                                                                              \
+    (((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS4) || ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS28) ||                                    \
+     ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS144) || ((THRESHOLD) == ETH_PAUSELOWTHRESHOLD_MINUS256))
+#define IS_ETH_UNICAST_PAUSE_FRAME_DETECT(CMD)                                                                                             \
+    (((CMD) == ETH_UNICASTPAUSEFRAMEDETECT_ENABLE) || ((CMD) == ETH_UNICASTPAUSEFRAMEDETECT_DISABLE))
+#define IS_ETH_RECEIVE_FLOWCONTROL(CMD) (((CMD) == ETH_RECEIVEFLOWCONTROL_ENABLE) || ((CMD) == ETH_RECEIVEFLOWCONTROL_DISABLE))
+#define IS_ETH_TRANSMIT_FLOWCONTROL(CMD) (((CMD) == ETH_TRANSMITFLOWCONTROL_ENABLE) || ((CMD) == ETH_TRANSMITFLOWCONTROL_DISABLE))
+#define IS_ETH_VLAN_TAG_COMPARISON(COMPARISON)                                                                                             \
+    (((COMPARISON) == ETH_VLANTAGCOMPARISON_12BIT) || ((COMPARISON) == ETH_VLANTAGCOMPARISON_16BIT))
 #define IS_ETH_VLAN_TAG_IDENTIFIER(IDENTIFIER) ((IDENTIFIER) <= 0xFFFFU)
-#define IS_ETH_MAC_ADDRESS0123(ADDRESS) (((ADDRESS) == ETH_MAC_ADDRESS0) || \
-                                         ((ADDRESS) == ETH_MAC_ADDRESS1) || \
-                                         ((ADDRESS) == ETH_MAC_ADDRESS2) || \
-                                         ((ADDRESS) == ETH_MAC_ADDRESS3))
-#define IS_ETH_MAC_ADDRESS123(ADDRESS) (((ADDRESS) == ETH_MAC_ADDRESS1) || \
-                                        ((ADDRESS) == ETH_MAC_ADDRESS2) || \
-                                        ((ADDRESS) == ETH_MAC_ADDRESS3))
-#define IS_ETH_MAC_ADDRESS_FILTER(FILTER) (((FILTER) == ETH_MAC_ADDRESSFILTER_SA) || \
-                                           ((FILTER) == ETH_MAC_ADDRESSFILTER_DA))
-#define IS_ETH_MAC_ADDRESS_MASK(MASK) (((MASK) == ETH_MAC_ADDRESSMASK_BYTE6) || \
-                                       ((MASK) == ETH_MAC_ADDRESSMASK_BYTE5) || \
-                                       ((MASK) == ETH_MAC_ADDRESSMASK_BYTE4) || \
-                                       ((MASK) == ETH_MAC_ADDRESSMASK_BYTE3) || \
-                                       ((MASK) == ETH_MAC_ADDRESSMASK_BYTE2) || \
-                                       ((MASK) == ETH_MAC_ADDRESSMASK_BYTE1))
-#define IS_ETH_DROP_TCPIP_CHECKSUM_FRAME(CMD) (((CMD) == ETH_DROPTCPIPCHECKSUMERRORFRAME_ENABLE) || \
-                                               ((CMD) == ETH_DROPTCPIPCHECKSUMERRORFRAME_DISABLE))
-#define IS_ETH_RECEIVE_STORE_FORWARD(CMD) (((CMD) == ETH_RECEIVESTOREFORWARD_ENABLE) || \
-                                           ((CMD) == ETH_RECEIVESTOREFORWARD_DISABLE))
-#define IS_ETH_FLUSH_RECEIVE_FRAME(CMD) (((CMD) == ETH_FLUSHRECEIVEDFRAME_ENABLE) || \
-                                         ((CMD) == ETH_FLUSHRECEIVEDFRAME_DISABLE))
-#define IS_ETH_TRANSMIT_STORE_FORWARD(CMD) (((CMD) == ETH_TRANSMITSTOREFORWARD_ENABLE) || \
-                                            ((CMD) == ETH_TRANSMITSTOREFORWARD_DISABLE))
-#define IS_ETH_TRANSMIT_THRESHOLD_CONTROL(THRESHOLD) (((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_64BYTES) ||  \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_128BYTES) || \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_192BYTES) || \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_256BYTES) || \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_40BYTES) ||  \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_32BYTES) ||  \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_24BYTES) ||  \
-                                                      ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_16BYTES))
-#define IS_ETH_FORWARD_ERROR_FRAMES(CMD) (((CMD) == ETH_FORWARDERRORFRAMES_ENABLE) || \
-                                          ((CMD) == ETH_FORWARDERRORFRAMES_DISABLE))
-#define IS_ETH_FORWARD_UNDERSIZED_GOOD_FRAMES(CMD) (((CMD) == ETH_FORWARDUNDERSIZEDGOODFRAMES_ENABLE) || \
-                                                    ((CMD) == ETH_FORWARDUNDERSIZEDGOODFRAMES_DISABLE))
-#define IS_ETH_RECEIVE_THRESHOLD_CONTROL(THRESHOLD) (((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_64BYTES) || \
-                                                     ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_32BYTES) || \
-                                                     ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_96BYTES) || \
-                                                     ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_128BYTES))
-#define IS_ETH_SECOND_FRAME_OPERATE(CMD) (((CMD) == ETH_SECONDFRAMEOPERARTE_ENABLE) || \
-                                          ((CMD) == ETH_SECONDFRAMEOPERARTE_DISABLE))
-#define IS_ETH_ADDRESS_ALIGNED_BEATS(CMD) (((CMD) == ETH_ADDRESSALIGNEDBEATS_ENABLE) || \
-                                           ((CMD) == ETH_ADDRESSALIGNEDBEATS_DISABLE))
-#define IS_ETH_FIXED_BURST(CMD) (((CMD) == ETH_FIXEDBURST_ENABLE) || \
-                                 ((CMD) == ETH_FIXEDBURST_DISABLE))
-#define IS_ETH_RXDMA_BURST_LENGTH(LENGTH) (((LENGTH) == ETH_RXDMABURSTLENGTH_1BEAT) ||        \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_2BEAT) ||        \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4BEAT) ||        \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_8BEAT) ||        \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_16BEAT) ||       \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_32BEAT) ||       \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_4BEAT) ||  \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_8BEAT) ||  \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_16BEAT) || \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_32BEAT) || \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_64BEAT) || \
-                                           ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_128BEAT))
-#define IS_ETH_TXDMA_BURST_LENGTH(LENGTH) (((LENGTH) == ETH_TXDMABURSTLENGTH_1BEAT) ||        \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_2BEAT) ||        \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4BEAT) ||        \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_8BEAT) ||        \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_16BEAT) ||       \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_32BEAT) ||       \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_4BEAT) ||  \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_8BEAT) ||  \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_16BEAT) || \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_32BEAT) || \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_64BEAT) || \
-                                           ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_128BEAT))
+#define IS_ETH_MAC_ADDRESS0123(ADDRESS)                                                                                                    \
+    (((ADDRESS) == ETH_MAC_ADDRESS0) || ((ADDRESS) == ETH_MAC_ADDRESS1) || ((ADDRESS) == ETH_MAC_ADDRESS2) ||                              \
+     ((ADDRESS) == ETH_MAC_ADDRESS3))
+#define IS_ETH_MAC_ADDRESS123(ADDRESS)                                                                                                     \
+    (((ADDRESS) == ETH_MAC_ADDRESS1) || ((ADDRESS) == ETH_MAC_ADDRESS2) || ((ADDRESS) == ETH_MAC_ADDRESS3))
+#define IS_ETH_MAC_ADDRESS_FILTER(FILTER) (((FILTER) == ETH_MAC_ADDRESSFILTER_SA) || ((FILTER) == ETH_MAC_ADDRESSFILTER_DA))
+#define IS_ETH_MAC_ADDRESS_MASK(MASK)                                                                                                      \
+    (((MASK) == ETH_MAC_ADDRESSMASK_BYTE6) || ((MASK) == ETH_MAC_ADDRESSMASK_BYTE5) || ((MASK) == ETH_MAC_ADDRESSMASK_BYTE4) ||            \
+     ((MASK) == ETH_MAC_ADDRESSMASK_BYTE3) || ((MASK) == ETH_MAC_ADDRESSMASK_BYTE2) || ((MASK) == ETH_MAC_ADDRESSMASK_BYTE1))
+#define IS_ETH_DROP_TCPIP_CHECKSUM_FRAME(CMD)                                                                                              \
+    (((CMD) == ETH_DROPTCPIPCHECKSUMERRORFRAME_ENABLE) || ((CMD) == ETH_DROPTCPIPCHECKSUMERRORFRAME_DISABLE))
+#define IS_ETH_RECEIVE_STORE_FORWARD(CMD) (((CMD) == ETH_RECEIVESTOREFORWARD_ENABLE) || ((CMD) == ETH_RECEIVESTOREFORWARD_DISABLE))
+#define IS_ETH_FLUSH_RECEIVE_FRAME(CMD) (((CMD) == ETH_FLUSHRECEIVEDFRAME_ENABLE) || ((CMD) == ETH_FLUSHRECEIVEDFRAME_DISABLE))
+#define IS_ETH_TRANSMIT_STORE_FORWARD(CMD) (((CMD) == ETH_TRANSMITSTOREFORWARD_ENABLE) || ((CMD) == ETH_TRANSMITSTOREFORWARD_DISABLE))
+#define IS_ETH_TRANSMIT_THRESHOLD_CONTROL(THRESHOLD)                                                                                       \
+    (((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_64BYTES) || ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_128BYTES) ||                    \
+     ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_192BYTES) || ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_256BYTES) ||                   \
+     ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_40BYTES) || ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_32BYTES) ||                     \
+     ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_24BYTES) || ((THRESHOLD) == ETH_TRANSMITTHRESHOLDCONTROL_16BYTES))
+#define IS_ETH_FORWARD_ERROR_FRAMES(CMD) (((CMD) == ETH_FORWARDERRORFRAMES_ENABLE) || ((CMD) == ETH_FORWARDERRORFRAMES_DISABLE))
+#define IS_ETH_FORWARD_UNDERSIZED_GOOD_FRAMES(CMD)                                                                                         \
+    (((CMD) == ETH_FORWARDUNDERSIZEDGOODFRAMES_ENABLE) || ((CMD) == ETH_FORWARDUNDERSIZEDGOODFRAMES_DISABLE))
+#define IS_ETH_RECEIVE_THRESHOLD_CONTROL(THRESHOLD)                                                                                        \
+    (((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_64BYTES) || ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_32BYTES) ||                     \
+     ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_96BYTES) || ((THRESHOLD) == ETH_RECEIVEDTHRESHOLDCONTROL_128BYTES))
+#define IS_ETH_SECOND_FRAME_OPERATE(CMD) (((CMD) == ETH_SECONDFRAMEOPERARTE_ENABLE) || ((CMD) == ETH_SECONDFRAMEOPERARTE_DISABLE))
+#define IS_ETH_ADDRESS_ALIGNED_BEATS(CMD) (((CMD) == ETH_ADDRESSALIGNEDBEATS_ENABLE) || ((CMD) == ETH_ADDRESSALIGNEDBEATS_DISABLE))
+#define IS_ETH_FIXED_BURST(CMD) (((CMD) == ETH_FIXEDBURST_ENABLE) || ((CMD) == ETH_FIXEDBURST_DISABLE))
+#define IS_ETH_RXDMA_BURST_LENGTH(LENGTH)                                                                                                  \
+    (((LENGTH) == ETH_RXDMABURSTLENGTH_1BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_2BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_4BEAT) ||   \
+     ((LENGTH) == ETH_RXDMABURSTLENGTH_8BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_16BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_32BEAT) || \
+     ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_4BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_8BEAT) ||                                   \
+     ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_16BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_32BEAT) ||                                 \
+     ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_64BEAT) || ((LENGTH) == ETH_RXDMABURSTLENGTH_4XPBL_128BEAT))
+#define IS_ETH_TXDMA_BURST_LENGTH(LENGTH)                                                                                                  \
+    (((LENGTH) == ETH_TXDMABURSTLENGTH_1BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_2BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_4BEAT) ||   \
+     ((LENGTH) == ETH_TXDMABURSTLENGTH_8BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_16BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_32BEAT) || \
+     ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_4BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_8BEAT) ||                                   \
+     ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_16BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_32BEAT) ||                                 \
+     ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_64BEAT) || ((LENGTH) == ETH_TXDMABURSTLENGTH_4XPBL_128BEAT))
 #define IS_ETH_DMA_DESC_SKIP_LENGTH(LENGTH) ((LENGTH) <= 0x1FU)
-#define IS_ETH_DMA_ARBITRATION_ROUNDROBIN_RXTX(RATIO) (((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_1_1) || \
-                                                       ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_2_1) || \
-                                                       ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_3_1) || \
-                                                       ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_4_1) || \
-                                                       ((RATIO) == ETH_DMAARBITRATION_RXPRIORTX))
-#define IS_ETH_DMATXDESC_GET_FLAG(FLAG) (((FLAG) == ETH_DMATXDESC_OWN) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_IC) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_LS) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_FS) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_DC) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_DP) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_TTSE) || \
-                                         ((FLAG) == ETH_DMATXDESC_TER) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_TCH) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_TTSS) || \
-                                         ((FLAG) == ETH_DMATXDESC_IHE) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_ES) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_JT) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_FF) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_PCE) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_LCA) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_NC) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_LCO) ||  \
-                                         ((FLAG) == ETH_DMATXDESC_EC) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_VF) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_CC) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_ED) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_UF) ||   \
-                                         ((FLAG) == ETH_DMATXDESC_DB))
-#define IS_ETH_DMA_TXDESC_SEGMENT(SEGMENT) (((SEGMENT) == ETH_DMATXDESC_LASTSEGMENTS) || \
-                                            ((SEGMENT) == ETH_DMATXDESC_FIRSTSEGMENT))
-#define IS_ETH_DMA_TXDESC_CHECKSUM(CHECKSUM) (((CHECKSUM) == ETH_DMATXDESC_CHECKSUMBYPASS) ||            \
-                                              ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMIPV4HEADER) ||        \
-                                              ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMTCPUDPICMPSEGMENT) || \
-                                              ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMTCPUDPICMPFULL))
+#define IS_ETH_DMA_ARBITRATION_ROUNDROBIN_RXTX(RATIO)                                                                                      \
+    (((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_1_1) || ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_2_1) ||                         \
+     ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_3_1) || ((RATIO) == ETH_DMAARBITRATION_ROUNDROBIN_RXTX_4_1) ||                         \
+     ((RATIO) == ETH_DMAARBITRATION_RXPRIORTX))
+#define IS_ETH_DMATXDESC_GET_FLAG(FLAG)                                                                                                    \
+    (((FLAG) == ETH_DMATXDESC_OWN) || ((FLAG) == ETH_DMATXDESC_IC) || ((FLAG) == ETH_DMATXDESC_LS) || ((FLAG) == ETH_DMATXDESC_FS) ||      \
+     ((FLAG) == ETH_DMATXDESC_DC) || ((FLAG) == ETH_DMATXDESC_DP) || ((FLAG) == ETH_DMATXDESC_TTSE) || ((FLAG) == ETH_DMATXDESC_TER) ||    \
+     ((FLAG) == ETH_DMATXDESC_TCH) || ((FLAG) == ETH_DMATXDESC_TTSS) || ((FLAG) == ETH_DMATXDESC_IHE) || ((FLAG) == ETH_DMATXDESC_ES) ||   \
+     ((FLAG) == ETH_DMATXDESC_JT) || ((FLAG) == ETH_DMATXDESC_FF) || ((FLAG) == ETH_DMATXDESC_PCE) || ((FLAG) == ETH_DMATXDESC_LCA) ||     \
+     ((FLAG) == ETH_DMATXDESC_NC) || ((FLAG) == ETH_DMATXDESC_LCO) || ((FLAG) == ETH_DMATXDESC_EC) || ((FLAG) == ETH_DMATXDESC_VF) ||      \
+     ((FLAG) == ETH_DMATXDESC_CC) || ((FLAG) == ETH_DMATXDESC_ED) || ((FLAG) == ETH_DMATXDESC_UF) || ((FLAG) == ETH_DMATXDESC_DB))
+#define IS_ETH_DMA_TXDESC_SEGMENT(SEGMENT) (((SEGMENT) == ETH_DMATXDESC_LASTSEGMENTS) || ((SEGMENT) == ETH_DMATXDESC_FIRSTSEGMENT))
+#define IS_ETH_DMA_TXDESC_CHECKSUM(CHECKSUM)                                                                                               \
+    (((CHECKSUM) == ETH_DMATXDESC_CHECKSUMBYPASS) || ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMIPV4HEADER) ||                                   \
+     ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMTCPUDPICMPSEGMENT) || ((CHECKSUM) == ETH_DMATXDESC_CHECKSUMTCPUDPICMPFULL))
 #define IS_ETH_DMATXDESC_BUFFER_SIZE(SIZE) ((SIZE) <= 0x1FFFU)
-#define IS_ETH_DMARXDESC_GET_FLAG(FLAG) (((FLAG) == ETH_DMARXDESC_OWN) ||     \
-                                         ((FLAG) == ETH_DMARXDESC_AFM) ||     \
-                                         ((FLAG) == ETH_DMARXDESC_ES) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_DE) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_SAF) ||     \
-                                         ((FLAG) == ETH_DMARXDESC_LE) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_OE) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_VLAN) ||    \
-                                         ((FLAG) == ETH_DMARXDESC_FS) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_LS) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_IPV4HCE) || \
-                                         ((FLAG) == ETH_DMARXDESC_LC) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_FT) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_RWT) ||     \
-                                         ((FLAG) == ETH_DMARXDESC_RE) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_DBE) ||     \
-                                         ((FLAG) == ETH_DMARXDESC_CE) ||      \
-                                         ((FLAG) == ETH_DMARXDESC_MAMPCE))
-#define IS_ETH_DMA_RXDESC_BUFFER(BUFFER) (((BUFFER) == ETH_DMARXDESC_BUFFER1) || \
-                                          ((BUFFER) == ETH_DMARXDESC_BUFFER2))
-#define IS_ETH_PMT_GET_FLAG(FLAG) (((FLAG) == ETH_PMT_FLAG_WUFR) || \
-                                   ((FLAG) == ETH_PMT_FLAG_MPR))
+#define IS_ETH_DMARXDESC_GET_FLAG(FLAG)                                                                                                    \
+    (((FLAG) == ETH_DMARXDESC_OWN) || ((FLAG) == ETH_DMARXDESC_AFM) || ((FLAG) == ETH_DMARXDESC_ES) || ((FLAG) == ETH_DMARXDESC_DE) ||     \
+     ((FLAG) == ETH_DMARXDESC_SAF) || ((FLAG) == ETH_DMARXDESC_LE) || ((FLAG) == ETH_DMARXDESC_OE) || ((FLAG) == ETH_DMARXDESC_VLAN) ||    \
+     ((FLAG) == ETH_DMARXDESC_FS) || ((FLAG) == ETH_DMARXDESC_LS) || ((FLAG) == ETH_DMARXDESC_IPV4HCE) || ((FLAG) == ETH_DMARXDESC_LC) ||  \
+     ((FLAG) == ETH_DMARXDESC_FT) || ((FLAG) == ETH_DMARXDESC_RWT) || ((FLAG) == ETH_DMARXDESC_RE) || ((FLAG) == ETH_DMARXDESC_DBE) ||     \
+     ((FLAG) == ETH_DMARXDESC_CE) || ((FLAG) == ETH_DMARXDESC_MAMPCE))
+#define IS_ETH_DMA_RXDESC_BUFFER(BUFFER) (((BUFFER) == ETH_DMARXDESC_BUFFER1) || ((BUFFER) == ETH_DMARXDESC_BUFFER2))
+#define IS_ETH_PMT_GET_FLAG(FLAG) (((FLAG) == ETH_PMT_FLAG_WUFR) || ((FLAG) == ETH_PMT_FLAG_MPR))
 #define IS_ETH_DMA_FLAG(FLAG) ((((FLAG) & 0xC7FE1800U) == 0x00U) && ((FLAG) != 0x00U))
-#define IS_ETH_DMA_GET_FLAG(FLAG) (((FLAG) == ETH_DMA_FLAG_TST) || ((FLAG) == ETH_DMA_FLAG_PMT) ||                    \
-                                   ((FLAG) == ETH_DMA_FLAG_MMC) || ((FLAG) == ETH_DMA_FLAG_DATATRANSFERERROR) ||      \
-                                   ((FLAG) == ETH_DMA_FLAG_READWRITEERROR) || ((FLAG) == ETH_DMA_FLAG_ACCESSERROR) || \
-                                   ((FLAG) == ETH_DMA_FLAG_NIS) || ((FLAG) == ETH_DMA_FLAG_AIS) ||                    \
-                                   ((FLAG) == ETH_DMA_FLAG_ER) || ((FLAG) == ETH_DMA_FLAG_FBE) ||                     \
-                                   ((FLAG) == ETH_DMA_FLAG_ET) || ((FLAG) == ETH_DMA_FLAG_RWT) ||                     \
-                                   ((FLAG) == ETH_DMA_FLAG_RPS) || ((FLAG) == ETH_DMA_FLAG_RBU) ||                    \
-                                   ((FLAG) == ETH_DMA_FLAG_R) || ((FLAG) == ETH_DMA_FLAG_TU) ||                       \
-                                   ((FLAG) == ETH_DMA_FLAG_RO) || ((FLAG) == ETH_DMA_FLAG_TJT) ||                     \
-                                   ((FLAG) == ETH_DMA_FLAG_TBU) || ((FLAG) == ETH_DMA_FLAG_TPS) ||                    \
-                                   ((FLAG) == ETH_DMA_FLAG_T))
+#define IS_ETH_DMA_GET_FLAG(FLAG)                                                                                                          \
+    (((FLAG) == ETH_DMA_FLAG_TST) || ((FLAG) == ETH_DMA_FLAG_PMT) || ((FLAG) == ETH_DMA_FLAG_MMC) ||                                       \
+     ((FLAG) == ETH_DMA_FLAG_DATATRANSFERERROR) || ((FLAG) == ETH_DMA_FLAG_READWRITEERROR) || ((FLAG) == ETH_DMA_FLAG_ACCESSERROR) ||      \
+     ((FLAG) == ETH_DMA_FLAG_NIS) || ((FLAG) == ETH_DMA_FLAG_AIS) || ((FLAG) == ETH_DMA_FLAG_ER) || ((FLAG) == ETH_DMA_FLAG_FBE) ||        \
+     ((FLAG) == ETH_DMA_FLAG_ET) || ((FLAG) == ETH_DMA_FLAG_RWT) || ((FLAG) == ETH_DMA_FLAG_RPS) || ((FLAG) == ETH_DMA_FLAG_RBU) ||        \
+     ((FLAG) == ETH_DMA_FLAG_R) || ((FLAG) == ETH_DMA_FLAG_TU) || ((FLAG) == ETH_DMA_FLAG_RO) || ((FLAG) == ETH_DMA_FLAG_TJT) ||           \
+     ((FLAG) == ETH_DMA_FLAG_TBU) || ((FLAG) == ETH_DMA_FLAG_TPS) || ((FLAG) == ETH_DMA_FLAG_T))
 #define IS_ETH_MAC_IT(IT) ((((IT) & 0xFFFFFDF1U) == 0x00U) && ((IT) != 0x00U))
-#define IS_ETH_MAC_GET_IT(IT) (((IT) == ETH_MAC_IT_TST) || ((IT) == ETH_MAC_IT_MMCT) || \
-                               ((IT) == ETH_MAC_IT_MMCR) || ((IT) == ETH_MAC_IT_MMC) || \
-                               ((IT) == ETH_MAC_IT_PMT))
-#define IS_ETH_MAC_GET_FLAG(FLAG) (((FLAG) == ETH_MAC_FLAG_TST) || ((FLAG) == ETH_MAC_FLAG_MMCT) || \
-                                   ((FLAG) == ETH_MAC_FLAG_MMCR) || ((FLAG) == ETH_MAC_FLAG_MMC) || \
-                                   ((FLAG) == ETH_MAC_FLAG_PMT))
+#define IS_ETH_MAC_GET_IT(IT)                                                                                                              \
+    (((IT) == ETH_MAC_IT_TST) || ((IT) == ETH_MAC_IT_MMCT) || ((IT) == ETH_MAC_IT_MMCR) || ((IT) == ETH_MAC_IT_MMC) ||                     \
+     ((IT) == ETH_MAC_IT_PMT))
+#define IS_ETH_MAC_GET_FLAG(FLAG)                                                                                                          \
+    (((FLAG) == ETH_MAC_FLAG_TST) || ((FLAG) == ETH_MAC_FLAG_MMCT) || ((FLAG) == ETH_MAC_FLAG_MMCR) || ((FLAG) == ETH_MAC_FLAG_MMC) ||     \
+     ((FLAG) == ETH_MAC_FLAG_PMT))
 #define IS_ETH_DMA_IT(IT) ((((IT) & 0xC7FE1800U) == 0x00U) && ((IT) != 0x00U))
-#define IS_ETH_DMA_GET_IT(IT) (((IT) == ETH_DMA_IT_TST) || ((IT) == ETH_DMA_IT_PMT) || \
-                               ((IT) == ETH_DMA_IT_MMC) || ((IT) == ETH_DMA_IT_NIS) || \
-                               ((IT) == ETH_DMA_IT_AIS) || ((IT) == ETH_DMA_IT_ER) ||  \
-                               ((IT) == ETH_DMA_IT_FBE) || ((IT) == ETH_DMA_IT_ET) ||  \
-                               ((IT) == ETH_DMA_IT_RWT) || ((IT) == ETH_DMA_IT_RPS) || \
-                               ((IT) == ETH_DMA_IT_RBU) || ((IT) == ETH_DMA_IT_R) ||   \
-                               ((IT) == ETH_DMA_IT_TU) || ((IT) == ETH_DMA_IT_RO) ||   \
-                               ((IT) == ETH_DMA_IT_TJT) || ((IT) == ETH_DMA_IT_TBU) || \
-                               ((IT) == ETH_DMA_IT_TPS) || ((IT) == ETH_DMA_IT_T))
-#define IS_ETH_DMA_GET_OVERFLOW(OVERFLOW) (((OVERFLOW) == ETH_DMA_OVERFLOW_RXFIFOCOUNTER) || \
-                                           ((OVERFLOW) == ETH_DMA_OVERFLOW_MISSEDFRAMECOUNTER))
-#define IS_ETH_MMC_IT(IT) (((((IT) & 0xFFDF3FFFU) == 0x00U) || (((IT) & 0xEFFDFF9FU) == 0x00U)) && \
-                           ((IT) != 0x00U))
-#define IS_ETH_MMC_GET_IT(IT) (((IT) == ETH_MMC_IT_TGF) || ((IT) == ETH_MMC_IT_TGFMSC) || \
-                               ((IT) == ETH_MMC_IT_TGFSC) || ((IT) == ETH_MMC_IT_RGUF) || \
-                               ((IT) == ETH_MMC_IT_RFAE) || ((IT) == ETH_MMC_IT_RFCE))
-#define IS_ETH_ENHANCED_DESCRIPTOR_FORMAT(CMD) (((CMD) == ETH_DMAENHANCEDDESCRIPTOR_ENABLE) || \
-                                                ((CMD) == ETH_DMAENHANCEDDESCRIPTOR_DISABLE))
+#define IS_ETH_DMA_GET_IT(IT)                                                                                                              \
+    (((IT) == ETH_DMA_IT_TST) || ((IT) == ETH_DMA_IT_PMT) || ((IT) == ETH_DMA_IT_MMC) || ((IT) == ETH_DMA_IT_NIS) ||                       \
+     ((IT) == ETH_DMA_IT_AIS) || ((IT) == ETH_DMA_IT_ER) || ((IT) == ETH_DMA_IT_FBE) || ((IT) == ETH_DMA_IT_ET) ||                         \
+     ((IT) == ETH_DMA_IT_RWT) || ((IT) == ETH_DMA_IT_RPS) || ((IT) == ETH_DMA_IT_RBU) || ((IT) == ETH_DMA_IT_R) ||                         \
+     ((IT) == ETH_DMA_IT_TU) || ((IT) == ETH_DMA_IT_RO) || ((IT) == ETH_DMA_IT_TJT) || ((IT) == ETH_DMA_IT_TBU) ||                         \
+     ((IT) == ETH_DMA_IT_TPS) || ((IT) == ETH_DMA_IT_T))
+#define IS_ETH_DMA_GET_OVERFLOW(OVERFLOW)                                                                                                  \
+    (((OVERFLOW) == ETH_DMA_OVERFLOW_RXFIFOCOUNTER) || ((OVERFLOW) == ETH_DMA_OVERFLOW_MISSEDFRAMECOUNTER))
+#define IS_ETH_MMC_IT(IT) (((((IT) & 0xFFDF3FFFU) == 0x00U) || (((IT) & 0xEFFDFF9FU) == 0x00U)) && ((IT) != 0x00U))
+#define IS_ETH_MMC_GET_IT(IT)                                                                                                              \
+    (((IT) == ETH_MMC_IT_TGF) || ((IT) == ETH_MMC_IT_TGFMSC) || ((IT) == ETH_MMC_IT_TGFSC) || ((IT) == ETH_MMC_IT_RGUF) ||                 \
+     ((IT) == ETH_MMC_IT_RFAE) || ((IT) == ETH_MMC_IT_RFCE))
+#define IS_ETH_ENHANCED_DESCRIPTOR_FORMAT(CMD) (((CMD) == ETH_DMAENHANCEDDESCRIPTOR_ENABLE) || ((CMD) == ETH_DMAENHANCEDDESCRIPTOR_DISABLE))
 
 /**
   * @}
@@ -337,312 +238,309 @@ extern "C" {
 
 /* ETHERNET Missed frames counter Shift */
 #define ETH_DMA_RX_OVERFLOW_MISSEDFRAMES_COUNTERSHIFT 17U
-/**
+
+    /**
  * @}
  */
 
-/* Exported types ------------------------------------------------------------*/
-/** @defgroup ETH_Exported_Types ETH Exported Types
+    /* Exported types ------------------------------------------------------------*/
+    /** @defgroup ETH_Exported_Types ETH Exported Types
   * @{
   */
 
-/**
+    /**
   * @brief  HAL State structures definition
   */
-typedef enum {
-    HAL_ETH_STATE_RESET      = 0x00U, /*!< Peripheral not yet Initialized or disabled         */
-    HAL_ETH_STATE_READY      = 0x01U, /*!< Peripheral Initialized and ready for use           */
-    HAL_ETH_STATE_BUSY       = 0x02U, /*!< an internal process is ongoing                     */
-    HAL_ETH_STATE_BUSY_TX    = 0x12U, /*!< Data Transmission process is ongoing               */
-    HAL_ETH_STATE_BUSY_RX    = 0x22U, /*!< Data Reception process is ongoing                  */
-    HAL_ETH_STATE_BUSY_TX_RX = 0x32U, /*!< Data Transmission and Reception process is ongoing */
-    HAL_ETH_STATE_BUSY_WR    = 0x42U, /*!< Write process is ongoing                           */
-    HAL_ETH_STATE_BUSY_RD    = 0x82U, /*!< Read process is ongoing                            */
-    HAL_ETH_STATE_TIMEOUT    = 0x03U, /*!< Timeout state                                      */
-    HAL_ETH_STATE_ERROR      = 0x04U  /*!< Reception process is ongoing                       */
-} HAL_ETH_StateTypeDef;
+    typedef enum {
+        HAL_ETH_STATE_RESET      = 0x00U, /*!< Peripheral not yet Initialized or disabled         */
+        HAL_ETH_STATE_READY      = 0x01U, /*!< Peripheral Initialized and ready for use           */
+        HAL_ETH_STATE_BUSY       = 0x02U, /*!< an internal process is ongoing                     */
+        HAL_ETH_STATE_BUSY_TX    = 0x12U, /*!< Data Transmission process is ongoing               */
+        HAL_ETH_STATE_BUSY_RX    = 0x22U, /*!< Data Reception process is ongoing                  */
+        HAL_ETH_STATE_BUSY_TX_RX = 0x32U, /*!< Data Transmission and Reception process is ongoing */
+        HAL_ETH_STATE_BUSY_WR    = 0x42U, /*!< Write process is ongoing                           */
+        HAL_ETH_STATE_BUSY_RD    = 0x82U, /*!< Read process is ongoing                            */
+        HAL_ETH_STATE_TIMEOUT    = 0x03U, /*!< Timeout state                                      */
+        HAL_ETH_STATE_ERROR      = 0x04U  /*!< Reception process is ongoing                       */
+    } HAL_ETH_StateTypeDef;
 
-/**
+    /**
   * @brief  ETH Init Structure definition
   */
 
-typedef struct
-{
-    uint32_t AutoNegotiation; /*!< Selects or not the AutoNegotiation mode for the external PHY
+    typedef struct {
+        uint32_t AutoNegotiation; /*!< Selects or not the AutoNegotiation mode for the external PHY
                                                            The AutoNegotiation allows an automatic setting of the Speed (10/100Mbps)
                                                            and the mode (half/full-duplex).
                                                            This parameter can be a value of @ref ETH_AutoNegotiation */
 
-    uint32_t Speed; /*!< Sets the Ethernet speed: 10/100 Mbps.
+        uint32_t Speed; /*!< Sets the Ethernet speed: 10/100 Mbps.
                                                            This parameter can be a value of @ref ETH_Speed */
 
-    uint32_t DuplexMode; /*!< Selects the MAC duplex mode: Half-Duplex or Full-Duplex mode
+        uint32_t DuplexMode; /*!< Selects the MAC duplex mode: Half-Duplex or Full-Duplex mode
                                                            This parameter can be a value of @ref ETH_Duplex_Mode */
 
-    uint16_t PhyAddress; /*!< Ethernet PHY address.
+        uint16_t PhyAddress; /*!< Ethernet PHY address.
                                                            This parameter must be a number between Min_Data = 0 and Max_Data = 32 */
 
-    uint8_t* MACAddr; /*!< MAC Address of used Hardware: must be pointer on an array of 6 bytes */
+        uint8_t* MACAddr; /*!< MAC Address of used Hardware: must be pointer on an array of 6 bytes */
 
-    uint32_t RxMode; /*!< Selects the Ethernet Rx mode: Polling mode, Interrupt mode.
+        uint32_t RxMode; /*!< Selects the Ethernet Rx mode: Polling mode, Interrupt mode.
                                                            This parameter can be a value of @ref ETH_Rx_Mode */
 
-    uint32_t ChecksumMode; /*!< Selects if the checksum is check by hardware or by software.
+        uint32_t ChecksumMode; /*!< Selects if the checksum is check by hardware or by software.
                                                          This parameter can be a value of @ref ETH_Checksum_Mode */
 
-    uint32_t MediaInterface; /*!< Selects the media-independent interface or the reduced media-independent interface.
+        uint32_t MediaInterface; /*!< Selects the media-independent interface or the reduced media-independent interface.
                                                          This parameter can be a value of @ref ETH_Media_Interface */
 
-} ETH_InitTypeDef;
+    } ETH_InitTypeDef;
 
-/**
+    /**
  * @brief  ETH MAC Configuration Structure definition
  */
 
-typedef struct
-{
-    uint32_t Watchdog; /*!< Selects or not the Watchdog timer
+    typedef struct {
+        uint32_t Watchdog; /*!< Selects or not the Watchdog timer
                                                            When enabled, the MAC allows no more then 2048 bytes to be received.
                                                            When disabled, the MAC can receive up to 16384 bytes.
                                                            This parameter can be a value of @ref ETH_Watchdog */
 
-    uint32_t Jabber; /*!< Selects or not Jabber timer
+        uint32_t Jabber; /*!< Selects or not Jabber timer
                                                            When enabled, the MAC allows no more then 2048 bytes to be sent.
                                                            When disabled, the MAC can send up to 16384 bytes.
                                                            This parameter can be a value of @ref ETH_Jabber */
 
-    uint32_t InterFrameGap; /*!< Selects the minimum IFG between frames during transmission.
+        uint32_t InterFrameGap; /*!< Selects the minimum IFG between frames during transmission.
                                                            This parameter can be a value of @ref ETH_Inter_Frame_Gap */
 
-    uint32_t CarrierSense; /*!< Selects or not the Carrier Sense.
+        uint32_t CarrierSense; /*!< Selects or not the Carrier Sense.
                                                            This parameter can be a value of @ref ETH_Carrier_Sense */
 
-    uint32_t ReceiveOwn; /*!< Selects or not the ReceiveOwn,
+        uint32_t ReceiveOwn; /*!< Selects or not the ReceiveOwn,
                                                            ReceiveOwn allows the reception of frames when the TX_EN signal is asserted
                                                            in Half-Duplex mode.
                                                            This parameter can be a value of @ref ETH_Receive_Own */
 
-    uint32_t LoopbackMode; /*!< Selects or not the internal MAC MII Loopback mode.
+        uint32_t LoopbackMode; /*!< Selects or not the internal MAC MII Loopback mode.
                                                            This parameter can be a value of @ref ETH_Loop_Back_Mode */
 
-    uint32_t ChecksumOffload; /*!< Selects or not the IPv4 checksum checking for received frame payloads' TCP/UDP/ICMP headers.
+        uint32_t ChecksumOffload; /*!< Selects or not the IPv4 checksum checking for received frame payloads' TCP/UDP/ICMP headers.
                                                            This parameter can be a value of @ref ETH_Checksum_Offload */
 
-    uint32_t RetryTransmission; /*!< Selects or not the MAC attempt retries transmission, based on the settings of BL,
+        uint32_t RetryTransmission; /*!< Selects or not the MAC attempt retries transmission, based on the settings of BL,
                                                            when a collision occurs (Half-Duplex mode).
                                                            This parameter can be a value of @ref ETH_Retry_Transmission */
 
-    uint32_t AutomaticPadCRCStrip; /*!< Selects or not the Automatic MAC Pad/CRC Stripping.
+        uint32_t AutomaticPadCRCStrip; /*!< Selects or not the Automatic MAC Pad/CRC Stripping.
                                                            This parameter can be a value of @ref ETH_Automatic_Pad_CRC_Strip */
 
-    uint32_t BackOffLimit; /*!< Selects the BackOff limit value.
+        uint32_t BackOffLimit; /*!< Selects the BackOff limit value.
                                                            This parameter can be a value of @ref ETH_Back_Off_Limit */
 
-    uint32_t DeferralCheck; /*!< Selects or not the deferral check function (Half-Duplex mode).
+        uint32_t DeferralCheck; /*!< Selects or not the deferral check function (Half-Duplex mode).
                                                            This parameter can be a value of @ref ETH_Deferral_Check */
 
-    uint32_t ReceiveAll; /*!< Selects or not all frames reception by the MAC (No filtering).
+        uint32_t ReceiveAll; /*!< Selects or not all frames reception by the MAC (No filtering).
                                                            This parameter can be a value of @ref ETH_Receive_All */
 
-    uint32_t SourceAddrFilter; /*!< Selects the Source Address Filter mode.
+        uint32_t SourceAddrFilter; /*!< Selects the Source Address Filter mode.
                                                            This parameter can be a value of @ref ETH_Source_Addr_Filter */
 
-    uint32_t PassControlFrames; /*!< Sets the forwarding mode of the control frames (including unicast and multicast PAUSE frames)
+        uint32_t PassControlFrames; /*!< Sets the forwarding mode of the control frames (including unicast and multicast PAUSE frames)
                                                            This parameter can be a value of @ref ETH_Pass_Control_Frames */
 
-    uint32_t BroadcastFramesReception; /*!< Selects or not the reception of Broadcast Frames.
+        uint32_t BroadcastFramesReception; /*!< Selects or not the reception of Broadcast Frames.
                                                            This parameter can be a value of @ref ETH_Broadcast_Frames_Reception */
 
-    uint32_t DestinationAddrFilter; /*!< Sets the destination filter mode for both unicast and multicast frames.
+        uint32_t DestinationAddrFilter; /*!< Sets the destination filter mode for both unicast and multicast frames.
                                                            This parameter can be a value of @ref ETH_Destination_Addr_Filter */
 
-    uint32_t PromiscuousMode; /*!< Selects or not the Promiscuous Mode
+        uint32_t PromiscuousMode; /*!< Selects or not the Promiscuous Mode
                                                            This parameter can be a value of @ref ETH_Promiscuous_Mode */
 
-    uint32_t MulticastFramesFilter; /*!< Selects the Multicast Frames filter mode: None/HashTableFilter/PerfectFilter/PerfectHashTableFilter.
+        uint32_t
+            MulticastFramesFilter; /*!< Selects the Multicast Frames filter mode: None/HashTableFilter/PerfectFilter/PerfectHashTableFilter.
                                                            This parameter can be a value of @ref ETH_Multicast_Frames_Filter */
 
-    uint32_t UnicastFramesFilter; /*!< Selects the Unicast Frames filter mode: HashTableFilter/PerfectFilter/PerfectHashTableFilter.
+        uint32_t UnicastFramesFilter; /*!< Selects the Unicast Frames filter mode: HashTableFilter/PerfectFilter/PerfectHashTableFilter.
                                                            This parameter can be a value of @ref ETH_Unicast_Frames_Filter */
 
-    uint32_t HashTableHigh; /*!< This field holds the higher 32 bits of Hash table.
+        uint32_t HashTableHigh; /*!< This field holds the higher 32 bits of Hash table.
                                                            This parameter must be a number between Min_Data = 0x0 and Max_Data = 0xFFFFFFFFU */
 
-    uint32_t HashTableLow; /*!< This field holds the lower 32 bits of Hash table.
+        uint32_t HashTableLow; /*!< This field holds the lower 32 bits of Hash table.
                                                            This parameter must be a number between Min_Data = 0x0 and Max_Data = 0xFFFFFFFFU  */
 
-    uint32_t PauseTime; /*!< This field holds the value to be used in the Pause Time field in the transmit control frame.
+        uint32_t PauseTime; /*!< This field holds the value to be used in the Pause Time field in the transmit control frame.
                                                            This parameter must be a number between Min_Data = 0x0 and Max_Data = 0xFFFFU */
 
-    uint32_t ZeroQuantaPause; /*!< Selects or not the automatic generation of Zero-Quanta Pause Control frames.
+        uint32_t ZeroQuantaPause; /*!< Selects or not the automatic generation of Zero-Quanta Pause Control frames.
                                                            This parameter can be a value of @ref ETH_Zero_Quanta_Pause */
 
-    uint32_t PauseLowThreshold; /*!< This field configures the threshold of the PAUSE to be checked for
+        uint32_t PauseLowThreshold; /*!< This field configures the threshold of the PAUSE to be checked for
                                                            automatic retransmission of PAUSE Frame.
                                                            This parameter can be a value of @ref ETH_Pause_Low_Threshold */
 
-    uint32_t UnicastPauseFrameDetect; /*!< Selects or not the MAC detection of the Pause frames (with MAC Address0
+        uint32_t UnicastPauseFrameDetect; /*!< Selects or not the MAC detection of the Pause frames (with MAC Address0
                                                            unicast address and unique multicast address).
                                                            This parameter can be a value of @ref ETH_Unicast_Pause_Frame_Detect */
 
-    uint32_t ReceiveFlowControl; /*!< Enables or disables the MAC to decode the received Pause frame and
+        uint32_t ReceiveFlowControl; /*!< Enables or disables the MAC to decode the received Pause frame and
                                                            disable its transmitter for a specified time (Pause Time)
                                                            This parameter can be a value of @ref ETH_Receive_Flow_Control */
 
-    uint32_t TransmitFlowControl; /*!< Enables or disables the MAC to transmit Pause frames (Full-Duplex mode)
+        uint32_t TransmitFlowControl; /*!< Enables or disables the MAC to transmit Pause frames (Full-Duplex mode)
                                                            or the MAC back-pressure operation (Half-Duplex mode)
                                                            This parameter can be a value of @ref ETH_Transmit_Flow_Control */
 
-    uint32_t VLANTagComparison; /*!< Selects the 12-bit VLAN identifier or the complete 16-bit VLAN tag for
+        uint32_t VLANTagComparison; /*!< Selects the 12-bit VLAN identifier or the complete 16-bit VLAN tag for
                                                            comparison and filtering.
                                                            This parameter can be a value of @ref ETH_VLAN_Tag_Comparison */
 
-    uint32_t VLANTagIdentifier; /*!< Holds the VLAN tag identifier for receive frames */
+        uint32_t VLANTagIdentifier; /*!< Holds the VLAN tag identifier for receive frames */
 
-} ETH_MACInitTypeDef;
+    } ETH_MACInitTypeDef;
 
-/**
+    /**
   * @brief  ETH DMA Configuration Structure definition
   */
 
-typedef struct
-{
-    uint32_t DropTCPIPChecksumErrorFrame; /*!< Selects or not the Dropping of TCP/IP Checksum Error Frames.
+    typedef struct {
+        uint32_t DropTCPIPChecksumErrorFrame; /*!< Selects or not the Dropping of TCP/IP Checksum Error Frames.
                                                              This parameter can be a value of @ref ETH_Drop_TCP_IP_Checksum_Error_Frame */
 
-    uint32_t ReceiveStoreForward; /*!< Enables or disables the Receive store and forward mode.
+        uint32_t ReceiveStoreForward; /*!< Enables or disables the Receive store and forward mode.
                                                              This parameter can be a value of @ref ETH_Receive_Store_Forward */
 
-    uint32_t FlushReceivedFrame; /*!< Enables or disables the flushing of received frames.
+        uint32_t FlushReceivedFrame; /*!< Enables or disables the flushing of received frames.
                                                              This parameter can be a value of @ref ETH_Flush_Received_Frame */
 
-    uint32_t TransmitStoreForward; /*!< Enables or disables Transmit store and forward mode.
+        uint32_t TransmitStoreForward; /*!< Enables or disables Transmit store and forward mode.
                                                              This parameter can be a value of @ref ETH_Transmit_Store_Forward */
 
-    uint32_t TransmitThresholdControl; /*!< Selects or not the Transmit Threshold Control.
+        uint32_t TransmitThresholdControl; /*!< Selects or not the Transmit Threshold Control.
                                                              This parameter can be a value of @ref ETH_Transmit_Threshold_Control */
 
-    uint32_t ForwardErrorFrames; /*!< Selects or not the forward to the DMA of erroneous frames.
+        uint32_t ForwardErrorFrames; /*!< Selects or not the forward to the DMA of erroneous frames.
                                                              This parameter can be a value of @ref ETH_Forward_Error_Frames */
 
-    uint32_t ForwardUndersizedGoodFrames; /*!< Enables or disables the Rx FIFO to forward Undersized frames (frames with no Error
+        uint32_t ForwardUndersizedGoodFrames; /*!< Enables or disables the Rx FIFO to forward Undersized frames (frames with no Error
                                                              and length less than 64 bytes) including pad-bytes and CRC)
                                                              This parameter can be a value of @ref ETH_Forward_Undersized_Good_Frames */
 
-    uint32_t ReceiveThresholdControl; /*!< Selects the threshold level of the Receive FIFO.
+        uint32_t ReceiveThresholdControl; /*!< Selects the threshold level of the Receive FIFO.
                                                              This parameter can be a value of @ref ETH_Receive_Threshold_Control */
 
-    uint32_t SecondFrameOperate; /*!< Selects or not the Operate on second frame mode, which allows the DMA to process a second
+        uint32_t SecondFrameOperate; /*!< Selects or not the Operate on second frame mode, which allows the DMA to process a second
                                                              frame of Transmit data even before obtaining the status for the first frame.
                                                              This parameter can be a value of @ref ETH_Second_Frame_Operate */
 
-    uint32_t AddressAlignedBeats; /*!< Enables or disables the Address Aligned Beats.
+        uint32_t AddressAlignedBeats; /*!< Enables or disables the Address Aligned Beats.
                                                              This parameter can be a value of @ref ETH_Address_Aligned_Beats */
 
-    uint32_t FixedBurst; /*!< Enables or disables the AHB Master interface fixed burst transfers.
+        uint32_t FixedBurst; /*!< Enables or disables the AHB Master interface fixed burst transfers.
                                                              This parameter can be a value of @ref ETH_Fixed_Burst */
 
-    uint32_t RxDMABurstLength; /*!< Indicates the maximum number of beats to be transferred in one Rx DMA transaction.
+        uint32_t RxDMABurstLength; /*!< Indicates the maximum number of beats to be transferred in one Rx DMA transaction.
                                                              This parameter can be a value of @ref ETH_Rx_DMA_Burst_Length */
 
-    uint32_t TxDMABurstLength; /*!< Indicates the maximum number of beats to be transferred in one Tx DMA transaction.
+        uint32_t TxDMABurstLength; /*!< Indicates the maximum number of beats to be transferred in one Tx DMA transaction.
                                                              This parameter can be a value of @ref ETH_Tx_DMA_Burst_Length */
 
-    uint32_t DescriptorSkipLength; /*!< Specifies the number of word to skip between two unchained descriptors (Ring mode)
+        uint32_t DescriptorSkipLength; /*!< Specifies the number of word to skip between two unchained descriptors (Ring mode)
                                                              This parameter must be a number between Min_Data = 0 and Max_Data = 32 */
 
-    uint32_t DMAArbitration; /*!< Selects the DMA Tx/Rx arbitration.
+        uint32_t DMAArbitration; /*!< Selects the DMA Tx/Rx arbitration.
                                                              This parameter can be a value of @ref ETH_DMA_Arbitration */
-} ETH_DMAInitTypeDef;
+    } ETH_DMAInitTypeDef;
 
-/**
+    /**
   * @brief  ETH DMA Descriptors data structure definition
   */
 
-typedef struct
-{
-    __IO uint32_t Status; /*!< Status */
+    typedef struct {
+        __IO uint32_t Status; /*!< Status */
 
-    uint32_t ControlBufferSize; /*!< Control and Buffer1, Buffer2 lengths */
+        uint32_t ControlBufferSize; /*!< Control and Buffer1, Buffer2 lengths */
 
-    uint32_t Buffer1Addr; /*!< Buffer1 address pointer */
+        uint32_t Buffer1Addr; /*!< Buffer1 address pointer */
 
-    uint32_t Buffer2NextDescAddr; /*!< Buffer2 or next descriptor address pointer */
+        uint32_t Buffer2NextDescAddr; /*!< Buffer2 or next descriptor address pointer */
 
-} ETH_DMADescTypeDef;
+    } ETH_DMADescTypeDef;
 
-/**
+    /**
   * @brief  Received Frame Information structure definition
   */
-typedef struct
-{
-    ETH_DMADescTypeDef* FSRxDesc; /*!< First Segment Rx Desc */
+    typedef struct {
+        ETH_DMADescTypeDef* FSRxDesc; /*!< First Segment Rx Desc */
 
-    ETH_DMADescTypeDef* LSRxDesc; /*!< Last Segment Rx Desc */
+        ETH_DMADescTypeDef* LSRxDesc; /*!< Last Segment Rx Desc */
 
-    uint32_t SegCount; /*!< Segment count */
+        uint32_t SegCount; /*!< Segment count */
 
-    uint32_t length; /*!< Frame length */
+        uint32_t length; /*!< Frame length */
 
-    uint32_t buffer; /*!< Frame buffer */
+        uint32_t buffer; /*!< Frame buffer */
 
-} ETH_DMARxFrameInfos;
+    } ETH_DMARxFrameInfos;
 
-/**
+    /**
   * @brief  ETH Handle Structure definition
   */
 
 #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
-typedef struct __ETH_HandleTypeDef
+    typedef struct __ETH_HandleTypeDef
 #else
-typedef struct
+    typedef struct
 #endif /* USE_HAL_ETH_REGISTER_CALLBACKS */
-{
-    ETH_TypeDef* Instance; /*!< Register base address       */
+    {
+        ETH_TypeDef* Instance; /*!< Register base address       */
 
-    ETH_InitTypeDef Init; /*!< Ethernet Init Configuration */
+        ETH_InitTypeDef Init; /*!< Ethernet Init Configuration */
 
-    uint32_t LinkStatus; /*!< Ethernet link status        */
+        uint32_t LinkStatus; /*!< Ethernet link status        */
 
-    ETH_DMADescTypeDef* RxDesc; /*!< Rx descriptor to Get        */
+        ETH_DMADescTypeDef* RxDesc; /*!< Rx descriptor to Get        */
 
-    ETH_DMADescTypeDef* TxDesc; /*!< Tx descriptor to Set        */
+        ETH_DMADescTypeDef* TxDesc; /*!< Tx descriptor to Set        */
 
-    ETH_DMARxFrameInfos RxFrameInfos; /*!< last Rx frame infos         */
+        ETH_DMARxFrameInfos RxFrameInfos; /*!< last Rx frame infos         */
 
-    __IO HAL_ETH_StateTypeDef State; /*!< ETH communication state     */
+        __IO HAL_ETH_StateTypeDef State; /*!< ETH communication state     */
 
-    HAL_LockTypeDef Lock; /*!< ETH Lock                    */
+        HAL_LockTypeDef Lock; /*!< ETH Lock                    */
 
 #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
 
-    void (*TxCpltCallback)(struct __ETH_HandleTypeDef* heth);    /*!< ETH Tx Complete Callback   */
-    void (*RxCpltCallback)(struct __ETH_HandleTypeDef* heth);    /*!< ETH Rx  Complete Callback   */
-    void (*DMAErrorCallback)(struct __ETH_HandleTypeDef* heth);  /*!< DMA Error Callback      */
-    void (*MspInitCallback)(struct __ETH_HandleTypeDef* heth);   /*!< ETH Msp Init callback       */
-    void (*MspDeInitCallback)(struct __ETH_HandleTypeDef* heth); /*!< ETH Msp DeInit callback     */
+        void (*TxCpltCallback)(struct __ETH_HandleTypeDef* heth);    /*!< ETH Tx Complete Callback   */
+        void (*RxCpltCallback)(struct __ETH_HandleTypeDef* heth);    /*!< ETH Rx  Complete Callback   */
+        void (*DMAErrorCallback)(struct __ETH_HandleTypeDef* heth);  /*!< DMA Error Callback      */
+        void (*MspInitCallback)(struct __ETH_HandleTypeDef* heth);   /*!< ETH Msp Init callback       */
+        void (*MspDeInitCallback)(struct __ETH_HandleTypeDef* heth); /*!< ETH Msp DeInit callback     */
 
 #endif /* USE_HAL_ETH_REGISTER_CALLBACKS */
 
-} ETH_HandleTypeDef;
+    } ETH_HandleTypeDef;
 
 #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
-/**
+    /**
   * @brief  HAL ETH Callback ID enumeration definition
   */
-typedef enum {
-    HAL_ETH_MSPINIT_CB_ID     = 0x00U, /*!< ETH MspInit callback ID            */
-    HAL_ETH_MSPDEINIT_CB_ID   = 0x01U, /*!< ETH MspDeInit callback ID          */
-    HAL_ETH_TX_COMPLETE_CB_ID = 0x02U, /*!< ETH Tx Complete Callback ID        */
-    HAL_ETH_RX_COMPLETE_CB_ID = 0x03U, /*!< ETH Rx Complete Callback ID        */
-    HAL_ETH_DMA_ERROR_CB_ID   = 0x04U, /*!< ETH DMA Error Callback ID          */
+    typedef enum {
+        HAL_ETH_MSPINIT_CB_ID     = 0x00U, /*!< ETH MspInit callback ID            */
+        HAL_ETH_MSPDEINIT_CB_ID   = 0x01U, /*!< ETH MspDeInit callback ID          */
+        HAL_ETH_TX_COMPLETE_CB_ID = 0x02U, /*!< ETH Tx Complete Callback ID        */
+        HAL_ETH_RX_COMPLETE_CB_ID = 0x03U, /*!< ETH Rx Complete Callback ID        */
+        HAL_ETH_DMA_ERROR_CB_ID   = 0x04U, /*!< ETH DMA Error Callback ID          */
 
-} HAL_ETH_CallbackIDTypeDef;
+    } HAL_ETH_CallbackIDTypeDef;
 
-/**
+    /**
   * @brief  HAL ETH Callback pointer definition
   */
-typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to an ETH callback function */
+    typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to an ETH callback function */
 
 #endif /* USE_HAL_ETH_REGISTER_CALLBACKS */
 
@@ -759,19 +657,19 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
 #define ETH_DMATXDESC_TCH 0x00100000U                    /*!< Second Address Chained */
 #define ETH_DMATXDESC_TTSS 0x00020000U                   /*!< Tx Time Stamp Status */
 #define ETH_DMATXDESC_IHE 0x00010000U                    /*!< IP Header Error */
-#define ETH_DMATXDESC_ES 0x00008000U                     /*!< Error summary: OR of the following bits: UE || ED || EC || LCO || NC || LCA || FF || JT */
-#define ETH_DMATXDESC_JT 0x00004000U                     /*!< Jabber Timeout */
-#define ETH_DMATXDESC_FF 0x00002000U                     /*!< Frame Flushed: DMA/MTL flushed the frame due to SW flush */
-#define ETH_DMATXDESC_PCE 0x00001000U                    /*!< Payload Checksum Error */
-#define ETH_DMATXDESC_LCA 0x00000800U                    /*!< Loss of Carrier: carrier lost during transmission */
-#define ETH_DMATXDESC_NC 0x00000400U                     /*!< No Carrier: no carrier signal from the transceiver */
-#define ETH_DMATXDESC_LCO 0x00000200U                    /*!< Late Collision: transmission aborted due to collision */
-#define ETH_DMATXDESC_EC 0x00000100U                     /*!< Excessive Collision: transmission aborted after 16 collisions */
-#define ETH_DMATXDESC_VF 0x00000080U                     /*!< VLAN Frame */
-#define ETH_DMATXDESC_CC 0x00000078U                     /*!< Collision Count */
-#define ETH_DMATXDESC_ED 0x00000004U                     /*!< Excessive Deferral */
-#define ETH_DMATXDESC_UF 0x00000002U                     /*!< Underflow Error: late data arrival from the memory */
-#define ETH_DMATXDESC_DB 0x00000001U                     /*!< Deferred Bit */
+#define ETH_DMATXDESC_ES 0x00008000U  /*!< Error summary: OR of the following bits: UE || ED || EC || LCO || NC || LCA || FF || JT */
+#define ETH_DMATXDESC_JT 0x00004000U  /*!< Jabber Timeout */
+#define ETH_DMATXDESC_FF 0x00002000U  /*!< Frame Flushed: DMA/MTL flushed the frame due to SW flush */
+#define ETH_DMATXDESC_PCE 0x00001000U /*!< Payload Checksum Error */
+#define ETH_DMATXDESC_LCA 0x00000800U /*!< Loss of Carrier: carrier lost during transmission */
+#define ETH_DMATXDESC_NC 0x00000400U  /*!< No Carrier: no carrier signal from the transceiver */
+#define ETH_DMATXDESC_LCO 0x00000200U /*!< Late Collision: transmission aborted due to collision */
+#define ETH_DMATXDESC_EC 0x00000100U  /*!< Excessive Collision: transmission aborted after 16 collisions */
+#define ETH_DMATXDESC_VF 0x00000080U  /*!< VLAN Frame */
+#define ETH_DMATXDESC_CC 0x00000078U  /*!< Collision Count */
+#define ETH_DMATXDESC_ED 0x00000004U  /*!< Excessive Deferral */
+#define ETH_DMATXDESC_UF 0x00000002U  /*!< Underflow Error: late data arrival from the memory */
+#define ETH_DMATXDESC_DB 0x00000001U  /*!< Deferred Bit */
 
 /**
   * @brief  Bit definition of TDES1 register
@@ -1037,8 +935,9 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
 /** @defgroup ETH_Pass_Control_Frames ETH Pass Control Frames
   * @{
   */
-#define ETH_PASSCONTROLFRAMES_BLOCKALL 0x00000040U                /*!< MAC filters all control frames from reaching the application */
-#define ETH_PASSCONTROLFRAMES_FORWARDALL 0x00000080U              /*!< MAC forwards all control frames to application even if they fail the Address Filter */
+#define ETH_PASSCONTROLFRAMES_BLOCKALL 0x00000040U /*!< MAC filters all control frames from reaching the application */
+#define ETH_PASSCONTROLFRAMES_FORWARDALL                                                                                                   \
+    0x00000080U /*!< MAC forwards all control frames to application even if they fail the Address Filter */
 #define ETH_PASSCONTROLFRAMES_FORWARDPASSEDADDRFILTER 0x000000C0U /*!< MAC forwards control frames that pass the Address Filter. */
 /**
   * @}
@@ -1310,18 +1209,24 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
 /** @defgroup ETH_Tx_DMA_Burst_Length ETH Tx DMA Burst Length
   * @{
   */
-#define ETH_TXDMABURSTLENGTH_1BEAT 0x00000100U         /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 1 */
-#define ETH_TXDMABURSTLENGTH_2BEAT 0x00000200U         /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 2 */
-#define ETH_TXDMABURSTLENGTH_4BEAT 0x00000400U         /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 4 */
-#define ETH_TXDMABURSTLENGTH_8BEAT 0x00000800U         /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 8 */
-#define ETH_TXDMABURSTLENGTH_16BEAT 0x00001000U        /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 16 */
-#define ETH_TXDMABURSTLENGTH_32BEAT 0x00002000U        /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 32 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_4BEAT 0x01000100U   /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 4 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_8BEAT 0x01000200U   /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 8 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_16BEAT 0x01000400U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 16 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_32BEAT 0x01000800U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 32 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_64BEAT 0x01001000U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 64 */
-#define ETH_TXDMABURSTLENGTH_4XPBL_128BEAT 0x01002000U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 128 */
+#define ETH_TXDMABURSTLENGTH_1BEAT 0x00000100U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 1 */
+#define ETH_TXDMABURSTLENGTH_2BEAT 0x00000200U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 2 */
+#define ETH_TXDMABURSTLENGTH_4BEAT 0x00000400U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 4 */
+#define ETH_TXDMABURSTLENGTH_8BEAT 0x00000800U  /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 8 */
+#define ETH_TXDMABURSTLENGTH_16BEAT 0x00001000U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 16 */
+#define ETH_TXDMABURSTLENGTH_32BEAT 0x00002000U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 32 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_4BEAT                                                                                                   \
+    0x01000100U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 4 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_8BEAT                                                                                                   \
+    0x01000200U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 8 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_16BEAT                                                                                                  \
+    0x01000400U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 16 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_32BEAT                                                                                                  \
+    0x01000800U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 32 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_64BEAT                                                                                                  \
+    0x01001000U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 64 */
+#define ETH_TXDMABURSTLENGTH_4XPBL_128BEAT                                                                                                 \
+    0x01002000U /*!< maximum number of beats to be transferred in one TxDMA (or both) transaction is 128 */
 
 /**
   * @}
@@ -1351,10 +1256,11 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
 /** @defgroup ETH_DMA_Tx_descriptor_Checksum_Insertion_Control ETH DMA Tx descriptor Checksum Insertion Control
   * @{
   */
-#define ETH_DMATXDESC_CHECKSUMBYPASS 0x00000000U            /*!< Checksum engine bypass */
-#define ETH_DMATXDESC_CHECKSUMIPV4HEADER 0x00400000U        /*!< IPv4 header checksum insertion  */
-#define ETH_DMATXDESC_CHECKSUMTCPUDPICMPSEGMENT 0x00800000U /*!< TCP/UDP/ICMP checksum insertion. Pseudo header checksum is assumed to be present */
-#define ETH_DMATXDESC_CHECKSUMTCPUDPICMPFULL 0x00C00000U    /*!< TCP/UDP/ICMP checksum fully in hardware including pseudo header */
+#define ETH_DMATXDESC_CHECKSUMBYPASS 0x00000000U     /*!< Checksum engine bypass */
+#define ETH_DMATXDESC_CHECKSUMIPV4HEADER 0x00400000U /*!< IPv4 header checksum insertion  */
+#define ETH_DMATXDESC_CHECKSUMTCPUDPICMPSEGMENT                                                                                            \
+    0x00800000U /*!< TCP/UDP/ICMP checksum insertion. Pseudo header checksum is assumed to be present */
+#define ETH_DMATXDESC_CHECKSUMTCPUDPICMPFULL 0x00C00000U /*!< TCP/UDP/ICMP checksum fully in hardware including pseudo header */
 /**
   * @}
   */
@@ -1536,11 +1442,11 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
   * @retval None
   */
 #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
-#define __HAL_ETH_RESET_HANDLE_STATE(__HANDLE__)               \
-    do {                                                       \
-        (__HANDLE__)->State             = HAL_ETH_STATE_RESET; \
-        (__HANDLE__)->MspInitCallback   = NULL;                \
-        (__HANDLE__)->MspDeInitCallback = NULL;                \
+#define __HAL_ETH_RESET_HANDLE_STATE(__HANDLE__)                                                                                           \
+    do {                                                                                                                                   \
+        (__HANDLE__)->State             = HAL_ETH_STATE_RESET;                                                                             \
+        (__HANDLE__)->MspInitCallback   = NULL;                                                                                            \
+        (__HANDLE__)->MspDeInitCallback = NULL;                                                                                            \
     } while (0)
 #else
 #define __HAL_ETH_RESET_HANDLE_STATE(__HANDLE__) ((__HANDLE__)->State = HAL_ETH_STATE_RESET)
@@ -1588,7 +1494,8 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
   * @param  __HANDLE__: ETH Handle
   * @retval The Transmit descriptor collision counter value.
   */
-#define __HAL_ETH_DMATXDESC_GET_COLLISION_COUNT(__HANDLE__) (((__HANDLE__)->TxDesc->Status & ETH_DMATXDESC_CC) >> ETH_DMATXDESC_COLLISION_COUNTSHIFT)
+#define __HAL_ETH_DMATXDESC_GET_COLLISION_COUNT(__HANDLE__)                                                                                \
+    (((__HANDLE__)->TxDesc->Status & ETH_DMATXDESC_CC) >> ETH_DMATXDESC_COLLISION_COUNTSHIFT)
 
 /**
   * @brief  Set the specified DMA Tx Desc Own bit.
@@ -1861,10 +1768,10 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
   * @param  __HANDLE__: ETH Handle.
   * @retval None
   */
-#define __HAL_ETH_MMC_COUNTER_HALF_PRESET(__HANDLE__)      \
-    do {                                                   \
-        (__HANDLE__)->Instance->MMCCR &= ~ETH_MMCCR_MCFHP; \
-        (__HANDLE__)->Instance->MMCCR |= ETH_MMCCR_MCP;    \
+#define __HAL_ETH_MMC_COUNTER_HALF_PRESET(__HANDLE__)                                                                                      \
+    do {                                                                                                                                   \
+        (__HANDLE__)->Instance->MMCCR &= ~ETH_MMCCR_MCFHP;                                                                                 \
+        (__HANDLE__)->Instance->MMCCR |= ETH_MMCCR_MCP;                                                                                    \
     } while (0U)
 
 /**
@@ -2026,20 +1933,20 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
   * @brief  Enables rising/falling edge trigger to the ETH External interrupt line.
   * @retval None
   */
-#define __HAL_ETH_WAKEUP_EXTI_ENABLE_FALLINGRISING_TRIGGER() \
-    do {                                                     \
-        EXTI->RTSR |= ETH_EXTI_LINE_WAKEUP;                  \
-        EXTI->FTSR |= ETH_EXTI_LINE_WAKEUP;                  \
+#define __HAL_ETH_WAKEUP_EXTI_ENABLE_FALLINGRISING_TRIGGER()                                                                               \
+    do {                                                                                                                                   \
+        EXTI->RTSR |= ETH_EXTI_LINE_WAKEUP;                                                                                                \
+        EXTI->FTSR |= ETH_EXTI_LINE_WAKEUP;                                                                                                \
     } while (0U)
 
 /**
   * @brief  Disables rising/falling edge trigger to the ETH External interrupt line.
   * @retval None
   */
-#define __HAL_ETH_WAKEUP_EXTI_DISABLE_FALLINGRISING_TRIGGER() \
-    do {                                                      \
-        EXTI->RTSR &= ~(ETH_EXTI_LINE_WAKEUP);                \
-        EXTI->FTSR &= ~(ETH_EXTI_LINE_WAKEUP);                \
+#define __HAL_ETH_WAKEUP_EXTI_DISABLE_FALLINGRISING_TRIGGER()                                                                              \
+    do {                                                                                                                                   \
+        EXTI->RTSR &= ~(ETH_EXTI_LINE_WAKEUP);                                                                                             \
+        EXTI->FTSR &= ~(ETH_EXTI_LINE_WAKEUP);                                                                                             \
     } while (0U)
 
 /**
@@ -2048,89 +1955,92 @@ typedef void (*pETH_CallbackTypeDef)(ETH_HandleTypeDef* heth); /*!< pointer to a
   */
 #define __HAL_ETH_WAKEUP_EXTI_GENERATE_SWIT() EXTI->SWIER |= ETH_EXTI_LINE_WAKEUP
 
-/**
+    /**
   * @}
   */
-/* Exported functions --------------------------------------------------------*/
+    /* Exported functions --------------------------------------------------------*/
 
-/** @addtogroup ETH_Exported_Functions
+    /** @addtogroup ETH_Exported_Functions
   * @{
   */
 
-/* Initialization and de-initialization functions  ****************************/
+    /* Initialization and de-initialization functions  ****************************/
 
-/** @addtogroup ETH_Exported_Functions_Group1
+    /** @addtogroup ETH_Exported_Functions_Group1
   * @{
   */
-HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef* heth);
-HAL_StatusTypeDef HAL_ETH_DeInit(ETH_HandleTypeDef* heth);
-void              HAL_ETH_MspInit(ETH_HandleTypeDef* heth);
-void              HAL_ETH_MspDeInit(ETH_HandleTypeDef* heth);
-HAL_StatusTypeDef HAL_ETH_DMATxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMATxDescTab, uint8_t* TxBuff, uint32_t TxBuffCount);
-HAL_StatusTypeDef HAL_ETH_DMARxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMARxDescTab, uint8_t* RxBuff, uint32_t RxBuffCount);
+    HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef* heth);
+    HAL_StatusTypeDef HAL_ETH_DeInit(ETH_HandleTypeDef* heth);
+    void              HAL_ETH_MspInit(ETH_HandleTypeDef* heth);
+    void              HAL_ETH_MspDeInit(ETH_HandleTypeDef* heth);
+    HAL_StatusTypeDef
+    HAL_ETH_DMATxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMATxDescTab, uint8_t* TxBuff, uint32_t TxBuffCount);
+    HAL_StatusTypeDef
+    HAL_ETH_DMARxDescListInit(ETH_HandleTypeDef* heth, ETH_DMADescTypeDef* DMARxDescTab, uint8_t* RxBuff, uint32_t RxBuffCount);
 /* Callbacks Register/UnRegister functions  ***********************************/
 #if (USE_HAL_ETH_REGISTER_CALLBACKS == 1)
-HAL_StatusTypeDef HAL_ETH_RegisterCallback(ETH_HandleTypeDef* heth, HAL_ETH_CallbackIDTypeDef CallbackID, pETH_CallbackTypeDef pCallback);
-HAL_StatusTypeDef HAL_ETH_UnRegisterCallback(ETH_HandleTypeDef* heth, HAL_ETH_CallbackIDTypeDef CallbackID);
+    HAL_StatusTypeDef
+    HAL_ETH_RegisterCallback(ETH_HandleTypeDef* heth, HAL_ETH_CallbackIDTypeDef CallbackID, pETH_CallbackTypeDef pCallback);
+    HAL_StatusTypeDef HAL_ETH_UnRegisterCallback(ETH_HandleTypeDef* heth, HAL_ETH_CallbackIDTypeDef CallbackID);
 #endif /* USE_HAL_ETH_REGISTER_CALLBACKS */
 
-/**
+    /**
   * @}
   */
-/* IO operation functions  ****************************************************/
+    /* IO operation functions  ****************************************************/
 
-/** @addtogroup ETH_Exported_Functions_Group2
+    /** @addtogroup ETH_Exported_Functions_Group2
   * @{
   */
-HAL_StatusTypeDef HAL_ETH_TransmitFrame(ETH_HandleTypeDef* heth, uint32_t FrameLength);
-HAL_StatusTypeDef HAL_ETH_GetReceivedFrame(ETH_HandleTypeDef* heth);
-/* Communication with PHY functions*/
-HAL_StatusTypeDef HAL_ETH_ReadPHYRegister(ETH_HandleTypeDef* heth, uint16_t PHYReg, uint32_t* RegValue);
-HAL_StatusTypeDef HAL_ETH_WritePHYRegister(ETH_HandleTypeDef* heth, uint16_t PHYReg, uint32_t RegValue);
-/* Non-Blocking mode: Interrupt */
-HAL_StatusTypeDef HAL_ETH_GetReceivedFrame_IT(ETH_HandleTypeDef* heth);
-void              HAL_ETH_IRQHandler(ETH_HandleTypeDef* heth);
-/* Callback in non blocking modes (Interrupt) */
-void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef* heth);
-void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef* heth);
-void HAL_ETH_ErrorCallback(ETH_HandleTypeDef* heth);
-/**
+    HAL_StatusTypeDef HAL_ETH_TransmitFrame(ETH_HandleTypeDef* heth, uint32_t FrameLength);
+    HAL_StatusTypeDef HAL_ETH_GetReceivedFrame(ETH_HandleTypeDef* heth);
+    /* Communication with PHY functions*/
+    HAL_StatusTypeDef HAL_ETH_ReadPHYRegister(ETH_HandleTypeDef* heth, uint16_t PHYReg, uint32_t* RegValue);
+    HAL_StatusTypeDef HAL_ETH_WritePHYRegister(ETH_HandleTypeDef* heth, uint16_t PHYReg, uint32_t RegValue);
+    /* Non-Blocking mode: Interrupt */
+    HAL_StatusTypeDef HAL_ETH_GetReceivedFrame_IT(ETH_HandleTypeDef* heth);
+    void              HAL_ETH_IRQHandler(ETH_HandleTypeDef* heth);
+    /* Callback in non blocking modes (Interrupt) */
+    void HAL_ETH_TxCpltCallback(ETH_HandleTypeDef* heth);
+    void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef* heth);
+    void HAL_ETH_ErrorCallback(ETH_HandleTypeDef* heth);
+    /**
   * @}
   */
 
-/* Peripheral Control functions  **********************************************/
+    /* Peripheral Control functions  **********************************************/
 
-/** @addtogroup ETH_Exported_Functions_Group3
+    /** @addtogroup ETH_Exported_Functions_Group3
   * @{
   */
 
-HAL_StatusTypeDef HAL_ETH_Start(ETH_HandleTypeDef* heth);
-HAL_StatusTypeDef HAL_ETH_Stop(ETH_HandleTypeDef* heth);
-HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef* macconf);
-HAL_StatusTypeDef HAL_ETH_ConfigDMA(ETH_HandleTypeDef* heth, ETH_DMAInitTypeDef* dmaconf);
-/**
+    HAL_StatusTypeDef HAL_ETH_Start(ETH_HandleTypeDef* heth);
+    HAL_StatusTypeDef HAL_ETH_Stop(ETH_HandleTypeDef* heth);
+    HAL_StatusTypeDef HAL_ETH_ConfigMAC(ETH_HandleTypeDef* heth, ETH_MACInitTypeDef* macconf);
+    HAL_StatusTypeDef HAL_ETH_ConfigDMA(ETH_HandleTypeDef* heth, ETH_DMAInitTypeDef* dmaconf);
+    /**
   * @}
   */
 
-/* Peripheral State functions  ************************************************/
+    /* Peripheral State functions  ************************************************/
 
-/** @addtogroup ETH_Exported_Functions_Group4
+    /** @addtogroup ETH_Exported_Functions_Group4
   * @{
   */
-HAL_ETH_StateTypeDef HAL_ETH_GetState(ETH_HandleTypeDef* heth);
-/**
+    HAL_ETH_StateTypeDef HAL_ETH_GetState(ETH_HandleTypeDef* heth);
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 
-/**
+    /**
   * @}
   */
 

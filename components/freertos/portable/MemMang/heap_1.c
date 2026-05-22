@@ -106,8 +106,7 @@ void* pvPortMalloc(size_t xWantedSize) {
         }
 
         /* Check there is enough room left for the allocation. */
-        if ((xWantedSize > 0) &&
-            (heapADD_WILL_OVERFLOW(xNextFreeByte, xWantedSize) == 0) &&
+        if ((xWantedSize > 0) && (heapADD_WILL_OVERFLOW(xNextFreeByte, xWantedSize) == 0) &&
             ((xNextFreeByte + xWantedSize) < configADJUSTED_HEAP_SIZE)) {
             /* Return the next free byte then increment the index past this
              * block. */
@@ -129,6 +128,7 @@ void* pvPortMalloc(size_t xWantedSize) {
 
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -140,12 +140,14 @@ void vPortFree(void* pv) {
     /* Force an assert as it is invalid to call this function. */
     configASSERT(pv == NULL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortInitialiseBlocks(void) {
     /* Only required when static memory is not cleared. */
     xNextFreeByte = (size_t)0;
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetFreeHeapSize(void) {
@@ -162,4 +164,5 @@ size_t xPortGetFreeHeapSize(void) {
 void vPortHeapResetState(void) {
     xNextFreeByte = (size_t)0U;
 }
+
 /*-----------------------------------------------------------*/

@@ -42,12 +42,15 @@
 #endif
 
 /* Lists for ready and blocked co-routines. --------------------*/
-static List_t  pxReadyCoRoutineLists[configMAX_CO_ROUTINE_PRIORITIES]; /**< Prioritised ready co-routines. */
-static List_t  xDelayedCoRoutineList1;                                 /**< Delayed co-routines. */
-static List_t  xDelayedCoRoutineList2;                                 /**< Delayed co-routines (two lists are used - one for delays that have overflowed the current tick count. */
-static List_t* pxDelayedCoRoutineList         = NULL;                  /**< Points to the delayed co-routine list currently being used. */
-static List_t* pxOverflowDelayedCoRoutineList = NULL;                  /**< Points to the delayed co-routine list currently being used to hold co-routines that have overflowed the current tick count. */
-static List_t  xPendingReadyCoRoutineList;                             /**< Holds co-routines that have been readied by an external event.  They cannot be added directly to the ready lists as the ready lists cannot be accessed by interrupts. */
+static List_t pxReadyCoRoutineLists[configMAX_CO_ROUTINE_PRIORITIES]; /**< Prioritised ready co-routines. */
+static List_t xDelayedCoRoutineList1;                                 /**< Delayed co-routines. */
+static List_t
+    xDelayedCoRoutineList2; /**< Delayed co-routines (two lists are used - one for delays that have overflowed the current tick count. */
+static List_t* pxDelayedCoRoutineList = NULL; /**< Points to the delayed co-routine list currently being used. */
+static List_t* pxOverflowDelayedCoRoutineList =
+    NULL; /**< Points to the delayed co-routine list currently being used to hold co-routines that have overflowed the current tick count. */
+static List_t
+    xPendingReadyCoRoutineList; /**< Holds co-routines that have been readied by an external event.  They cannot be added directly to the ready lists as the ready lists cannot be accessed by interrupts. */
 
 /* Other file private variables. --------------------------------*/
 CRCB_t*            pxCurrentCoRoutine          = NULL;
@@ -66,12 +69,12 @@ static TickType_t  xPassedTicks                = (TickType_t)0U;
  * This macro accesses the co-routine ready lists and therefore must not be
  * used from within an ISR.
  */
-#define prvAddCoRoutineToReadyQueue(pxCRCB)                                                                     \
-    do {                                                                                                        \
-        if ((pxCRCB)->uxPriority > uxTopCoRoutineReadyPriority) {                                               \
-            uxTopCoRoutineReadyPriority = (pxCRCB)->uxPriority;                                                 \
-        }                                                                                                       \
-        vListInsertEnd((List_t*)&(pxReadyCoRoutineLists[(pxCRCB)->uxPriority]), &((pxCRCB)->xGenericListItem)); \
+#define prvAddCoRoutineToReadyQueue(pxCRCB)                                                                                                \
+    do {                                                                                                                                   \
+        if ((pxCRCB)->uxPriority > uxTopCoRoutineReadyPriority) {                                                                          \
+            uxTopCoRoutineReadyPriority = (pxCRCB)->uxPriority;                                                                            \
+        }                                                                                                                                  \
+        vListInsertEnd((List_t*)&(pxReadyCoRoutineLists[(pxCRCB)->uxPriority]), &((pxCRCB)->xGenericListItem));                            \
     } while (0)
 
 /*
@@ -100,9 +103,7 @@ static void prvCheckDelayedList(void);
 
 /*-----------------------------------------------------------*/
 
-BaseType_t xCoRoutineCreate(crCOROUTINE_CODE pxCoRoutineCode,
-                            UBaseType_t      uxPriority,
-                            UBaseType_t      uxIndex) {
+BaseType_t xCoRoutineCreate(crCOROUTINE_CODE pxCoRoutineCode, UBaseType_t uxPriority, UBaseType_t uxIndex) {
     BaseType_t xReturn;
     CRCB_t*    pxCoRoutine;
 
@@ -159,10 +160,10 @@ BaseType_t xCoRoutineCreate(crCOROUTINE_CODE pxCoRoutineCode,
 
     return xReturn;
 }
+
 /*-----------------------------------------------------------*/
 
-void vCoRoutineAddToDelayedList(TickType_t xTicksToDelay,
-                                List_t*    pxEventList) {
+void vCoRoutineAddToDelayedList(TickType_t xTicksToDelay, List_t* pxEventList) {
     TickType_t xTimeToWake;
 
     traceENTER_vCoRoutineAddToDelayedList(xTicksToDelay, pxEventList);
@@ -197,6 +198,7 @@ void vCoRoutineAddToDelayedList(TickType_t xTicksToDelay,
 
     traceRETURN_vCoRoutineAddToDelayedList();
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvCheckPendingReadyList(void) {
@@ -218,6 +220,7 @@ static void prvCheckPendingReadyList(void) {
         prvAddCoRoutineToReadyQueue(pxUnblockedCRCB);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvCheckDelayedList(void) {
@@ -271,6 +274,7 @@ static void prvCheckDelayedList(void) {
 
     xLastTickCount = xCoRoutineTickCount;
 }
+
 /*-----------------------------------------------------------*/
 
 void vCoRoutineSchedule(void) {
@@ -306,6 +310,7 @@ void vCoRoutineSchedule(void) {
 
     traceRETURN_vCoRoutineSchedule();
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvInitialiseCoRoutineLists(void) {
@@ -324,6 +329,7 @@ static void prvInitialiseCoRoutineLists(void) {
     pxDelayedCoRoutineList         = &xDelayedCoRoutineList1;
     pxOverflowDelayedCoRoutineList = &xDelayedCoRoutineList2;
 }
+
 /*-----------------------------------------------------------*/
 
 BaseType_t xCoRoutineRemoveFromEventList(const List_t* pxEventList) {
@@ -349,6 +355,7 @@ BaseType_t xCoRoutineRemoveFromEventList(const List_t* pxEventList) {
 
     return xReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -368,6 +375,7 @@ void vCoRoutineResetState(void) {
     xLastTickCount              = (TickType_t)0U;
     xPassedTicks                = (TickType_t)0U;
 }
+
 /*-----------------------------------------------------------*/
 
 #endif /* configUSE_CO_ROUTINES == 0 */

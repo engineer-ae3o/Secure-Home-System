@@ -41,24 +41,18 @@ SOFTWARE.
 ///\ingroup etl
 
 namespace etl {
-/// \ingroup radix
-struct radix {
-    enum enum_type {
-        undefined   = 0,
-        binary      = 2,
-        octal       = 8,
-        decimal     = 10,
-        hexadecimal = 16
-    };
+    /// \ingroup radix
+    struct radix {
+        enum enum_type { undefined = 0, binary = 2, octal = 8, decimal = 10, hexadecimal = 16 };
 
-    ETL_DECLARE_ENUM_TYPE(radix, uint_least8_t)
-    ETL_ENUM_TYPE(undefined, "undefined")
-    ETL_ENUM_TYPE(binary, "binary")
-    ETL_ENUM_TYPE(octal, "octal")
-    ETL_ENUM_TYPE(decimal, "decimal")
-    ETL_ENUM_TYPE(hexadecimal, "hexadecimal")
-    ETL_END_ENUM_TYPE
-};
+        ETL_DECLARE_ENUM_TYPE(radix, uint_least8_t)
+        ETL_ENUM_TYPE(undefined, "undefined")
+        ETL_ENUM_TYPE(binary, "binary")
+        ETL_ENUM_TYPE(octal, "octal")
+        ETL_ENUM_TYPE(decimal, "decimal")
+        ETL_ENUM_TYPE(hexadecimal, "hexadecimal")
+        ETL_END_ENUM_TYPE
+    };
 } // namespace etl
 
 #endif

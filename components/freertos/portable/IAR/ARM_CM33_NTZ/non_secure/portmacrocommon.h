@@ -35,9 +35,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* *INDENT-ON* */
+    /* *INDENT-ON* */
 
-/*------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------
  * Port specific definitions.
  *
  * The settings in this file configure FreeRTOS correctly for the given hardware
@@ -72,12 +72,12 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
 #if (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS)
-typedef uint16_t TickType_t;
+    typedef uint16_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffff
 #elif (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS)
 typedef uint32_t TickType_t;
@@ -103,40 +103,40 @@ typedef uint32_t TickType_t;
 #define portFORCE_INLINE inline __attribute__((always_inline))
 #endif
 #define portHAS_STACK_OVERFLOW_CHECKING 1
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-/**
+    /**
  * @brief Extern declarations.
  */
-extern BaseType_t xPortIsInsideInterrupt(void);
+    extern BaseType_t xPortIsInsideInterrupt(void);
 
-extern void vPortYield(void) /* PRIVILEGED_FUNCTION */;
+    extern void vPortYield(void) /* PRIVILEGED_FUNCTION */;
 
-extern void vPortEnterCritical(void) /* PRIVILEGED_FUNCTION */;
-extern void vPortExitCritical(void) /* PRIVILEGED_FUNCTION */;
+    extern void vPortEnterCritical(void) /* PRIVILEGED_FUNCTION */;
+    extern void vPortExitCritical(void) /* PRIVILEGED_FUNCTION */;
 
-extern uint32_t ulSetInterruptMask(void) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */;
-extern void     vClearInterruptMask(uint32_t ulMask) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */;
+    extern uint32_t ulSetInterruptMask(void) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */;
+    extern void     vClearInterruptMask(uint32_t ulMask) /* __attribute__(( naked )) PRIVILEGED_FUNCTION */;
 
 #if (configENABLE_TRUSTZONE == 1)
-extern void vPortAllocateSecureContext(uint32_t ulSecureStackSize); /* __attribute__ (( naked )) */
-extern void vPortFreeSecureContext(uint32_t* pulTCB) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */;
+    extern void vPortAllocateSecureContext(uint32_t ulSecureStackSize); /* __attribute__ (( naked )) */
+    extern void vPortFreeSecureContext(uint32_t* pulTCB) /* __attribute__ (( naked )) PRIVILEGED_FUNCTION */;
 #endif /* configENABLE_TRUSTZONE */
 
 #if (configENABLE_MPU == 1)
-extern BaseType_t xIsPrivileged(void) /* __attribute__ (( naked )) */;
-extern void       vResetPrivilege(void) /* __attribute__ (( naked )) */;
+    extern BaseType_t xIsPrivileged(void) /* __attribute__ (( naked )) */;
+    extern void       vResetPrivilege(void) /* __attribute__ (( naked )) */;
 #endif /* configENABLE_MPU */
 
 #if (configENABLE_PAC == 1)
 
-/**
+    /**
      * @brief Generates 128-bit task's random PAC key.
      *
      * @param[out] pulTaskPacKey Pointer to a 4-word (128-bits) array to be
      *             filled with a 128-bit random number.
      */
-void vApplicationGenerateTaskRandomPacKey(uint32_t* pulTaskPacKey);
+    void vApplicationGenerateTaskRandomPacKey(uint32_t* pulTaskPacKey);
 
 #endif /* configENABLE_PAC */
 /*-----------------------------------------------------------*/
@@ -198,17 +198,17 @@ void vApplicationGenerateTaskRandomPacKey(uint32_t* pulTaskPacKey);
 #define portMPU_REGION_READ_ONLY (3UL << 1UL)
 
 #define portMPU_REGION_EXECUTE_NEVER (1UL)
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configENABLE_MPU == 1)
 
-/**
+    /**
      * @brief Settings to define an MPU region.
      */
-typedef struct MPURegionSettings {
-    uint32_t ulRBAR; /**< RBAR for the region. */
-    uint32_t ulRLAR; /**< RLAR for the region. */
-} MPURegionSettings_t;
+    typedef struct MPURegionSettings {
+        uint32_t ulRBAR; /**< RBAR for the region. */
+        uint32_t ulRLAR; /**< RLAR for the region. */
+    } MPURegionSettings_t;
 
 #if (configUSE_MPU_WRAPPERS_V1 == 0)
 
@@ -216,17 +216,17 @@ typedef struct MPURegionSettings {
 #error configSYSTEM_CALL_STACK_SIZE must be defined to the desired size of the system call stack in words for using MPU wrappers v2.
 #endif
 
-/**
+    /**
          * @brief System call stack.
          */
-typedef struct SYSTEM_CALL_STACK_INFO {
-    uint32_t  ulSystemCallStackBuffer[configSYSTEM_CALL_STACK_SIZE];
-    uint32_t* pulSystemCallStack;
-    uint32_t* pulSystemCallStackLimit;
-    uint32_t* pulTaskStack;
-    uint32_t  ulLinkRegisterAtSystemCallEntry;
-    uint32_t  ulStackLimitRegisterAtSystemCallEntry;
-} xSYSTEM_CALL_STACK_INFO;
+    typedef struct SYSTEM_CALL_STACK_INFO {
+        uint32_t  ulSystemCallStackBuffer[configSYSTEM_CALL_STACK_SIZE];
+        uint32_t* pulSystemCallStack;
+        uint32_t* pulSystemCallStackLimit;
+        uint32_t* pulTaskStack;
+        uint32_t  ulLinkRegisterAtSystemCallEntry;
+        uint32_t  ulStackLimitRegisterAtSystemCallEntry;
+    } xSYSTEM_CALL_STACK_INFO;
 
 #endif /* configUSE_MPU_WRAPPERS_V1 == 0 */
 
@@ -354,19 +354,19 @@ typedef struct SYSTEM_CALL_STACK_INFO {
 /* Size of an Access Control List (ACL) entry in bits. */
 #define portACL_ENTRY_SIZE_BITS (32U)
 
-typedef struct MPU_SETTINGS {
-    uint32_t            ulMAIR0;                                 /**< MAIR0 for the task containing attributes for all the 4 per task regions. */
-    MPURegionSettings_t xRegionsSettings[portTOTAL_NUM_REGIONS]; /**< Settings for 4 per task regions. */
-    uint32_t            ulContext[MAX_CONTEXT_SIZE];
-    uint32_t            ulTaskFlags;
+    typedef struct MPU_SETTINGS {
+        uint32_t            ulMAIR0; /**< MAIR0 for the task containing attributes for all the 4 per task regions. */
+        MPURegionSettings_t xRegionsSettings[portTOTAL_NUM_REGIONS]; /**< Settings for 4 per task regions. */
+        uint32_t            ulContext[MAX_CONTEXT_SIZE];
+        uint32_t            ulTaskFlags;
 
 #if (configUSE_MPU_WRAPPERS_V1 == 0)
-    xSYSTEM_CALL_STACK_INFO xSystemCallStackInfo;
+        xSYSTEM_CALL_STACK_INFO xSystemCallStackInfo;
 #if (configENABLE_ACCESS_CONTROL_LIST == 1)
-    uint32_t ulAccessControlList[(configPROTECTED_KERNEL_OBJECT_POOL_SIZE / portACL_ENTRY_SIZE_BITS) + 1];
+        uint32_t ulAccessControlList[(configPROTECTED_KERNEL_OBJECT_POOL_SIZE / portACL_ENTRY_SIZE_BITS) + 1];
 #endif
 #endif
-} xMPU_SETTINGS;
+    } xMPU_SETTINGS;
 
 #endif /* configENABLE_MPU == 1 */
 /*-----------------------------------------------------------*/
@@ -377,7 +377,7 @@ typedef struct MPU_SETTINGS {
  */
 #if (configASSERT_DEFINED == 1)
 #if (portHAS_ARMV8M_MAIN_EXTENSION == 1)
-void vPortValidateInterruptPriority(void);
+    void vPortValidateInterruptPriority(void);
 #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID() vPortValidateInterruptPriority()
 #endif
 #endif
@@ -406,14 +406,14 @@ void vPortValidateInterruptPriority(void);
 
 #define portNVIC_INT_CTRL_REG (*((volatile uint32_t*)0xe000ed04))
 #define portNVIC_PENDSVSET_BIT (1UL << 28UL)
-#define portEND_SWITCHING_ISR(xSwitchRequired)              \
-    do {                                                    \
-        if (xSwitchRequired) {                              \
-            traceISR_EXIT_TO_SCHEDULER();                   \
-            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT; \
-        } else {                                            \
-            traceISR_EXIT();                                \
-        }                                                   \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    do {                                                                                                                                   \
+        if (xSwitchRequired) {                                                                                                             \
+            traceISR_EXIT_TO_SCHEDULER();                                                                                                  \
+            portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;                                                                                \
+        } else {                                                                                                                           \
+            traceISR_EXIT();                                                                                                               \
+        }                                                                                                                                  \
     } while (0)
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
 /*-----------------------------------------------------------*/
@@ -431,7 +431,7 @@ void vPortValidateInterruptPriority(void);
  * @brief Tickless idle/low power functionality.
  */
 #ifndef portSUPPRESS_TICKS_AND_SLEEP
-extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
+    extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
 #define portSUPPRESS_TICKS_AND_SLEEP(xExpectedIdleTime) vPortSuppressTicksAndSleep(xExpectedIdleTime)
 #endif
 /*-----------------------------------------------------------*/
@@ -441,7 +441,7 @@ extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
  */
 #define portTASK_FUNCTION_PROTO(vFunction, pvParameters) void vFunction(void* pvParameters)
 #define portTASK_FUNCTION(vFunction, pvParameters) void vFunction(void* pvParameters)
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configENABLE_TRUSTZONE == 1)
 
@@ -464,7 +464,7 @@ extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
  */
 #define portCLEAN_UP_TCB(pxTCB) vPortFreeSecureContext((uint32_t*)pxTCB)
 #endif /* configENABLE_TRUSTZONE */
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configENABLE_MPU == 1)
 
@@ -494,11 +494,11 @@ extern void vPortSuppressTicksAndSleep(TickType_t xExpectedIdleTime);
 #define portRAISE_PRIVILEGE()
 #define portRESET_PRIVILEGE()
 #endif /* configENABLE_MPU */
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
 #if (configENABLE_MPU == 1)
 
-extern BaseType_t xPortIsTaskPrivileged(void);
+    extern BaseType_t xPortIsTaskPrivileged(void);
 
 /**
  * @brief Checks whether or not the calling task is privileged.
@@ -531,16 +531,16 @@ extern BaseType_t xPortIsTaskPrivileged(void);
  */
 #if (configUSE_PORT_OPTIMISED_TASK_SELECTION == 1)
 
-/**
+    /**
  * @brief Count the number of leading zeros in a 32-bit value.
  */
-static portFORCE_INLINE uint32_t ulPortCountLeadingZeros(uint32_t ulBitmap) {
-    uint32_t ulReturn;
+    static portFORCE_INLINE uint32_t ulPortCountLeadingZeros(uint32_t ulBitmap) {
+        uint32_t ulReturn;
 
-    __asm volatile("clz %0, %1" : "=r"(ulReturn) : "r"(ulBitmap) : "memory");
+        __asm volatile("clz %0, %1" : "=r"(ulReturn) : "r"(ulBitmap) : "memory");
 
-    return ulReturn;
-}
+        return ulReturn;
+    }
 
 /* Check the configuration. */
 #if (configMAX_PRIORITIES > 32)

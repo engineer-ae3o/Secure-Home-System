@@ -239,9 +239,11 @@ static void              IRDA_DMATxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              IRDA_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              IRDA_DMATxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
 static void              IRDA_DMARxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
-static HAL_StatusTypeDef IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
-static void              IRDA_EndTxTransfer(IRDA_HandleTypeDef* hirda);
-static void              IRDA_EndRxTransfer(IRDA_HandleTypeDef* hirda);
+static HAL_StatusTypeDef
+IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+static void IRDA_EndTxTransfer(IRDA_HandleTypeDef* hirda);
+static void IRDA_EndRxTransfer(IRDA_HandleTypeDef* hirda);
+
 /**
   * @}
   */
@@ -448,7 +450,8 @@ __weak void HAL_IRDA_MspDeInit(IRDA_HandleTypeDef* hirda) {
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_IRDA_RegisterCallback(IRDA_HandleTypeDef* hirda, HAL_IRDA_CallbackIDTypeDef CallbackID, pIRDA_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_IRDA_RegisterCallback(IRDA_HandleTypeDef* hirda, HAL_IRDA_CallbackIDTypeDef CallbackID, pIRDA_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef status = HAL_OK;
 
     if (pCallback == NULL) {
@@ -2070,7 +2073,8 @@ static void IRDA_DMAError(DMA_HandleTypeDef* hdma) {
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
-static HAL_StatusTypeDef IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
+static HAL_StatusTypeDef
+IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout) {
     /* Wait until flag is set */
     while ((__HAL_IRDA_GET_FLAG(hirda, Flag) ? SET : RESET) == Status) {
         /* Check for the Timeout */

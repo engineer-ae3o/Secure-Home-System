@@ -107,9 +107,7 @@ const uint32_t ulMaxSyscallInterruptPriorityConst = configMAX_SYSCALL_INTERRUPT_
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
 
@@ -136,6 +134,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -151,6 +150,7 @@ static void prvTaskExitError(void) {
     for (;;) {
     }
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -184,6 +184,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -191,6 +192,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(ulCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortYield(void) {
@@ -202,6 +204,7 @@ void vPortYield(void) {
     __DSB();
     __ISB();
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -219,6 +222,7 @@ void vPortEnterCritical(void) {
         configASSERT(((*(portNVIC_INT_CTRL)) & portVECTACTIVE_MASK) == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -229,6 +233,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void SysTick_Handler(void) {
@@ -247,6 +252,7 @@ void SysTick_Handler(void) {
     }
     portCLEAR_INTERRUPT_MASK_FROM_ISR(ulDummy);
 }
+
 /*-----------------------------------------------------------*/
 
 /*

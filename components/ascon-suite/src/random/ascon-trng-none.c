@@ -78,8 +78,7 @@ int ascon_trng_get_bytes(unsigned char* out, size_t outlen) {
 static THREAD_LOCAL ascon_state_t global_prng;
 static THREAD_LOCAL int volatile global_prng_initialized = 0;
 
-#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_GETTIMEOFDAY) || \
-    defined(HAVE_TIME)
+#if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_GETTIMEOFDAY) || defined(HAVE_TIME)
 
 static void ascon_trng_add_timespec(ascon_state_t* state, unsigned offset, uint32_t sec, uint32_t partial_sec) {
     uint32_t x[2];

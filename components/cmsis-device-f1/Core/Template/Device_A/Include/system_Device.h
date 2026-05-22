@@ -31,28 +31,28 @@ extern "C" {
 
 #include <stdint.h>
 
-extern uint32_t SystemCoreClock; /*!< System Clock Frequency (Core Clock)  */
+    extern uint32_t SystemCoreClock; /*!< System Clock Frequency (Core Clock)  */
 
-/**
+    /**
   \brief Setup the microcontroller system.
 
    Initialize the System and update the SystemCoreClock variable.
  */
-extern void SystemInit(void);
+    extern void SystemInit(void);
 
-/**
+    /**
   \brief  Update SystemCoreClock variable.
 
    Updates the SystemCoreClock with current core Clock retrieved from cpu registers.
  */
-extern void SystemCoreClockUpdate(void);
+    extern void SystemCoreClockUpdate(void);
 
-/**
+    /**
   \brief  Create Translation Table.
 
    Creates Memory Management Unit Translation Table.
  */
-extern void MMU_CreateTranslationTable(void);
+    extern void MMU_CreateTranslationTable(void);
 
 #ifdef __cplusplus
 }

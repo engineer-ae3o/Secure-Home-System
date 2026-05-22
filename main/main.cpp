@@ -24,7 +24,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     };
     HAL_GPIO_Init(GPIOC, &init);
 
-    while (1) {
+    while (true) {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
         vTaskDelay(pdMS_TO_TICKS(500));
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
@@ -68,7 +68,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     NVIC_SetPriority(EXTI4_IRQn, 15);
     NVIC_SetPriority(EXTI9_5_IRQn, 15);
 
-    while (1) {
+    while (true) {
         xQueueReceive(event_queue, &key, portMAX_DELAY);
         (void)key;
     }
@@ -93,7 +93,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
 
     volatile nc::type_t type = nc::type_t::REED;
 
-    while (1) {
+    while (true) {
         uint32_t flag{};
         xTaskNotifyWait(0, 0xFFFFFFFFU, &flag, portMAX_DELAY);
 
@@ -122,7 +122,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {
         {{"I", "hate"}, {"my", "life."}, {"This", "is"}, {"so", "so"}, {"damn", "boring"}}};
 
-    while (1) {
+    while (true) {
         for (const auto& line : lcd_text) {
             // Print text. Bet you didn't know that before
             lcd::println(line[0], 0);
@@ -135,7 +135,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
 }
 
 [[noreturn]] static void gsm_task(void*) {
-    while (1) {
+    while (true) {
     }
 }
 
@@ -162,13 +162,14 @@ extern "C" {
 
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
         xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
-        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 5, gsm_task_stack.data(), &gsm_task_tcb);
+        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
         xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
         xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
 
         vTaskStartScheduler();
 
-        while (1);
+        while (true) {
+        }
     }
 
     void EXTI3_IRQHandler() {

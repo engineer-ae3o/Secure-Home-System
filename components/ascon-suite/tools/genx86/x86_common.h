@@ -258,8 +258,7 @@ void flush_pipeline(void);
 #define MAX_REG_LIST 16
 
 /* Information about the stack frame for a masked word utility function */
-typedef struct
-{
+typedef struct {
     /* Logical registers that the arguments end up in */
     reg_t* arg[MAX_ARGS];
 

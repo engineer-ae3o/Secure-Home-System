@@ -25,10 +25,16 @@
 #include <string.h>
 
 /* Initialization vector for ASCON-128 */
-static uint8_t const ASCON128_IV[8] =
-    {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
+static uint8_t const ASCON128_IV[8] = {0x80, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
 
-void ascon128_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+void ascon128_aead_encrypt(unsigned char*       c,
+                           size_t*              clen,
+                           const unsigned char* m,
+                           size_t               mlen,
+                           const unsigned char* ad,
+                           size_t               adlen,
+                           const unsigned char* npub,
+                           const unsigned char* k) {
     ascon_state_t state;
     unsigned char partial;
 
@@ -63,7 +69,14 @@ void ascon128_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* 
     ascon_free(&state);
 }
 
-int ascon128_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+int ascon128_aead_decrypt(unsigned char*       m,
+                          size_t*              mlen,
+                          const unsigned char* c,
+                          size_t               clen,
+                          const unsigned char* ad,
+                          size_t               adlen,
+                          const unsigned char* npub,
+                          const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON128_TAG_SIZE];
     unsigned char partial;

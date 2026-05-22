@@ -1,7 +1,8 @@
 #pragma once
+
 template<size_t Size_>
 class uni_type {
-    public:
+public:
     static constexpr size_t Size = Size_;
 
     //***********************************
@@ -26,13 +27,13 @@ class uni_type {
         return Size;
     }
 
-    private:
+private:
     char buffer[Size]
 };
 
 template<size_t Size_>
 class uni_type_ptr {
-    public:
+public:
     static constexpr size_t Size = Size_;
 
     //***********************************
@@ -57,6 +58,6 @@ class uni_type_ptr {
         return Size;
     }
 
-    private:
+private:
     char* pbuffer;
 };

@@ -133,14 +133,11 @@
  * Setting configVALIDATE_HEAP_BLOCK_POINTER to 1 enables customized heap block pointers
  * protection on heap_5. */
 #ifndef configVALIDATE_HEAP_BLOCK_POINTER
-#define heapVALIDATE_BLOCK_POINTER(pxBlock)                    \
-    configASSERT((pucHeapHighAddress != NULL) &&               \
-                 (pucHeapLowAddress != NULL) &&                \
-                 ((uint8_t*)(pxBlock) >= pucHeapLowAddress) && \
+#define heapVALIDATE_BLOCK_POINTER(pxBlock)                                                                                                \
+    configASSERT((pucHeapHighAddress != NULL) && (pucHeapLowAddress != NULL) && ((uint8_t*)(pxBlock) >= pucHeapLowAddress) &&              \
                  ((uint8_t*)(pxBlock) < pucHeapHighAddress))
 #else /* ifndef configVALIDATE_HEAP_BLOCK_POINTER */
-#define heapVALIDATE_BLOCK_POINTER(pxBlock) \
-    configVALIDATE_HEAP_BLOCK_POINTER(pxBlock)
+#define heapVALIDATE_BLOCK_POINTER(pxBlock) configVALIDATE_HEAP_BLOCK_POINTER(pxBlock)
 #endif /* configVALIDATE_HEAP_BLOCK_POINTER */
 
 #else /* if ( configENABLE_HEAP_PROTECTOR == 1 ) */
@@ -351,6 +348,7 @@ void* pvPortMalloc(size_t xWantedSize) {
     configASSERT((((size_t)pvReturn) & (size_t)portBYTE_ALIGNMENT_MASK) == 0);
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -401,25 +399,28 @@ void vPortFree(void* pv) {
         }
     }
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetFreeHeapSize(void) {
     return xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetMinimumEverFreeHeapSize(void) {
     return xMinimumEverFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortResetHeapMinimumEverFreeHeapSize(void) {
     xMinimumEverFreeBytesRemaining = xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
-void* pvPortCalloc(size_t xNum,
-                   size_t xSize) {
+void* pvPortCalloc(size_t xNum, size_t xSize) {
     void* pv = NULL;
 
     if (heapMULTIPLY_WILL_OVERFLOW(xNum, xSize) == 0) {
@@ -432,6 +433,7 @@ void* pvPortCalloc(size_t xNum,
 
     return pv;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEGED_FUNCTION */
@@ -441,7 +443,8 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEG
 
     /* Iterate through the list until a block is found that has a higher address
      * than the block being inserted. */
-    for (pxIterator = &xStart; heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock) < pxBlockToInsert; pxIterator = heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock)) {
+    for (pxIterator = &xStart; heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock) < pxBlockToInsert;
+         pxIterator = heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock)) {
         /* Nothing to do here, just iterate to the right position. */
     }
 
@@ -486,6 +489,7 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEG
         mtCOVERAGE_TEST_MARKER();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortDefineHeapRegions(const HeapRegion_t* const pxHeapRegions) /* PRIVILEGED_FUNCTION */
@@ -542,8 +546,7 @@ void vPortDefineHeapRegions(const HeapRegion_t* const pxHeapRegions) /* PRIVILEG
 
 #if (configENABLE_HEAP_PROTECTOR == 1)
         {
-            if ((pucHeapLowAddress == NULL) ||
-                ((uint8_t*)xAlignedHeap < pucHeapLowAddress)) {
+            if ((pucHeapLowAddress == NULL) || ((uint8_t*)xAlignedHeap < pucHeapLowAddress)) {
                 pucHeapLowAddress = (uint8_t*)xAlignedHeap;
             }
         }
@@ -597,11 +600,12 @@ void vPortDefineHeapRegions(const HeapRegion_t* const pxHeapRegions) /* PRIVILEG
     /* Check something was actually defined before it is accessed. */
     configASSERT(xTotalHeapSize);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortGetHeapStats(HeapStats_t* pxHeapStats) {
     BlockLink_t* pxBlock;
-    size_t       xBlocks = 0, xMaxSize = 0, xMinSize = portMAX_DELAY; /* portMAX_DELAY used as a portable way of getting the maximum value. */
+    size_t xBlocks = 0, xMaxSize = 0, xMinSize = portMAX_DELAY; /* portMAX_DELAY used as a portable way of getting the maximum value. */
 
     vTaskSuspendAll();
     {
@@ -649,6 +653,7 @@ void vPortGetHeapStats(HeapStats_t* pxHeapStats) {
     }
     taskEXIT_CRITICAL();
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -669,4 +674,5 @@ void vPortHeapResetState(void) {
     pucHeapLowAddress  = NULL;
 #endif /* #if ( configENABLE_HEAP_PROTECTOR == 1 ) */
 }
+
 /*-----------------------------------------------------------*/

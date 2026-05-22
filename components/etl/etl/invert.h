@@ -38,37 +38,35 @@ SOFTWARE.
 #include <stdint.h>
 
 namespace etl {
-//***************************************************************************
-/// Invert.
-//***************************************************************************
-template<typename TInput>
-class invert : public etl::unary_function<TInput, TInput> {
+    //***************************************************************************
+    /// Invert.
+    //***************************************************************************
+    template<typename TInput>
+    class invert : public etl::unary_function<TInput, TInput> {
     public:
-    //*****************************************************************
-    // Constructor.
-    //*****************************************************************
-    invert()
-        : offset(TInput(0)), minuend((etl::numeric_limits<TInput>::is_signed) ? TInput(0) : etl::numeric_limits<TInput>::max()) {
-    }
+        //*****************************************************************
+        // Constructor.
+        //*****************************************************************
+        invert() : offset(TInput(0)), minuend((etl::numeric_limits<TInput>::is_signed) ? TInput(0) : etl::numeric_limits<TInput>::max()) {
+        }
 
-    //*****************************************************************
-    // Constructor.
-    //*****************************************************************
-    invert(TInput offset_, TInput minuend_)
-        : offset(offset_), minuend(minuend_) {
-    }
+        //*****************************************************************
+        // Constructor.
+        //*****************************************************************
+        invert(TInput offset_, TInput minuend_) : offset(offset_), minuend(minuend_) {
+        }
 
-    //*****************************************************************
-    // operator ()
-    //*****************************************************************
-    TInput operator()(TInput value) const {
-        return minuend - (value - offset);
-    }
+        //*****************************************************************
+        // operator ()
+        //*****************************************************************
+        TInput operator()(TInput value) const {
+            return minuend - (value - offset);
+        }
 
     private:
-    const TInput offset;
-    const TInput minuend;
-};
+        const TInput offset;
+        const TInput minuend;
+    };
 } // namespace etl
 
 #endif

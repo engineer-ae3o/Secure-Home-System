@@ -115,9 +115,11 @@
 #ifndef __UNALIGNED_UINT16_READ
 #pragma language = save
 #pragma language = extended
+
 __IAR_FT uint16_t __iar_uint16_read(void const* ptr) {
     return *(__packed uint16_t*)(ptr);
 }
+
 #pragma language = restore
 #define __UNALIGNED_UINT16_READ(PTR) __iar_uint16_read(PTR)
 #endif
@@ -125,10 +127,12 @@ __IAR_FT uint16_t __iar_uint16_read(void const* ptr) {
 #ifndef __UNALIGNED_UINT16_WRITE
 #pragma language = save
 #pragma language = extended
+
 __IAR_FT void __iar_uint16_write(void const* ptr, uint16_t val) {
     *(__packed uint16_t*)(ptr) = val;
     ;
 }
+
 #pragma language = restore
 #define __UNALIGNED_UINT16_WRITE(PTR, VAL) __iar_uint16_write(PTR, VAL)
 #endif
@@ -136,9 +140,11 @@ __IAR_FT void __iar_uint16_write(void const* ptr, uint16_t val) {
 #ifndef __UNALIGNED_UINT32_READ
 #pragma language = save
 #pragma language = extended
+
 __IAR_FT uint32_t __iar_uint32_read(void const* ptr) {
     return *(__packed uint32_t*)(ptr);
 }
+
 #pragma language = restore
 #define __UNALIGNED_UINT32_READ(PTR) __iar_uint32_read(PTR)
 #endif
@@ -146,10 +152,12 @@ __IAR_FT uint32_t __iar_uint32_read(void const* ptr) {
 #ifndef __UNALIGNED_UINT32_WRITE
 #pragma language = save
 #pragma language = extended
+
 __IAR_FT void __iar_uint32_write(void const* ptr, uint32_t val) {
     *(__packed uint32_t*)(ptr) = val;
     ;
 }
+
 #pragma language = restore
 #define __UNALIGNED_UINT32_WRITE(PTR, VAL) __iar_uint32_write(PTR, VAL)
 #endif
@@ -261,8 +269,7 @@ __IAR_FT void __CLREX(void) {
 
 #endif /* (__ARM_FEATURE_LDREX >= 4) */
 
-#if ((__ARM_FEATURE_SAT >= 1) && \
-     (__ARM_ARCH_ISA_THUMB >= 2))
+#if ((__ARM_FEATURE_SAT >= 1) && (__ARM_ARCH_ISA_THUMB >= 2))
 /* __ARM_FEATURE_SAT is wrong for Armv8-M Baseline devices */
 /**
   \brief   Signed Saturate

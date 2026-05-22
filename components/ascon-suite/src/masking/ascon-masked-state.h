@@ -80,19 +80,18 @@
 extern "C" {
 #endif
 
-/**
+    /**
  * \brief State of the ASCON permutation which has been masked
  * with up to 4 shares.
  *
  * This structure should be treated as opaque.
  */
-typedef struct
-{
-    ascon_masked_word_t M[5]; /**< Masked words of the state */
+    typedef struct {
+        ascon_masked_word_t M[5]; /**< Masked words of the state */
 
-} ascon_masked_state_t;
+    } ascon_masked_state_t;
 
-/**
+    /**
  * \brief Initializes the words of a masked ASCON permutation state.
  *
  * \param state The masked ASCON state to initialize.
@@ -103,9 +102,9 @@ typedef struct
  *
  * \sa ascon_masked_state_free()
  */
-void ascon_masked_state_init(ascon_masked_state_t* state);
+    void ascon_masked_state_init(ascon_masked_state_t* state);
 
-/**
+    /**
  * \brief Frees an ASCON-x2 permutation state and attempts to destroy
  * any sensitive material.
  *
@@ -113,9 +112,9 @@ void ascon_masked_state_init(ascon_masked_state_t* state);
  *
  * \sa ascon_masked_state_init()
  */
-void ascon_masked_state_free(ascon_masked_state_t* state);
+    void ascon_masked_state_free(ascon_masked_state_t* state);
 
-/**
+    /**
  * \brief Randomizes an ASCON-x2 permutation state.
  *
  * \param state The ASCON-x2 state to be randomized.
@@ -124,9 +123,9 @@ void ascon_masked_state_free(ascon_masked_state_t* state);
  * The state will still have the same effective value, but this function
  * will mix in fresh randomness to all words.
  */
-void ascon_x2_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
+    void ascon_x2_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Permutes the ASCON-x2 state with a specified number of rounds.
  *
  * \param state The ASCON-x2 state in "operational" form.
@@ -135,9 +134,9 @@ void ascon_x2_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
  * \param preserve Preserved randomness from the previous permutation
  * operation, or a fresh random word if randomness should not be preserved.
  */
-void ascon_x2_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
+    void ascon_x2_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x2 permutation state from a regular
  * ASCON-x1 permutation state.
  *
@@ -145,9 +144,9 @@ void ascon_x2_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t
  * \param src The source to copy from.
  * \param trng TRNG to use to mask the original ASCON-x1 state.
  */
-void ascon_x2_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x2_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x2 permutation state to a regular
  * ASCON-x1 permutation state.
  *
@@ -157,9 +156,9 @@ void ascon_x2_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src,
  * The \a dest must be released and freed before this operation as it
  * will be initialized by the process.
  */
-void ascon_x2_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
+    void ascon_x2_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x2 permutation state from a source to a
  * destination.
  *
@@ -167,9 +166,9 @@ void ascon_x2_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
  * \param src The source to copy from.
  * \param trng TRNG to use to re-randomize the source state.
  */
-void ascon_x2_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x2_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state to an
  * ASCON-x2 permutation state.
  *
@@ -177,9 +176,9 @@ void ascon_x2_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x2_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x2_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state to an
  * ASCON-x2 permutation state.
  *
@@ -187,9 +186,9 @@ void ascon_x2_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x2_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x2_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Randomizes an ASCON-x3 permutation state.
  *
  * \param state The ASCON-x3 state to be randomized.
@@ -198,9 +197,9 @@ void ascon_x2_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_
  * The state will still have the same effective value, but this function
  * will mix in fresh randomness to all words.
  */
-void ascon_x3_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
+    void ascon_x3_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Permutes the ASCON-x3 state with a specified number of rounds.
  *
  * \param state The ASCON-x3 state in "operational" form.
@@ -209,9 +208,9 @@ void ascon_x3_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
  * \param preserve Preserved randomness from the previous permutation
  * operation, or fresh random words if randomness should not be preserved.
  */
-void ascon_x3_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
+    void ascon_x3_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state from a regular
  * ASCON-x1 permutation state.
  *
@@ -219,9 +218,9 @@ void ascon_x3_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t
  * \param src The source to copy from.
  * \param trng TRNG to use to mask the original ASCON-x1 state.
  */
-void ascon_x3_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x3_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state to a regular
  * ASCON-x1 permutation state.
  *
@@ -231,9 +230,9 @@ void ascon_x3_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src,
  * The \a dest must be released and freed before this operation as it
  * will be initialized by the process.
  */
-void ascon_x3_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
+    void ascon_x3_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state from an
  * ASCON-x2 permutation state.
  *
@@ -241,9 +240,9 @@ void ascon_x3_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x3_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x3_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state from a source to a
  * destination.
  *
@@ -251,9 +250,9 @@ void ascon_x3_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to re-randomize the source state.
  */
-void ascon_x3_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x3_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x3 permutation state from an
  * ASCON-x4 permutation state.
  *
@@ -261,9 +260,9 @@ void ascon_x3_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x3_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x3_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Randomizes an ASCON-x4 permutation state.
  *
  * \param state The ASCON-x4 state to be randomized.
@@ -272,9 +271,9 @@ void ascon_x3_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_
  * The state will still have the same effective value, but this function
  * will mix in fresh randomness to all words.
  */
-void ascon_x4_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
+    void ascon_x4_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Permutes the ASCON-x4 state with a specified number of rounds.
  *
  * \param state The ASCON-x4 state in "operational" form.
@@ -283,9 +282,9 @@ void ascon_x4_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng);
  * \param preserve Preserved randomness from the previous permutation
  * operation, or fresh random words if randomness should not be preserved.
  */
-void ascon_x4_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
+    void ascon_x4_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state from a regular
  * ASCON-x1 permutation state.
  *
@@ -293,9 +292,9 @@ void ascon_x4_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t
  * \param src The source to copy from.
  * \param trng TRNG to use to mask the original ASCON-x1 state.
  */
-void ascon_x4_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x4_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state to a regular
  * ASCON-x1 permutation state.
  *
@@ -305,9 +304,9 @@ void ascon_x4_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src,
  * The \a dest must be released and freed before this operation as it
  * will be initialized by the process.
  */
-void ascon_x4_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
+    void ascon_x4_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state from an
  * ASCON-x2 permutation state.
  *
@@ -315,9 +314,9 @@ void ascon_x4_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src);
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x4_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x4_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state from an
  * ASCON-x3 permutation state.
  *
@@ -325,9 +324,9 @@ void ascon_x4_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to randomize the output state.
  */
-void ascon_x4_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x4_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Copies the entire ASCON-x4 permutation state from a source to a
  * destination.
  *
@@ -335,9 +334,9 @@ void ascon_x4_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_
  * \param src The source to copy from.
  * \param trng TRNG to use to re-randomize the source state.
  */
-void ascon_x4_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
+    void ascon_x4_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Randomizes a masked 128-bit key by mixing in fresh random material
  * from a caller-supplied TRNG.
  *
@@ -346,9 +345,9 @@ void ascon_x4_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_
  *
  * Long-lived keys should be randomized regularly to mix in fresh randomness.
  */
-void ascon_masked_key_128_randomize_with_trng(ascon_masked_key_128_t* masked, ascon_trng_state_t* trng);
+    void ascon_masked_key_128_randomize_with_trng(ascon_masked_key_128_t* masked, ascon_trng_state_t* trng);
 
-/**
+    /**
  * \brief Randomizes a masked 160-bit key by mixing in fresh random material
  * from a caller-supplied TRNG.
  *
@@ -357,7 +356,7 @@ void ascon_masked_key_128_randomize_with_trng(ascon_masked_key_128_t* masked, as
  *
  * Long-lived keys should be randomized regularly to mix in fresh randomness.
  */
-void ascon_masked_key_160_randomize_with_trng(ascon_masked_key_160_t* masked, ascon_trng_state_t* trng);
+    void ascon_masked_key_160_randomize_with_trng(ascon_masked_key_160_t* masked, ascon_trng_state_t* trng);
 
 #ifdef __cplusplus
 }

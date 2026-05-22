@@ -26,8 +26,7 @@
 #include "code.h"
 
 // Information about a test vector for a block cipher.
-typedef struct
-{
+typedef struct {
     const char*   name;
     unsigned char key[48];
     unsigned      key_len;

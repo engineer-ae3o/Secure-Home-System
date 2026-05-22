@@ -77,8 +77,7 @@ int main(int argc, char* argv[]) {
 #else
     /* Simple command-line parser for systems without getopt() */
     int optind = 1;
-    while (optind < argc && argv[optind][0] == '-' &&
-           argv[optind][1] != '\0') {
+    while (optind < argc && argv[optind][0] == '-' && argv[optind][1] != '\0') {
         const char* opts = argv[optind] + 1;
         while ((opt = *opts++) != '\0') {
             switch (opt) {
@@ -319,8 +318,7 @@ static int check_file(const char* filename, int algorithm) {
         /* Parse the line into a hash value and a filename */
         hashlen = 0;
         posn    = 0;
-        while (posn < len && hashlen < ASCON_HASH_SIZE &&
-               (hex1 = to_hex_digit(line[posn])) >= 0 &&
+        while (posn < len && hashlen < ASCON_HASH_SIZE && (hex1 = to_hex_digit(line[posn])) >= 0 &&
                (hex2 = to_hex_digit(line[posn + 1])) >= 0) {
             hash[hashlen++] = (unsigned char)(hex1 * 16 + hex2);
             posn += 2;

@@ -6,8 +6,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include <utility>
-
 namespace gsm {
 
     // Global state. It is what it is
@@ -157,10 +155,12 @@ namespace gsm {
         NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
         // Set TX and RX pins as analog
-        GPIO_InitTypeDef gpio_deinit = {.Pin   = (config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
-                                        .Mode  = GPIO_MODE_ANALOG,
-                                        .Pull  = GPIO_NOPULL,
-                                        .Speed = GPIO_SPEED_FREQ_LOW};
+        GPIO_InitTypeDef gpio_deinit = {
+            .Pin   = static_cast<uint32_t>(config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
+            .Mode  = GPIO_MODE_ANALOG,
+            .Pull  = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_LOW,
+        };
         HAL_GPIO_Init(config::GSM_GPIO_TX.port, &gpio_deinit);
 
         s_is_initialized = false;
@@ -184,7 +184,9 @@ namespace gsm {
     etl::expected<etl::array<char, 16>, status_t> get_imsi() {
         utils::assert_check(s_is_initialized);
 
-        return {};
+        etl::array<char, 16> imsi{};
+
+        return imsi;
     }
 
 } // namespace gsm

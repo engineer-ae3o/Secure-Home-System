@@ -166,13 +166,13 @@ namespace pad {
 
             // Can't delete since stack allocated
             // So, just zero the memory and mark as unused
-            if (m_event_queue) {
+            if (static_cast<bool>(m_event_queue)) {
                 m_queue_structure = {};
                 m_queue_buffer    = {};
                 m_event_queue     = nullptr;
             }
 
-            if (m_debounce_timer) {
+            if (static_cast<bool>(m_debounce_timer)) {
                 xTimerStop(m_debounce_timer, portMAX_DELAY);
                 m_debounce_timer_structure = {};
                 m_debounce_timer           = nullptr;
@@ -187,7 +187,7 @@ namespace pad {
          * 
          * @return The event queue
          */
-        QueueHandle_t get_event_queue() const {
+        [[nodiscard]] QueueHandle_t get_event_queue() const {
             utils::assert_check(m_is_initialized);
             return m_event_queue;
         };
@@ -213,13 +213,14 @@ namespace pad {
     private:
         static void debounce_timer_cb(TimerHandle_t xTimer) {
             // Get timer ID
-            keypad_t* keypad = static_cast<keypad_t*>(pvTimerGetTimerID(xTimer));
+            auto keypad = static_cast<keypad_t*>(pvTimerGetTimerID(xTimer));
 
             // Set all row pins high
             HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_row_pins, GPIO_PIN_SET);
 
             // Keypad scanning
-            uint8_t row{}, column{};
+            uint8_t row{};
+            uint8_t column{};
             bool    found{};
 
             [&]() {

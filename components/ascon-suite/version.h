@@ -37,12 +37,12 @@ extern "C" {
  */
 #define ASCON_SUITE_VERSION 0x000300
 
-/**
+    /**
  * \brief Version of the ASCON Suite API that is implemented by the library.
  *
  * \return The library version; e.g. 0x010203 for version 1.2.3.
  */
-int ascon_suite_version(void);
+    int ascon_suite_version(void);
 
 #ifdef __cplusplus
 }

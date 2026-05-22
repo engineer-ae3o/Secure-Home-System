@@ -56,7 +56,7 @@
 extern "C" {
 #endif
 
-/**
+    /**
  * \brief Encrypts and authenticates a packet with ASCON-128-SIV.
  *
  * \param c Buffer to receive the output.
@@ -73,9 +73,16 @@ extern "C" {
  *
  * \sa ascon128_siv_decrypt()
  */
-void ascon128_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    void ascon128_siv_encrypt(unsigned char*       c,
+                              size_t*              clen,
+                              const unsigned char* m,
+                              size_t               mlen,
+                              const unsigned char* ad,
+                              size_t               adlen,
+                              const unsigned char* npub,
+                              const unsigned char* k);
 
-/**
+    /**
  * \brief Decrypts and authenticates a packet with ASCON-128-SIV.
  *
  * \param m Buffer to receive the plaintext message on output.
@@ -96,9 +103,16 @@ void ascon128_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m
  *
  * \sa ascon128_siv_encrypt()
  */
-int ascon128_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    int ascon128_siv_decrypt(unsigned char*       m,
+                             size_t*              mlen,
+                             const unsigned char* c,
+                             size_t               clen,
+                             const unsigned char* ad,
+                             size_t               adlen,
+                             const unsigned char* npub,
+                             const unsigned char* k);
 
-/**
+    /**
  * \brief Encrypts and authenticates a packet with ASCON-128a-SIV.
  *
  * \param c Buffer to receive the output.
@@ -115,9 +129,16 @@ int ascon128_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c,
  *
  * \sa ascon128a_siv_decrypt()
  */
-void ascon128a_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    void ascon128a_siv_encrypt(unsigned char*       c,
+                               size_t*              clen,
+                               const unsigned char* m,
+                               size_t               mlen,
+                               const unsigned char* ad,
+                               size_t               adlen,
+                               const unsigned char* npub,
+                               const unsigned char* k);
 
-/**
+    /**
  * \brief Decrypts and authenticates a packet with ASCON-128a-SIV.
  *
  * \param m Buffer to receive the plaintext message on output.
@@ -138,9 +159,16 @@ void ascon128a_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* 
  *
  * \sa ascon128a_siv_encrypt()
  */
-int ascon128a_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    int ascon128a_siv_decrypt(unsigned char*       m,
+                              size_t*              mlen,
+                              const unsigned char* c,
+                              size_t               clen,
+                              const unsigned char* ad,
+                              size_t               adlen,
+                              const unsigned char* npub,
+                              const unsigned char* k);
 
-/**
+    /**
  * \brief Encrypts and authenticates a packet with ASCON-80pq-SIV.
  *
  * \param c Buffer to receive the output.
@@ -157,9 +185,16 @@ int ascon128a_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c
  *
  * \sa ascon80pq_siv_decrypt()
  */
-void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    void ascon80pq_siv_encrypt(unsigned char*       c,
+                               size_t*              clen,
+                               const unsigned char* m,
+                               size_t               mlen,
+                               const unsigned char* ad,
+                               size_t               adlen,
+                               const unsigned char* npub,
+                               const unsigned char* k);
 
-/**
+    /**
  * \brief Decrypts and authenticates a packet with ASCON-80pq-SIV.
  *
  * \param m Buffer to receive the plaintext message on output.
@@ -180,34 +215,42 @@ void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* 
  *
  * \sa ascon80pq_siv_encrypt()
  */
-int ascon80pq_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
+    int ascon80pq_siv_decrypt(unsigned char*       m,
+                              size_t*              mlen,
+                              const unsigned char* c,
+                              size_t               clen,
+                              const unsigned char* ad,
+                              size_t               adlen,
+                              const unsigned char* npub,
+                              const unsigned char* k);
 
 #ifdef __cplusplus
 }
 
 namespace ascon {
 
-/**
+    /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128-SIV.
  */
-class siv128 : public aead {
-    /* Disable copy operations */
-    inline siv128(const siv128&) : aead() {
-    }
-    inline siv128& operator=(const siv128&) {
-        return *this;
-    }
+    class siv128 : public aead {
+        /* Disable copy operations */
+        inline siv128(const siv128&) : aead() {
+        }
+
+        inline siv128& operator=(const siv128&) {
+            return *this;
+        }
 
     public:
-    /**
+        /**
      * \brief Constructs a new ASCON-128-SIV object.
      *
      * The key and nonce will be initially set to all-zeroes.  Use set_key()
      * and set_nonce() to set specific key and nonce values.
      */
-    siv128();
+        siv128();
 
-    /**
+        /**
      * \brief Constructs a new ASCON-128-SIV object with an initial key.
      *
      * \param key The key to use to encrypt or decrypt packets.
@@ -217,55 +260,56 @@ class siv128 : public aead {
      *
      * The key will be set to all-zeroes if \a key is NULL.
      */
-    explicit siv128(const unsigned char key[ASCON128_KEY_SIZE]);
+        explicit siv128(const unsigned char key[ASCON128_KEY_SIZE]);
 
-    /**
+        /**
      * \brief Destroys this ASCON-128-SIV object and all sensitive
      * material within.
      */
-    ~siv128();
+        ~siv128();
 
-    /* Override virtual methods */
-    size_t key_size() const;
-    size_t tag_size() const;
-    size_t nonce_size() const;
-    bool   set_key(const unsigned char* key, size_t len);
-    void   set_nonce(const unsigned char* nonce, size_t len);
-    void   set_counter(uint64_t n);
-    void   clear();
+        /* Override virtual methods */
+        size_t key_size() const;
+        size_t tag_size() const;
+        size_t nonce_size() const;
+        bool   set_key(const unsigned char* key, size_t len);
+        void   set_nonce(const unsigned char* nonce, size_t len);
+        void   set_counter(uint64_t n);
+        void   clear();
 
     protected:
-    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
-    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
+        int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+        int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
     private:
-    struct {
-        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
-    } m_state;                                    /**< Internal AEAD state */
-};
+        struct {
+            unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+            unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+        } m_state;                                    /**< Internal AEAD state */
+    };
 
-/**
+    /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128a-SIV.
  */
-class siv128a : public aead {
-    /* Disable copy operations */
-    inline siv128a(const siv128a&) : aead() {
-    }
-    inline siv128a& operator=(const siv128a&) {
-        return *this;
-    }
+    class siv128a : public aead {
+        /* Disable copy operations */
+        inline siv128a(const siv128a&) : aead() {
+        }
+
+        inline siv128a& operator=(const siv128a&) {
+            return *this;
+        }
 
     public:
-    /**
+        /**
      * \brief Constructs a new ASCON-128a-SIV object.
      *
      * The key and nonce will be initially set to all-zeroes.  Use set_key()
      * and set_nonce() to set specific key and nonce values.
      */
-    siv128a();
+        siv128a();
 
-    /**
+        /**
      * \brief Constructs a new ASCON-128a-SIV object with an initial key.
      *
      * \param key The key to use to encrypt or decrypt packets.
@@ -275,55 +319,56 @@ class siv128a : public aead {
      *
      * The key will be set to all-zeroes if \a key is NULL.
      */
-    explicit siv128a(const unsigned char key[ASCON128_KEY_SIZE]);
+        explicit siv128a(const unsigned char key[ASCON128_KEY_SIZE]);
 
-    /**
+        /**
      * \brief Destroys this ASCON-128a-SIV object and all sensitive
      * material within.
      */
-    ~siv128a();
+        ~siv128a();
 
-    /* Override virtual methods */
-    size_t key_size() const;
-    size_t tag_size() const;
-    size_t nonce_size() const;
-    bool   set_key(const unsigned char* key, size_t len);
-    void   set_nonce(const unsigned char* nonce, size_t len);
-    void   set_counter(uint64_t n);
-    void   clear();
+        /* Override virtual methods */
+        size_t key_size() const;
+        size_t tag_size() const;
+        size_t nonce_size() const;
+        bool   set_key(const unsigned char* key, size_t len);
+        void   set_nonce(const unsigned char* nonce, size_t len);
+        void   set_counter(uint64_t n);
+        void   clear();
 
     protected:
-    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
-    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
+        int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+        int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
     private:
-    struct {
-        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
-    } m_state;                                    /**< Internal AEAD state */
-};
+        struct {
+            unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+            unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+        } m_state;                                    /**< Internal AEAD state */
+    };
 
-/**
+    /**
  * \brief Encrypts or decrypts sequential packets with ASCON-80pq-SIV.
  */
-class siv80pq : public aead {
-    /* Disable copy operations */
-    inline siv80pq(const siv80pq&) : aead() {
-    }
-    inline siv80pq& operator=(const siv80pq&) {
-        return *this;
-    }
+    class siv80pq : public aead {
+        /* Disable copy operations */
+        inline siv80pq(const siv80pq&) : aead() {
+        }
+
+        inline siv80pq& operator=(const siv80pq&) {
+            return *this;
+        }
 
     public:
-    /**
+        /**
      * \brief Constructs a new ASCON-80pq-SIV object.
      *
      * The key and nonce will be initially set to all-zeroes.  Use set_key()
      * and set_nonce() to set specific key and nonce values.
      */
-    siv80pq();
+        siv80pq();
 
-    /**
+        /**
      * \brief Constructs a new ASCON-80pq-SIV object with an initial key.
      *
      * \param key The key to use to encrypt or decrypt packets.
@@ -333,33 +378,33 @@ class siv80pq : public aead {
      *
      * The key will be set to all-zeroes if \a key is NULL.
      */
-    explicit siv80pq(const unsigned char key[ASCON80PQ_KEY_SIZE]);
+        explicit siv80pq(const unsigned char key[ASCON80PQ_KEY_SIZE]);
 
-    /**
+        /**
      * \brief Destroys this ASCON-80pq-SIV object and all sensitive
      * material within.
      */
-    ~siv80pq();
+        ~siv80pq();
 
-    /* Override virtual methods */
-    size_t key_size() const;
-    size_t tag_size() const;
-    size_t nonce_size() const;
-    bool   set_key(const unsigned char* key, size_t len);
-    void   set_nonce(const unsigned char* nonce, size_t len);
-    void   set_counter(uint64_t n);
-    void   clear();
+        /* Override virtual methods */
+        size_t key_size() const;
+        size_t tag_size() const;
+        size_t nonce_size() const;
+        bool   set_key(const unsigned char* key, size_t len);
+        void   set_nonce(const unsigned char* nonce, size_t len);
+        void   set_counter(uint64_t n);
+        void   clear();
 
     protected:
-    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
-    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
+        int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+        int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
     private:
-    struct {
-        unsigned char key[ASCON80PQ_KEY_SIZE];     /**< Key */
-        unsigned char nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
-    } m_state;                                     /**< Internal AEAD state */
-};
+        struct {
+            unsigned char key[ASCON80PQ_KEY_SIZE];     /**< Key */
+            unsigned char nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
+        } m_state;                                     /**< Internal AEAD state */
+    };
 
 } /* namespace ascon */
 

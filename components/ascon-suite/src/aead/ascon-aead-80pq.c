@@ -29,7 +29,14 @@
  */
 static uint8_t const ASCON80PQ_IV[4] = {0xa0, 0x40, 0x0c, 0x06};
 
-void ascon80pq_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+void ascon80pq_aead_encrypt(unsigned char*       c,
+                            size_t*              clen,
+                            const unsigned char* m,
+                            size_t               mlen,
+                            const unsigned char* ad,
+                            size_t               adlen,
+                            const unsigned char* npub,
+                            const unsigned char* k) {
     ascon_state_t state;
     unsigned char partial;
 
@@ -64,7 +71,14 @@ void ascon80pq_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char*
     ascon_free(&state);
 }
 
-int ascon80pq_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+int ascon80pq_aead_decrypt(unsigned char*       m,
+                           size_t*              mlen,
+                           const unsigned char* c,
+                           size_t               clen,
+                           const unsigned char* ad,
+                           size_t               adlen,
+                           const unsigned char* npub,
+                           const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON80PQ_TAG_SIZE];
     unsigned char partial;

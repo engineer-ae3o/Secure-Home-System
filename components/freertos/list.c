@@ -82,6 +82,7 @@ void vListInitialise(List_t* const pxList) {
 
     traceRETURN_vListInitialise();
 }
+
 /*-----------------------------------------------------------*/
 
 void vListInitialiseItem(ListItem_t* const pxItem) {
@@ -97,10 +98,10 @@ void vListInitialiseItem(ListItem_t* const pxItem) {
 
     traceRETURN_vListInitialiseItem();
 }
+
 /*-----------------------------------------------------------*/
 
-void vListInsertEnd(List_t* const     pxList,
-                    ListItem_t* const pxNewListItem) {
+void vListInsertEnd(List_t* const pxList, ListItem_t* const pxNewListItem) {
     ListItem_t* const pxIndex = pxList->pxIndex;
 
     traceENTER_vListInsertEnd(pxList, pxNewListItem);
@@ -130,10 +131,10 @@ void vListInsertEnd(List_t* const     pxList,
 
     traceRETURN_vListInsertEnd();
 }
+
 /*-----------------------------------------------------------*/
 
-void vListInsert(List_t* const     pxList,
-                 ListItem_t* const pxNewListItem) {
+void vListInsert(List_t* const pxList, ListItem_t* const pxNewListItem) {
     ListItem_t*      pxIterator;
     const TickType_t xValueOfInsertion = pxNewListItem->xItemValue;
 
@@ -181,7 +182,8 @@ void vListInsert(List_t* const     pxList,
         *      configMAX_SYSCALL_INTERRUPT_PRIORITY.
         **********************************************************************/
 
-        for (pxIterator = (ListItem_t*)&(pxList->xListEnd); pxIterator->pxNext->xItemValue <= xValueOfInsertion; pxIterator = pxIterator->pxNext) {
+        for (pxIterator = (ListItem_t*)&(pxList->xListEnd); pxIterator->pxNext->xItemValue <= xValueOfInsertion;
+             pxIterator = pxIterator->pxNext) {
             /* There is nothing to do here, just iterating to the wanted
              * insertion position.
              * IF YOU FIND YOUR CODE STUCK HERE, SEE THE NOTE JUST ABOVE.
@@ -202,6 +204,7 @@ void vListInsert(List_t* const     pxList,
 
     traceRETURN_vListInsert();
 }
+
 /*-----------------------------------------------------------*/
 
 UBaseType_t uxListRemove(ListItem_t* const pxItemToRemove) {
@@ -231,4 +234,5 @@ UBaseType_t uxListRemove(ListItem_t* const pxItemToRemove) {
 
     return pxList->uxNumberOfItems;
 }
+
 /*-----------------------------------------------------------*/

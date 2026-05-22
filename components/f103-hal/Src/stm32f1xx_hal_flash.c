@@ -133,6 +133,7 @@ FLASH_ProcessTypeDef pFlash = {.ProcedureOnGoing = FLASH_PROC_NONE,
 static void FLASH_Program_HalfWord(uint32_t Address, uint16_t Data);
 static void FLASH_SetErrorCode(void);
 extern void FLASH_PageErase(uint32_t PageAddress);
+
 /**
   * @}
   */
@@ -758,9 +759,7 @@ HAL_StatusTypeDef FLASH_WaitForLastOperation(uint32_t Timeout) {
         __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP);
     }
 
-    if (__HAL_FLASH_GET_FLAG(FLASH_FLAG_WRPERR) ||
-        __HAL_FLASH_GET_FLAG(FLASH_FLAG_OPTVERR) ||
-        __HAL_FLASH_GET_FLAG(FLASH_FLAG_PGERR)) {
+    if (__HAL_FLASH_GET_FLAG(FLASH_FLAG_WRPERR) || __HAL_FLASH_GET_FLAG(FLASH_FLAG_OPTVERR) || __HAL_FLASH_GET_FLAG(FLASH_FLAG_PGERR)) {
         /*Save the error code*/
         FLASH_SetErrorCode();
         return HAL_ERROR;
@@ -849,6 +848,7 @@ static void FLASH_SetErrorCode(void) {
     /* Clear FLASH error pending bits */
     __HAL_FLASH_CLEAR_FLAG(flags);
 }
+
 /**
   * @}
   */

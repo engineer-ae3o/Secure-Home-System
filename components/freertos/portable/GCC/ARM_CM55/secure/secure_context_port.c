@@ -54,8 +54,10 @@ void SecureContext_LoadContextAsm(SecureContext_t* pxSecureContext) {
         "                                   \n"
         " load_ctx_therad_mode:             \n"
         "    bx lr                          \n"
-        "                                   \n" ::: "r0", "r1", "r2");
+        "                                   \n" ::
+            : "r0", "r1", "r2");
 }
+
 /*-----------------------------------------------------------*/
 
 void SecureContext_SaveContextAsm(SecureContext_t* pxSecureContext) {
@@ -84,6 +86,8 @@ void SecureContext_SaveContextAsm(SecureContext_t* pxSecureContext) {
         "                                   \n"
         " save_ctx_therad_mode:             \n"
         "    bx lr                          \n"
-        "                                   \n" ::"i"(securecontextNO_STACK) : "r1", "memory");
+        "                                   \n" ::"i"(securecontextNO_STACK)
+        : "r1", "memory");
 }
+
 /*-----------------------------------------------------------*/

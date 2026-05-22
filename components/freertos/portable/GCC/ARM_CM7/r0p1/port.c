@@ -193,9 +193,7 @@ static const volatile uint8_t* const pcInterruptPriorityRegisters = (const volat
 /*
  * See header file for description.
  */
-StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
-                                   TaskFunction_t pxCode,
-                                   void*          pvParameters) {
+StackType_t* pxPortInitialiseStack(StackType_t* pxTopOfStack, TaskFunction_t pxCode, void* pvParameters) {
     /* Simulate the stack frame as it would be created by a context switch
      * interrupt. */
 
@@ -222,6 +220,7 @@ StackType_t* pxPortInitialiseStack(StackType_t*   pxTopOfStack,
 
     return pxTopOfStack;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvTaskExitError(void) {
@@ -246,6 +245,7 @@ static void prvTaskExitError(void) {
          * after it. */
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortSVCHandler(void) {
@@ -262,6 +262,7 @@ void vPortSVCHandler(void) {
         "                                   \n"
         "   .ltorg                          \n");
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvPortStartFirstTask(void) {
@@ -269,21 +270,21 @@ static void prvPortStartFirstTask(void) {
      * in use in case the FPU was used before the scheduler was started - which
      * would otherwise result in the unnecessary leaving of space in the SVC stack
      * for lazy saving of FPU registers. */
-    __asm volatile(
-        " ldr r0, =0xE000ED08   \n" /* Use the NVIC offset register to locate the stack. */
-        " ldr r0, [r0]          \n"
-        " ldr r0, [r0]          \n"
-        " msr msp, r0           \n" /* Set the msp back to the start of the stack. */
-        " mov r0, #0            \n" /* Clear the bit that indicates the FPU is in use, see comment above. */
-        " msr control, r0       \n"
-        " cpsie i               \n" /* Globally enable interrupts. */
-        " cpsie f               \n"
-        " dsb                   \n"
-        " isb                   \n"
-        " svc 0                 \n" /* System call to start first task. */
-        " nop                   \n"
-        " .ltorg                \n");
+    __asm volatile(" ldr r0, =0xE000ED08   \n" /* Use the NVIC offset register to locate the stack. */
+                   " ldr r0, [r0]          \n"
+                   " ldr r0, [r0]          \n"
+                   " msr msp, r0           \n" /* Set the msp back to the start of the stack. */
+                   " mov r0, #0            \n" /* Clear the bit that indicates the FPU is in use, see comment above. */
+                   " msr control, r0       \n"
+                   " cpsie i               \n" /* Globally enable interrupts. */
+                   " cpsie f               \n"
+                   " dsb                   \n"
+                   " isb                   \n"
+                   " svc 0                 \n" /* System call to start first task. */
+                   " nop                   \n"
+                   " .ltorg                \n");
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -327,9 +328,10 @@ BaseType_t xPortStartScheduler(void) {
 #if (configASSERT_DEFINED == 1)
     {
         volatile uint8_t        ucOriginalPriority;
-        volatile uint32_t       ulImplementedPrioBits        = 0;
-        volatile uint8_t* const pucFirstUserPriorityRegister = (volatile uint8_t* const)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
-        volatile uint8_t        ucMaxPriorityValue;
+        volatile uint32_t       ulImplementedPrioBits = 0;
+        volatile uint8_t* const pucFirstUserPriorityRegister =
+            (volatile uint8_t* const)(portNVIC_IP_REGISTERS_OFFSET_16 + portFIRST_USER_INTERRUPT_NUMBER);
+        volatile uint8_t ucMaxPriorityValue;
 
         /* Determine the maximum priority from which ISR safe FreeRTOS API
          * functions can be called.  ISR safe functions are those that end in
@@ -438,6 +440,7 @@ BaseType_t xPortStartScheduler(void) {
     /* Should not get here! */
     return 0;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler(void) {
@@ -445,6 +448,7 @@ void vPortEndScheduler(void) {
      * Artificially force an assert. */
     configASSERT(uxCriticalNesting == 1000UL);
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortEnterCritical(void) {
@@ -460,6 +464,7 @@ void vPortEnterCritical(void) {
         configASSERT((portNVIC_INT_CTRL_REG & portVECTACTIVE_MASK) == 0);
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical(void) {
@@ -470,6 +475,7 @@ void vPortExitCritical(void) {
         portENABLE_INTERRUPTS();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortPendSVHandler(void) {
@@ -524,6 +530,7 @@ void xPortPendSVHandler(void) {
         "                                       \n"
         "   .ltorg                              \n" ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY));
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortSysTickHandler(void) {
@@ -547,6 +554,7 @@ void xPortSysTickHandler(void) {
     }
     portENABLE_INTERRUPTS();
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configUSE_TICKLESS_IDLE == 1)
@@ -777,19 +785,20 @@ __attribute__((weak)) void vPortSetupTimerInterrupt(void) {
     portNVIC_SYSTICK_LOAD_REG = (configSYSTICK_CLOCK_HZ / configTICK_RATE_HZ) - 1UL;
     portNVIC_SYSTICK_CTRL_REG = (portNVIC_SYSTICK_CLK_BIT_CONFIG | portNVIC_SYSTICK_INT_BIT | portNVIC_SYSTICK_ENABLE_BIT);
 }
+
 /*-----------------------------------------------------------*/
 
 /* This is a naked function. */
 static void vPortEnableVFP(void) {
-    __asm volatile(
-        "   ldr.w r0, =0xE000ED88       \n" /* The FPU enable bits are in the CPACR. */
-        "   ldr r1, [r0]                \n"
-        "                               \n"
-        "   orr r1, r1, #( 0xf << 20 )  \n" /* Enable CP10 and CP11 coprocessors, then save back. */
-        "   str r1, [r0]                \n"
-        "   bx r14                      \n"
-        "   .ltorg                      \n");
+    __asm volatile("   ldr.w r0, =0xE000ED88       \n" /* The FPU enable bits are in the CPACR. */
+                   "   ldr r1, [r0]                \n"
+                   "                               \n"
+                   "   orr r1, r1, #( 0xf << 20 )  \n" /* Enable CP10 and CP11 coprocessors, then save back. */
+                   "   str r1, [r0]                \n"
+                   "   bx r14                      \n"
+                   "   .ltorg                      \n");
 }
+
 /*-----------------------------------------------------------*/
 
 #if (configASSERT_DEFINED == 1)

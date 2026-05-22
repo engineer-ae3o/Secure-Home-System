@@ -39,39 +39,38 @@ SOFTWARE.
 #include <stdint.h>
 
 namespace etl {
-namespace private_limiter {
-template<typename TInput>
-struct limit {
-    TInput operator()(TInput value, TInput lowest, TInput highest) const {
-        return etl::clamp(value, lowest, highest);
-    }
-};
-} // namespace private_limiter
+    namespace private_limiter {
+        template<typename TInput>
+        struct limit {
+            TInput operator()(TInput value, TInput lowest, TInput highest) const {
+                return etl::clamp(value, lowest, highest);
+            }
+        };
+    } // namespace private_limiter
 
-//***************************************************************************
-/// Limiter.
-//***************************************************************************
-template<typename TInput, typename TLimit = etl::private_limiter::limit<TInput>>
-class limiter : public etl::unary_function<TInput, TInput> {
+    //***************************************************************************
+    /// Limiter.
+    //***************************************************************************
+    template<typename TInput, typename TLimit = etl::private_limiter::limit<TInput>>
+    class limiter : public etl::unary_function<TInput, TInput> {
     public:
-    //*****************************************************************
-    // Constructor.
-    //*****************************************************************
-    limiter(TInput lowest_, TInput highest_)
-        : lowest(lowest_), highest(highest_) {
-    }
+        //*****************************************************************
+        // Constructor.
+        //*****************************************************************
+        limiter(TInput lowest_, TInput highest_) : lowest(lowest_), highest(highest_) {
+        }
 
-    //*****************************************************************
-    // operator ()
-    //*****************************************************************
-    TInput operator()(TInput value) const {
-        return TLimit()(value, lowest, highest);
-    }
+        //*****************************************************************
+        // operator ()
+        //*****************************************************************
+        TInput operator()(TInput value) const {
+            return TLimit()(value, lowest, highest);
+        }
 
     private:
-    const TInput lowest;
-    const TInput highest;
-};
+        const TInput lowest;
+        const TInput highest;
+    };
 } // namespace etl
 
 #endif

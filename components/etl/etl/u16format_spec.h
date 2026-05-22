@@ -38,7 +38,7 @@ SOFTWARE.
 #include "u16string.h"
 
 namespace etl {
-typedef etl::basic_format_spec<etl::iu16string> u16format_spec;
+    typedef etl::basic_format_spec<etl::iu16string> u16format_spec;
 }
 
 #endif

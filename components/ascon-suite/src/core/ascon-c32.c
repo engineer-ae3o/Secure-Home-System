@@ -30,25 +30,23 @@
 
 #if defined(ASCON_BACKEND_C32)
 
-#define ROUND_CONSTANT_PAIR(rc1, rc2) \
-    (~((uint32_t)(rc1))), (~((uint32_t)(rc2)))
+#define ROUND_CONSTANT_PAIR(rc1, rc2) (~((uint32_t)(rc1))), (~((uint32_t)(rc2)))
 
 void ascon_permute(ascon_state_t* state, uint8_t first_round) {
-    static const uint32_t RC[12 * 2] = {
-        ROUND_CONSTANT_PAIR(12, 12),
-        ROUND_CONSTANT_PAIR(9, 12),
-        ROUND_CONSTANT_PAIR(12, 9),
-        ROUND_CONSTANT_PAIR(9, 9),
-        ROUND_CONSTANT_PAIR(6, 12),
-        ROUND_CONSTANT_PAIR(3, 12),
-        ROUND_CONSTANT_PAIR(6, 9),
-        ROUND_CONSTANT_PAIR(3, 9),
-        ROUND_CONSTANT_PAIR(12, 6),
-        ROUND_CONSTANT_PAIR(9, 6),
-        ROUND_CONSTANT_PAIR(12, 3),
-        ROUND_CONSTANT_PAIR(9, 3)};
-    const uint32_t* rc = RC + first_round * 2;
-    uint32_t        t0, t1, t2, t3, t4;
+    static const uint32_t RC[12 * 2] = {ROUND_CONSTANT_PAIR(12, 12),
+                                        ROUND_CONSTANT_PAIR(9, 12),
+                                        ROUND_CONSTANT_PAIR(12, 9),
+                                        ROUND_CONSTANT_PAIR(9, 9),
+                                        ROUND_CONSTANT_PAIR(6, 12),
+                                        ROUND_CONSTANT_PAIR(3, 12),
+                                        ROUND_CONSTANT_PAIR(6, 9),
+                                        ROUND_CONSTANT_PAIR(3, 9),
+                                        ROUND_CONSTANT_PAIR(12, 6),
+                                        ROUND_CONSTANT_PAIR(9, 6),
+                                        ROUND_CONSTANT_PAIR(12, 3),
+                                        ROUND_CONSTANT_PAIR(9, 3)};
+    const uint32_t*       rc         = RC + first_round * 2;
+    uint32_t              t0, t1, t2, t3, t4;
 
     /* Load the state into local variables */
     uint32_t x0_e = state->W[0];
@@ -77,29 +75,29 @@ void ascon_permute(ascon_state_t* state, uint8_t first_round) {
         rc += 2;
 
 /* Substitution layer */
-#define ascon_sbox(x0, x1, x2, x3, x4) \
-    do {                               \
-        x0 ^= x4;                      \
-        x4 ^= x3;                      \
-        x2 ^= x1;                      \
-        t0 = ~x0;                      \
-        t1 = ~x1;                      \
-        t2 = ~x2;                      \
-        t3 = ~x3;                      \
-        t4 = ~x4;                      \
-        t0 &= x1;                      \
-        t1 &= x2;                      \
-        t2 &= x3;                      \
-        t3 &= x4;                      \
-        t4 &= x0;                      \
-        x0 ^= t1;                      \
-        x1 ^= t2;                      \
-        x2 ^= t3;                      \
-        x3 ^= t4;                      \
-        x4 ^= t0;                      \
-        x1 ^= x0;                      \
-        x0 ^= x4;                      \
-        x3 ^= x2; /* x2 = ~x2; */      \
+#define ascon_sbox(x0, x1, x2, x3, x4)                                                                                                     \
+    do {                                                                                                                                   \
+        x0 ^= x4;                                                                                                                          \
+        x4 ^= x3;                                                                                                                          \
+        x2 ^= x1;                                                                                                                          \
+        t0 = ~x0;                                                                                                                          \
+        t1 = ~x1;                                                                                                                          \
+        t2 = ~x2;                                                                                                                          \
+        t3 = ~x3;                                                                                                                          \
+        t4 = ~x4;                                                                                                                          \
+        t0 &= x1;                                                                                                                          \
+        t1 &= x2;                                                                                                                          \
+        t2 &= x3;                                                                                                                          \
+        t3 &= x4;                                                                                                                          \
+        t4 &= x0;                                                                                                                          \
+        x0 ^= t1;                                                                                                                          \
+        x1 ^= t2;                                                                                                                          \
+        x2 ^= t3;                                                                                                                          \
+        x3 ^= t4;                                                                                                                          \
+        x4 ^= t0;                                                                                                                          \
+        x1 ^= x0;                                                                                                                          \
+        x0 ^= x4;                                                                                                                          \
+        x3 ^= x2; /* x2 = ~x2; */                                                                                                          \
     } while (0)
         ascon_sbox(x0_e, x1_e, x2_e, x3_e, x4_e);
         ascon_sbox(x0_o, x1_o, x2_o, x3_o, x4_o);

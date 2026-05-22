@@ -32,39 +32,39 @@
 extern "C" {
 #endif
 
-/* ========================================================================= */
-/* ============           Interrupt Number Definition           ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============           Interrupt Number Definition           ============ */
+    /* ========================================================================= */
 
-typedef enum IRQn {
-    /* ================     Cortex-M Core Exception Numbers     ================ */
+    typedef enum IRQn {
+        /* ================     Cortex-M Core Exception Numbers     ================ */
 
-    /* ToDo: add Cortex exception numbers according the used Cortex-Core */
-    Reset_IRQn            = -15, /*  1 Reset Vector
+        /* ToDo: add Cortex exception numbers according the used Cortex-Core */
+        Reset_IRQn            = -15, /*  1 Reset Vector
                                        invoked on Power up and warm reset */
-    NonMaskableInt_IRQn   = -14, /*  2 Non maskable Interrupt
+        NonMaskableInt_IRQn   = -14, /*  2 Non maskable Interrupt
                                        cannot be stopped or preempted */
-    HardFault_IRQn        = -13, /*  3 Hard Fault
+        HardFault_IRQn        = -13, /*  3 Hard Fault
                                        all classes of Fault */
-    MemoryManagement_IRQn = -12, /*  4 Memory Management
+        MemoryManagement_IRQn = -12, /*  4 Memory Management
                                        MPU mismatch, including Access Violation and No Match */
-    BusFault_IRQn         = -11, /*  5 Bus Fault
+        BusFault_IRQn         = -11, /*  5 Bus Fault
                                        Pre-Fetch-, Memory Access, other address/memory Fault */
-    UsageFault_IRQn       = -10, /*  6 Usage Fault
+        UsageFault_IRQn       = -10, /*  6 Usage Fault
                                        i.e. Undef Instruction, Illegal State Transition */
-    SecureFault_IRQn      = -9,  /*  7 Secure Fault Interrupt */
-    SVCall_IRQn           = -5,  /* 11 System Service Call via SVC instruction */
-    DebugMonitor_IRQn     = -4,  /* 12 Debug Monitor */
-    PendSV_IRQn           = -2,  /* 14 Pendable request for system service */
-    SysTick_IRQn          = -1,  /* 15 System Tick Timer */
+        SecureFault_IRQn      = -9,  /*  7 Secure Fault Interrupt */
+        SVCall_IRQn           = -5,  /* 11 System Service Call via SVC instruction */
+        DebugMonitor_IRQn     = -4,  /* 12 Debug Monitor */
+        PendSV_IRQn           = -2,  /* 14 Pendable request for system service */
+        SysTick_IRQn          = -1,  /* 15 System Tick Timer */
 
-    /* ================        <Device> Interrupt Numbers       ================ */
-    /* ToDo: Add here your device specific interrupt numbers
+        /* ================        <Device> Interrupt Numbers       ================ */
+        /* ToDo: Add here your device specific interrupt numbers
          according the interrupt handlers defined in startup_Device.s
          eg.: Interrupt for Timer#1       TIM1_IRQHandler   ->   TIM1_IRQn */
-    <DeviceInterrupt first>   _IRQn = 0, /* first Device Interrupt*/
-    ...<DeviceInterrupt last> _IRQn = n  /* last Device Interrupt */
-} IRQn_Type;
+        <DeviceInterrupt first>   _IRQn = 0, /* first Device Interrupt*/
+        ...<DeviceInterrupt last> _IRQn = n  /* last Device Interrupt */
+    } IRQn_Type;
 
 /* ========================================================================= */
 /* ============      Processor and Core Peripheral Section      ============ */
@@ -125,28 +125,27 @@ typedef enum IRQn {
          replace '<Device>' with your device name */
 #include "system_<Device>.h" /* System Header */
 
-/* ========================================================================= */
-/* ============       Device Specific Peripheral Section        ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============       Device Specific Peripheral Section        ============ */
+    /* ========================================================================= */
 
-/* ToDo: add here your device specific peripheral access structure typedefs
+    /* ToDo: add here your device specific peripheral access structure typedefs
          including bit definitions for Pos/Msk macros
          following is an example for a timer */
 
-/* ========================================================================= */
-/* ============                       TMR                       ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============                       TMR                       ============ */
+    /* ========================================================================= */
 
-typedef struct
-{
-    __IOM uint32_t LOAD;    /* Offset: 0x000 (R/W) Load Register */
-    __IM uint32_t  VALUE;   /* Offset: 0x004 (R/ ) Value Register */
-    __IOM uint32_t CONTROL; /* Offset: 0x008 (R/W) Control Register */
-    __OM uint32_t  INTCLR;  /* Offset: 0x00C ( /W) Clear Interrupt Register */
-    __IM uint32_t  RIS;     /* Offset: 0x010 (R/ ) Raw Interrupt Status Register */
-    __IM uint32_t  MIS;     /* Offset: 0x014 (R/ ) Interrupt Status Register */
-    __IOM uint32_t BGLOAD;  /* Offset: 0x018 (R/W) Background Load Register */
-} < DeviceAbbreviation > _TMR_TypeDef;
+    typedef struct {
+        __IOM uint32_t LOAD;    /* Offset: 0x000 (R/W) Load Register */
+        __IM uint32_t  VALUE;   /* Offset: 0x004 (R/ ) Value Register */
+        __IOM uint32_t CONTROL; /* Offset: 0x008 (R/W) Control Register */
+        __OM uint32_t  INTCLR;  /* Offset: 0x00C ( /W) Clear Interrupt Register */
+        __IM uint32_t  RIS;     /* Offset: 0x010 (R/ ) Raw Interrupt Status Register */
+        __IM uint32_t  MIS;     /* Offset: 0x014 (R/ ) Interrupt Status Register */
+        __IOM uint32_t BGLOAD;  /* Offset: 0x018 (R/W) Background Load Register */
+    } < DeviceAbbreviation > _TMR_TypeDef;
 
 /* <DeviceAbbreviation>_TMR LOAD Register Definitions */
 #define < DeviceAbbreviation> _TMR_LOAD_Pos 0
@@ -199,11 +198,11 @@ typedef struct
 #define < DeviceAbbreviation> TIM1_BASE(<DeviceAbbreviation> _PERIPH_BASE + 0x0800) /* (Timer1    ) Base Address */
 #define < DeviceAbbreviation> TIM2_BASE(<DeviceAbbreviation> _PERIPH_BASE + 0x1000) /* (Timer2    ) Base Address */
 
-/* ========================================================================= */
-/* ============             Peripheral declaration              ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============             Peripheral declaration              ============ */
+    /* ========================================================================= */
 
-/* ToDo: Add here your device peripherals pointer definitions
+    /* ToDo: Add here your device peripherals pointer definitions
          following is an example for timer */
 
 #define < DeviceAbbreviation> _TIM0((<DeviceAbbreviation> _TMR_TypeDef*) < DeviceAbbreviation > TIM0_BASE)

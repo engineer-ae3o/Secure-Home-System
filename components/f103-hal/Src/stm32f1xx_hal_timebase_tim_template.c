@@ -40,6 +40,7 @@
 TIM_HandleTypeDef TimHandle;
 /* Private function prototypes -----------------------------------------------*/
 void TIM2_IRQHandler(void);
+
 /* Private functions ---------------------------------------------------------*/
 
 /**

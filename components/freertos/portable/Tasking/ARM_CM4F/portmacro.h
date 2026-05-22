@@ -54,12 +54,12 @@ extern "C" {
 #define portSTACK_TYPE uint32_t
 #define portBASE_TYPE long
 
-typedef portSTACK_TYPE StackType_t;
-typedef long           BaseType_t;
-typedef unsigned long  UBaseType_t;
+    typedef portSTACK_TYPE StackType_t;
+    typedef long           BaseType_t;
+    typedef unsigned long  UBaseType_t;
 
 #if (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS)
-typedef uint16_t TickType_t;
+    typedef uint16_t TickType_t;
 #define portMAX_DELAY (TickType_t)0xffff
 #elif (configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_32_BITS)
 typedef uint32_t TickType_t;
@@ -77,22 +77,22 @@ typedef uint32_t TickType_t;
 #define portSTACK_GROWTH (-1)
 #define portTICK_PERIOD_MS ((TickType_t)1000 / configTICK_RATE_HZ)
 #define portBYTE_ALIGNMENT 8
-/*-----------------------------------------------------------*/
+    /*-----------------------------------------------------------*/
 
-/* Scheduler utilities. */
-extern void vPortYield(void);
+    /* Scheduler utilities. */
+    extern void vPortYield(void);
 #define portNVIC_INT_CTRL ((volatile uint32_t*)0xe000ed04)
 #define portNVIC_PENDSVSET 0x10000000
 #define portYIELD() vPortYield()
 
-#define portEND_SWITCHING_ISR(xSwitchRequired)         \
-    do {                                               \
-        if (xSwitchRequired != pdFALSE) {              \
-            traceISR_EXIT_TO_SCHEDULER();              \
-            *(portNVIC_INT_CTRL) = portNVIC_PENDSVSET; \
-        } else {                                       \
-            traceISR_EXIT();                           \
-        }                                              \
+#define portEND_SWITCHING_ISR(xSwitchRequired)                                                                                             \
+    do {                                                                                                                                   \
+        if (xSwitchRequired != pdFALSE) {                                                                                                  \
+            traceISR_EXIT_TO_SCHEDULER();                                                                                                  \
+            *(portNVIC_INT_CTRL) = portNVIC_PENDSVSET;                                                                                     \
+        } else {                                                                                                                           \
+            traceISR_EXIT();                                                                                                               \
+        }                                                                                                                                  \
     } while (0)
 #define portYIELD_FROM_ISR(x) portEND_SWITCHING_ISR(x)
 /*-----------------------------------------------------------*/
@@ -112,13 +112,13 @@ extern void vPortYield(void);
  */
 #define portCLEAR_INTERRUPT_MASK() __set_BASEPRI(0)
 
-extern uint32_t ulPortSetInterruptMask(void);
-extern void     vPortClearInterruptMask(uint32_t ulNewMask);
+    extern uint32_t ulPortSetInterruptMask(void);
+    extern void     vPortClearInterruptMask(uint32_t ulNewMask);
 #define portSET_INTERRUPT_MASK_FROM_ISR() ulPortSetInterruptMask()
 #define portCLEAR_INTERRUPT_MASK_FROM_ISR(x) vPortClearInterruptMask(x)
 
-extern void vPortEnterCritical(void);
-extern void vPortExitCritical(void);
+    extern void vPortEnterCritical(void);
+    extern void vPortExitCritical(void);
 
 #define portDISABLE_INTERRUPTS() portSET_INTERRUPT_MASK()
 #define portENABLE_INTERRUPTS() portCLEAR_INTERRUPT_MASK()

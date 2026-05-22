@@ -46,8 +46,7 @@ static void function_footer(const char* name) {
 }
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     const char* x0;
     const char* x1;
     const char* x2;
@@ -105,8 +104,7 @@ static void gen_sbox(const reg_names* regs) {
 /* Generate the code for a single ASCON round */
 static void gen_round(const reg_names* regs, int round) {
     /* Apply the round constant to x2, and also NOT x2 in the process */
-    printf("\tldr\t%s, =0x%llx\n", regs->t5, ~((unsigned long long)(((0x0F - round) << 4) | round))) &
-        0xFFFFFFFFFFFFFFFFULL;
+    printf("\tldr\t%s, =0x%llx\n", regs->t5, ~((unsigned long long)(((0x0F - round) << 4) | round))) & 0xFFFFFFFFFFFFFFFFULL;
     printf("\teor\t%s, %s, %s\n", regs->x2, regs->x2, regs->t5);
 
     /* Apply the S-box to the words of the state */

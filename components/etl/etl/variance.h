@@ -39,173 +39,170 @@ SOFTWARE.
 #include <stdint.h>
 
 namespace etl {
-namespace private_variance {
-//***************************************************************************
-/// Types for generic variance.
-//***************************************************************************
-template<typename TInput, typename TCalc>
-struct variance_traits {
-    typedef TCalc calc_t;
-};
+    namespace private_variance {
+        //***************************************************************************
+        /// Types for generic variance.
+        //***************************************************************************
+        template<typename TInput, typename TCalc>
+        struct variance_traits {
+            typedef TCalc calc_t;
+        };
 
-//***************************************************************************
-/// Types for float variance.
-//***************************************************************************
-template<typename TCalc>
-struct variance_traits<float, TCalc> {
-    typedef float calc_t;
-};
+        //***************************************************************************
+        /// Types for float variance.
+        //***************************************************************************
+        template<typename TCalc>
+        struct variance_traits<float, TCalc> {
+            typedef float calc_t;
+        };
 
-//***************************************************************************
-/// Types for double variance.
-//***************************************************************************
-template<typename TCalc>
-struct variance_traits<double, TCalc> {
-    typedef double calc_t;
-};
-} // namespace private_variance
+        //***************************************************************************
+        /// Types for double variance.
+        //***************************************************************************
+        template<typename TCalc>
+        struct variance_traits<double, TCalc> {
+            typedef double calc_t;
+        };
+    } // namespace private_variance
 
-//***************************************************************************
-/// Variance Type.
-//***************************************************************************
-namespace private_variance {
-template<typename T = void>
-struct variance_type_helper {
-    static ETL_CONSTANT bool Sample     = false;
-    static ETL_CONSTANT bool Population = true;
-};
+    //***************************************************************************
+    /// Variance Type.
+    //***************************************************************************
+    namespace private_variance {
+        template<typename T = void>
+        struct variance_type_helper {
+            static ETL_CONSTANT bool Sample     = false;
+            static ETL_CONSTANT bool Population = true;
+        };
 
-template<typename T>
-ETL_CONSTANT bool variance_type_helper<T>::Sample;
+        template<typename T>
+        ETL_CONSTANT bool variance_type_helper<T>::Sample;
 
-template<typename T>
-ETL_CONSTANT bool variance_type_helper<T>::Population;
-} // namespace private_variance
+        template<typename T>
+        ETL_CONSTANT bool variance_type_helper<T>::Population;
+    } // namespace private_variance
 
-struct variance_type : public private_variance::variance_type_helper<> {
-};
+    struct variance_type : public private_variance::variance_type_helper<> {};
 
-//***************************************************************************
-/// Variance.
-//***************************************************************************
-template<bool Variance_Type, typename TInput, typename TCalc = TInput>
-class variance
-    : public private_variance::variance_traits<TInput, TCalc>,
-      public etl::binary_function<TInput, TInput, void> {
+    //***************************************************************************
+    /// Variance.
+    //***************************************************************************
+    template<bool Variance_Type, typename TInput, typename TCalc = TInput>
+    class variance : public private_variance::variance_traits<TInput, TCalc>, public etl::binary_function<TInput, TInput, void> {
     private:
-    static ETL_CONSTANT int Adjustment = (Variance_Type == variance_type::Population) ? 0 : 1;
+        static ETL_CONSTANT int Adjustment = (Variance_Type == variance_type::Population) ? 0 : 1;
 
-    typedef typename private_variance::variance_traits<TInput, TCalc>::calc_t calc_t;
+        typedef typename private_variance::variance_traits<TInput, TCalc>::calc_t calc_t;
 
     public:
-    //*********************************
-    /// Constructor.
-    //*********************************
-    variance() {
-        clear();
-    }
-
-    //*********************************
-    /// Constructor.
-    //*********************************
-    template<typename TIterator>
-    variance(TIterator first, TIterator last) {
-        clear();
-        add(first, last);
-    }
-
-    //*********************************
-    /// Add a pair of values.
-    //*********************************
-    void add(TInput value) {
-        sum_of_squares += TCalc(value * value);
-        sum += TCalc(value);
-        ++counter;
-        recalculate = true;
-    }
-
-    //*********************************
-    /// Add a range.
-    //*********************************
-    template<typename TIterator>
-    void add(TIterator first, TIterator last) {
-        while (first != last) {
-            add(*first);
-            ++first;
+        //*********************************
+        /// Constructor.
+        //*********************************
+        variance() {
+            clear();
         }
-    }
 
-    //*********************************
-    /// operator ()
-    /// Add a pair of values.
-    //*********************************
-    void operator()(TInput value) {
-        add(value);
-    }
+        //*********************************
+        /// Constructor.
+        //*********************************
+        template<typename TIterator>
+        variance(TIterator first, TIterator last) {
+            clear();
+            add(first, last);
+        }
 
-    //*********************************
-    /// operator ()
-    /// Add a range.
-    //*********************************
-    template<typename TIterator>
-    void operator()(TIterator first, TIterator last) {
-        add(first, last);
-    }
+        //*********************************
+        /// Add a pair of values.
+        //*********************************
+        void add(TInput value) {
+            sum_of_squares += TCalc(value * value);
+            sum += TCalc(value);
+            ++counter;
+            recalculate = true;
+        }
 
-    //*********************************
-    /// Get the variance.
-    //*********************************
-    double get_variance() const {
-        if (recalculate) {
-            variance_value = 0.0;
+        //*********************************
+        /// Add a range.
+        //*********************************
+        template<typename TIterator>
+        void add(TIterator first, TIterator last) {
+            while (first != last) {
+                add(*first);
+                ++first;
+            }
+        }
 
-            if (counter != 0) {
-                double n          = double(counter);
-                double adjustment = 1.0 / (n * (n - Adjustment));
+        //*********************************
+        /// operator ()
+        /// Add a pair of values.
+        //*********************************
+        void operator()(TInput value) {
+            add(value);
+        }
 
-                double square_of_sum = sum * sum;
+        //*********************************
+        /// operator ()
+        /// Add a range.
+        //*********************************
+        template<typename TIterator>
+        void operator()(TIterator first, TIterator last) {
+            add(first, last);
+        }
 
-                variance_value = (n * sum_of_squares - square_of_sum) * adjustment;
+        //*********************************
+        /// Get the variance.
+        //*********************************
+        double get_variance() const {
+            if (recalculate) {
+                variance_value = 0.0;
+
+                if (counter != 0) {
+                    double n          = double(counter);
+                    double adjustment = 1.0 / (n * (n - Adjustment));
+
+                    double square_of_sum = sum * sum;
+
+                    variance_value = (n * sum_of_squares - square_of_sum) * adjustment;
+                }
+
+                recalculate = false;
             }
 
-            recalculate = false;
+            return variance_value;
         }
 
-        return variance_value;
-    }
+        //*********************************
+        /// Get the variance.
+        //*********************************
+        operator double() const {
+            return get_variance();
+        }
 
-    //*********************************
-    /// Get the variance.
-    //*********************************
-    operator double() const {
-        return get_variance();
-    }
+        //*********************************
+        /// Get the total number added entries.
+        //*********************************
+        size_t count() const {
+            return size_t(counter);
+        }
 
-    //*********************************
-    /// Get the total number added entries.
-    //*********************************
-    size_t count() const {
-        return size_t(counter);
-    }
-
-    //*********************************
-    /// Clear the variance.
-    //*********************************
-    void clear() {
-        sum_of_squares = calc_t(0);
-        sum            = calc_t(0);
-        counter        = 0U;
-        variance_value = 0.0;
-        recalculate    = true;
-    }
+        //*********************************
+        /// Clear the variance.
+        //*********************************
+        void clear() {
+            sum_of_squares = calc_t(0);
+            sum            = calc_t(0);
+            counter        = 0U;
+            variance_value = 0.0;
+            recalculate    = true;
+        }
 
     private:
-    calc_t         sum_of_squares;
-    calc_t         sum;
-    uint32_t       counter;
-    mutable double variance_value;
-    mutable bool   recalculate;
-};
+        calc_t         sum_of_squares;
+        calc_t         sum;
+        uint32_t       counter;
+        mutable double variance_value;
+        mutable bool   recalculate;
+    };
 } // namespace etl
 
 #endif

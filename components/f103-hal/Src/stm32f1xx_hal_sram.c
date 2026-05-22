@@ -139,6 +139,7 @@
 static void SRAM_DMACplt(DMA_HandleTypeDef* hdma);
 static void SRAM_DMACpltProt(DMA_HandleTypeDef* hdma);
 static void SRAM_DMAError(DMA_HandleTypeDef* hdma);
+
 /**
   * @}
   */
@@ -683,7 +684,8 @@ HAL_StatusTypeDef HAL_SRAM_Write_DMA(SRAM_HandleTypeDef* hsram, uint32_t* pAddre
   * @param pCallback : pointer to the Callback function
   * @retval status
   */
-HAL_StatusTypeDef HAL_SRAM_RegisterCallback(SRAM_HandleTypeDef* hsram, HAL_SRAM_CallbackIDTypeDef CallbackId, pSRAM_CallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_SRAM_RegisterCallback(SRAM_HandleTypeDef* hsram, HAL_SRAM_CallbackIDTypeDef CallbackId, pSRAM_CallbackTypeDef pCallback) {
     HAL_StatusTypeDef     status = HAL_OK;
     HAL_SRAM_StateTypeDef state;
 
@@ -781,7 +783,8 @@ HAL_StatusTypeDef HAL_SRAM_UnRegisterCallback(SRAM_HandleTypeDef* hsram, HAL_SRA
   * @param pCallback : pointer to the Callback function
   * @retval status
   */
-HAL_StatusTypeDef HAL_SRAM_RegisterDmaCallback(SRAM_HandleTypeDef* hsram, HAL_SRAM_CallbackIDTypeDef CallbackId, pSRAM_DmaCallbackTypeDef pCallback) {
+HAL_StatusTypeDef
+HAL_SRAM_RegisterDmaCallback(SRAM_HandleTypeDef* hsram, HAL_SRAM_CallbackIDTypeDef CallbackId, pSRAM_DmaCallbackTypeDef pCallback) {
     HAL_StatusTypeDef     status = HAL_OK;
     HAL_SRAM_StateTypeDef state;
 

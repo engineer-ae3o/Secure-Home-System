@@ -937,9 +937,7 @@ uint32_t HAL_DAC_GetValue(const DAC_HandleTypeDef* hdac, uint32_t Channel) {
   *            @arg DAC_CHANNEL_2: DAC Channel2 selected
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_DAC_ConfigChannel(DAC_HandleTypeDef*            hdac,
-                                        const DAC_ChannelConfTypeDef* sConfig,
-                                        uint32_t                      Channel) {
+HAL_StatusTypeDef HAL_DAC_ConfigChannel(DAC_HandleTypeDef* hdac, const DAC_ChannelConfTypeDef* sConfig, uint32_t Channel) {
     HAL_StatusTypeDef status = HAL_OK;
     uint32_t          tmpreg1;
     uint32_t          tmpreg2;
@@ -963,8 +961,7 @@ HAL_StatusTypeDef HAL_DAC_ConfigChannel(DAC_HandleTypeDef*            hdac,
     /* Get the DAC CR value */
     tmpreg1 = hdac->Instance->CR;
     /* Clear BOFFx, TENx, TSELx, WAVEx and MAMPx bits */
-    tmpreg1 &= ~(((uint32_t)(DAC_CR_MAMP1 | DAC_CR_WAVE1 | DAC_CR_TSEL1 | DAC_CR_TEN1 | DAC_CR_BOFF1))
-                 << (Channel & 0x10UL));
+    tmpreg1 &= ~(((uint32_t)(DAC_CR_MAMP1 | DAC_CR_WAVE1 | DAC_CR_TSEL1 | DAC_CR_TEN1 | DAC_CR_BOFF1)) << (Channel & 0x10UL));
     /* Configure for the selected DAC channel: buffer output, trigger */
     /* Set TSELx and TENx bits according to DAC_Trigger value */
     /* Set BOFFx bit according to DAC_OutputBuffer value */

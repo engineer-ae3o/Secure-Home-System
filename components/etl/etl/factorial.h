@@ -40,30 +40,30 @@ SOFTWARE.
 ///\ingroup maths
 
 namespace etl {
-//***************************************************************************
-///\ingroup fibonacci
-/// Defines <b>value</b> as the Nth factorial number.
-///\tparam N The number to find the factorial value of.
-//***************************************************************************
-template<size_t N>
-struct factorial {
-    static ETL_CONSTANT size_t value = N * factorial<N - 1>::value;
-};
+    //***************************************************************************
+    ///\ingroup fibonacci
+    /// Defines <b>value</b> as the Nth factorial number.
+    ///\tparam N The number to find the factorial value of.
+    //***************************************************************************
+    template<size_t N>
+    struct factorial {
+        static ETL_CONSTANT size_t value = N * factorial<N - 1>::value;
+    };
 
-//***************************************************************************
-// Specialisation for N = 0
-//***************************************************************************
-template<>
-struct factorial<0> {
-    static ETL_CONSTANT size_t value = 1;
-};
+    //***************************************************************************
+    // Specialisation for N = 0
+    //***************************************************************************
+    template<>
+    struct factorial<0> {
+        static ETL_CONSTANT size_t value = 1;
+    };
 
-template<size_t N>
-ETL_CONSTANT size_t factorial<N>::value;
+    template<size_t N>
+    ETL_CONSTANT size_t factorial<N>::value;
 
 #if ETL_USING_CPP17
-template<size_t N>
-inline constexpr size_t factorial_v = factorial<N>::value;
+    template<size_t N>
+    inline constexpr size_t factorial_v = factorial<N>::value;
 #endif
 } // namespace etl
 

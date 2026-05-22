@@ -43,109 +43,108 @@ SOFTWARE.
 #include <stddef.h>
 
 namespace etl {
-//***************************************************************************
-///\ingroup vector
-/// Exception base for vectors
-//***************************************************************************
-class vector_exception : public exception {
+    //***************************************************************************
+    ///\ingroup vector
+    /// Exception base for vectors
+    //***************************************************************************
+    class vector_exception : public exception {
     public:
-    vector_exception(string_type reason_, string_type file_name_, numeric_type line_number_)
-        : exception(reason_, file_name_, line_number_) {
-    }
-};
+        vector_exception(string_type reason_, string_type file_name_, numeric_type line_number_)
+            : exception(reason_, file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup vector
-/// Vector full exception.
-//***************************************************************************
-class vector_full : public vector_exception {
+    //***************************************************************************
+    ///\ingroup vector
+    /// Vector full exception.
+    //***************************************************************************
+    class vector_full : public vector_exception {
     public:
-    vector_full(string_type file_name_, numeric_type line_number_)
-        : vector_exception(ETL_ERROR_TEXT("vector:full", ETL_VECTOR_FILE_ID "A"), file_name_, line_number_) {
-    }
-};
+        vector_full(string_type file_name_, numeric_type line_number_)
+            : vector_exception(ETL_ERROR_TEXT("vector:full", ETL_VECTOR_FILE_ID "A"), file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup vector
-/// Vector empty exception.
-//***************************************************************************
-class vector_empty : public vector_exception {
+    //***************************************************************************
+    ///\ingroup vector
+    /// Vector empty exception.
+    //***************************************************************************
+    class vector_empty : public vector_exception {
     public:
-    vector_empty(string_type file_name_, numeric_type line_number_)
-        : vector_exception(ETL_ERROR_TEXT("vector:empty", ETL_VECTOR_FILE_ID "B"), file_name_, line_number_) {
-    }
-};
+        vector_empty(string_type file_name_, numeric_type line_number_)
+            : vector_exception(ETL_ERROR_TEXT("vector:empty", ETL_VECTOR_FILE_ID "B"), file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup vector
-/// Vector out of bounds exception.
-//***************************************************************************
-class vector_out_of_bounds : public vector_exception {
+    //***************************************************************************
+    ///\ingroup vector
+    /// Vector out of bounds exception.
+    //***************************************************************************
+    class vector_out_of_bounds : public vector_exception {
     public:
-    vector_out_of_bounds(string_type file_name_, numeric_type line_number_)
-        : vector_exception(ETL_ERROR_TEXT("vector:bounds", ETL_VECTOR_FILE_ID "C"), file_name_, line_number_) {
-    }
-};
+        vector_out_of_bounds(string_type file_name_, numeric_type line_number_)
+            : vector_exception(ETL_ERROR_TEXT("vector:bounds", ETL_VECTOR_FILE_ID "C"), file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup vector
-/// Vector incompatible type exception.
-//***************************************************************************
-class vector_incompatible_type : public vector_exception {
+    //***************************************************************************
+    ///\ingroup vector
+    /// Vector incompatible type exception.
+    //***************************************************************************
+    class vector_incompatible_type : public vector_exception {
     public:
-    vector_incompatible_type(string_type file_name_, numeric_type line_number_)
-        : vector_exception(ETL_ERROR_TEXT("vector:type", ETL_VECTOR_FILE_ID "D"), file_name_, line_number_) {
-    }
-};
+        vector_incompatible_type(string_type file_name_, numeric_type line_number_)
+            : vector_exception(ETL_ERROR_TEXT("vector:type", ETL_VECTOR_FILE_ID "D"), file_name_, line_number_) {
+        }
+    };
 
-//***************************************************************************
-///\ingroup vector
-/// The base class for all templated vector types.
-//***************************************************************************
-class vector_base {
+    //***************************************************************************
+    ///\ingroup vector
+    /// The base class for all templated vector types.
+    //***************************************************************************
+    class vector_base {
     public:
-    typedef size_t size_type;
+        typedef size_t size_type;
 
-    //*************************************************************************
-    /// Returns the capacity of the vector.
-    ///\return The capacity of the vector.
-    //*************************************************************************
-    size_type capacity() const {
-        return CAPACITY;
-    }
+        //*************************************************************************
+        /// Returns the capacity of the vector.
+        ///\return The capacity of the vector.
+        //*************************************************************************
+        size_type capacity() const {
+            return CAPACITY;
+        }
 
-    //*************************************************************************
-    /// Returns the maximum possible size of the vector.
-    ///\return The maximum size of the vector.
-    //*************************************************************************
-    size_type max_size() const {
-        return CAPACITY;
-    }
+        //*************************************************************************
+        /// Returns the maximum possible size of the vector.
+        ///\return The maximum size of the vector.
+        //*************************************************************************
+        size_type max_size() const {
+            return CAPACITY;
+        }
 
     protected:
-    //*************************************************************************
-    /// Constructor.
-    //*************************************************************************
-    vector_base(size_t max_size_)
-        : CAPACITY(max_size_) {
-    }
+        //*************************************************************************
+        /// Constructor.
+        //*************************************************************************
+        vector_base(size_t max_size_) : CAPACITY(max_size_) {
+        }
 
-    //*************************************************************************
-    /// Destructor.
-    //*************************************************************************
+        //*************************************************************************
+        /// Destructor.
+        //*************************************************************************
 #if defined(ETL_POLYMORPHIC_VECTOR) || defined(ETL_POLYMORPHIC_CONTAINERS) || defined(ETL_IVECTOR_REPAIR_ENABLE)
     public:
-    virtual ~vector_base() {
-    }
+        virtual ~vector_base() {
+        }
 #else
     protected:
-    ~vector_base() {
-    }
+        ~vector_base() {
+        }
 #endif
 
-    const size_type CAPACITY; ///<The maximum number of elements in the vector.
-    ETL_DECLARE_DEBUG_COUNT;  ///< Internal debugging.
-};
+        const size_type CAPACITY; ///<The maximum number of elements in the vector.
+        ETL_DECLARE_DEBUG_COUNT;  ///< Internal debugging.
+    };
 } // namespace etl
 
 #endif

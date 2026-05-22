@@ -1108,11 +1108,10 @@
     SAU regions are defined in partition.h
  */
 
-#define SAU_INIT_REGION(n)                                \
-    SAU->RNR  = (n & SAU_RNR_REGION_Msk);                 \
-    SAU->RBAR = (SAU_INIT_START##n & SAU_RBAR_BADDR_Msk); \
-    SAU->RLAR = (SAU_INIT_END##n & SAU_RLAR_LADDR_Msk) |  \
-                ((SAU_INIT_NSC##n << SAU_RLAR_NSC_Pos) & SAU_RLAR_NSC_Msk) | 1U
+#define SAU_INIT_REGION(n)                                                                                                                 \
+    SAU->RNR  = (n & SAU_RNR_REGION_Msk);                                                                                                  \
+    SAU->RBAR = (SAU_INIT_START##n & SAU_RBAR_BADDR_Msk);                                                                                  \
+    SAU->RLAR = (SAU_INIT_END##n & SAU_RLAR_LADDR_Msk) | ((SAU_INIT_NSC##n << SAU_RLAR_NSC_Pos) & SAU_RLAR_NSC_Msk) | 1U
 
 /**
   \brief   Setup a SAU Region
@@ -1165,19 +1164,16 @@ __STATIC_INLINE void TZ_SAU_Setup(void) {
 #endif
 
 #if defined(SCB_CSR_AIRCR_INIT) && (SCB_CSR_AIRCR_INIT == 1U)
-    SCB->SCR = (SCB->SCR & ~(SCB_SCR_SLEEPDEEPS_Msk)) |
-               ((SCB_CSR_DEEPSLEEPS_VAL << SCB_SCR_SLEEPDEEPS_Pos) & SCB_SCR_SLEEPDEEPS_Msk);
+    SCB->SCR = (SCB->SCR & ~(SCB_SCR_SLEEPDEEPS_Msk)) | ((SCB_CSR_DEEPSLEEPS_VAL << SCB_SCR_SLEEPDEEPS_Pos) & SCB_SCR_SLEEPDEEPS_Msk);
 
-    SCB->AIRCR = (SCB->AIRCR & ~(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_SYSRESETREQS_Msk |
-                                 SCB_AIRCR_BFHFNMINS_Msk | SCB_AIRCR_PRIS_Msk)) |
+    SCB->AIRCR = (SCB->AIRCR & ~(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_SYSRESETREQS_Msk | SCB_AIRCR_BFHFNMINS_Msk | SCB_AIRCR_PRIS_Msk)) |
                  ((0x05FAU << SCB_AIRCR_VECTKEY_Pos) & SCB_AIRCR_VECTKEY_Msk) |
                  ((SCB_AIRCR_SYSRESETREQS_VAL << SCB_AIRCR_SYSRESETREQS_Pos) & SCB_AIRCR_SYSRESETREQS_Msk) |
                  ((SCB_AIRCR_PRIS_VAL << SCB_AIRCR_PRIS_Pos) & SCB_AIRCR_PRIS_Msk) |
                  ((SCB_AIRCR_BFHFNMINS_VAL << SCB_AIRCR_BFHFNMINS_Pos) & SCB_AIRCR_BFHFNMINS_Msk);
 #endif /* defined (SCB_CSR_AIRCR_INIT) && (SCB_CSR_AIRCR_INIT == 1U) */
 
-#if (((defined(__FPU_USED) && (__FPU_USED == 1U)) ||              \
-      (defined(__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0))) && \
+#if (((defined(__FPU_USED) && (__FPU_USED == 1U)) || (defined(__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0))) &&                           \
      (defined(TZ_FPU_NS_USAGE) && (TZ_FPU_NS_USAGE == 1U)))
 
     SCB->NSACR = (SCB->NSACR & ~(SCB_NSACR_CP10_Msk | SCB_NSACR_CP11_Msk)) |

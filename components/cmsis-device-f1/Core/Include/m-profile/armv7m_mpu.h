@@ -70,10 +70,7 @@
 * \param Region The region to be configured, number 0 to 15.
 * \param BaseAddress The base address for the region.
 */
-#define ARM_MPU_RBAR(Region, BaseAddress)  \
-    (((BaseAddress) & MPU_RBAR_ADDR_Msk) | \
-     ((Region) & MPU_RBAR_REGION_Msk) |    \
-     (MPU_RBAR_VALID_Msk))
+#define ARM_MPU_RBAR(Region, BaseAddress) (((BaseAddress) & MPU_RBAR_ADDR_Msk) | ((Region) & MPU_RBAR_REGION_Msk) | (MPU_RBAR_VALID_Msk))
 
 /**
 * MPU Memory Access Attributes
@@ -83,11 +80,9 @@
 * \param IsCacheable       Region is cacheable, i.e. its value may be kept in cache.
 * \param IsBufferable      Region is bufferable, i.e. using write-back caching. Cacheable but non-bufferable regions use write-through policy.
 */
-#define ARM_MPU_ACCESS_(TypeExtField, IsShareable, IsCacheable, IsBufferable) \
-    ((((TypeExtField) << MPU_RASR_TEX_Pos) & MPU_RASR_TEX_Msk) |              \
-     (((IsShareable) << MPU_RASR_S_Pos) & MPU_RASR_S_Msk) |                   \
-     (((IsCacheable) << MPU_RASR_C_Pos) & MPU_RASR_C_Msk) |                   \
-     (((IsBufferable) << MPU_RASR_B_Pos) & MPU_RASR_B_Msk))
+#define ARM_MPU_ACCESS_(TypeExtField, IsShareable, IsCacheable, IsBufferable)                                                              \
+    ((((TypeExtField) << MPU_RASR_TEX_Pos) & MPU_RASR_TEX_Msk) | (((IsShareable) << MPU_RASR_S_Pos) & MPU_RASR_S_Msk) |                    \
+     (((IsCacheable) << MPU_RASR_C_Pos) & MPU_RASR_C_Msk) | (((IsBufferable) << MPU_RASR_B_Pos) & MPU_RASR_B_Msk))
 
 /**
 * MPU Region Attribute and Size Register Value
@@ -98,12 +93,10 @@
 * \param SubRegionDisable  Sub-region disable field.
 * \param Size              Region size of the region to be configured, for example 4K, 8K.
 */
-#define ARM_MPU_RASR_EX(DisableExec, AccessPermission, AccessAttributes, SubRegionDisable, Size)      \
-    ((((DisableExec) << MPU_RASR_XN_Pos) & MPU_RASR_XN_Msk) |                                         \
-     (((AccessPermission) << MPU_RASR_AP_Pos) & MPU_RASR_AP_Msk) |                                    \
-     (((AccessAttributes) & (MPU_RASR_TEX_Msk | MPU_RASR_S_Msk | MPU_RASR_C_Msk | MPU_RASR_B_Msk))) | \
-     (((SubRegionDisable) << MPU_RASR_SRD_Pos) & MPU_RASR_SRD_Msk) |                                  \
-     (((Size) << MPU_RASR_SIZE_Pos) & MPU_RASR_SIZE_Msk) |                                            \
+#define ARM_MPU_RASR_EX(DisableExec, AccessPermission, AccessAttributes, SubRegionDisable, Size)                                           \
+    ((((DisableExec) << MPU_RASR_XN_Pos) & MPU_RASR_XN_Msk) | (((AccessPermission) << MPU_RASR_AP_Pos) & MPU_RASR_AP_Msk) |                \
+     (((AccessAttributes) & (MPU_RASR_TEX_Msk | MPU_RASR_S_Msk | MPU_RASR_C_Msk | MPU_RASR_B_Msk))) |                                      \
+     (((SubRegionDisable) << MPU_RASR_SRD_Pos) & MPU_RASR_SRD_Msk) | (((Size) << MPU_RASR_SIZE_Pos) & MPU_RASR_SIZE_Msk) |                 \
      (((MPU_RASR_ENABLE_Msk))))
 
 /**
@@ -118,8 +111,9 @@
 * \param SubRegionDisable  Sub-region disable field.
 * \param Size              Region size of the region to be configured, for example 4K, 8K.
 */
-#define ARM_MPU_RASR(DisableExec, AccessPermission, TypeExtField, IsShareable, IsCacheable, IsBufferable, SubRegionDisable, Size) \
-    ARM_MPU_RASR_EX(DisableExec, AccessPermission, ARM_MPU_ACCESS_(TypeExtField, IsShareable, IsCacheable, IsBufferable), SubRegionDisable, Size)
+#define ARM_MPU_RASR(DisableExec, AccessPermission, TypeExtField, IsShareable, IsCacheable, IsBufferable, SubRegionDisable, Size)          \
+    ARM_MPU_RASR_EX(                                                                                                                       \
+        DisableExec, AccessPermission, ARM_MPU_ACCESS_(TypeExtField, IsShareable, IsCacheable, IsBufferable), SubRegionDisable, Size)
 
 /**
 * MPU Memory Access Attribute for strongly ordered memory.
@@ -152,7 +146,8 @@
 * \param InnerCp Configures the inner cache policy.
 * \param IsShareable Configures the memory as shareable or non-shareable.
 */
-#define ARM_MPU_ACCESS_NORMAL(OuterCp, InnerCp, IsShareable) ARM_MPU_ACCESS_((4U | (OuterCp)), IsShareable, ((InnerCp) >> 1U), ((InnerCp) & 1U))
+#define ARM_MPU_ACCESS_NORMAL(OuterCp, InnerCp, IsShareable)                                                                               \
+    ARM_MPU_ACCESS_((4U | (OuterCp)), IsShareable, ((InnerCp) >> 1U), ((InnerCp) & 1U))
 
 /**
 * MPU Memory Access Attribute non-cacheable policy.

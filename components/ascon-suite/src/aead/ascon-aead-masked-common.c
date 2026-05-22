@@ -25,7 +25,13 @@
 /* Not needed if we won't be masking associated data and plaintext */
 #if ASCON_MASKED_DATA_SHARES != 1
 
-void ascon_masked_aead_absorb_8(ascon_masked_state_t* state, const unsigned char* data, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_absorb_8(ascon_masked_state_t* state,
+                                const unsigned char*  data,
+                                size_t                len,
+                                uint8_t               first_round,
+                                ascon_masked_word_t*  word,
+                                uint64_t*             preserve,
+                                ascon_trng_state_t*   trng) {
     while (len >= 8) {
         ascon_masked_data_load(word, data, trng);
         ascon_masked_data_xor(&(state->M[0]), word);
@@ -41,7 +47,13 @@ void ascon_masked_aead_absorb_8(ascon_masked_state_t* state, const unsigned char
     ascon_masked_data_permute(state, first_round, preserve);
 }
 
-void ascon_masked_aead_absorb_16(ascon_masked_state_t* state, const unsigned char* data, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_absorb_16(ascon_masked_state_t* state,
+                                 const unsigned char*  data,
+                                 size_t                len,
+                                 uint8_t               first_round,
+                                 ascon_masked_word_t*  word,
+                                 uint64_t*             preserve,
+                                 ascon_trng_state_t*   trng) {
     while (len >= 16) {
         ascon_masked_data_load(word, data, trng);
         ascon_masked_data_xor(&(state->M[0]), word);
@@ -71,7 +83,14 @@ void ascon_masked_aead_absorb_16(ascon_masked_state_t* state, const unsigned cha
     ascon_masked_data_permute(state, first_round, preserve);
 }
 
-void ascon_masked_aead_encrypt_8(ascon_masked_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_encrypt_8(ascon_masked_state_t* state,
+                                 unsigned char*        dest,
+                                 const unsigned char*  src,
+                                 size_t                len,
+                                 uint8_t               first_round,
+                                 ascon_masked_word_t*  word,
+                                 uint64_t*             preserve,
+                                 ascon_trng_state_t*   trng) {
     while (len >= 8) {
         ascon_masked_data_load(word, src, trng);
         ascon_masked_data_xor(&(state->M[0]), word);
@@ -89,7 +108,14 @@ void ascon_masked_aead_encrypt_8(ascon_masked_state_t* state, unsigned char* des
     ascon_masked_word_pad(&(state->M[0]), len);
 }
 
-void ascon_masked_aead_encrypt_16(ascon_masked_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_encrypt_16(ascon_masked_state_t* state,
+                                  unsigned char*        dest,
+                                  const unsigned char*  src,
+                                  size_t                len,
+                                  uint8_t               first_round,
+                                  ascon_masked_word_t*  word,
+                                  uint64_t*             preserve,
+                                  ascon_trng_state_t*   trng) {
     while (len >= 16) {
         ascon_masked_data_load(word, src, trng);
         ascon_masked_data_xor(&(state->M[0]), word);
@@ -125,7 +151,14 @@ void ascon_masked_aead_encrypt_16(ascon_masked_state_t* state, unsigned char* de
     }
 }
 
-void ascon_masked_aead_decrypt_8(ascon_masked_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_decrypt_8(ascon_masked_state_t* state,
+                                 unsigned char*        dest,
+                                 const unsigned char*  src,
+                                 size_t                len,
+                                 uint8_t               first_round,
+                                 ascon_masked_word_t*  word,
+                                 uint64_t*             preserve,
+                                 ascon_trng_state_t*   trng) {
     while (len >= 8) {
         ascon_masked_data_load(word, src, trng);
         ascon_masked_data_xor(&(state->M[0]), word);
@@ -145,7 +178,14 @@ void ascon_masked_aead_decrypt_8(ascon_masked_state_t* state, unsigned char* des
     ascon_masked_word_pad(&(state->M[0]), len);
 }
 
-void ascon_masked_aead_decrypt_16(ascon_masked_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, ascon_masked_word_t* word, uint64_t* preserve, ascon_trng_state_t* trng) {
+void ascon_masked_aead_decrypt_16(ascon_masked_state_t* state,
+                                  unsigned char*        dest,
+                                  const unsigned char*  src,
+                                  size_t                len,
+                                  uint8_t               first_round,
+                                  ascon_masked_word_t*  word,
+                                  uint64_t*             preserve,
+                                  ascon_trng_state_t*   trng) {
     while (len >= 16) {
         ascon_masked_data_load(word, src, trng);
         ascon_masked_data_xor(&(state->M[0]), word);

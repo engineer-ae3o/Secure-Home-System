@@ -243,8 +243,7 @@ __PACKED_STRUCT T_UINT32_READ {
  */
 #define __CLZ(value) __clz(value)
 
-#if ((__ARM_FEATURE_SAT >= 1) && \
-     (__ARM_ARCH_ISA_THUMB >= 2))
+#if ((__ARM_FEATURE_SAT >= 1) && (__ARM_ARCH_ISA_THUMB >= 2))
 /* __ARM_FEATURE_SAT is wrong for Armv8-M Baseline devices */
 /**
   \brief   Signed Saturate

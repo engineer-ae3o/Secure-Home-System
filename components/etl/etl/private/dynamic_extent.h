@@ -35,7 +35,7 @@ SOFTWARE.
 #include "../integral_limits.h"
 
 namespace etl {
-static ETL_CONSTANT size_t dynamic_extent = etl::integral_limits<size_t>::max;
+    static ETL_CONSTANT size_t dynamic_extent = etl::integral_limits<size_t>::max;
 }
 
 #endif

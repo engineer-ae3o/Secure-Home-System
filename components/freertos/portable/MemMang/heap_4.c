@@ -130,9 +130,8 @@ PRIVILEGED_DATA static portPOINTER_SIZE_TYPE xHeapCanary;
 #endif /* configENABLE_HEAP_PROTECTOR */
 
 /* Assert that a heap block pointer is within the heap bounds. */
-#define heapVALIDATE_BLOCK_POINTER(pxBlock)               \
-    configASSERT(((uint8_t*)(pxBlock) >= &(ucHeap[0])) && \
-                 ((uint8_t*)(pxBlock) <= &(ucHeap[configTOTAL_HEAP_SIZE - 1])))
+#define heapVALIDATE_BLOCK_POINTER(pxBlock)                                                                                                \
+    configASSERT(((uint8_t*)(pxBlock) >= &(ucHeap[0])) && ((uint8_t*)(pxBlock) <= &(ucHeap[configTOTAL_HEAP_SIZE - 1])))
 
 /*-----------------------------------------------------------*/
 
@@ -313,6 +312,7 @@ void* pvPortMalloc(size_t xWantedSize) {
     configASSERT((((size_t)pvReturn) & (size_t)portBYTE_ALIGNMENT_MASK) == 0);
     return pvReturn;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortFree(void* pv) {
@@ -363,30 +363,34 @@ void vPortFree(void* pv) {
         }
     }
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetFreeHeapSize(void) {
     return xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 size_t xPortGetMinimumEverFreeHeapSize(void) {
     return xMinimumEverFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 void xPortResetHeapMinimumEverFreeHeapSize(void) {
     xMinimumEverFreeBytesRemaining = xFreeBytesRemaining;
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortInitialiseBlocks(void) {
     /* This just exists to keep the linker quiet. */
 }
+
 /*-----------------------------------------------------------*/
 
-void* pvPortCalloc(size_t xNum,
-                   size_t xSize) {
+void* pvPortCalloc(size_t xNum, size_t xSize) {
     void* pv = NULL;
 
     if (heapMULTIPLY_WILL_OVERFLOW(xNum, xSize) == 0) {
@@ -399,6 +403,7 @@ void* pvPortCalloc(size_t xNum,
 
     return pv;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvHeapInit(void) /* PRIVILEGED_FUNCTION */
@@ -446,6 +451,7 @@ static void prvHeapInit(void) /* PRIVILEGED_FUNCTION */
     xMinimumEverFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
     xFreeBytesRemaining            = pxFirstFreeBlock->xBlockSize;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEGED_FUNCTION */
@@ -455,7 +461,8 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEG
 
     /* Iterate through the list until a block is found that has a higher address
      * than the block being inserted. */
-    for (pxIterator = &xStart; heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock) < pxBlockToInsert; pxIterator = heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock)) {
+    for (pxIterator = &xStart; heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock) < pxBlockToInsert;
+         pxIterator = heapPROTECT_BLOCK_POINTER(pxIterator->pxNextFreeBlock)) {
         /* Nothing to do here, just iterate to the right position. */
     }
 
@@ -500,11 +507,12 @@ static void prvInsertBlockIntoFreeList(BlockLink_t* pxBlockToInsert) /* PRIVILEG
         mtCOVERAGE_TEST_MARKER();
     }
 }
+
 /*-----------------------------------------------------------*/
 
 void vPortGetHeapStats(HeapStats_t* pxHeapStats) {
     BlockLink_t* pxBlock;
-    size_t       xBlocks = 0, xMaxSize = 0, xMinSize = portMAX_DELAY; /* portMAX_DELAY used as a portable way of getting the maximum value. */
+    size_t xBlocks = 0, xMaxSize = 0, xMinSize = portMAX_DELAY; /* portMAX_DELAY used as a portable way of getting the maximum value. */
 
     vTaskSuspendAll();
     {
@@ -547,6 +555,7 @@ void vPortGetHeapStats(HeapStats_t* pxHeapStats) {
     }
     taskEXIT_CRITICAL();
 }
+
 /*-----------------------------------------------------------*/
 
 /*
@@ -562,4 +571,5 @@ void vPortHeapResetState(void) {
     xNumberOfSuccessfulAllocations = (size_t)0U;
     xNumberOfSuccessfulFrees       = (size_t)0U;
 }
+
 /*-----------------------------------------------------------*/

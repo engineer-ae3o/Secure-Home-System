@@ -34,7 +34,7 @@ class Code;
  * \brief Holds information about a single AVR instruction.
  */
 class Insn {
-    public:
+public:
     enum Type {
         ADC,        /**< Add with carry */
         ADD,        /**< Add without carry */
@@ -97,9 +97,10 @@ class Insn {
 
     Insn() : m_type(NOP), m_reg1(0), m_reg2(0) {
     }
-    Insn(const Insn& insn)
-        : m_type(insn.m_type), m_reg1(insn.m_reg1), m_reg2(insn.m_reg2) {
+
+    Insn(const Insn& insn) : m_type(insn.m_type), m_reg1(insn.m_reg1), m_reg2(insn.m_reg2) {
     }
+
     ~Insn() {
     }
 
@@ -113,18 +114,23 @@ class Insn {
     Type type() const {
         return m_type;
     }
+
     unsigned char reg1() const {
         return m_reg1;
     }
+
     unsigned char reg2() const {
         return m_reg2;
     }
+
     unsigned char value() const {
         return m_reg2;
     }
+
     unsigned char label() const {
         return m_reg1;
     }
+
     unsigned char offset() const {
         return m_reg2;
     }
@@ -218,13 +224,12 @@ class Insn {
      */
     void write(std::ostream& ostream, const Code& code, int offset) const;
 
-    private:
+private:
     Type          m_type;
     unsigned char m_reg1;
     unsigned char m_reg2;
 
-    Insn(Type type, unsigned char reg1, unsigned char reg2)
-        : m_type(type), m_reg1(reg1), m_reg2(reg2) {
+    Insn(Type type, unsigned char reg1, unsigned char reg2) : m_type(type), m_reg1(reg1), m_reg2(reg2) {
     }
 };
 
@@ -232,12 +237,15 @@ class Insn {
  * \brief Representation of a multi-byte register.
  */
 class Reg {
-    public:
+public:
     Reg() {
     }
+
     Reg(const Reg& other) : m_regs(other.m_regs) {
     }
+
     Reg(const Reg& other, unsigned char offset, unsigned char count = 0xFF);
+
     ~Reg() {
     }
 
@@ -321,7 +329,12 @@ class Reg {
      *
      * \return The shuffled version of this register.
      */
-    Reg shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5) const;
+    Reg shuffle(unsigned char offset0,
+                unsigned char offset1,
+                unsigned char offset2,
+                unsigned char offset3,
+                unsigned char offset4,
+                unsigned char offset5) const;
 
     /**
      * \brief Shuffles the bytes in a 64-bit register.
@@ -345,7 +358,14 @@ class Reg {
      *
      * \return The shuffled version of this register.
      */
-    Reg shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5, unsigned char offset6, unsigned char offset7) const;
+    Reg shuffle(unsigned char offset0,
+                unsigned char offset1,
+                unsigned char offset2,
+                unsigned char offset3,
+                unsigned char offset4,
+                unsigned char offset5,
+                unsigned char offset6,
+                unsigned char offset7) const;
 
     /**
      * \brief Appends another register to this one to create a combined set.
@@ -377,7 +397,7 @@ class Reg {
      */
     static Reg z_ptr();
 
-    private:
+private:
     std::vector<unsigned char> m_regs;
 
     friend class Code;
@@ -387,12 +407,15 @@ class Reg {
 #define ZERO_REG 1 /**< AVR register number for the zero register */
 
 class Sbox {
-    public:
+public:
     Sbox() {
     }
+
     Sbox(const Sbox& other) : m_data(other.m_data) {
     }
+
     Sbox(const unsigned char* data, unsigned size);
+
     ~Sbox() {
     }
 
@@ -404,14 +427,15 @@ class Sbox {
     int size() const {
         return m_data.size();
     }
+
     unsigned char lookup(int value) const;
 
-    private:
+private:
     std::vector<unsigned char> m_data;
 };
 
 class Code {
-    public:
+public:
     Code();
     ~Code();
 
@@ -518,98 +542,129 @@ class Code {
 
     // Helper functions to add instructions of various types to the code.
     void adc(const Reg& reg1, const Reg& reg2);
+
     void adc(const Reg& reg1, unsigned long long value) {
         add(reg1, value, true);
     }
+
     void add(const Reg& reg1, const Reg& reg2);
     void add(const Reg& reg1, unsigned long long value, bool carryIn = false);
+
     void add_ptr_x(int offset) {
         add_ptr(26, offset);
     }
+
     void add_ptr_y(int offset) {
         add_ptr(28, offset);
     }
+
     void add_ptr_z(int offset) {
         add_ptr(30, offset);
     }
+
     void asr(const Reg& reg);
     void bit_get(const Reg& reg, int bit);
     void bit_put(const Reg& reg, int bit);
     void bit_permute(const Reg& reg, const unsigned char* perm, int size, bool inverse = false);
+
     void brcc(unsigned char& label) {
         branch(Insn::BRCC, label);
     }
+
     void brcs(unsigned char& label) {
         branch(Insn::BRCS, label);
     }
+
     void breq(unsigned char& label) {
         branch(Insn::BREQ, label);
     }
+
     void brne(unsigned char& label) {
         branch(Insn::BRNE, label);
     }
+
     void call(unsigned char& label) {
         branch(Insn::CALL, label);
     }
+
     void clr(const Reg& reg);
     void compare(const Reg& reg1, const Reg& reg2);
     void compare(const Reg& reg1, unsigned long long value);
     void compare_and_loop(const Reg& reg1, unsigned long long value, unsigned char& label);
     void compare_and_set(const Reg& regout, const Reg& reg1, const Reg& reg2, unsigned char set);
+
     void dec(const Reg& reg) {
         sub(reg, 1);
     }
+
     void inc(const Reg& reg) {
         add(reg, 1);
     }
+
     void jmp(unsigned char& label) {
         branch(Insn::JMP, label);
     }
+
     void label(unsigned char& label) {
         branch(Insn::LABEL, label);
     }
+
     void ldx(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::LD_X, offset);
     }
+
     void ldy(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::LD_Y, offset);
     }
+
     void ldlocal(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::LD_Y, offset + 1);
     }
+
     void ldz(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::LD_Z, offset);
     }
+
     void ldx_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::LD_X, offset);
     }
+
     void ldy_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::LD_Y, offset);
     }
+
     void ldlocal_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::LD_Y, offset + 1);
     }
+
     void ldz_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::LD_Z, offset);
     }
+
     void ldy_xor(const Reg& reg, unsigned offset) {
         ld_xor(reg, Insn::LD_Y, offset);
     }
+
     void ldlocal_xor(const Reg& reg, unsigned offset) {
         ld_xor(reg, Insn::LD_Y, offset + 1);
     }
+
     void ldz_xor(const Reg& reg, unsigned offset) {
         ld_xor(reg, Insn::LD_Z, offset);
     }
+
     void ldy_xor_in(const Reg& reg, unsigned offset) {
         ld_xor_in(reg, Insn::LD_Y, offset);
     }
+
     void ldlocal_xor_in(const Reg& reg, unsigned offset) {
         ld_xor_in(reg, Insn::LD_Y, offset + 1);
     }
+
     void ldz_xor_in(const Reg& reg, unsigned offset) {
         ld_xor_in(reg, Insn::LD_Z, offset);
     }
+
     void lsl(const Reg& reg, unsigned bits);
     void lsl_bytes(const Reg& reg, unsigned count);
     void lsr(const Reg& reg, unsigned bits);
@@ -633,64 +688,84 @@ class Code {
     void logxor_or(const Reg& reg1, const Reg& reg2, const Reg& reg3);
     void pop(const Reg& reg);
     void push(const Reg& reg);
+
     void ret() {
         bare(Insn::RET);
     }
+
     void rol(const Reg& reg, unsigned bits);
     void rol_bytes(const Reg& reg, unsigned count);
     void ror(const Reg& reg, unsigned bits);
     void ror_bytes(const Reg& reg, unsigned count);
     void sbc(const Reg& reg1, const Reg& reg2);
+
     void sbc(const Reg& reg1, unsigned long long value) {
         add(reg1, value, true);
     }
+
     void sub(const Reg& reg1, const Reg& reg2);
     void sub(const Reg& reg1, unsigned long long value, bool carryIn = false);
+
     void sub_ptr_x(int offset) {
         add_ptr_x(-offset);
     }
+
     void sub_ptr_y(int offset) {
         add_ptr_y(-offset);
     }
+
     void sub_ptr_z(int offset) {
         add_ptr_z(-offset);
     }
+
     void stx(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::ST_X, offset);
     }
+
     void sty(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::ST_Y, offset);
     }
+
     void stlocal(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::ST_Y, offset + 1);
     }
+
     void stz(const Reg& reg, unsigned char offset) {
         ld_st(reg, Insn::ST_Z, offset);
     }
+
     void stx_zero(unsigned offset, unsigned count) {
         st_zero(Insn::ST_X, offset, count);
     }
+
     void sty_zero(unsigned offset, unsigned count) {
         st_zero(Insn::ST_Y, offset, count);
     }
+
     void stlocal_zero(unsigned offset, unsigned count) {
         st_zero(Insn::ST_Y, offset + 1, count);
     }
+
     void stz_zero(unsigned offset, unsigned count) {
         st_zero(Insn::ST_Z, offset, count);
     }
+
     void stx_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::ST_X, offset);
     }
+
     void sty_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::ST_Y, offset);
     }
+
     void stlocal_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::ST_Y, offset + 1);
     }
+
     void stz_long(const Reg& reg, unsigned offset) {
         ld_st_long(reg, Insn::ST_Z, offset);
     }
+
     void swap(const Reg& reg1, const Reg& reg2);
     void swapmove(const Reg& reg, unsigned long long mask, unsigned shift, const Reg& temp = Reg());
     void swapmove(const Reg& reg1, const Reg& reg2, unsigned long long mask, unsigned shift, const Reg& temp = Reg());
@@ -702,6 +777,7 @@ class Code {
     void sbox_cleanup(void);
     void sbox_lookup(const Reg& reg1, const Reg& reg2);
     void sbox_write(std::ostream& ostream, unsigned char num, const Sbox& sbox);
+
     Sbox sbox_get(unsigned char num) const {
         return m_sboxes.at(num);
     }
@@ -710,17 +786,23 @@ class Code {
     void prologue_setup_key(const char* name, unsigned size_locals);
     void prologue_setup_key_reversed(const char* name, unsigned size_locals);
     void prologue_encrypt_block(const char* name, unsigned size_locals);
+
     void prologue_decrypt_block(const char* name, unsigned size_locals) {
         prologue_encrypt_block(name, size_locals);
     }
+
     Reg prologue_encrypt_block_with_tweak(const char* name, unsigned size_locals);
+
     Reg prologue_decrypt_block_with_tweak(const char* name, unsigned size_locals) {
         return prologue_encrypt_block_with_tweak(name, size_locals);
     }
+
     void prologue_encrypt_block_key2(const char* name, unsigned size_locals);
+
     void prologue_decrypt_block_key2(const char* name, unsigned size_locals) {
         prologue_encrypt_block_key2(name, size_locals);
     }
+
     void prologue_permutation(const char* name, unsigned size_locals);
     Reg  prologue_permutation_with_count(const char* name, unsigned size_locals);
     Reg  prologue_masked_permutation(const char* name, unsigned size_locals);
@@ -743,11 +825,22 @@ class Code {
 
     // Execute generated code in the interpreter.
     void exec_setup_key(void* schedule, unsigned schedule_len, const void* key, unsigned key_len);
-    void exec_encrypt_block(const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak = 0);
-    void exec_encrypt_block_with_tweak_ptr(const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, const void* tweak, unsigned tweak_len);
-    void exec_decrypt_block(const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak = 0) {
+    void exec_encrypt_block(
+        const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak = 0);
+    void exec_encrypt_block_with_tweak_ptr(const void* key,
+                                           unsigned    key_len,
+                                           void*       output,
+                                           unsigned    output_len,
+                                           const void* input,
+                                           unsigned    input_len,
+                                           const void* tweak,
+                                           unsigned    tweak_len);
+
+    void exec_decrypt_block(
+        const void* key, unsigned key_len, void* output, unsigned output_len, const void* input, unsigned input_len, unsigned tweak = 0) {
         exec_encrypt_block(key, key_len, output, output_len, input, input_len, tweak);
     }
+
     void exec_permutation(void* state, unsigned state_len, unsigned count = 0, unsigned arg2 = 0, unsigned arg3 = 0, unsigned arg4 = 0);
     void exec_masked_permutation(void* state, unsigned state_len, unsigned count, void* preserve, unsigned preserve_len);
     void exec_tinyjambu(void* state, unsigned state_len, const void* key, unsigned key_len, unsigned rounds);
@@ -771,6 +864,7 @@ class Code {
     void immreg(Insn::Type type, unsigned char reg, unsigned char value);
     void memory(Insn::Type type, unsigned char reg, unsigned char offset);
     void zeroreg(unsigned char reg, bool sideEffects = true);
+
     void zeroreg_no_cc(unsigned char reg) {
         zeroreg(reg, false);
     }
@@ -790,16 +884,9 @@ class Code {
      */
     void write_alias(std::ostream& ostream, const std::string& name) const;
 
-    private:
-    enum PrologueType {
-        EncryptBlock,
-        EncryptBlockKey2,
-        KeySetup,
-        KeySetupReversed,
-        Permutation,
-        PermutationMasked,
-        TinyJAMBU
-    };
+private:
+    enum PrologueType { EncryptBlock, EncryptBlockKey2, KeySetup, KeySetupReversed, Permutation, PermutationMasked, TinyJAMBU };
+
     std::vector<Insn>             m_insns;
     std::vector<int>              m_labels;
     std::vector<unsigned char>    m_regOrder;

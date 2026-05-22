@@ -28,14 +28,12 @@
 /**
  * \brief Initialization vector for ASCON-128-SIV, authentication phase.
  */
-static uint8_t const ASCON128_IV1[8] =
-    {0x81, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
+static uint8_t const ASCON128_IV1[8] = {0x81, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
 
 /**
  * \brief Initialization vector for ASCON-128-SIV, encryption phase.
  */
-static uint8_t const ASCON128_IV2[8] =
-    {0x82, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
+static uint8_t const ASCON128_IV2[8] = {0x82, 0x40, 0x0c, 0x06, 0x00, 0x00, 0x00, 0x00};
 
 /**
  * \brief Initializes the ASCON state for ASCON-128-SIV.
@@ -83,7 +81,14 @@ static void ascon_siv_encrypt_8(ascon_state_t* state, unsigned char* dest, const
     }
 }
 
-void ascon128_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+void ascon128_siv_encrypt(unsigned char*       c,
+                          size_t*              clen,
+                          const unsigned char* m,
+                          size_t               mlen,
+                          const unsigned char* ad,
+                          size_t               adlen,
+                          const unsigned char* npub,
+                          const unsigned char* k) {
     ascon_state_t state;
 
     /* Set the length of the returned ciphertext */
@@ -118,7 +123,14 @@ void ascon128_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m
     ascon_free(&state);
 }
 
-int ascon128_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
+int ascon128_siv_decrypt(unsigned char*       m,
+                         size_t*              mlen,
+                         const unsigned char* c,
+                         size_t               clen,
+                         const unsigned char* ad,
+                         size_t               adlen,
+                         const unsigned char* npub,
+                         const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON128_TAG_SIZE];
     int           result;

@@ -217,12 +217,7 @@ HAL_StatusTypeDef SDIO_Init(SDIO_TypeDef* SDIOx, SDIO_InitTypeDef Init) {
     assert_param(IS_SDIO_CLKDIV(Init.ClockDiv));
 
     /* Set SDMMC configuration parameters */
-    tmpreg |= (Init.ClockEdge |
-               Init.ClockBypass |
-               Init.ClockPowerSave |
-               Init.BusWide |
-               Init.HardwareFlowControl |
-               Init.ClockDiv);
+    tmpreg |= (Init.ClockEdge | Init.ClockBypass | Init.ClockPowerSave | Init.BusWide | Init.HardwareFlowControl | Init.ClockDiv);
 
     /* Write to SDMMC CLKCR */
     MODIFY_REG(SDIOx->CLKCR, CLKCR_CLEAR_MASK, tmpreg);
@@ -349,10 +344,7 @@ HAL_StatusTypeDef SDIO_SendCommand(SDIO_TypeDef* SDIOx, SDIO_CmdInitTypeDef* Com
     SDIOx->ARG = Command->Argument;
 
     /* Set SDMMC command parameters */
-    tmpreg |= (uint32_t)(Command->CmdIndex |
-                         Command->Response |
-                         Command->WaitForInterrupt |
-                         Command->CPSM);
+    tmpreg |= (uint32_t)(Command->CmdIndex | Command->Response | Command->WaitForInterrupt | Command->CPSM);
 
     /* Write to SDMMC CMD register */
     MODIFY_REG(SDIOx->CMD, CMD_CLEAR_MASK, tmpreg);
@@ -417,10 +409,7 @@ HAL_StatusTypeDef SDIO_ConfigData(SDIO_TypeDef* SDIOx, SDIO_DataInitTypeDef* Dat
     SDIOx->DLEN = Data->DataLength;
 
     /* Set the SDMMC data configuration parameters */
-    tmpreg |= (uint32_t)(Data->DataBlockSize |
-                         Data->TransferDir |
-                         Data->TransferMode |
-                         Data->DPSM);
+    tmpreg |= (uint32_t)(Data->DataBlockSize | Data->TransferDir | Data->TransferMode | Data->DPSM);
 
     /* Write to SDMMC DCTRL */
     MODIFY_REG(SDIOx->DCTRL, DCTRL_CLEAR_MASK, tmpreg);
@@ -1156,8 +1145,7 @@ uint32_t SDMMC_GetCmdResp1(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint32_t Timeout
             return SDMMC_ERROR_TIMEOUT;
         }
         sta_reg = SDIOx->STA;
-    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
-             ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
+    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) || ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
 
     if (__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT)) {
         __SDIO_CLEAR_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT);
@@ -1241,8 +1229,7 @@ uint32_t SDMMC_GetCmdResp2(SDIO_TypeDef* SDIOx) {
             return SDMMC_ERROR_TIMEOUT;
         }
         sta_reg = SDIOx->STA;
-    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
-             ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
+    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) || ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
 
     if (__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT)) {
         __SDIO_CLEAR_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT);
@@ -1277,8 +1264,7 @@ uint32_t SDMMC_GetCmdResp3(SDIO_TypeDef* SDIOx) {
             return SDMMC_ERROR_TIMEOUT;
         }
         sta_reg = SDIOx->STA;
-    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
-             ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
+    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) || ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
 
     if (__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT)) {
         __SDIO_CLEAR_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT);
@@ -1313,8 +1299,7 @@ uint32_t SDMMC_GetCmdResp6(SDIO_TypeDef* SDIOx, uint8_t SD_CMD, uint16_t* pRCA) 
             return SDMMC_ERROR_TIMEOUT;
         }
         sta_reg = SDIOx->STA;
-    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
-             ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
+    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) || ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
 
     if (__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT)) {
         __SDIO_CLEAR_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT);
@@ -1368,8 +1353,7 @@ uint32_t SDMMC_GetCmdResp7(SDIO_TypeDef* SDIOx) {
             return SDMMC_ERROR_TIMEOUT;
         }
         sta_reg = SDIOx->STA;
-    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) ||
-             ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
+    } while (((sta_reg & (SDIO_FLAG_CCRCFAIL | SDIO_FLAG_CMDREND | SDIO_FLAG_CTIMEOUT)) == 0U) || ((sta_reg & SDIO_FLAG_CMDACT) != 0U));
 
     if (__SDIO_GET_FLAG(SDIOx, SDIO_FLAG_CTIMEOUT)) {
         /* Card is SD V2.0 compliant */

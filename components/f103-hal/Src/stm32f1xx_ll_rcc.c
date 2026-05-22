@@ -301,7 +301,8 @@ uint32_t LL_RCC_GetADCClockFreq(uint32_t ADCxSource) {
     adc_prescaler = LL_RCC_GetADCClockSource(ADCxSource);
 
     /* ADC frequency = PCLK2 frequency / ADC prescaler (2, 4, 6 or 8) */
-    adc_frequency = RCC_GetPCLK2ClockFreq(RCC_GetHCLKClockFreq(RCC_GetSystemClockFreq())) / (((adc_prescaler >> POSITION_VAL(ADCxSource)) + 1U) * 2U);
+    adc_frequency =
+        RCC_GetPCLK2ClockFreq(RCC_GetHCLKClockFreq(RCC_GetSystemClockFreq())) / (((adc_prescaler >> POSITION_VAL(ADCxSource)) + 1U) * 2U);
 
     return adc_frequency;
 }

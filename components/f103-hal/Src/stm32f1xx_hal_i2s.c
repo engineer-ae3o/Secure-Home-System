@@ -221,6 +221,7 @@ static void              I2S_DMAError(DMA_HandleTypeDef* hdma);
 static void              I2S_Transmit_IT(I2S_HandleTypeDef* hi2s);
 static void              I2S_Receive_IT(I2S_HandleTypeDef* hi2s);
 static HAL_StatusTypeDef I2S_WaitFlagStateUntilTimeout(I2S_HandleTypeDef* hi2s, uint32_t Flag, FlagStatus State, uint32_t Timeout);
+
 /**
   * @}
   */
@@ -315,7 +316,9 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef* hi2s) {
 
     /*----------------------- SPIx I2SCFGR & I2SPR Configuration ----------------*/
     /* Clear I2SMOD, I2SE, I2SCFG, PCMSYNC, I2SSTD, CKPOL, DATLEN and CHLEN bits */
-    CLEAR_BIT(hi2s->Instance->I2SCFGR, (SPI_I2SCFGR_CHLEN | SPI_I2SCFGR_DATLEN | SPI_I2SCFGR_CKPOL | SPI_I2SCFGR_I2SSTD | SPI_I2SCFGR_PCMSYNC | SPI_I2SCFGR_I2SCFG | SPI_I2SCFGR_I2SE | SPI_I2SCFGR_I2SMOD));
+    CLEAR_BIT(hi2s->Instance->I2SCFGR,
+              (SPI_I2SCFGR_CHLEN | SPI_I2SCFGR_DATLEN | SPI_I2SCFGR_CKPOL | SPI_I2SCFGR_I2SSTD | SPI_I2SCFGR_PCMSYNC | SPI_I2SCFGR_I2SCFG |
+               SPI_I2SCFGR_I2SE | SPI_I2SCFGR_I2SMOD));
     hi2s->Instance->I2SPR = 0x0002U;
 
     /*----------------------- I2SPR: I2SDIV and ODD Calculation -----------------*/
@@ -391,7 +394,10 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef* hi2s) {
 
     /* Clear I2SMOD, I2SE, I2SCFG, PCMSYNC, I2SSTD, CKPOL, DATLEN and CHLEN bits */
     /* And configure the I2S with the I2S_InitStruct values                      */
-    MODIFY_REG(hi2s->Instance->I2SCFGR, (SPI_I2SCFGR_CHLEN | SPI_I2SCFGR_DATLEN | SPI_I2SCFGR_CKPOL | SPI_I2SCFGR_I2SSTD | SPI_I2SCFGR_PCMSYNC | SPI_I2SCFGR_I2SCFG | SPI_I2SCFGR_I2SE | SPI_I2SCFGR_I2SMOD), (SPI_I2SCFGR_I2SMOD | hi2s->Init.Mode | hi2s->Init.Standard | hi2s->Init.DataFormat | hi2s->Init.CPOL));
+    MODIFY_REG(hi2s->Instance->I2SCFGR,
+               (SPI_I2SCFGR_CHLEN | SPI_I2SCFGR_DATLEN | SPI_I2SCFGR_CKPOL | SPI_I2SCFGR_I2SSTD | SPI_I2SCFGR_PCMSYNC | SPI_I2SCFGR_I2SCFG |
+                SPI_I2SCFGR_I2SE | SPI_I2SCFGR_I2SMOD),
+               (SPI_I2SCFGR_I2SMOD | hi2s->Init.Mode | hi2s->Init.Standard | hi2s->Init.DataFormat | hi2s->Init.CPOL));
 
 #if defined(SPI_I2SCFGR_ASTRTEN)
     if ((hi2s->Init.Standard == I2S_STANDARD_PCM_SHORT) || ((hi2s->Init.Standard == I2S_STANDARD_PCM_LONG))) {
@@ -1057,10 +1063,7 @@ HAL_StatusTypeDef HAL_I2S_Transmit_DMA(I2S_HandleTypeDef* hi2s, uint16_t* pData,
     hi2s->hdmatx->XferErrorCallback = I2S_DMAError;
 
     /* Enable the Tx DMA Stream/Channel */
-    if (HAL_OK != HAL_DMA_Start_IT(hi2s->hdmatx,
-                                   (uint32_t)hi2s->pTxBuffPtr,
-                                   (uint32_t)&hi2s->Instance->DR,
-                                   hi2s->TxXferSize)) {
+    if (HAL_OK != HAL_DMA_Start_IT(hi2s->hdmatx, (uint32_t)hi2s->pTxBuffPtr, (uint32_t)&hi2s->Instance->DR, hi2s->TxXferSize)) {
         /* Update SPI error code */
         SET_BIT(hi2s->ErrorCode, HAL_I2S_ERROR_DMA);
         hi2s->State = HAL_I2S_STATE_READY;
@@ -1329,8 +1332,8 @@ void HAL_I2S_IRQHandler(I2S_HandleTypeDef* hi2s) {
     uint32_t itflag   = hi2s->Instance->SR;
 
     /* I2S in mode Receiver ------------------------------------------------*/
-    if ((I2S_CHECK_FLAG(itflag, I2S_FLAG_OVR) == RESET) &&
-        (I2S_CHECK_FLAG(itflag, I2S_FLAG_RXNE) != RESET) && (I2S_CHECK_IT_SOURCE(itsource, I2S_IT_RXNE) != RESET)) {
+    if ((I2S_CHECK_FLAG(itflag, I2S_FLAG_OVR) == RESET) && (I2S_CHECK_FLAG(itflag, I2S_FLAG_RXNE) != RESET) &&
+        (I2S_CHECK_IT_SOURCE(itsource, I2S_IT_RXNE) != RESET)) {
         I2S_Receive_IT(hi2s);
         return;
     }
@@ -1486,6 +1489,7 @@ HAL_I2S_StateTypeDef HAL_I2S_GetState(I2S_HandleTypeDef* hi2s) {
 uint32_t HAL_I2S_GetError(I2S_HandleTypeDef* hi2s) {
     return hi2s->ErrorCode;
 }
+
 /**
   * @}
   */

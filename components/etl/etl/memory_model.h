@@ -38,35 +38,35 @@ SOFTWARE.
 #include <stdint.h>
 
 namespace etl {
-ETL_DECLARE_USER_TYPE(memory_model, int)
-ETL_USER_TYPE(MEMORY_MODEL_SMALL, 0)
-ETL_USER_TYPE(MEMORY_MODEL_MEDIUM, 1)
-ETL_USER_TYPE(MEMORY_MODEL_LARGE, 2)
-ETL_USER_TYPE(MEMORY_MODEL_HUGE, 3)
-ETL_END_USER_TYPE(memory_model)
+    ETL_DECLARE_USER_TYPE(memory_model, int)
+    ETL_USER_TYPE(MEMORY_MODEL_SMALL, 0)
+    ETL_USER_TYPE(MEMORY_MODEL_MEDIUM, 1)
+    ETL_USER_TYPE(MEMORY_MODEL_LARGE, 2)
+    ETL_USER_TYPE(MEMORY_MODEL_HUGE, 3)
+    ETL_END_USER_TYPE(memory_model)
 
-template<size_t MEMORY_MODEL>
-struct size_type_lookup;
+    template<size_t MEMORY_MODEL>
+    struct size_type_lookup;
 
-template<>
-struct size_type_lookup<etl::memory_model::MEMORY_MODEL_SMALL> {
-    typedef uint_least8_t type;
-};
+    template<>
+    struct size_type_lookup<etl::memory_model::MEMORY_MODEL_SMALL> {
+        typedef uint_least8_t type;
+    };
 
-template<>
-struct size_type_lookup<etl::memory_model::MEMORY_MODEL_MEDIUM> {
-    typedef uint_least16_t type;
-};
+    template<>
+    struct size_type_lookup<etl::memory_model::MEMORY_MODEL_MEDIUM> {
+        typedef uint_least16_t type;
+    };
 
-template<>
-struct size_type_lookup<etl::memory_model::MEMORY_MODEL_LARGE> {
-    typedef uint_least32_t type;
-};
+    template<>
+    struct size_type_lookup<etl::memory_model::MEMORY_MODEL_LARGE> {
+        typedef uint_least32_t type;
+    };
 
-template<>
-struct size_type_lookup<etl::memory_model::MEMORY_MODEL_HUGE> {
-    typedef uint_least64_t type;
-};
+    template<>
+    struct size_type_lookup<etl::memory_model::MEMORY_MODEL_HUGE> {
+        typedef uint_least64_t type;
+    };
 } // namespace etl
 
 #endif

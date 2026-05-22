@@ -57,8 +57,7 @@ int ascon_bytes_from_hex(unsigned char* out, size_t outlen, const char* in, size
             digit = ch - 'a' + 10;
         } else if (ch >= 'A' && ch <= 'F') {
             digit = ch - 'A' + 10;
-        } else if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n' ||
-                   ch == '\f' || ch == '\v') {
+        } else if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n' || ch == '\f' || ch == '\v') {
             continue;
         } else {
             return -1;

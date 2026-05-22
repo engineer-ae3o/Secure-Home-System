@@ -30,44 +30,44 @@
 extern "C" {
 #endif
 
-/* ========================================================================= */
-/* ============           Interrupt Number Definition           ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============           Interrupt Number Definition           ============ */
+    /* ========================================================================= */
 
-typedef enum IRQn {
-    /* ================     Cortex-A Specific Interrupt Numbers  =============== */
+    typedef enum IRQn {
+        /* ================     Cortex-A Specific Interrupt Numbers  =============== */
 
-    /* Software Generated Interrupts */
-    SGI0_IRQn  = 0,  /* Software Generated Interrupt  0 */
-    SGI1_IRQn  = 1,  /* Software Generated Interrupt  1 */
-    SGI2_IRQn  = 2,  /* Software Generated Interrupt  2 */
-    SGI3_IRQn  = 3,  /* Software Generated Interrupt  3 */
-    SGI4_IRQn  = 4,  /* Software Generated Interrupt  4 */
-    SGI5_IRQn  = 5,  /* Software Generated Interrupt  5 */
-    SGI6_IRQn  = 6,  /* Software Generated Interrupt  6 */
-    SGI7_IRQn  = 7,  /* Software Generated Interrupt  7 */
-    SGI8_IRQn  = 8,  /* Software Generated Interrupt  8 */
-    SGI9_IRQn  = 9,  /* Software Generated Interrupt  9 */
-    SGI10_IRQn = 10, /* Software Generated Interrupt 10 */
-    SGI11_IRQn = 11, /* Software Generated Interrupt 11 */
-    SGI12_IRQn = 12, /* Software Generated Interrupt 12 */
-    SGI13_IRQn = 13, /* Software Generated Interrupt 13 */
-    SGI14_IRQn = 14, /* Software Generated Interrupt 14 */
-    SGI15_IRQn = 15, /* Software Generated Interrupt 15 */
+        /* Software Generated Interrupts */
+        SGI0_IRQn  = 0,  /* Software Generated Interrupt  0 */
+        SGI1_IRQn  = 1,  /* Software Generated Interrupt  1 */
+        SGI2_IRQn  = 2,  /* Software Generated Interrupt  2 */
+        SGI3_IRQn  = 3,  /* Software Generated Interrupt  3 */
+        SGI4_IRQn  = 4,  /* Software Generated Interrupt  4 */
+        SGI5_IRQn  = 5,  /* Software Generated Interrupt  5 */
+        SGI6_IRQn  = 6,  /* Software Generated Interrupt  6 */
+        SGI7_IRQn  = 7,  /* Software Generated Interrupt  7 */
+        SGI8_IRQn  = 8,  /* Software Generated Interrupt  8 */
+        SGI9_IRQn  = 9,  /* Software Generated Interrupt  9 */
+        SGI10_IRQn = 10, /* Software Generated Interrupt 10 */
+        SGI11_IRQn = 11, /* Software Generated Interrupt 11 */
+        SGI12_IRQn = 12, /* Software Generated Interrupt 12 */
+        SGI13_IRQn = 13, /* Software Generated Interrupt 13 */
+        SGI14_IRQn = 14, /* Software Generated Interrupt 14 */
+        SGI15_IRQn = 15, /* Software Generated Interrupt 15 */
 
-    /* Private Peripheral Interrupts */
-    VirtualMaintenanceInterrupt_IRQn = 25, /* Virtual Maintenance Interrupt */
-    HypervisorTimer_IRQn             = 26, /* Hypervisor Timer Interrupt */
-    VirtualTimer_IRQn                = 27, /* Virtual Timer Interrupt */
-    Legacy_nFIQ_IRQn                 = 28, /* Legacy nFIQ Interrupt */
-    SecurePhyTimer_IRQn              = 29, /* Secure Physical Timer Interrupt */
-    NonSecurePhyTimer_IRQn           = 30, /* Non-Secure Physical Timer Interrupt */
-    Legacy_nIRQ_IRQn                 = 31, /* Legacy nIRQ Interrupt */
+        /* Private Peripheral Interrupts */
+        VirtualMaintenanceInterrupt_IRQn = 25, /* Virtual Maintenance Interrupt */
+        HypervisorTimer_IRQn             = 26, /* Hypervisor Timer Interrupt */
+        VirtualTimer_IRQn                = 27, /* Virtual Timer Interrupt */
+        Legacy_nFIQ_IRQn                 = 28, /* Legacy nFIQ Interrupt */
+        SecurePhyTimer_IRQn              = 29, /* Secure Physical Timer Interrupt */
+        NonSecurePhyTimer_IRQn           = 30, /* Non-Secure Physical Timer Interrupt */
+        Legacy_nIRQ_IRQn                 = 31, /* Legacy nIRQ Interrupt */
 
-    /* Shared Peripheral Interrupts */
-    /* ToDo: add here your device specific external interrupt numbers */
-    <DeviceInterrupt> _IRQn = 0, /* Device Interrupt                                                          */
-} IRQn_Type;
+        /* Shared Peripheral Interrupts */
+        /* ToDo: add here your device specific external interrupt numbers */
+        <DeviceInterrupt> _IRQn = 0, /* Device Interrupt                                                          */
+    } IRQn_Type;
 
 /* ========================================================================= */
 /* ============      Processor and Core Peripheral Section      ============ */
@@ -118,28 +118,27 @@ typedef enum IRQn {
          replace '<Device>' with your device name */
 #include "system_<Device>.h" /* System Header */
 
-/* ========================================================================= */
-/* ============       Device Specific Peripheral Section        ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============       Device Specific Peripheral Section        ============ */
+    /* ========================================================================= */
 
-/* ToDo: add here your device specific peripheral access structure typedefs
+    /* ToDo: add here your device specific peripheral access structure typedefs
          following is an example for a timer */
 
-/* ========================================================================= */
-/* ============                       TMR                       ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============                       TMR                       ============ */
+    /* ========================================================================= */
 
-typedef struct
-{
-    __IOM uint32_t TimerLoad;    /* Offset: 0x004 (R/W) Load Register */
-    __IM uint32_t  TimerValue;   /* Offset: 0x008 (R/ ) Counter Current Value Register */
-    __IOM uint32_t TimerControl; /* Offset: 0x00C (R/W) Control Register */
-    __OM uint32_t  TimerIntClr;  /* Offset: 0x010 ( /W) Interrupt Clear Register */
-    __IM uint32_t  TimerRIS;     /* Offset: 0x014 (R/ ) Raw Interrupt Status Register */
-    __IM uint32_t  TimerMIS;     /* Offset: 0x018 (R/ ) Masked Interrupt Status Register */
-    __IM uint32_t  RESERVED[1];
-    __IOM uint32_t TimerBGLoad; /* Offset: 0x020 (R/W) Background Load Register */
-} < DeviceAbbreviation > _TMR_TypeDef;
+    typedef struct {
+        __IOM uint32_t TimerLoad;    /* Offset: 0x004 (R/W) Load Register */
+        __IM uint32_t  TimerValue;   /* Offset: 0x008 (R/ ) Counter Current Value Register */
+        __IOM uint32_t TimerControl; /* Offset: 0x00C (R/W) Control Register */
+        __OM uint32_t  TimerIntClr;  /* Offset: 0x010 ( /W) Interrupt Clear Register */
+        __IM uint32_t  TimerRIS;     /* Offset: 0x014 (R/ ) Raw Interrupt Status Register */
+        __IM uint32_t  TimerMIS;     /* Offset: 0x018 (R/ ) Masked Interrupt Status Register */
+        __IM uint32_t  RESERVED[1];
+        __IOM uint32_t TimerBGLoad; /* Offset: 0x020 (R/W) Background Load Register */
+    } < DeviceAbbreviation > _TMR_TypeDef;
 
 /* --------  End of section using anonymous unions and disabling warnings  -------- */
 #if defined(__CC_ARM)
@@ -177,11 +176,11 @@ typedef struct
 #define < DeviceAbbreviation> TIM1_BASE(<DeviceAbbreviation> _PERIPH_BASE + 0x0800) /* (Timer1    ) Base Address */
 #define < DeviceAbbreviation> TIM2_BASE(<DeviceAbbreviation> _PERIPH_BASE + 0x1000) /* (Timer2    ) Base Address */
 
-/* ========================================================================= */
-/* ============             Peripheral declaration              ============ */
-/* ========================================================================= */
+    /* ========================================================================= */
+    /* ============             Peripheral declaration              ============ */
+    /* ========================================================================= */
 
-/* ToDo: Add here your device peripherals pointer definitions
+    /* ToDo: Add here your device peripherals pointer definitions
          following is an example for timer */
 
 #define < DeviceAbbreviation> _TIM0((<DeviceAbbreviation> _TMR_TypeDef*) < DeviceAbbreviation > TIM0_BASE)

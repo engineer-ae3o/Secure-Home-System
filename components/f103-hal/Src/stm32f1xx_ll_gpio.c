@@ -45,24 +45,18 @@
   * @{
   */
 
-#define IS_LL_GPIO_PIN(__VALUE__) ((((__VALUE__) & LL_GPIO_PIN_ALL) != 0u) && \
-                                   (((__VALUE__) & (~LL_GPIO_PIN_ALL)) == 0u))
+#define IS_LL_GPIO_PIN(__VALUE__) ((((__VALUE__) & LL_GPIO_PIN_ALL) != 0u) && (((__VALUE__) & (~LL_GPIO_PIN_ALL)) == 0u))
 
-#define IS_LL_GPIO_MODE(__VALUE__) (((__VALUE__) == LL_GPIO_MODE_ANALOG) ||   \
-                                    ((__VALUE__) == LL_GPIO_MODE_FLOATING) || \
-                                    ((__VALUE__) == LL_GPIO_MODE_INPUT) ||    \
-                                    ((__VALUE__) == LL_GPIO_MODE_OUTPUT) ||   \
-                                    ((__VALUE__) == LL_GPIO_MODE_ALTERNATE))
+#define IS_LL_GPIO_MODE(__VALUE__)                                                                                                         \
+    (((__VALUE__) == LL_GPIO_MODE_ANALOG) || ((__VALUE__) == LL_GPIO_MODE_FLOATING) || ((__VALUE__) == LL_GPIO_MODE_INPUT) ||              \
+     ((__VALUE__) == LL_GPIO_MODE_OUTPUT) || ((__VALUE__) == LL_GPIO_MODE_ALTERNATE))
 
-#define IS_LL_GPIO_SPEED(__VALUE__) (((__VALUE__) == LL_GPIO_SPEED_FREQ_LOW) ||    \
-                                     ((__VALUE__) == LL_GPIO_SPEED_FREQ_MEDIUM) || \
-                                     ((__VALUE__) == LL_GPIO_SPEED_FREQ_HIGH))
+#define IS_LL_GPIO_SPEED(__VALUE__)                                                                                                        \
+    (((__VALUE__) == LL_GPIO_SPEED_FREQ_LOW) || ((__VALUE__) == LL_GPIO_SPEED_FREQ_MEDIUM) || ((__VALUE__) == LL_GPIO_SPEED_FREQ_HIGH))
 
-#define IS_LL_GPIO_OUTPUT_TYPE(__VALUE__) (((__VALUE__) == LL_GPIO_OUTPUT_PUSHPULL) || \
-                                           ((__VALUE__) == LL_GPIO_OUTPUT_OPENDRAIN))
+#define IS_LL_GPIO_OUTPUT_TYPE(__VALUE__) (((__VALUE__) == LL_GPIO_OUTPUT_PUSHPULL) || ((__VALUE__) == LL_GPIO_OUTPUT_OPENDRAIN))
 
-#define IS_LL_GPIO_PULL(__VALUE__) (((__VALUE__) == LL_GPIO_PULL_DOWN) || \
-                                    ((__VALUE__) == LL_GPIO_PULL_UP))
+#define IS_LL_GPIO_PULL(__VALUE__) (((__VALUE__) == LL_GPIO_PULL_DOWN) || ((__VALUE__) == LL_GPIO_PULL_UP))
 
 /**
   * @}

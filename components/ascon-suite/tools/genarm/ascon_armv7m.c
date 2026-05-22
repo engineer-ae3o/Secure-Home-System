@@ -52,8 +52,7 @@ static void function_footer(const char* name) {
 }
 
 /* List of all registers that we can work with */
-typedef struct
-{
+typedef struct {
     const char* x0_e;
     const char* x1_e;
     const char* x2_e;
@@ -195,8 +194,7 @@ static void gen_round(const reg_names* regs, int round) {
 /* Generate the code for a single sliced ASCON round */
 static void gen_round_sliced(const reg_names* regs, int round) {
     /* Round constants for all rounds */
-    static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    static const unsigned char RC[12 * 2] = {12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
 
     /* Apply the round constants to x2_e and x2_o */
     printf("\teor\t%s, %s, #%d\n", regs->x2_e, regs->x2_e, RC[round * 2]);

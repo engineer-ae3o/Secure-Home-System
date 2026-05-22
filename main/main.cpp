@@ -17,7 +17,11 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper;
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef init = {
-        .Pin = GPIO_PIN_13, .Mode = GPIO_MODE_OUTPUT_PP, .Pull = GPIO_NOPULL, .Speed = GPIO_SPEED_LOW};
+        .Pin   = GPIO_PIN_13,
+        .Mode  = GPIO_MODE_OUTPUT_PP,
+        .Pull  = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_LOW,
+    };
     HAL_GPIO_Init(GPIOC, &init);
 
     while (1) {
@@ -70,16 +74,20 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper;
 }
 
 [[noreturn]] static void switch_task(void*) {
-    const nc::config_t reed_config = {.port                = config::REED_SWITCH.port,
-                                      .pin                 = config::REED_SWITCH.pin,
-                                      .irq_type            = EXTI15_10_IRQn,
-                                      .calling_task_handle = xTaskGetCurrentTaskHandle()};
+    const nc::config_t reed_config = {
+        .port                = config::REED_SWITCH.port,
+        .pin                 = config::REED_SWITCH.pin,
+        .irq_type            = EXTI15_10_IRQn,
+        .calling_task_handle = xTaskGetCurrentTaskHandle(),
+    };
     reed.init(reed_config);
 
-    const nc::config_t tamper_config = {.port                = config::TAMPER_SWITCH.port,
-                                        .pin                 = config::TAMPER_SWITCH.pin,
-                                        .irq_type            = EXTI15_10_IRQn,
-                                        .calling_task_handle = xTaskGetCurrentTaskHandle()};
+    const nc::config_t tamper_config = {
+        .port                = config::TAMPER_SWITCH.port,
+        .pin                 = config::TAMPER_SWITCH.pin,
+        .irq_type            = EXTI15_10_IRQn,
+        .calling_task_handle = xTaskGetCurrentTaskHandle(),
+    };
     tamper.init(tamper_config);
 
     volatile nc::type_t type = nc::type_t::REED;
@@ -111,13 +119,7 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper;
 
     // Text to be displayed
     constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {
-        {
-            {"I", "hate"},
-            {"my", "life."},
-            {"This", "is"},
-            {"so", "so"},
-            {"damn", "boring"},
-        }};
+        {{"I", "hate"}, {"my", "life."}, {"This", "is"}, {"so", "so"}, {"damn", "boring"}}};
 
     while (1) {
         for (const auto& line : lcd_text) {
@@ -154,39 +156,39 @@ static StaticTask_t                 switch_task_tcb{};
 
 extern "C" {
 
-[[noreturn]] int main() {
-    HAL_Init();
+    [[noreturn]] int main() {
+        HAL_Init();
 
-    xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-    xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
-    xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 5, gsm_task_stack.data(), &gsm_task_tcb);
-    xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
-    xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
+        xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
+        xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
+        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 5, gsm_task_stack.data(), &gsm_task_tcb);
+        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
 
-    vTaskStartScheduler();
+        vTaskStartScheduler();
 
-    while (1)
-        ;
-}
-
-void EXTI3_IRQHandler() {
-    keypad.irq_handler();
-}
-
-void EXTI4_IRQHandler() {
-    keypad.irq_handler();
-}
-
-void EXTI9_5_IRQHandler() {
-    keypad.irq_handler();
-}
-
-void EXTI15_10_IRQHandler() {
-    if (__HAL_GPIO_EXTI_GET_IT(config::REED_SWITCH.pin)) {
-        reed.irq_handler();
+        while (1)
+            ;
     }
-    if (__HAL_GPIO_EXTI_GET_IT(config::TAMPER_SWITCH.pin)) {
-        tamper.irq_handler();
+
+    void EXTI3_IRQHandler() {
+        keypad.irq_handler();
     }
-}
+
+    void EXTI4_IRQHandler() {
+        keypad.irq_handler();
+    }
+
+    void EXTI9_5_IRQHandler() {
+        keypad.irq_handler();
+    }
+
+    void EXTI15_10_IRQHandler() {
+        if (__HAL_GPIO_EXTI_GET_IT(config::REED_SWITCH.pin)) {
+            reed.irq_handler();
+        }
+        if (__HAL_GPIO_EXTI_GET_IT(config::TAMPER_SWITCH.pin)) {
+            tamper.irq_handler();
+        }
+    }
 }

@@ -11,7 +11,7 @@ namespace gsm {
         ERR_GENERIC,
         ERR_TIMEOUT,
         ERR_SIM_NOT_FOUND,
-        ERR_COULD_NOT_CONNECT
+        ERR_COULD_NOT_CONNECT,
     };
 
     /**

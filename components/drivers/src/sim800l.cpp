@@ -68,7 +68,8 @@ namespace gsm {
             .Pin   = config::GSM_GPIO_TX.pin,
             .Mode  = GPIO_MODE_AF_PP,
             .Pull  = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW};
+            .Speed = GPIO_SPEED_FREQ_LOW,
+        };
         HAL_GPIO_Init(config::GSM_GPIO_TX.port, &tx_init);
 
         // RX
@@ -76,7 +77,8 @@ namespace gsm {
             .Pin   = config::GSM_GPIO_RX.pin,
             .Mode  = GPIO_MODE_INPUT,
             .Pull  = GPIO_PULLUP,
-            .Speed = GPIO_SPEED_FREQ_LOW};
+            .Speed = GPIO_SPEED_FREQ_LOW,
+        };
         HAL_GPIO_Init(config::GSM_GPIO_RX.port, &rx_init);
 
         // Configure the UART channel
@@ -155,11 +157,10 @@ namespace gsm {
         NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
         // Set TX and RX pins as analog
-        GPIO_InitTypeDef gpio_deinit = {
-            .Pin   = (config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
-            .Mode  = GPIO_MODE_ANALOG,
-            .Pull  = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW};
+        GPIO_InitTypeDef gpio_deinit = {.Pin   = (config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
+                                        .Mode  = GPIO_MODE_ANALOG,
+                                        .Pull  = GPIO_NOPULL,
+                                        .Speed = GPIO_SPEED_FREQ_LOW};
         HAL_GPIO_Init(config::GSM_GPIO_TX.port, &gpio_deinit);
 
         s_is_initialized = false;
@@ -189,13 +190,13 @@ namespace gsm {
 } // namespace gsm
 
 extern "C" {
-// DMA TX irq handler
-void DMA1_Channel4_IRQHandler() {
-    HAL_DMA_IRQHandler(&gsm::s_dma_tx_handle);
-}
+    // DMA TX irq handler
+    void DMA1_Channel4_IRQHandler() {
+        HAL_DMA_IRQHandler(&gsm::s_dma_tx_handle);
+    }
 
-// DMA RX irq handler
-void DMA1_Channel5_IRQHandler() {
-    HAL_DMA_IRQHandler(&gsm::s_dma_rx_handle);
-}
+    // DMA RX irq handler
+    void DMA1_Channel5_IRQHandler() {
+        HAL_DMA_IRQHandler(&gsm::s_dma_rx_handle);
+    }
 }

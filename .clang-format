@@ -10,7 +10,7 @@ IndentCaseLabels: true
 
 AccessModifierOffset: 0
 
-ColumnLimit: 0
+ColumnLimit: 140
 InsertBraces: true
 
 PointerAlignment: Left
@@ -22,8 +22,15 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceAfterTemplateKeyword: false
 
+SeparateDefinitionBlocks: Always
+MaxEmptyLinesToKeep: 1
+
 NamespaceIndentation: All
+IndentExternBlock: Indent
 BreakBeforeBraces: Custom
+BreakTemplateDeclarations: Yes
+IndentAccessModifiers: true
+ContinuationIndentWidth: 4
 
 BraceWrapping:
     AfterStruct: false
@@ -33,14 +40,16 @@ AlignConsecutiveAssignments:
     Enabled: true
     AcrossEmptyLines: false
     AcrossComments: false
+
 AlignConsecutiveDeclarations:
     Enabled: true
     AcrossEmptyLines: false
     AcrossComments: false
+
 AlignTrailingComments:
     Kind: Always
     OverEmptyLines: 0
-    
+
 AlignAfterOpenBracket: Align
 BinPackParameters: false
 BinPackArguments: false

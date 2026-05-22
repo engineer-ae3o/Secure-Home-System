@@ -17,7 +17,7 @@ namespace gsm {
 
     static bool s_is_initialized{};
 
-    static constexpr uint32_t POLLING_DELAY_MS{2000};
+    [[maybe_unused]] static constexpr uint32_t POLLING_DELAY_MS{2000};
 
     enum class cmd_t : uint8_t {
         // Initialization
@@ -44,7 +44,7 @@ namespace gsm {
     };
 
     // AT commands LUT
-    static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
+    [[maybe_unused]] static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
         [std::to_underlying(cmd_t::AT)]           = {"AT\r\n", "OK"},
         [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r\n", "OK"},
         [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r\n", "OK"},

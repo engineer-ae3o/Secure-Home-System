@@ -1,5 +1,6 @@
 #include "stm32f1xx_hal.h"
 #include "config.hpp"
+#include "utils.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -8,7 +9,10 @@
 
 extern "C" {
 
-    uint32_t SystemCoreClock{};
+    // These are extern declared in the headers. Need to be defined here.
+    uint32_t      SystemCoreClock{};    // System Clock Frequency (Core Clock)
+    const uint8_t AHBPrescTable[16U]{}; // AHB prescalers table values
+    const uint8_t APBPrescTable[8U]{};  // APB prescalers table values
 
     void system_init() {
         // Enable the prefetch queue and set the flash latency to 2 wait states
@@ -50,6 +54,7 @@ extern "C" {
         SCB->CCR |= (SCB_CCR_DIV_0_TRP_Msk | SCB_CCR_UNALIGN_TRP_Msk);
     }
 
+    // Cortex-M Fault Handlers
     __attribute__((naked)) void HardFault_Handler() {
         __asm volatile("tst lr, #4\n"
                        "ite eq\n"
@@ -118,10 +123,10 @@ extern "C" {
         }
     }
 
+    // FreeRTOS hooks
     void vApplicationStackOverflowHook(TaskHandle_t xTask, const char* pcTaskName) {
         (void)xTask;
         (void)pcTaskName;
-
         __asm volatile("bkpt #0");
         while (true) {
         }
@@ -137,7 +142,7 @@ extern "C" {
         __WFI();
     }
 
-    // Setup the timer to be used by the HAL since
+    // Setup TIM2 to be used by the HAL since
     // FreeRTOS already consumes SysTick
     static volatile etl::atomic<uint32_t> s_hal_tick{};
 
@@ -172,5 +177,73 @@ extern "C" {
             TIM2->SR &= ~TIM_SR_UIF;
             s_hal_tick++;
         }
+    }
+
+    // Needed by some parts of ST's HALs that uses libc
+    int _close(int fd) {
+        (void)fd;
+        errno = EBADF;
+        return -1;
+    }
+
+    off_t _lseek(int fd, off_t offset, int whence) {
+        (void)fd;
+        (void)offset;
+        (void)whence;
+        errno = EBADF;
+        return -1;
+    }
+
+    int _read(int fd, void* buf, size_t count) {
+        (void)fd;
+        (void)buf;
+        (void)count;
+        errno = EBADF;
+        return -1;
+    }
+
+    [[noreturn]] void _exit(int status) {
+        (void)status;
+        utils::panic();
+        while (true) {
+        }
+    }
+
+    int _kill(pid_t pid, int sig) {
+        (void)pid;
+        (void)sig;
+        errno = ESRCH;
+        return -1;
+    }
+
+    pid_t _getpid() {
+        return 1;
+    }
+
+    int _write(int fd, const void* buf, size_t count) {
+        (void)fd;
+        (void)buf;
+        (void)count;
+        errno = EBADF;
+        return -1;
+    }
+
+    caddr_t _sbrk(ptrdiff_t increment) {
+        (void)increment;
+        errno = ENOMEM;
+        return (caddr_t)-1;
+    }
+
+    int _fstat(int fd, struct stat* st) {
+        (void)fd;
+        (void)st;
+        errno = EBADF;
+        return -1;
+    }
+
+    int _isatty(int fd) {
+        (void)fd;
+        errno = EBADF;
+        return 0;
     }
 }

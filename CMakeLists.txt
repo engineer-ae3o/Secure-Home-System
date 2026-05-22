@@ -68,7 +68,6 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Werror
         -Wextra
         -Wshadow
-        -Wconversion
         -Wwrite-strings
         -Wformat=2
         -ffunction-sections

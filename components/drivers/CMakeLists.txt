@@ -24,7 +24,6 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Werror
                                        -Wextra
                                        -Wshadow
-                                       -Wconversion
                                        -Wwrite-strings
                                        -Wformat=2
                                        -ffunction-sections

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stm32f1xx_hal.h"
+
 #include "utils.hpp"
 
 #include "FreeRTOS.h"
@@ -8,8 +9,6 @@
 #include "queue.h"
 
 #include "etl/array.h"
-
-#include <cstdint>
 
 namespace pad {
 
@@ -41,12 +40,12 @@ namespace pad {
         uint16_t m_row_pins{};
         uint16_t m_col_pins{};
 
-        QueueHandle_t                                            m_event_queue{};
-        etl::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
-        StaticQueue_t                                            m_queue_structure{};
-
         TimerHandle_t m_debounce_timer{};
         StaticTimer_t m_debounce_timer_structure{};
+
+        QueueHandle_t                                            m_event_queue{};
+        StaticQueue_t                                            m_queue_structure{};
+        etl::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
 
     public:
         keypad_t() = default;

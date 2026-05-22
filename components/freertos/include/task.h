@@ -1927,7 +1927,7 @@ extern "C" {
     /* MISRA Ref 8.6.1 [External linkage] */
     /* More details at: https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/MISRA.md#rule-86 */
     /* coverity[misra_c_2012_rule_8_6_violation] */
-    void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName);
+    void vApplicationStackOverflowHook(TaskHandle_t xTask, const char* pcTaskName);
 
 #endif
 

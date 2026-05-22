@@ -157,14 +157,14 @@ extern "C" {
 
     typedef struct {
         __IO uint32_t
-            SR; /*!< ADC status register,    used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address         */
+            SR; /*!< ADC status register, used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address         */
         __IO uint32_t
             CR1; /*!< ADC control register 1, used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address + 0x04  */
         __IO uint32_t
             CR2; /*!< ADC control register 2, used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address + 0x08  */
         uint32_t RESERVED[16];
         __IO uint32_t
-            DR; /*!< ADC data register,      used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address + 0x4C  */
+            DR; /*!< ADC data register, used for ADC multimode (bits common to several ADC instances). Address offset: ADC1 base address + 0x4C  */
     } ADC_Common_TypeDef;
 
     /** 
@@ -466,13 +466,12 @@ extern "C" {
     } WWDG_TypeDef;
 
     /**
-  * @}
-  */
+     * 
+     */
 
     /** @addtogroup Peripheral_memory_map
-  * @{
-  */
-
+     * @{
+     */
 #define FLASH_BASE 0x08000000UL      /*!< FLASH base address in the alias region */
 #define FLASH_BANK1_END 0x0801FFFFUL /*!< FLASH END address of bank1 */
 #define SRAM_BASE 0x20000000UL       /*!< SRAM base address in the alias region */

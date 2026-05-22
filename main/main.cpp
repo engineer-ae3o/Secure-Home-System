@@ -1,19 +1,38 @@
 #include "stm32f1xx_hal.h"
+
 #include "hd44780.hpp"
+#include "sim800l.hpp"
 #include "keypad.hpp"
 #include "switch.hpp"
 #include "config.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 
 #include "etl/array.h"
 
+// Global because the ISR neeed to be able to see them
 static pad::keypad_t<config::QUEUE_SIZE> keypad{};
 static nc::switch_t<nc::type_t::REED>    reed{};
 static nc::switch_t<nc::type_t::LIMIT>   tamper{};
 
-[[noreturn]] static void led_task(void*) {
+// Neede to serialize use of the display
+static SemaphoreHandle_t lcd_mutex{};
+static StaticSemaphore_t lcd_mutex_buffer{};
+
+// Thread safe LCD helper
+void print(const etl::string_view& str, uint8_t line) {
+    xSemaphoreTake(lcd_mutex, portMAX_DELAY);
+    lcd::println(str, line);
+    vTaskDelay(pdMS_TO_TICKS(4000));
+    xSemaphoreGive(lcd_mutex);
+}
+
+// Tasks
+[[noreturn]] static void led_task(void* arg) {
+    UNUSED(arg);
+
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef init = {
@@ -32,7 +51,9 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     }
 }
 
-[[noreturn]] static void keypad_task(void*) {
+[[noreturn]] static void keypad_task(void* arg) {
+    UNUSED(arg);
+
     const pad::config_t config = {
         // Ports
         .row_port = config::KEYPAD_ROW_PINS[0].port,
@@ -74,7 +95,9 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     }
 }
 
-[[noreturn]] static void switch_task(void*) {
+[[noreturn]] static void switch_task(void* arg) {
+    UNUSED(arg);
+
     const nc::config_t reed_config = {
         .port                = config::REED_SWITCH.port,
         .pin                 = config::REED_SWITCH.pin,
@@ -97,14 +120,14 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
         uint32_t flag{};
         xTaskNotifyWait(0, 0xFFFFFFFFU, &flag, portMAX_DELAY);
 
-        if (flag & std::to_underlying(nc::type_t::REED)) {
+        if (static_cast<bool>(flag & std::to_underlying(nc::type_t::REED))) {
             // Reed switch broken
             (void)flag;
             type = nc::type_t::REED;
             (void)type;
         }
 
-        if (flag & std::to_underlying(nc::type_t::LIMIT)) {
+        if (static_cast<bool>(flag & std::to_underlying(nc::type_t::LIMIT))) {
             // Tamper switch broken
             (void)flag;
             type = nc::type_t::LIMIT;
@@ -113,20 +136,27 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     }
 }
 
-[[noreturn]] static void lcd_task(void*) {
+[[noreturn]] static void lcd_task(void* arg) {
+    UNUSED(arg);
+
     lcd::init();
     lcd::clear_screen();
     lcd::backlight_on();
 
     // Text to be displayed
-    constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {
-        {{"I", "hate"}, {"my", "life."}, {"This", "is"}, {"so", "so"}, {"damn", "boring"}}};
+    constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {{
+        {"I", "hate"},
+        {"my", "life."},
+        {"This", "is"},
+        {"so", "so"},
+        {"damn", "boring"},
+    }};
 
     while (true) {
         for (const auto& line : lcd_text) {
             // Print text. Bet you didn't know that before
-            lcd::println(line[0], 0);
-            lcd::println(line[1], 1);
+            print(line[0], 0);
+            print(line[1], 1);
 
             // Block 2.5s. Helpful? Share and drop a comment (hehe) if it did
             vTaskDelay(pdMS_TO_TICKS(2500));
@@ -134,7 +164,55 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper{};
     }
 }
 
-[[noreturn]] static void gsm_task(void*) {
+[[noreturn]] static void gsm_task(void* arg) {
+    UNUSED(arg);
+
+    auto ret = gsm::init();
+    switch (ret) {
+        case gsm::status_t::ERR_GENERIC:
+            print("An unknown", 0);
+            print("error occured", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::status_t::ERR_SIM_NOT_FOUND:
+            print("SIM card", 0);
+            print("not found", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::status_t::ERR_COULD_NOT_CONNECT:
+            print("Failed to", 0);
+            print("connect to tower", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::status_t::ERR_TIMEOUT:
+            print("Timeout waiting", 0);
+            print("for a connection", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::status_t::OK:
+            print("SIM card found", 0);
+            print("Reading IMSI", 1);
+            break;
+        default:
+            break;
+    }
+
+    const auto& imsi = gsm::get_imsi();
+    if (!imsi) {
+        print("Failed to read", 0);
+        print("the SIM's IMSI", 1);
+        // Crash system for now
+        utils::assert_check(false);
+    }
+
+    print("SIM's IMSI: ", 0);
+    print(etl::string_view(imsi->data(), imsi->size()), 1);
+
+    // Do nothing for now
     while (true) {
     }
 }
@@ -159,6 +237,8 @@ extern "C" {
 
     [[noreturn]] int main() {
         HAL_Init();
+
+        lcd_mutex = xSemaphoreCreateMutexStatic(&lcd_mutex_buffer);
 
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
         xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);

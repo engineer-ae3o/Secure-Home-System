@@ -6,7 +6,8 @@ namespace utils {
 
     [[noreturn]] inline void panic() {
         __asm volatile("bkpt #0");
-        while (1);
+        while (true) {
+        }
     }
 
     inline void assert_check(bool cond) {

@@ -1,4 +1,5 @@
 #include "stm32f1xx_hal.h"
+
 #include "hd44780.hpp"
 #include "config.hpp"
 #include "utils.hpp"

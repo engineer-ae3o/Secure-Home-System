@@ -1,4 +1,5 @@
 #include "stm32f1xx_hal.h"
+
 #include "sim800l.hpp"
 #include "config.hpp"
 #include "utils.hpp"

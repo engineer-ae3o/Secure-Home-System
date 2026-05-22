@@ -17,7 +17,8 @@ extern "C" {
 
         // Enable the HSE
         RCC->CR |= RCC_CR_HSEON;
-        while (!(RCC->CR & RCC_CR_HSERDY));
+        while (!static_cast<bool>(RCC->CR & RCC_CR_HSERDY)) {
+        }
 
         // Set HSE as PLL source and multiply the 8MHz HSE by 9 to get a 72MHz clock speed
         RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL);
@@ -30,12 +31,14 @@ extern "C" {
 
         // Enable the PLL
         RCC->CR |= RCC_CR_PLLON;
-        while (!(RCC->CR & RCC_CR_PLLRDY));
+        while ((!static_cast<bool>(RCC->CR & RCC_CR_PLLRDY))) {
+        }
 
         // Switch the system clock to the PLL
         RCC->CFGR &= ~RCC_CFGR_SW;
         RCC->CFGR |= RCC_CFGR_SW_PLL;
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {
+        }
 
         // Update core clock settings
         SystemCoreClock = config::CLOCK_SPEED_HZ;
@@ -115,7 +118,10 @@ extern "C" {
         }
     }
 
-    void vApplicationStackOverflowHook(TaskHandle_t, char*) {
+    void vApplicationStackOverflowHook(TaskHandle_t xTask, const char* pcTaskName) {
+        (void)xTask;
+        (void)pcTaskName;
+
         __asm volatile("bkpt #0");
         while (true) {
         }

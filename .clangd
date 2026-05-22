@@ -1,0 +1,24 @@
+CompileFlags:
+    CompilationDatabase: build/
+
+Diagnostics:
+    UnusedIncludes: Strict
+    ClangTidy:
+        Add:
+          - bugprone-*
+          - modernize-*
+          - performance-*
+          - readability-*
+          - clang-analyzer-*
+        Remove:
+          - modernize-use-trailing-return-type
+          - readability-braces-around-statements
+          - readability-magic-numbers
+
+Index:
+    Background: Build
+
+InlayHints:
+    Enabled: true
+    ParameterNames: true
+    DeducedTypes: true

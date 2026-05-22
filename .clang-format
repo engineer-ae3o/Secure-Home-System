@@ -1,0 +1,53 @@
+---
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: gnu++23
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+NamespaceIndentation: None
+IndentCaseLabels: true
+
+AccessModifierOffset: 0
+
+ColumnLimit: 0
+
+BreakBeforeBraces: Attach
+InsertBraces: true
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceAfterTemplateKeyword: false
+
+AlignConsecutiveAssignments:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: false
+AlignConsecutiveDeclarations:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: false
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 0
+    
+AlignAfterOpenBracket: Align
+BinPackParameters: false
+BinPackArguments: false
+
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+ReflowComments: false
+
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty

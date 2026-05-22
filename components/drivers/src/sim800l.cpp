@@ -6,10 +6,12 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <utility>
+
 
 namespace gsm {
 
-    // GLobal state. It is what it is
+    // Global state. It is what it is
     static UART_HandleTypeDef s_uart_handle{};
     static DMA_HandleTypeDef s_dma_tx_handle{};
     static DMA_HandleTypeDef s_dma_rx_handle{};
@@ -58,7 +60,7 @@ namespace gsm {
     
     // Public API
     status_t init() {
-        utils::assert_check(!s_is_initialized);
+    utils::assert_check(!s_is_initialized);
 
         // Configure the GPIOs
         __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -172,6 +174,9 @@ namespace gsm {
     status_t send_sms(const etl::string_view& sms, const etl::string_view& number) {
         utils::assert_check(s_is_initialized);
 
+        (void)sms;
+        (void)number;
+
         return status_t::OK;
     }
 
@@ -183,6 +188,7 @@ namespace gsm {
     
     etl::expected<etl::array<char, 16>, status_t> get_imsi() {
         utils::assert_check(s_is_initialized);
+        
 
         return {};
     }

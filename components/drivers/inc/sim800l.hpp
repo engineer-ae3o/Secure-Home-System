@@ -8,7 +8,7 @@
 
 namespace gsm {
 
-    [[nodiscard]] enum class status_t : uint8_t {
+    enum class status_t : uint8_t {
         OK,
         ERR_GENERIC,
         ERR_SIM_NOT_FOUND,
@@ -32,7 +32,7 @@ namespace gsm {
      * @note It blocks the calling task for up to 30s on the worst case path
      *       while waiting for the `OK` status message from the GSM module.
      */
-    status_t init();
+    [[nodiscard]] status_t init();
 
     /**
      * @brief Deinitializes the UART and DMA peripherals, as well as
@@ -52,7 +52,7 @@ namespace gsm {
      *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
      *                                    network tower.
      */
-    status_t send_sms(const etl::string_view& sms, const etl::string_view& number);
+    [[nodiscard]] status_t send_sms(const etl::string_view& sms, const etl::string_view& number);
 
     /**
      * @brief Checks if the SIM card is still present in the GSM module and can
@@ -67,7 +67,7 @@ namespace gsm {
      *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
      *                                   network tower.
      */
-    status_t get_sim_status();
+    [[nodiscard]] status_t get_sim_status();
 
     /**
      * @brief Reads the IMSI (International Mobile Subscriber Identity) of the

@@ -8,19 +8,19 @@ TabWidth: 4
 UseTab: Never
 IndentCaseLabels: true
 
-AccessModifierOffset: 0
-
 ColumnLimit: 140
 InsertBraces: true
 
 PointerAlignment: Left
 ReferenceAlignment: Left
+AllowShortLoopsOnASingleLine: true
 
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceAfterTemplateKeyword: false
+BreakAfterAttributes: Never
 
 SeparateDefinitionBlocks: Always
 MaxEmptyLinesToKeep: 1
@@ -29,7 +29,7 @@ NamespaceIndentation: All
 IndentExternBlock: Indent
 BreakBeforeBraces: Custom
 BreakTemplateDeclarations: Yes
-IndentAccessModifiers: true
+AccessModifierOffset: -4
 ContinuationIndentWidth: 4
 
 BraceWrapping:
@@ -61,6 +61,5 @@ ReflowComments: false
 
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Never
 AllowShortLambdasOnASingleLine: Empty

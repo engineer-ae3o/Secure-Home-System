@@ -9,9 +9,9 @@
 
 #include "etl/array.h"
 
-static pad::keypad_t<config::QUEUE_SIZE> keypad;
-static nc::switch_t<nc::type_t::REED>    reed;
-static nc::switch_t<nc::type_t::LIMIT>   tamper;
+static pad::keypad_t<config::QUEUE_SIZE> keypad{};
+static nc::switch_t<nc::type_t::REED>    reed{};
+static nc::switch_t<nc::type_t::LIMIT>   tamper{};
 
 [[noreturn]] static void led_task(void*) {
     __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -34,7 +34,10 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper;
 
 [[noreturn]] static void keypad_task(void*) {
     const pad::config_t config = {
+        // Ports
         .row_port = config::KEYPAD_ROW_PINS[0].port,
+        .col_port = config::KEYPAD_COLUMN_PINS[0].port,
+        // and pins
         .row_pins =
             {
                 config::KEYPAD_ROW_PINS[0].pin,
@@ -42,8 +45,6 @@ static nc::switch_t<nc::type_t::LIMIT>   tamper;
                 config::KEYPAD_ROW_PINS[2].pin,
                 config::KEYPAD_ROW_PINS[3].pin,
             },
-
-        .col_port = config::KEYPAD_COLUMN_PINS[0].port,
         .col_pins =
             {
                 config::KEYPAD_COLUMN_PINS[0].pin,
@@ -167,8 +168,7 @@ extern "C" {
 
         vTaskStartScheduler();
 
-        while (1)
-            ;
+        while (1);
     }
 
     void EXTI3_IRQHandler() {

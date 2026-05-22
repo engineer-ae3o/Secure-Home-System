@@ -67,8 +67,7 @@
 #define WRITE_PERMISSIONS 0600
 #endif
 
-int safe_file_open_read(SAFEFILE *file, const char *filename)
-{
+int safe_file_open_read(SAFEFILE* file, const char* filename) {
 #if defined(USE_POSIX_FDS)
     if (!strcmp(filename, "-")) {
         file->fd = 0;
@@ -90,8 +89,7 @@ int safe_file_open_read(SAFEFILE *file, const char *filename)
 #endif
 }
 
-int safe_file_open_write(SAFEFILE *file, const char *filename)
-{
+int safe_file_open_write(SAFEFILE* file, const char* filename) {
 #if defined(USE_POSIX_FDS)
     if (!strcmp(filename, "-")) {
         file->fd = 1;
@@ -113,31 +111,32 @@ int safe_file_open_write(SAFEFILE *file, const char *filename)
 #endif
 }
 
-void safe_file_close(SAFEFILE *file)
-{
+void safe_file_close(SAFEFILE* file) {
 #if defined(USE_POSIX_FDS)
-    if (file->fd >= 2)
+    if (file->fd >= 2) {
         close(file->fd);
+    }
     file->fd = -1;
 #else
-    if (file->filename && strcmp(file->filename, "-") != 0)
+    if (file->filename && strcmp(file->filename, "-") != 0) {
         fclose(file->file);
+    }
     file->file = NULL;
 #endif
 }
 
-int safe_file_read(SAFEFILE *file, void *data, size_t len)
-{
+int safe_file_read(SAFEFILE* file, void* data, size_t len) {
 #if defined(USE_POSIX_FDS)
-    unsigned char *d = (unsigned char *)data;
-    int result = 0;
-    int temp;
+    unsigned char* d      = (unsigned char*)data;
+    int            result = 0;
+    int            temp;
     for (;;) {
         temp = read(file->fd, d, len);
         if (temp < 0) {
             /* Handle signal interruptions and non-blocking I/O */
-            if (errno == EINTR || errno == EAGAIN)
+            if (errno == EINTR || errno == EAGAIN) {
                 continue;
+            }
             perror(file->filename);
             return -1;
         } else if (temp == 0) {
@@ -151,24 +150,25 @@ int safe_file_read(SAFEFILE *file, void *data, size_t len)
     return result;
 #else
     int result = fread(data, 1, len, file->file);
-    if (result < 0)
+    if (result < 0) {
         perror(file->filename);
+    }
     return result;
 #endif
 }
 
-int safe_file_write(SAFEFILE *file, const void *data, size_t len)
-{
+int safe_file_write(SAFEFILE* file, const void* data, size_t len) {
 #if defined(USE_POSIX_FDS)
-    const unsigned char *d = (const unsigned char *)data;
-    int result = 0;
-    int temp;
+    const unsigned char* d      = (const unsigned char*)data;
+    int                  result = 0;
+    int                  temp;
     for (;;) {
         temp = write(file->fd, d, len);
         if (temp < 0) {
             /* Handle signal interruptions and non-blocking I/O */
-            if (errno == EINTR || errno == EAGAIN)
+            if (errno == EINTR || errno == EAGAIN) {
                 continue;
+            }
             perror(file->filename);
             return -1;
         } else if (temp == 0) {
@@ -182,19 +182,20 @@ int safe_file_write(SAFEFILE *file, const void *data, size_t len)
     return result;
 #else
     int result = fwrite(data, 1, len, file->file);
-    if (result < 0)
+    if (result < 0) {
         perror(file->filename);
+    }
     return result;
 #endif
 }
 
-void safe_file_delete(SAFEFILE *file)
-{
+void safe_file_delete(SAFEFILE* file) {
     safe_file_close(file);
 #if defined(USE_POSIX_FDS)
-    if (strcmp(file->filename, "-") != 0)
+    if (strcmp(file->filename, "-") != 0) {
         unlink(file->filename);
+    }
 #else
-    #warning "don't know how to delete files on this platform"
+#warning "don't know how to delete files on this platform"
 #endif
 }

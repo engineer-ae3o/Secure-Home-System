@@ -37,47 +37,38 @@ SOFTWARE.
 
 #include <stdint.h>
 
-namespace etl
-{
-  //***************************************************************************
-  /// Invert.
-  //***************************************************************************
-  template<typename TInput>
-  class invert : public etl::unary_function<TInput, TInput>
-  {
-  public:
-
+namespace etl {
+//***************************************************************************
+/// Invert.
+//***************************************************************************
+template<typename TInput>
+class invert : public etl::unary_function<TInput, TInput> {
+    public:
     //*****************************************************************
     // Constructor.
     //*****************************************************************
     invert()
-      : offset(TInput(0))
-      , minuend((etl::numeric_limits<TInput>::is_signed) ? TInput(0) : etl::numeric_limits<TInput>::max())
-    {
+        : offset(TInput(0)), minuend((etl::numeric_limits<TInput>::is_signed) ? TInput(0) : etl::numeric_limits<TInput>::max()) {
     }
 
     //*****************************************************************
     // Constructor.
     //*****************************************************************
     invert(TInput offset_, TInput minuend_)
-      : offset(offset_)
-      , minuend(minuend_)
-    {
+        : offset(offset_), minuend(minuend_) {
     }
 
     //*****************************************************************
     // operator ()
     //*****************************************************************
-    TInput operator ()(TInput value) const
-    {
-      return minuend - (value - offset);
+    TInput operator()(TInput value) const {
+        return minuend - (value - offset);
     }
 
-  private:
-
+    private:
     const TInput offset;
     const TInput minuend;
-  };
-}
+};
+} // namespace etl
 
 #endif

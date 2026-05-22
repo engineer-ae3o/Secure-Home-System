@@ -46,8 +46,8 @@
 #define REG_RSI "rsi"
 #define REG_RBP "rbp"
 #define REG_RSP "rsp"
-#define REG_R8  "r8"
-#define REG_R9  "r9"
+#define REG_R8 "r8"
+#define REG_R9 "r9"
 #define REG_R10 "r10"
 #define REG_R11 "r11"
 #define REG_R12 "r12"
@@ -63,8 +63,8 @@
 #define REG_RSI "%rsi"
 #define REG_RBP "%rbp"
 #define REG_RSP "%rsp"
-#define REG_R8  "%r8"
-#define REG_R9  "%r9"
+#define REG_R8 "%r8"
+#define REG_R9 "%r9"
 #define REG_R10 "%r10"
 #define REG_R11 "%r11"
 #define REG_R12 "%r12"
@@ -133,115 +133,114 @@
 #endif
 
 /* Instructions names */
-#define IN_XOR      "xor"
-#define IN_AND      "and"
-#define IN_OR       "or"
-#define IN_NOT      "not"
+#define IN_XOR "xor"
+#define IN_AND "and"
+#define IN_OR "or"
+#define IN_NOT "not"
 #define IN_REVBYTES "bswap"
 
 /* Condition codes for branch instructions */
-#define BR_ALWAYS   "jmp"
-#define BR_GT       "jg"
-#define BR_GT_U     "ja"
-#define BR_LT       "jl"
-#define BR_LT_U     "jb"
-#define BR_GE       "jge"
-#define BR_GE_U     "jae"
-#define BR_LE       "jle"
-#define BR_LE_U     "jbe"
-#define BR_EQ       "je"
-#define BR_NE       "jne"
+#define BR_ALWAYS "jmp"
+#define BR_GT "jg"
+#define BR_GT_U "ja"
+#define BR_LT "jl"
+#define BR_LT_U "jb"
+#define BR_GE "jge"
+#define BR_GE_U "jae"
+#define BR_LE "jle"
+#define BR_LE_U "jbe"
+#define BR_EQ "je"
+#define BR_NE "jne"
 
 /* Target word size, either 32 or 64.  Defaults to 64. */
 extern int target_word_size;
 
 /* Output a function header */
-void function_header(const char *name);
+void function_header(const char* name);
 
 /* Output a function footer, including the "ret" instruction */
-void function_footer(const char *name);
+void function_footer(const char* name);
 
 /* Generates a binary operator */
-void binop(const char *name, reg_t *reg1, reg_t *reg2);
+void binop(const char* name, reg_t* reg1, reg_t* reg2);
 
 /* Generates a unary operator */
-void unop(const char *name, reg_t *reg);
+void unop(const char* name, reg_t* reg);
 
 /* Generates a rotate-right of a register */
-void ror(reg_t *dest, int shift);
+void ror(reg_t* dest, int shift);
 
 /* Generates a rotate-right of a register with the shift amount in a register */
-void ror_reg(reg_t *dest, reg_t *shift);
+void ror_reg(reg_t* dest, reg_t* shift);
 
 /* Generates a shift-left of a register */
-void shl(reg_t *dest, int shift);
+void shl(reg_t* dest, int shift);
 
 /* Generates a shift-left of a register with the shift amount in a register */
-void shl_reg(reg_t *dest, reg_t *shift);
+void shl_reg(reg_t* dest, reg_t* shift);
 
 /* Generates a shift-right of a register */
-void shr(reg_t *dest, int shift);
+void shr(reg_t* dest, int shift);
 
 /* Generates a shift-right of a register with the shift amount in a register */
-void shr_reg(reg_t *dest, reg_t *shift);
+void shr_reg(reg_t* dest, reg_t* shift);
 
 /* XOR's a round constant with a register */
-void xor_rc(reg_t *reg, int rc);
+void xor_rc(reg_t* reg, int rc);
 
 /* XOR's a directly named register with a logical register */
-void xor_direct(reg_t *reg1, const char *reg2);
+void xor_direct(reg_t* reg1, const char* reg2);
 
 /* Moves a value from a source register to a destination register */
-void move(reg_t *dest, reg_t *src);
+void move(reg_t* dest, reg_t* src);
 
 /* Moves an immediate value into a destination register */
-void move_imm(reg_t *dest, long long value);
+void move_imm(reg_t* dest, long long value);
 
 /* Adds an immediate value to a register */
-void add_imm(reg_t *reg, int value);
+void add_imm(reg_t* reg, int value);
 
 /* Compares a register with an immediate value and branch */
-int compare_imm(const char *condition, int label, reg_t *reg, int value);
+int compare_imm(const char* condition, int label, reg_t* reg, int value);
 
 /* Branch to a label */
-int branch(const char *condition, int label);
+int branch(const char* condition, int label);
 
 /* Set the location of a label */
 int set_label(int label);
 
 /* Loads a register from a memory location */
-void load(reg_t *reg, const char *ptr, int offset);
+void load(reg_t* reg, const char* ptr, int offset);
 
 /* Loads a value from a memory location and XOR's it with a register */
-void load_and_xor(reg_t *reg, const char *ptr, int offset);
+void load_and_xor(reg_t* reg, const char* ptr, int offset);
 
 /* Loads a register from a memory location that is less than word-sized */
-void load_smaller(reg_t *reg, const char *ptr, int offset, int size);
+void load_smaller(reg_t* reg, const char* ptr, int offset, int size);
 
 /* Loads a register from a memory location that is less than word-sized */
-void load_smaller_plus_reg
-    (reg_t *reg, const char *ptr, const char *ptrplus, int size);
+void load_smaller_plus_reg(reg_t* reg, const char* ptr, const char* ptrplus, int size);
 
 /* Stores a register to a memory location */
-void store(reg_t *reg, const char *ptr, int offset);
+void store(reg_t* reg, const char* ptr, int offset);
 
 /* Stores a register to a smaller memory location */
-void store_smaller(reg_t *reg, const char *ptr, int offset, int size);
+void store_smaller(reg_t* reg, const char* ptr, int offset, int size);
 
 /* XOR's a register with a memory location */
-void xor_and_store(reg_t *reg, const char *ptr, int offset);
+void xor_and_store(reg_t* reg, const char* ptr, int offset);
 
 /* Clears the contents of a register to zero */
-void clear_reg(const char *reg);
+void clear_reg(const char* reg);
 
 /* Pushes a register on the stack */
-void push(const char *reg);
+void push(const char* reg);
 
 /* Pops a register from the stack */
-void pop(const char *reg);
+void pop(const char* reg);
 
 /* Moves a register directly */
-void move_direct(const char *dest, const char *src);
+void move_direct(const char* dest, const char* src);
 
 /* Reschedules the previous instruction by an offset */
 void reschedule(int offset);
@@ -262,16 +261,16 @@ void flush_pipeline(void);
 typedef struct
 {
     /* Logical registers that the arguments end up in */
-    reg_t *arg[MAX_ARGS];
+    reg_t* arg[MAX_ARGS];
 
     /* Logical registers that contain the TRNG-allocated words */
-    reg_t *random[MAX_RANDOM];
+    reg_t* random[MAX_RANDOM];
 
     /* Register list for the register allocator */
-    char *reg_list[MAX_REG_LIST];
+    char* reg_list[MAX_REG_LIST];
 
     /* Registers that were saved on the stack */
-    char *save_regs[MAX_REG_LIST];
+    char* save_regs[MAX_REG_LIST];
 
     /* Number of registers that were saved on the stack */
     int num_save_regs;
@@ -280,7 +279,7 @@ typedef struct
     int frame_size;
 
     /* Register for the masked word / state */
-    const char *state_reg;
+    const char* state_reg;
 
 } util_frame_t;
 
@@ -293,10 +292,9 @@ typedef struct
  *
  * This will also initialize the register allocator.
  */
-void util_function_setup
-    (util_frame_t *frame, int num_args, int word_arg, int trng_bytes);
+void util_function_setup(util_frame_t* frame, int num_args, int word_arg, int trng_bytes);
 
 /* Tear down the stack frame for a masked word utility function */
-void util_function_teardown(util_frame_t *frame);
+void util_function_teardown(util_frame_t* frame);
 
 #endif /* X86_COMMON_H */

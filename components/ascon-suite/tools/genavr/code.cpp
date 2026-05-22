@@ -45,21 +45,18 @@
  * e.g. 1 byte return values will be returned in r24, 2 byte in r24:r25.
  */
 
-Insn Insn::bare(Type type)
-{
+Insn Insn::bare(Type type) {
     return Insn(type, 0, 0);
 }
 
-Insn Insn::reg1(Type type, unsigned char reg)
-{
+Insn Insn::reg1(Type type, unsigned char reg) {
     if (reg >= 32) {
         throw std::invalid_argument("invalid register number");
     }
     return Insn(type, reg, 0);
 }
 
-Insn Insn::reg2(Type type, unsigned char reg1, unsigned char reg2)
-{
+Insn Insn::reg2(Type type, unsigned char reg1, unsigned char reg2) {
     if (reg1 >= 32 || reg2 >= 32) {
         throw std::invalid_argument("invalid register number");
     }
@@ -71,8 +68,7 @@ Insn Insn::reg2(Type type, unsigned char reg1, unsigned char reg2)
     return Insn(type, reg1, reg2);
 }
 
-Insn Insn::imm(Type type, unsigned reg, unsigned char value)
-{
+Insn Insn::imm(Type type, unsigned reg, unsigned char value) {
     if (reg < 16 || reg >= 32) {
         throw std::invalid_argument("not a high register");
     }
@@ -84,25 +80,24 @@ Insn Insn::imm(Type type, unsigned reg, unsigned char value)
     return Insn(type, reg, value);
 }
 
-Insn Insn::branch(Type type, unsigned char ref)
-{
+Insn Insn::branch(Type type, unsigned char ref) {
     return Insn(type, ref, 0);
 }
 
-Insn Insn::label(unsigned char ref)
-{
+Insn Insn::label(unsigned char ref) {
     return Insn(LABEL, ref, 0);
 }
 
-Insn Insn::memory(Type type, unsigned char reg, unsigned char offset)
-{
+Insn Insn::memory(Type type, unsigned char reg, unsigned char offset) {
     if (offset != PRE_DEC && offset != POST_INC) {
         if (type == LD_X || type == ST_X) {
-            if (offset != 0)
+            if (offset != 0) {
                 throw std::invalid_argument("invalid X pointer offset");
+            }
         } else {
-            if (offset >= 64)
+            if (offset >= 64) {
                 throw std::invalid_argument("invalid Y or Z pointer offset");
+            }
         }
     }
     return Insn(type, reg, offset);
@@ -122,14 +117,15 @@ Insn Insn::memory(Type type, unsigned char reg, unsigned char offset)
  * wraps around to the start of \a other.  This allows the application
  * to extract a rotated version of the register.
  */
-Reg::Reg(const Reg &other, unsigned char offset, unsigned char count)
-{
-    if (offset >= other.size())
+Reg::Reg(const Reg& other, unsigned char offset, unsigned char count) {
+    if (offset >= other.size()) {
         return;
-    if (count == 0xFF)
+    }
+    if (count == 0xFF) {
         count = other.size() - offset;
-    else if (count >= other.size())
+    } else if (count >= other.size()) {
         count = other.size();
+    }
     while (count > 0) {
         m_regs.push_back(other.m_regs[offset]);
         offset = (offset + 1) % other.m_regs.size();
@@ -137,130 +133,114 @@ Reg::Reg(const Reg &other, unsigned char offset, unsigned char count)
     }
 }
 
-Reg Reg::reversed() const
-{
+Reg Reg::reversed() const {
     Reg temp;
-    for (int index = size(); index > 0; --index)
+    for (int index = size(); index > 0; --index) {
         temp.m_regs.push_back(m_regs[index - 1]);
+    }
     return temp;
 }
 
-Reg Reg::shuffle(const unsigned char *pattern) const
-{
+Reg Reg::shuffle(const unsigned char* pattern) const {
     Reg temp;
-    for (int index = 0; index < size(); ++index)
+    for (int index = 0; index < size(); ++index) {
         temp.m_regs.push_back(m_regs[pattern[index]]);
+    }
     return temp;
 }
 
-Reg Reg::shuffle(unsigned char offset0, unsigned char offset1,
-                 unsigned char offset2, unsigned char offset3) const
-{
+Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3) const {
     unsigned char pattern[4] = {offset0, offset1, offset2, offset3};
-    if (size() != 4)
+    if (size() != 4) {
         throw new std::invalid_argument("not a 32-bit register");
+    }
     return shuffle(pattern);
 }
 
-Reg Reg::shuffle(unsigned char offset0, unsigned char offset1,
-                 unsigned char offset2, unsigned char offset3,
-                 unsigned char offset4, unsigned char offset5) const
-{
+Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5) const {
     unsigned char pattern[6] = {
-        offset0, offset1, offset2, offset3, offset4, offset5
-    };
-    if (size() != 6)
+        offset0, offset1, offset2, offset3, offset4, offset5};
+    if (size() != 6) {
         throw new std::invalid_argument("not a 48-bit register");
+    }
     return shuffle(pattern);
 }
 
-Reg Reg::shuffle(unsigned char offset0, unsigned char offset1,
-                 unsigned char offset2, unsigned char offset3,
-                 unsigned char offset4, unsigned char offset5,
-                 unsigned char offset6, unsigned char offset7) const
-{
+Reg Reg::shuffle(unsigned char offset0, unsigned char offset1, unsigned char offset2, unsigned char offset3, unsigned char offset4, unsigned char offset5, unsigned char offset6, unsigned char offset7) const {
     unsigned char pattern[8] = {
-        offset0, offset1, offset2, offset3,
-        offset4, offset5, offset6, offset7
-    };
-    if (size() != 8)
+        offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7};
+    if (size() != 8) {
         throw new std::invalid_argument("not a 64-bit register");
+    }
     return shuffle(pattern);
 }
 
-Reg Reg::append(const Reg &other)
-{
+Reg Reg::append(const Reg& other) {
     Reg temp;
-    for (int index = 0; index < size(); ++index)
+    for (int index = 0; index < size(); ++index) {
         temp.m_regs.push_back(m_regs[index]);
-    for (int index = 0; index < other.size(); ++index)
+    }
+    for (int index = 0; index < other.size(); ++index) {
         temp.m_regs.push_back(other.m_regs[index]);
+    }
     return temp;
 }
 
-Reg Reg::x_ptr()
-{
+Reg Reg::x_ptr() {
     Reg ptr;
     ptr.m_regs.push_back(26);
     ptr.m_regs.push_back(27);
     return ptr;
 }
 
-Reg Reg::y_ptr()
-{
+Reg Reg::y_ptr() {
     Reg ptr;
     ptr.m_regs.push_back(28);
     ptr.m_regs.push_back(29);
     return ptr;
 }
 
-Reg Reg::z_ptr()
-{
+Reg Reg::z_ptr() {
     Reg ptr;
     ptr.m_regs.push_back(30);
     ptr.m_regs.push_back(31);
     return ptr;
 }
 
-Sbox::Sbox(const unsigned char *data, unsigned size)
-{
+Sbox::Sbox(const unsigned char* data, unsigned size) {
     m_data.assign(data, data + size);
 }
 
-unsigned char Sbox::lookup(int value) const
-{
-    if (value < 0 || value >= size())
+unsigned char Sbox::lookup(int value) const {
+    if (value < 0 || value >= size()) {
         throw std::invalid_argument("invalid S-box lookup");
+    }
     return m_data[value];
 }
 
-Code::Code()
-{
+Code::Code() {
     memset(m_immValues, 0, sizeof(m_immValues));
     clear();
 }
 
-Code::~Code()
-{
+Code::~Code() {
 }
 
-void Code::clear()
-{
+void Code::clear() {
     m_flags = MoveWord;
     m_insns.clear();
     m_labels.clear();
-    m_allocated = 0;
-    m_usedRegs = 0;
-    m_immRegs = 0;
-    m_immCount = 0;
+    m_allocated    = 0;
+    m_usedRegs     = 0;
+    m_immRegs      = 0;
+    m_immCount     = 0;
     m_prologueType = Permutation;
-    m_localsSize = 0;
-    m_name = std::string();
+    m_localsSize   = 0;
+    m_name         = std::string();
     resetRegs();
 }
 
-int Code::getLabel(unsigned char ref) const
-{
+int Code::getLabel(unsigned char ref) const {
     if (ref < 1 || ref > m_labels.size()) {
         throw std::invalid_argument("invalid label reference");
     }
@@ -281,8 +261,7 @@ int Code::getLabel(unsigned char ref) const
  *
  * \sa allocateHighReg(), releaseReg()
  */
-Reg Code::allocateReg(unsigned size)
-{
+Reg Code::allocateReg(unsigned size) {
     return allocateRegInternal(size, false, false);
 }
 
@@ -296,8 +275,7 @@ Reg Code::allocateReg(unsigned size)
  *
  * \sa allocateReg(), releaseReg()
  */
-Reg Code::allocateHighReg(unsigned size)
-{
+Reg Code::allocateHighReg(unsigned size) {
     return allocateRegInternal(size, true, false);
 }
 
@@ -315,8 +293,7 @@ Reg Code::allocateHighReg(unsigned size)
  *
  * \sa allocateReg(), allocateHighReg(), releaseReg()
  */
-Reg Code::allocateOptionalReg(unsigned size)
-{
+Reg Code::allocateOptionalReg(unsigned size) {
     return allocateRegInternal(size, false, true);
 }
 
@@ -327,10 +304,10 @@ Reg Code::allocateOptionalReg(unsigned size)
  *
  * \sa allocateReg(), allocateHighReg()
  */
-void Code::releaseReg(const Reg &reg)
-{
-    for (int index = 0; index < reg.size(); ++index)
+void Code::releaseReg(const Reg& reg) {
+    for (int index = 0; index < reg.size(); ++index) {
         m_allocated &= ~(1 << reg.reg(index));
+    }
 }
 
 /**
@@ -343,8 +320,7 @@ void Code::releaseReg(const Reg &reg)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the carry
  * will continue to be propagated to the end of \a reg1.
  */
-void Code::adc(const Reg &reg1, const Reg &reg2)
-{
+void Code::adc(const Reg& reg1, const Reg& reg2) {
     for (int index = 0; index < reg1.size(); ++index) {
         if (index < reg2.size()) {
             tworeg(Insn::ADC, reg1.reg(index), reg2.reg(index));
@@ -367,10 +343,10 @@ void Code::adc(const Reg &reg1, const Reg &reg2)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the carry
  * will continue to be propagated to the end of \a reg1.
  */
-void Code::add(const Reg &reg1, const Reg &reg2)
-{
-    if (reg2.size() == 0)
+void Code::add(const Reg& reg1, const Reg& reg2) {
+    if (reg2.size() == 0) {
         return; // Adding zero to a register means do nothing.
+    }
     for (int index = 0; index < reg1.size(); ++index) {
         if (index == 0) {
             tworeg(Insn::ADD, reg1.reg(index), reg2.reg(index));
@@ -392,8 +368,7 @@ void Code::add(const Reg &reg1, const Reg &reg2)
  * \param value The immediate value to add.
  * \param carryIn Set to true to add an immediate value with a carry in.
  */
-void Code::add(const Reg &reg1, unsigned long long value, bool carryIn)
-{
+void Code::add(const Reg& reg1, unsigned long long value, bool carryIn) {
     bool haveCarry = carryIn;
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
@@ -420,10 +395,11 @@ void Code::add(const Reg &reg1, unsigned long long value, bool carryIn)
         } else {
             // We need a high register to store the immediate byte value.
             unsigned char high_reg = immtemp(bvalue);
-            if (haveCarry)
+            if (haveCarry) {
                 tworeg(Insn::ADC, reg1.reg(index), high_reg);
-            else
+            } else {
                 tworeg(Insn::ADD, reg1.reg(index), high_reg);
+            }
             haveCarry = true;
         }
         value >>= 8;
@@ -435,13 +411,13 @@ void Code::add(const Reg &reg1, unsigned long long value, bool carryIn)
  *
  * \param reg The register to shift.
  */
-void Code::asr(const Reg &reg)
-{
+void Code::asr(const Reg& reg) {
     for (int index = reg.size(); index > 0; --index) {
-        if (index == reg.size())
+        if (index == reg.size()) {
             onereg(Insn::ASR, reg.reg(index - 1));
-        else
+        } else {
             onereg(Insn::ROR, reg.reg(index - 1));
+        }
     }
 }
 
@@ -453,8 +429,7 @@ void Code::asr(const Reg &reg)
  *
  * \sa bit_put()
  */
-void Code::bit_get(const Reg &reg, int bit)
-{
+void Code::bit_get(const Reg& reg, int bit) {
     bitop(Insn::BST, reg.reg(bit / 8), bit % 8);
 }
 
@@ -466,8 +441,7 @@ void Code::bit_get(const Reg &reg, int bit)
  *
  * \sa bit_get()
  */
-void Code::bit_put(const Reg &reg, int bit)
-{
+void Code::bit_put(const Reg& reg, int bit) {
     bitop(Insn::BLD, reg.reg(bit / 8), bit % 8);
 }
 
@@ -483,14 +457,13 @@ void Code::bit_put(const Reg &reg, int bit)
  * Each element in the permutation specifies the destination bit.  For example,
  * the element at index 3 specifies the destination bit for source bit 3.
  */
-void Code::bit_permute
-    (const Reg &reg, const unsigned char *perm, int size, bool inverse)
-{
+void Code::bit_permute(const Reg& reg, const unsigned char* perm, int size, bool inverse) {
     int index, prev, next;
 
     // Validate th size of the permutation.
-    if (size < 0 || size > (reg.size() * 8) || size > 240)
+    if (size < 0 || size > (reg.size() * 8) || size > 240) {
         throw std::invalid_argument("invalid permutation size");
+    }
 
     // Invert the permutation to convert "source bit goes to destination bit"
     // into "destination bit comes from source bit".
@@ -542,8 +515,8 @@ void Code::bit_permute
             bit_get(reg, next);
             bit_put(reg, prev);
             done[next] = 1;
-            prev = next;
-            next = P[prev];
+            prev       = next;
+            next       = P[prev];
         }
 
         // Copy the saved bit in the temporary register to the last position.
@@ -562,10 +535,10 @@ void Code::bit_permute
  *
  * \sa move()
  */
-void Code::clr(const Reg &reg)
-{
-    for (int index = 0; index < reg.size(); ++index)
+void Code::clr(const Reg& reg) {
+    for (int index = 0; index < reg.size(); ++index) {
         tworeg(Insn::EOR, reg.reg(index), reg.reg(index));
+    }
 }
 
 /**
@@ -580,14 +553,14 @@ void Code::clr(const Reg &reg)
  * The result is left in the status register so that a branch instruction
  * that follows can jump or not jump as expected.
  */
-void Code::compare(const Reg& reg1, const Reg& reg2)
-{
-    int index;
-    int minsize = reg1.size();
-    Insn::Type type = Insn::CP;
+void Code::compare(const Reg& reg1, const Reg& reg2) {
+    int           index;
+    int           minsize  = reg1.size();
+    Insn::Type    type     = Insn::CP;
     unsigned char zero_reg = ZERO_REG;
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     if (hasFlag(TempR1) && (minsize < reg1.size() || minsize < reg2.size())) {
         // We will need a temporary register with the value zero in it.
         Reg temp = allocateReg(1);
@@ -620,10 +593,10 @@ void Code::compare(const Reg& reg1, const Reg& reg2)
  * The result is left in the status register so that a branch instruction
  * that follows can jump or not jump as expected.
  */
-void Code::compare(const Reg& reg1, unsigned long long value)
-{
-    if (reg1.size() == 0)
+void Code::compare(const Reg& reg1, unsigned long long value) {
+    if (reg1.size() == 0) {
         return;
+    }
     unsigned char bvalue = (unsigned char)value;
     if (bvalue == 0 && !hasFlag(TempR1)) {
         tworeg(Insn::CP, reg1.reg(0), ZERO_REG);
@@ -656,14 +629,13 @@ void Code::compare(const Reg& reg1, unsigned long long value)
  * This function can be more efficient than compare() followed by brne()
  * when looping on the value of a single-byte register.
  */
-void Code::compare_and_loop
-    (const Reg& reg1, unsigned long long value, unsigned char &label)
-{
+void Code::compare_and_loop(const Reg& reg1, unsigned long long value, unsigned char& label) {
     if (reg1.size() == 1) {
         // For a single-byte register we can be slightly more efficient.
         bool closeBy = false;
-        if (label != 0 && (m_insns.size() - getLabel(label)) <= 50)
+        if (label != 0 && (m_insns.size() - getLabel(label)) <= 50) {
             closeBy = true;
+        }
         if (value == 0 && closeBy && !hasFlag(TempR1)) {
             tworeg(Insn::CP, reg1.reg(0), ZERO_REG);
             brne(label);
@@ -705,17 +677,16 @@ void Code::compare_and_loop
  *
  * The comparison is performed in a manner that is constant time.
  */
-void Code::compare_and_set
-    (const Reg &regout, const Reg& reg1, const Reg& reg2, unsigned char set)
-{
+void Code::compare_and_set(const Reg& regout, const Reg& reg1, const Reg& reg2, unsigned char set) {
     // Check the parameters.
-    if (reg1.size() != reg2.size())
+    if (reg1.size() != reg2.size()) {
         throw std::invalid_argument("registers must be the same size");
-    else if (reg1.size() == 0)
+    } else if (reg1.size() == 0) {
         throw std::invalid_argument("cannot compare empty registers");
+    }
 
     // Compute TEMP_REG = (R1[0] ^ R2[0]) | (R1[1] ^ R2[1]) | ...
-    Reg temp = allocateReg(1);
+    Reg           temp  = allocateReg(1);
     unsigned char temp2 = tempreg();
     tworeg(Insn::MOV, temp2, reg1.reg(0));
     tworeg(Insn::EOR, temp2, reg2.reg(0));
@@ -736,23 +707,26 @@ void Code::compare_and_set
         // Result should be zero if equal or all-0xFF if not equal.
         zeroreg_no_cc(regout.reg(0));
         tworeg(Insn::SBC, regout.reg(0), regout.reg(0));
-        for (int index = 1; index < regout.size(); ++index)
+        for (int index = 1; index < regout.size(); ++index) {
             tworeg(Insn::MOV, regout.reg(index), regout.reg(0));
+        }
     } else if (set == 1) {
         // Result should be 1 if equal or zero if not equal.
         zeroreg_no_cc(regout.reg(0));
         onereg(Insn::ROL, regout.reg(0));
         unsigned char high_reg = immtemp(0x01);
         tworeg(Insn::EOR, regout.reg(0), high_reg);
-        for (int index = 1; index < regout.size(); ++index)
+        for (int index = 1; index < regout.size(); ++index) {
             zeroreg(regout.reg(index));
+        }
     } else {
         // Result should be all-0xFF if equal or zero if not equal.
         zeroreg_no_cc(regout.reg(0));
         onereg(Insn::ROL, regout.reg(0));
         onereg(Insn::DEC, regout.reg(0));
-        for (int index = 1; index < regout.size(); ++index)
+        for (int index = 1; index < regout.size(); ++index) {
             tworeg(Insn::MOV, regout.reg(index), regout.reg(0));
+        }
     }
 }
 
@@ -764,18 +738,18 @@ void Code::compare_and_set
  *
  * \sa lsr(), lsl_bytes()
  */
-void Code::lsl(const Reg &reg, unsigned bits)
-{
+void Code::lsl(const Reg& reg, unsigned bits) {
     if (bits == 0 || reg.size() == 0) {
         // Nothing to do.
         return;
     } else if (bits == 1) {
         // Shift left by 1 bit.
         for (int index = 0; index < reg.size(); ++index) {
-            if (index == 0)
+            if (index == 0) {
                 onereg(Insn::LSL, reg.reg(index));
-            else
+            } else {
                 onereg(Insn::ROL, reg.reg(index));
+            }
         }
     } else if ((bits % 8) == 0) {
         // Shift left by a number of bytes.
@@ -800,9 +774,9 @@ void Code::lsl(const Reg &reg, unsigned bits)
     } else {
         // Shift left by 5, 6, or 7 bits plus a byte shift.  We do this
         // by shifting right by 3, 2, or 1 bits and then do the byte shift.
-        unsigned count = bits / 8;
+        unsigned      count    = bits / 8;
         unsigned char temp_reg = tempreg();
-        bits = (8 - (bits % 8));
+        bits                   = (8 - (bits % 8));
         zeroreg(temp_reg);
         Reg temp(reg, 0, reg.size() - count);
         temp.m_regs.insert(temp.m_regs.begin(), temp_reg);
@@ -824,8 +798,7 @@ void Code::lsl(const Reg &reg, unsigned bits)
  *
  * \sa lsl(), lsr_bytes()
  */
-void Code::lsl_bytes(const Reg &reg, unsigned count)
-{
+void Code::lsl_bytes(const Reg& reg, unsigned count) {
     if (count == 0 || reg.size() == 0) {
         // Nothing to do.
         return;
@@ -849,18 +822,18 @@ void Code::lsl_bytes(const Reg &reg, unsigned count)
  *
  * \sa lsl(), lsr_bytes()
  */
-void Code::lsr(const Reg &reg, unsigned bits)
-{
+void Code::lsr(const Reg& reg, unsigned bits) {
     if (bits == 0 || reg.size() == 0) {
         // Nothing to do.
         return;
     } else if (bits == 1) {
         // Shift right by 1 bit.
         for (int index = reg.size() - 1; index >= 0; --index) {
-            if (index == (reg.size() - 1))
+            if (index == (reg.size() - 1)) {
                 onereg(Insn::LSR, reg.reg(index));
-            else
+            } else {
                 onereg(Insn::ROR, reg.reg(index));
+            }
         }
     } else if ((bits % 8) == 0) {
         // Shift right by a number of bytes.
@@ -885,9 +858,9 @@ void Code::lsr(const Reg &reg, unsigned bits)
     } else {
         // Shift right by 5, 6, or 7 bits plus a byte shift.  We do this
         // by shifting left by 3, 2, or 1 bits and then do the byte shift.
-        unsigned count = bits / 8;
+        unsigned      count    = bits / 8;
         unsigned char temp_reg = tempreg();
-        bits = (8 - (bits % 8));
+        bits                   = (8 - (bits % 8));
         zeroreg(temp_reg);
         Reg temp(reg, count, reg.size() - count);
         temp.m_regs.push_back(temp_reg);
@@ -909,8 +882,7 @@ void Code::lsr(const Reg &reg, unsigned bits)
  *
  * \sa lsr(), lsl_bytes()
  */
-void Code::lsr_bytes(const Reg &reg, unsigned count)
-{
+void Code::lsr_bytes(const Reg& reg, unsigned count) {
     if (count == 0 || reg.size() == 0) {
         // Nothing to do.
         return;
@@ -932,12 +904,13 @@ void Code::lsr_bytes(const Reg &reg, unsigned count)
  * \param reg The register to inspect.
  * \param index The index to look at for a register pair.
  */
-static bool isRegPair(const Reg &reg, int index)
-{
-    if (index < 0 || index >= (reg.size() - 1))
+static bool isRegPair(const Reg& reg, int index) {
+    if (index < 0 || index >= (reg.size() - 1)) {
         return false;
-    if ((reg.reg(index) % 2) != 0)
+    }
+    if ((reg.reg(index) % 2) != 0) {
         return false;
+    }
     return reg.reg(index + 1) == (reg.reg(index) + 1);
 }
 
@@ -948,21 +921,23 @@ static bool isRegPair(const Reg &reg, int index)
  * \param reg The register to inspect.
  * \param index The index to look at for a reversed register pair.
  */
-static bool isRevRegPair(const Reg &reg, int index)
-{
-    if (index < 0 || index >= (reg.size() - 1))
+static bool isRevRegPair(const Reg& reg, int index) {
+    if (index < 0 || index >= (reg.size() - 1)) {
         return false;
-    if ((reg.reg(index) % 2) == 0)
+    }
+    if ((reg.reg(index) % 2) == 0) {
         return false;
+    }
     return reg.reg(index + 1) == (reg.reg(index) - 1);
 }
 
-static bool sameReg(const Reg &reg1, int index1, const Reg &reg2, int index2)
-{
-    if (index1 < 0 || index1 >= reg1.size())
+static bool sameReg(const Reg& reg1, int index1, const Reg& reg2, int index2) {
+    if (index1 < 0 || index1 >= reg1.size()) {
         return false;
-    if (index2 < 0 || index2 >= reg2.size())
+    }
+    if (index2 < 0 || index2 >= reg2.size()) {
         return false;
+    }
     return reg1.reg(index1) == reg2.reg(index2);
 }
 
@@ -975,16 +950,19 @@ static bool sameReg(const Reg &reg1, int index1, const Reg &reg2, int index2)
  *
  * \return Returns true if there is no overlap, false if there is an overlap.
  */
-static bool noOverlap(const Reg &reg1, const Reg &reg2, int index)
-{
-    if (sameReg(reg1, index, reg2, index))
+static bool noOverlap(const Reg& reg1, const Reg& reg2, int index) {
+    if (sameReg(reg1, index, reg2, index)) {
         return false;
-    if (sameReg(reg1, index, reg2, index + 1))
+    }
+    if (sameReg(reg1, index, reg2, index + 1)) {
         return false;
-    if (sameReg(reg1, index + 1, reg2, index))
+    }
+    if (sameReg(reg1, index + 1, reg2, index)) {
         return false;
-    if (sameReg(reg1, index + 1, reg2, index + 1))
+    }
+    if (sameReg(reg1, index + 1, reg2, index + 1)) {
         return false;
+    }
     return true;
 }
 
@@ -1003,17 +981,18 @@ static bool noOverlap(const Reg &reg1, const Reg &reg2, int index)
  *
  * \sa moveHighFirst()
  */
-void Code::move(const Reg &reg1, const Reg &reg2, bool zeroFill)
-{
+void Code::move(const Reg& reg1, const Reg& reg2, bool zeroFill) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (index = 0; index < minsize; ++index) {
-        if (reg1.reg(index) == reg2.reg(index))
+        if (reg1.reg(index) == reg2.reg(index)) {
             continue; // Already in the destination.
+        }
         if (isRegPair(reg1, index) && isRegPair(reg2, index) &&
-                hasFlag(MoveWord)) {
+            hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index), reg2.reg(index));
             ++index;
         } else if (isRevRegPair(reg1, index) && isRevRegPair(reg2, index) &&
@@ -1037,8 +1016,7 @@ void Code::move(const Reg &reg1, const Reg &reg2, bool zeroFill)
  * \param reg1 The register to load the value into.
  * \param value The immediate value to load.
  */
-void Code::move(const Reg &reg1, unsigned long long value)
-{
+void Code::move(const Reg& reg1, unsigned long long value) {
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
         if (bvalue == 0 && !hasFlag(TempR1)) {
@@ -1069,19 +1047,20 @@ void Code::move(const Reg &reg1, unsigned long long value)
  *
  * \sa move()
  */
-void Code::moveHighFirst(const Reg &reg1, const Reg &reg2)
-{
+void Code::moveHighFirst(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (index = minsize - 1; index >= 0; --index) {
-        if (reg1.reg(index) == reg2.reg(index))
+        if (reg1.reg(index) == reg2.reg(index)) {
             continue; // Already in the destination.
+        }
         if (isRegPair(reg1, index - 1) &&
-                isRegPair(reg2, index - 1) &&
-                noOverlap(reg1, reg2, index - 1) &&
-                hasFlag(MoveWord)) {
+            isRegPair(reg2, index - 1) &&
+            noOverlap(reg1, reg2, index - 1) &&
+            hasFlag(MoveWord)) {
             tworeg(Insn::MOVW, reg1.reg(index - 1), reg2.reg(index - 1));
             --index;
         } else if (isRevRegPair(reg1, index - 1) &&
@@ -1101,8 +1080,7 @@ void Code::moveHighFirst(const Reg &reg1, const Reg &reg2)
  *
  * \param reg The register to negate.
  */
-void Code::neg(const Reg &reg)
-{
+void Code::neg(const Reg& reg) {
     if (reg.size() == 1) {
         onereg(Insn::NEG, reg.reg(0));
     } else {
@@ -1121,12 +1099,12 @@ void Code::neg(const Reg &reg)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will be set to zero.
  */
-void Code::logand(const Reg &reg1, const Reg &reg2)
-{
+void Code::logand(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (index = 0; index < minsize; ++index) {
         // AND all bytes that the two registers have in common.
         tworeg(Insn::AND, reg1.reg(index), reg2.reg(index));
@@ -1144,8 +1122,7 @@ void Code::logand(const Reg &reg1, const Reg &reg2)
  * \param reg1 The destination register to AND into.
  * \param value The immediate value to AND with.
  */
-void Code::logand(const Reg &reg1, unsigned long long value)
-{
+void Code::logand(const Reg& reg1, unsigned long long value) {
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
         if (bvalue == 0) {
@@ -1177,12 +1154,12 @@ void Code::logand(const Reg &reg1, unsigned long long value)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will be ignored.
  */
-void Code::logand_not(const Reg &reg1, const Reg &reg2)
-{
+void Code::logand_not(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     unsigned char temp_reg = tempreg();
     for (index = 0; index < minsize; ++index) {
         // AND-NOT all bytes that the two registers have in common.
@@ -1197,10 +1174,10 @@ void Code::logand_not(const Reg &reg1, const Reg &reg2)
  *
  * \param reg The register to complement.
  */
-void Code::lognot(const Reg &reg)
-{
-    for (int index = 0; index < reg.size(); ++index)
+void Code::lognot(const Reg& reg) {
+    for (int index = 0; index < reg.size(); ++index) {
         onereg(Insn::COM, reg.reg(index));
+    }
 }
 
 /**
@@ -1216,12 +1193,12 @@ void Code::lognot(const Reg &reg)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will be set to 0xFF.
  */
-void Code::lognot(const Reg &reg1, const Reg &reg2)
-{
+void Code::lognot(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (index = 0; index < minsize; ++index) {
         // NOT and copy all bytes that the two registers have in common.
         tworeg(Insn::MOV, reg1.reg(index), reg2.reg(index));
@@ -1249,11 +1226,11 @@ void Code::lognot(const Reg &reg1, const Reg &reg2)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will ignored.
  */
-void Code::logor(const Reg &reg1, const Reg &reg2)
-{
+void Code::logor(const Reg& reg1, const Reg& reg2) {
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (int index = 0; index < minsize; ++index) {
         tworeg(Insn::OR, reg1.reg(index), reg2.reg(index));
     }
@@ -1265,8 +1242,7 @@ void Code::logor(const Reg &reg1, const Reg &reg2)
  * \param reg1 The destination register to OR into.
  * \param value The immediate value to OR with.
  */
-void Code::logor(const Reg &reg1, unsigned long long value)
-{
+void Code::logor(const Reg& reg1, unsigned long long value) {
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
         if (bvalue == 0xFF) {
@@ -1300,12 +1276,12 @@ void Code::logor(const Reg &reg1, unsigned long long value)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will be set to 0xFF.
  */
-void Code::logor_not(const Reg &reg1, const Reg &reg2)
-{
+void Code::logor_not(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     unsigned char temp_reg = tempreg();
     for (index = 0; index < minsize; ++index) {
         // OR-NOT all bytes that the two registers have in common.
@@ -1335,11 +1311,11 @@ void Code::logor_not(const Reg &reg1, const Reg &reg2)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will ignored.
  */
-void Code::logxor(const Reg &reg1, const Reg &reg2)
-{
+void Code::logxor(const Reg& reg1, const Reg& reg2) {
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     for (int index = 0; index < minsize; ++index) {
         tworeg(Insn::EOR, reg1.reg(index), reg2.reg(index));
     }
@@ -1351,8 +1327,7 @@ void Code::logxor(const Reg &reg1, const Reg &reg2)
  * \param reg1 The destination register to XOR into.
  * \param value The immediate value to XOR with.
  */
-void Code::logxor(const Reg &reg1, unsigned long long value)
-{
+void Code::logxor(const Reg& reg1, unsigned long long value) {
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
         if (bvalue == 0xFF) {
@@ -1377,12 +1352,12 @@ void Code::logxor(const Reg &reg1, unsigned long long value)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the high
  * bytes of \a reg1 will be XOR'ed with 0xFF.
  */
-void Code::logxor_not(const Reg &reg1, const Reg &reg2)
-{
+void Code::logxor_not(const Reg& reg1, const Reg& reg2) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     unsigned char temp_reg = tempreg();
     for (index = 0; index < minsize; ++index) {
         // XOR-NOT all bytes that the two registers have in common.
@@ -1408,12 +1383,12 @@ void Code::logxor_not(const Reg &reg1, const Reg &reg2)
  *
  * It is assumed that \a reg2 and \a reg3 have the same size.
  */
-void Code::logxor_and(const Reg &reg1, const Reg &reg2, const Reg &reg3)
-{
+void Code::logxor_and(const Reg& reg1, const Reg& reg2, const Reg& reg3) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     unsigned char temp_reg = tempreg();
     for (index = 0; index < minsize; ++index) {
         // XOR-AND all bytes that the two registers have in common.
@@ -1434,12 +1409,12 @@ void Code::logxor_and(const Reg &reg1, const Reg &reg2, const Reg &reg3)
  *
  * It is assumed that \a reg2 and \a reg3 have the same size.
  */
-void Code::logxor_or(const Reg &reg1, const Reg &reg2, const Reg &reg3)
-{
+void Code::logxor_or(const Reg& reg1, const Reg& reg2, const Reg& reg3) {
     int index;
     int minsize = reg1.size();
-    if (reg2.size() < minsize)
+    if (reg2.size() < minsize) {
         minsize = reg2.size();
+    }
     unsigned char temp_reg = tempreg();
     for (index = 0; index < minsize; ++index) {
         // XOR-OR all bytes that the two registers have in common.
@@ -1458,10 +1433,10 @@ void Code::logxor_or(const Reg &reg1, const Reg &reg2, const Reg &reg3)
  *
  * \sa push()
  */
-void Code::pop(const Reg &reg)
-{
-    for (int index = 0; index < reg.size(); ++index)
+void Code::pop(const Reg& reg) {
+    for (int index = 0; index < reg.size(); ++index) {
         onereg(Insn::POP, reg.reg(index));
+    }
 }
 
 /**
@@ -1473,10 +1448,10 @@ void Code::pop(const Reg &reg)
  *
  * \sa pop()
  */
-void Code::push(const Reg &reg)
-{
-    for (int index = reg.size() - 1; index >= 0; --index)
+void Code::push(const Reg& reg) {
+    for (int index = reg.size() - 1; index >= 0; --index) {
         onereg(Insn::PUSH, reg.reg(index));
+    }
 }
 
 /**
@@ -1487,28 +1462,29 @@ void Code::push(const Reg &reg)
  *
  * \sa ror(), rol_bytes()
  */
-void Code::rol(const Reg &reg, unsigned bits)
-{
+void Code::rol(const Reg& reg, unsigned bits) {
     if (bits == 0 || reg.size() == 0) {
         // Nothing to do when rotating by zero bits.
         return;
     } else if (bits == 1 && !hasFlag(TempR1)) {
         // Rotate left by a single bit.
         for (int index = 0; index < reg.size(); ++index) {
-            if (index == 0)
+            if (index == 0) {
                 onereg(Insn::LSL, reg.reg(index));
-            else
+            } else {
                 onereg(Insn::ROL, reg.reg(index));
+            }
         }
         tworeg(Insn::ADC, reg.reg(0), ZERO_REG);
     } else if (bits == 1) {
         // Rotate left by a single bit when we don't have "r1" available.
         bitop(Insn::BST, reg.reg(reg.size() - 1), 7);
         for (int index = 0; index < reg.size(); ++index) {
-            if (index == 0)
+            if (index == 0) {
                 onereg(Insn::LSL, reg.reg(index));
-            else
+            } else {
                 onereg(Insn::ROL, reg.reg(index));
+            }
         }
         bitop(Insn::BLD, reg.reg(0), 0);
     } else if ((bits % 8) == 0) {
@@ -1541,10 +1517,10 @@ void Code::rol(const Reg &reg, unsigned bits)
  *
  * \sa rol(), ror_bytes()
  */
-void Code::rol_bytes(const Reg &reg, unsigned count)
-{
-    if (reg.size() == 0)
+void Code::rol_bytes(const Reg& reg, unsigned count) {
+    if (reg.size() == 0) {
         return;
+    }
     count %= (unsigned)(reg.size());
     if (count == 0) {
         // Nothing to do for a rotation by zero bytes.
@@ -1559,24 +1535,26 @@ void Code::rol_bytes(const Reg &reg, unsigned count)
         // 3 on a 9-byte register, rotate bytes 0, 3, and 6; then bytes
         // 1, 4, and 7, and finally bytes 2, 5, and 8.  This way we
         // only need a single temporary register to do the rotation.
-        int strip_len = reg.size() / count;
-        int from, to;
+        int           strip_len = reg.size() / count;
+        int           from, to;
         unsigned char temp_reg = have_tempreg() ? tempreg() : 0xFF;
         for (int strip = 0; strip < (int)count; ++strip) {
             from = (strip + (strip_len - 1) * count) % reg.size();
-            if (temp_reg != 0xFF)
+            if (temp_reg != 0xFF) {
                 tworeg(Insn::MOV, temp_reg, reg.reg(from));
-            else
+            } else {
                 onereg(Insn::PUSH, reg.reg(from));
+            }
             for (int posn = strip_len - 2; posn >= 0; --posn) {
                 from = (strip + posn * count) % reg.size();
-                to = (strip + (posn + 1) * count) % reg.size();
+                to   = (strip + (posn + 1) * count) % reg.size();
                 tworeg(Insn::MOV, reg.reg(to), reg.reg(from));
             }
-            if (temp_reg != 0xFF)
+            if (temp_reg != 0xFF) {
                 tworeg(Insn::MOV, reg.reg(strip), temp_reg);
-            else
+            } else {
                 onereg(Insn::POP, reg.reg(strip));
+            }
         }
     } else {
         // We need multiple temporary registers to perform the rotation.
@@ -1591,19 +1569,21 @@ void Code::rol_bytes(const Reg &reg, unsigned count)
         }
         for (index = 0; index < (int)count; ++index) {
             int from = reg.size() - count + index;
-            if (index < temp.size())
+            if (index < temp.size()) {
                 tworeg(Insn::MOV, temp.reg(index), reg.reg(from));
-            else
+            } else {
                 onereg(Insn::PUSH, reg.reg(from));
+            }
         }
         for (index = reg.size() - count - 1; index >= 0; --index) {
             tworeg(Insn::MOV, reg.reg(index + count), reg.reg(index));
         }
         for (index = count - 1; index >= 0; --index) {
-            if (index < temp.size())
+            if (index < temp.size()) {
                 tworeg(Insn::MOV, reg.reg(index), temp.reg(index));
-            else
+            } else {
                 onereg(Insn::POP, reg.reg(index));
+            }
         }
         releaseReg(temp);
     }
@@ -1617,8 +1597,7 @@ void Code::rol_bytes(const Reg &reg, unsigned count)
  *
  * \sa rol(), ror_bytes()
  */
-void Code::ror(const Reg &reg, unsigned bits)
-{
+void Code::ror(const Reg& reg, unsigned bits) {
     if (bits == 0 || reg.size() == 0) {
         // Nothing to do when rotating by zero bits.
         return;
@@ -1626,10 +1605,11 @@ void Code::ror(const Reg &reg, unsigned bits)
         // Rotate right by a single bit.
         bitop(Insn::BST, reg.reg(0), 0);
         for (int index = reg.size() - 1; index >= 0; --index) {
-            if (index == (reg.size() - 1))
+            if (index == (reg.size() - 1)) {
                 onereg(Insn::LSR, reg.reg(index));
-            else
+            } else {
                 onereg(Insn::ROR, reg.reg(index));
+            }
         }
         bitop(Insn::BLD, reg.reg(reg.size() - 1), 7);
     } else if ((bits % 8) == 0) {
@@ -1649,8 +1629,9 @@ void Code::ror(const Reg &reg, unsigned bits)
             zeroreg(temp_reg);
             while (bits > 0) {
                 onereg(Insn::LSR, reg.reg(reg.size() - 1));
-                for (int index = reg.size() - 2; index >= 0; --index)
+                for (int index = reg.size() - 2; index >= 0; --index) {
                     onereg(Insn::ROR, reg.reg(index));
+                }
                 onereg(Insn::ROR, temp_reg);
                 --bits;
             }
@@ -1678,10 +1659,10 @@ void Code::ror(const Reg &reg, unsigned bits)
  *
  * \sa ror(), rol_bytes()
  */
-void Code::ror_bytes(const Reg &reg, unsigned count)
-{
-    if (reg.size() == 0)
+void Code::ror_bytes(const Reg& reg, unsigned count) {
+    if (reg.size() == 0) {
         return;
+    }
     count %= (unsigned)(reg.size());
     if (count == 0) {
         // Nothing to do for a rotation by zero bytes.
@@ -1696,24 +1677,26 @@ void Code::ror_bytes(const Reg &reg, unsigned count)
         // 3 on a 9-byte register, rotate bytes 0, 3, and 6; then bytes
         // 1, 4, and 7, and finally bytes 2, 5, and 8.  This way we
         // only need a single temporary register to do the rotation.
-        int strip_len = reg.size() / count;
-        int from, to;
+        int           strip_len = reg.size() / count;
+        int           from, to;
         unsigned char temp_reg = have_tempreg() ? tempreg() : 0xFF;
         for (int strip = 0; strip < (int)count; ++strip) {
-            if (temp_reg != 0xFF)
+            if (temp_reg != 0xFF) {
                 tworeg(Insn::MOV, temp_reg, reg.reg(strip));
-            else
+            } else {
                 onereg(Insn::PUSH, reg.reg(strip));
+            }
             for (int posn = 1; posn < strip_len; ++posn) {
                 from = (strip + posn * count) % reg.size();
-                to = (strip + (posn - 1) * count) % reg.size();
+                to   = (strip + (posn - 1) * count) % reg.size();
                 tworeg(Insn::MOV, reg.reg(to), reg.reg(from));
             }
             to = (strip + (strip_len - 1) * count) % reg.size();
-            if (temp_reg != 0xFF)
+            if (temp_reg != 0xFF) {
                 tworeg(Insn::MOV, reg.reg(to), temp_reg);
-            else
+            } else {
                 onereg(Insn::POP, reg.reg(to));
+            }
         }
     } else {
         // We need multiple temporary registers to perform the rotation.
@@ -1727,20 +1710,22 @@ void Code::ror_bytes(const Reg &reg, unsigned count)
             temp = allocateOptionalReg(count);
         }
         for (index = 0; index < (int)count; ++index) {
-            if (index < temp.size())
+            if (index < temp.size()) {
                 tworeg(Insn::MOV, temp.reg(index), reg.reg(index));
-            else
+            } else {
                 onereg(Insn::PUSH, reg.reg(index));
+            }
         }
         for (index = 0; index < (int)(reg.size() - count); ++index) {
             tworeg(Insn::MOV, reg.reg(index), reg.reg(index + count));
         }
         for (index = count - 1; index >= 0; --index) {
             int to = reg.size() - count + index;
-            if (index < temp.size())
+            if (index < temp.size()) {
                 tworeg(Insn::MOV, reg.reg(to), temp.reg(index));
-            else
+            } else {
                 onereg(Insn::POP, reg.reg(to));
+            }
         }
         releaseReg(temp);
     }
@@ -1756,8 +1741,7 @@ void Code::ror_bytes(const Reg &reg, unsigned count)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the carry
  * will continue to be propagated to the end of \a reg1.
  */
-void Code::sbc(const Reg &reg1, const Reg &reg2)
-{
+void Code::sbc(const Reg& reg1, const Reg& reg2) {
     for (int index = 0; index < reg1.size(); ++index) {
         if (index < reg2.size()) {
             tworeg(Insn::SBC, reg1.reg(index), reg2.reg(index));
@@ -1780,10 +1764,10 @@ void Code::sbc(const Reg &reg1, const Reg &reg2)
  * will be ignored.  If \a reg1 is longer than \a reg2, then the carry
  * will continue to be propagated to the end of \a reg1.
  */
-void Code::sub(const Reg &reg1, const Reg &reg2)
-{
-    if (reg2.size() == 0)
+void Code::sub(const Reg& reg1, const Reg& reg2) {
+    if (reg2.size() == 0) {
         return; // Subtracting zero from a register means do nothing.
+    }
     for (int index = 0; index < reg1.size(); ++index) {
         if (index == 0) {
             tworeg(Insn::SUB, reg1.reg(index), reg2.reg(index));
@@ -1805,8 +1789,7 @@ void Code::sub(const Reg &reg1, const Reg &reg2)
  * \param value The immediate value to subtract.
  * \param carryIn Set to true to subtract an immediate value with a carry in.
  */
-void Code::sub(const Reg &reg1, unsigned long long value, bool carryIn)
-{
+void Code::sub(const Reg& reg1, unsigned long long value, bool carryIn) {
     bool haveCarry = carryIn;
     for (int index = 0; index < reg1.size(); ++index) {
         unsigned char bvalue = (unsigned char)value;
@@ -1827,18 +1810,20 @@ void Code::sub(const Reg &reg1, unsigned long long value, bool carryIn)
             haveCarry = true;
         } else if (reg1.reg(index) >= 16) {
             // We can use SBCI or SUBI to perform the subtraction.
-            if (haveCarry)
+            if (haveCarry) {
                 immreg(Insn::SBCI, reg1.reg(index), bvalue);
-            else
+            } else {
                 immreg(Insn::SUBI, reg1.reg(index), bvalue);
+            }
             haveCarry = true;
         } else {
             // We need a high register to store the immediate byte value.
             unsigned char high_reg = immtemp(bvalue);
-            if (haveCarry)
+            if (haveCarry) {
                 tworeg(Insn::SBC, reg1.reg(index), high_reg);
-            else
+            } else {
                 tworeg(Insn::SUB, reg1.reg(index), high_reg);
+            }
             haveCarry = true;
         }
         value >>= 8;
@@ -1854,11 +1839,11 @@ void Code::sub(const Reg &reg1, unsigned long long value, bool carryIn)
  * The two registers are assumed to have the same size.  If not, only
  * the low bytes that the two registers have in common will be swapped.
  */
-void Code::swap(const Reg &reg1, const Reg &reg2)
-{
+void Code::swap(const Reg& reg1, const Reg& reg2) {
     int minsize = reg1.size();
-    if (minsize > reg2.size())
+    if (minsize > reg2.size()) {
         minsize = reg2.size();
+    }
     for (int index = 0; index < minsize; ++index) {
         if (hasFlag(TempR0)) {
             // We are using the TEMP_REG for something else, so do an XOR swap.
@@ -1891,9 +1876,7 @@ void Code::swap(const Reg &reg1, const Reg &reg2)
  * reg ^= (t << shift);
  * \endcode
  */
-void Code::swapmove
-    (const Reg &reg, unsigned long long mask, unsigned shift, const Reg &temp)
-{
+void Code::swapmove(const Reg& reg, unsigned long long mask, unsigned shift, const Reg& temp) {
     swapmove(reg, reg, mask, shift, temp);
 }
 
@@ -1915,13 +1898,11 @@ void Code::swapmove
  * reg1 ^= (t << shift);
  * \endcode
  */
-void Code::swapmove
-    (const Reg &reg1, const Reg &reg2, unsigned long long mask,
-     unsigned shift, const Reg &temp)
-{
+void Code::swapmove(const Reg& reg1, const Reg& reg2, unsigned long long mask, unsigned shift, const Reg& temp) {
     // Validate the register sizes.
-    if (reg1.size() != reg2.size())
+    if (reg1.size() != reg2.size()) {
         throw std::invalid_argument("swapmove registers must be the same size");
+    }
 
     // Recognize some special forms that can be done more efficiently.
     if (mask == 0xFFU && shift == (unsigned)((reg1.size() - 1) * 8)) {
@@ -1937,10 +1918,11 @@ void Code::swapmove
     // Allocate a temporary register.  We try to allocate high registers
     // because they are more efficient when doing the AND with the mask.
     Reg t;
-    if (temp.size() == 0)
+    if (temp.size() == 0) {
         t = allocateRegPreferHigh(reg1.size());
-    else
+    } else {
         t = temp; // Use the caller-supplied temporary instead.
+    }
 
     // Some more special cases for masks with specific patterns.
     if (reg1.size() == 4 && (mask & 0x0000FFFFU) == 0) {
@@ -1976,8 +1958,9 @@ void Code::swapmove
     }
 
     // Release the temporary register.
-    if (temp.size() == 0)
+    if (temp.size() == 0) {
         releaseReg(t);
+    }
 }
 
 /**
@@ -1994,8 +1977,7 @@ void Code::swapmove
  *
  * \sa sbox_cleanup(), sbox_lookup()
  */
-void Code::sbox_setup(unsigned char num, const Sbox &sbox, const Reg &temp)
-{
+void Code::sbox_setup(unsigned char num, const Sbox& sbox, const Reg& temp) {
     if (temp.size() == 0 || temp.reg(0) < 16) {
         Reg t = allocateHighReg(1);
         m_insns.push_back(Insn::reg2(Insn::LPM_SETUP, t.reg(0), num));
@@ -2019,8 +2001,7 @@ void Code::sbox_setup(unsigned char num, const Sbox &sbox, const Reg &temp)
  *
  * \sa sbox_setup()
  */
-void Code::sbox_switch(unsigned char num, const Sbox &sbox, const Reg &temp)
-{
+void Code::sbox_switch(unsigned char num, const Sbox& sbox, const Reg& temp) {
     if (temp.size() == 0 || temp.reg(0) < 16) {
         Reg t = allocateHighReg(1);
         m_insns.push_back(Insn::reg2(Insn::LPM_SWITCH, t.reg(0), num));
@@ -2039,8 +2020,7 @@ void Code::sbox_switch(unsigned char num, const Sbox &sbox, const Reg &temp)
  * This function is intended for working with S-boxes that are greater
  * than 256 bytes in size.
  */
-void Code::sbox_adjust(const Reg &reg)
-{
+void Code::sbox_adjust(const Reg& reg) {
     onereg(Insn::LPM_ADJUST, reg.reg(0));
 }
 
@@ -2049,8 +2029,7 @@ void Code::sbox_adjust(const Reg &reg)
  *
  * \sa sbox_setup(), sbox_lookup()
  */
-void Code::sbox_cleanup(void)
-{
+void Code::sbox_cleanup(void) {
     bare(Insn::LPM_CLEAN);
 }
 
@@ -2065,13 +2044,14 @@ void Code::sbox_cleanup(void)
  *
  * \sa sbox_setup(), sbox_cleanup()
  */
-void Code::sbox_lookup(const Reg &reg1, const Reg &reg2)
-{
+void Code::sbox_lookup(const Reg& reg1, const Reg& reg2) {
     int minsize = reg1.size();
-    if (minsize > reg2.size())
+    if (minsize > reg2.size()) {
         minsize = reg2.size();
-    for (int index = 0; index < minsize; ++index)
+    }
+    for (int index = 0; index < minsize; ++index) {
         tworeg(Insn::LPM_SBOX, reg1.reg(index), reg2.reg(index));
+    }
 }
 
 /**
@@ -2094,11 +2074,10 @@ void Code::sbox_lookup(const Reg &reg1, const Reg &reg2)
  *
  * \sa prologue_encrypt_block()
  */
-void Code::prologue_setup_key(const char *name, unsigned size_locals)
-{
+void Code::prologue_setup_key(const char* name, unsigned size_locals) {
     m_prologueType = KeySetup;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 }
 
 /**
@@ -2114,11 +2093,10 @@ void Code::prologue_setup_key(const char *name, unsigned size_locals)
  * void name(const void *key, void *schedule)
  * \endcode
  */
-void Code::prologue_setup_key_reversed(const char *name, unsigned size_locals)
-{
+void Code::prologue_setup_key_reversed(const char* name, unsigned size_locals) {
     m_prologueType = KeySetupReversed;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 }
 
 /**
@@ -2148,11 +2126,10 @@ void Code::prologue_setup_key_reversed(const char *name, unsigned size_locals)
  *
  * \sa prologue_setup_key()
  */
-void Code::prologue_encrypt_block(const char *name, unsigned size_locals)
-{
+void Code::prologue_encrypt_block(const char* name, unsigned size_locals) {
     m_prologueType = EncryptBlock;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 }
 
 /**
@@ -2186,12 +2163,10 @@ void Code::prologue_encrypt_block(const char *name, unsigned size_locals)
  *
  * \sa prologue_encrypt_block()
  */
-Reg Code::prologue_encrypt_block_with_tweak
-    (const char *name, unsigned size_locals)
-{
+Reg Code::prologue_encrypt_block_with_tweak(const char* name, unsigned size_locals) {
     m_prologueType = EncryptBlock;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 
     // Output the standard encrypt block header.
     prologue_encrypt_block(name, size_locals);
@@ -2211,11 +2186,10 @@ Reg Code::prologue_encrypt_block_with_tweak
  * \param name Name of the block encrypt function.
  * \param size_locals Number of bytes of local variables that are needed.
  */
-void Code::prologue_encrypt_block_key2(const char *name, unsigned size_locals)
-{
+void Code::prologue_encrypt_block_key2(const char* name, unsigned size_locals) {
     m_prologueType = EncryptBlockKey2;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 }
 
 /**
@@ -2234,11 +2208,10 @@ void Code::prologue_encrypt_block_key2(const char *name, unsigned size_locals)
  * In the generated code, Z will point to "state" and the registers
  * of X will be free for use as temporary variables.
  */
-void Code::prologue_permutation(const char *name, unsigned size_locals)
-{
+void Code::prologue_permutation(const char* name, unsigned size_locals) {
     m_prologueType = Permutation;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
     setFlag(TempX);
 }
 
@@ -2262,9 +2235,7 @@ void Code::prologue_permutation(const char *name, unsigned size_locals)
  * Z will point to "state" and the registers of X will be free for
  * use as temporary variables.
  */
-Reg Code::prologue_permutation_with_count
-    (const char *name, unsigned size_locals)
-{
+Reg Code::prologue_permutation_with_count(const char* name, unsigned size_locals) {
     // Output the standard permutation header.
     prologue_permutation(name, size_locals);
 
@@ -2298,13 +2269,11 @@ Reg Code::prologue_permutation_with_count
  * In the generated code, Z will point to "state" and X will point to
  * "preserve".  X can be reclaimed and reloaded later with load_output_ptr().
  */
-Reg Code::prologue_masked_permutation
-    (const char *name, unsigned size_locals)
-{
+Reg Code::prologue_masked_permutation(const char* name, unsigned size_locals) {
     // Set up the prologue for the code generator.
     m_prologueType = PermutationMasked;
-    m_name = name;
-    m_localsSize = size_locals;
+    m_name         = name;
+    m_localsSize   = size_locals;
 
     // r22 will contain the "count" parameter on entry, so allocate it.
     m_allocated |= (1 << 22);
@@ -2330,12 +2299,11 @@ Reg Code::prologue_masked_permutation
  * The "state" parameter will end up in the X register and the "key"
  * parameter will end up in th "Z" register.
  */
-void Code::prologue_tinyjambu(const char *name, Reg &rounds)
-{
+void Code::prologue_tinyjambu(const char* name, Reg& rounds) {
     // Set up the prologue type.
     m_prologueType = TinyJAMBU;
-    m_name = name;
-    m_localsSize = 0;
+    m_name         = name;
+    m_localsSize   = 0;
 
     // r20 will contain the "rounds" parameter.
     m_allocated |= (1 << 20);
@@ -2350,8 +2318,7 @@ void Code::prologue_tinyjambu(const char *name, Reg &rounds)
  *
  * \sa prologue_encrypt_block()
  */
-void Code::load_output_ptr()
-{
+void Code::load_output_ptr() {
     // The output pointer is after the locals within the stack frame.
     ldlocal(Reg::x_ptr(), m_localsSize);
 }
@@ -2363,28 +2330,28 @@ void Code::load_output_ptr()
  *
  * \return Register containing the optional arguments.
  */
-Reg Code::arg(unsigned size)
-{
+Reg Code::arg(unsigned size) {
     int rounded_size = (size + 1) & ~1;
-    int first_reg = 26;
+    int first_reg    = 26;
     switch (m_prologueType) {
-    case EncryptBlock:
-    case EncryptBlockKey2:
-    case PermutationMasked:
-        first_reg -= 6;
-        break;
-    case KeySetup:
-    case KeySetupReversed:
-        first_reg -= 4;
-        break;
-    case Permutation:
-        first_reg -= 2;
-        if (m_allocated & (1 << 22))
-            first_reg -= 2; // Permutation also has a "count" parameter.
-        break;
-    case TinyJAMBU:
-        first_reg -= 8;
-        break;
+        case EncryptBlock:
+        case EncryptBlockKey2:
+        case PermutationMasked:
+            first_reg -= 6;
+            break;
+        case KeySetup:
+        case KeySetupReversed:
+            first_reg -= 4;
+            break;
+        case Permutation:
+            first_reg -= 2;
+            if (m_allocated & (1 << 22)) {
+                first_reg -= 2; // Permutation also has a "count" parameter.
+            }
+            break;
+        case TinyJAMBU:
+            first_reg -= 8;
+            break;
     }
     first_reg -= rounded_size;
     return allocateExplicitReg(first_reg, size);
@@ -2397,10 +2364,9 @@ Reg Code::arg(unsigned size)
  *
  * \return Register that refers to the function's return value.
  */
-Reg Code::return_value(unsigned size)
-{
+Reg Code::return_value(unsigned size) {
     int rounded_size = (size + 1) & ~1;
-    int first_reg = 26 - rounded_size;
+    int first_reg    = 26 - rounded_size;
     return allocateExplicitReg(first_reg, size);
 }
 
@@ -2417,13 +2383,14 @@ Reg Code::return_value(unsigned size)
  *
  * The operation is performed in constant time.
  */
-void Code::double_gf(const Reg &reg, unsigned feedback)
-{
-    if (reg.size() == 0)
+void Code::double_gf(const Reg& reg, unsigned feedback) {
+    if (reg.size() == 0) {
         return;
+    }
     onereg(Insn::LSL, reg.reg(0));
-    for (int index = 1; index < reg.size(); ++index)
+    for (int index = 1; index < reg.size(); ++index) {
         onereg(Insn::ROL, reg.reg(index));
+    }
     Reg temp = allocateHighReg(1);
     if (feedback < 0x0100U || reg.size() == 1) {
         // Single byte feedback value.
@@ -2446,108 +2413,108 @@ void Code::double_gf(const Reg &reg, unsigned feedback)
     releaseReg(temp);
 }
 
-void Code::print(const Reg &reg)
-{
-    if (!hasFlag(Print))
+void Code::print(const Reg& reg) {
+    if (!hasFlag(Print)) {
         return;
-    for (int index = 0; index < reg.size(); ++index)
+    }
+    for (int index = 0; index < reg.size(); ++index) {
         onereg(Insn::PRINT, reg.reg(index));
+    }
 }
 
-void Code::print(const char *str)
-{
-    if (!hasFlag(Print))
+void Code::print(const char* str) {
+    if (!hasFlag(Print)) {
         return;
+    }
     while (str && *str != '\0') {
         immreg(Insn::PRINTCH, 16, (unsigned char)(*str));
         ++str;
     }
 }
 
-void Code::print_reg_name(const char *tag, const Reg &reg)
-{
-    if (!hasFlag(Print))
+void Code::print_reg_name(const char* tag, const Reg& reg) {
+    if (!hasFlag(Print)) {
         return;
+    }
     print(tag);
     print(": ");
     for (int index = 0; index < reg.size(); ++index) {
         int r = reg.reg(index);
         immreg(Insn::PRINTCH, 16, 'r');
-        if (r >= 10)
+        if (r >= 10) {
             immreg(Insn::PRINTCH, 16, '0' + (r / 10));
+        }
         immreg(Insn::PRINTCH, 16, '0' + (r % 10));
-        if (index < (reg.size() - 1))
+        if (index < (reg.size() - 1)) {
             immreg(Insn::PRINTCH, 16, ':');
+        }
     }
     println();
 }
 
-void Code::println(void)
-{
-    if (hasFlag(Print))
+void Code::println(void) {
+    if (hasFlag(Print)) {
         bare(Insn::PRINTLN);
+    }
 }
 
-void Code::bare(Insn::Type type)
-{
+void Code::bare(Insn::Type type) {
     if (type == Insn::RET) {
         // Flush temporary immediates when we see a "ret" instruction.
-        m_immRegs = 0;
+        m_immRegs  = 0;
         m_immCount = 0;
     }
     m_insns.push_back(Insn::bare(type));
 }
 
-void Code::branch(Insn::Type type, unsigned char &ref)
-{
-    m_immRegs = 0; // Flush temporary immediates when we see a branch point.
+void Code::branch(Insn::Type type, unsigned char& ref) {
+    m_immRegs  = 0; // Flush temporary immediates when we see a branch point.
     m_immCount = 0;
     if (ref == 0) {
-        if (type == Insn::LABEL)
+        if (type == Insn::LABEL) {
             m_labels.push_back((int)(m_insns.size()));
-        else
+        } else {
             m_labels.push_back(-1);
+        }
         ref = m_labels.size();
     } else if (type == Insn::LABEL) {
-        if (ref > m_labels.size())
+        if (ref > m_labels.size()) {
             throw std::invalid_argument("invalid label reference");
-        if (m_labels[ref - 1] != -1)
+        }
+        if (m_labels[ref - 1] != -1) {
             throw std::invalid_argument("label specified multiple times");
+        }
         m_labels[ref - 1] = (int)(m_insns.size());
     } else {
-        if (ref > m_labels.size())
+        if (ref > m_labels.size()) {
             throw std::invalid_argument("invalid label reference");
+        }
     }
     m_insns.push_back(Insn::branch(type, ref));
 }
 
-void Code::onereg(Insn::Type type, unsigned char reg)
-{
+void Code::onereg(Insn::Type type, unsigned char reg) {
     m_insns.push_back(Insn::reg1(type, reg));
     used(reg);
 }
 
-void Code::tworeg(Insn::Type type, unsigned char reg1, unsigned char reg2)
-{
+void Code::tworeg(Insn::Type type, unsigned char reg1, unsigned char reg2) {
     m_insns.push_back(Insn::reg2(type, reg1, reg2));
     used(reg1);
     used(reg2);
 }
 
-void Code::bitop(Insn::Type type, unsigned char reg, unsigned char bit)
-{
+void Code::bitop(Insn::Type type, unsigned char reg, unsigned char bit) {
     m_insns.push_back(Insn::reg2(type, reg, bit));
     used(reg);
 }
 
-void Code::immreg(Insn::Type type, unsigned char reg, unsigned char value)
-{
+void Code::immreg(Insn::Type type, unsigned char reg, unsigned char value) {
     m_insns.push_back(Insn::imm(type, reg, value));
     used(reg);
 }
 
-void Code::memory(Insn::Type type, unsigned char reg, unsigned char offset)
-{
+void Code::memory(Insn::Type type, unsigned char reg, unsigned char offset) {
     m_insns.push_back(Insn::memory(type, reg, offset));
     used(reg);
 }
@@ -2559,8 +2526,7 @@ void Code::memory(Insn::Type type, unsigned char reg, unsigned char offset)
  * \param sideEffects Set to true if it is allowable to side-effect the
  * status flags; or false if no change to the status flags is permitted.
  */
-void Code::zeroreg(unsigned char reg, bool sideEffects)
-{
+void Code::zeroreg(unsigned char reg, bool sideEffects) {
     if (!hasFlag(TempR1)) {
         // We can use "r1" which is pre-loaded with zero.
         tworeg(Insn::MOV, reg, ZERO_REG);
@@ -2579,8 +2545,7 @@ void Code::zeroreg(unsigned char reg, bool sideEffects)
     used(reg);
 }
 
-void Code::resetRegs()
-{
+void Code::resetRegs() {
     m_regOrder.clear();
 
     // Allocate some high registers that we don't need to save first.
@@ -2639,8 +2604,7 @@ void Code::resetRegs()
     }
 }
 
-void Code::used(unsigned char reg)
-{
+void Code::used(unsigned char reg) {
     m_usedRegs |= (1 << reg);
 }
 
@@ -2651,14 +2615,15 @@ void Code::used(unsigned char reg)
  *
  * \return The register number or 0xFF if there are no free registers left.
  */
-unsigned char Code::allocateSpare(bool high)
-{
+unsigned char Code::allocateSpare(bool high) {
     for (unsigned index = 0; index < m_regOrder.size(); ++index) {
         unsigned char reg = m_regOrder[index];
-        if (m_allocated & (1 << reg))
+        if (m_allocated & (1 << reg)) {
             continue;
-        if (high && reg < 16)
+        }
+        if (high && reg < 16) {
             continue;
+        }
         m_allocated |= (1 << reg);
         m_immRegs &= ~(1 << reg);
         return reg;
@@ -2676,19 +2641,22 @@ unsigned char Code::allocateSpare(bool high)
  *
  * This function is intended to optimize for using MOVW instructions later.
  */
-unsigned char Code::allocateSparePair(bool high)
-{
+unsigned char Code::allocateSparePair(bool high) {
     for (unsigned index = 0; index < (m_regOrder.size() - 1); ++index) {
         unsigned char reg1 = m_regOrder[index];
         unsigned char reg2 = m_regOrder[index + 1];
-        if ((reg1 % 2) != 0 || reg2 != (reg1 + 1))
+        if ((reg1 % 2) != 0 || reg2 != (reg1 + 1)) {
             continue;
-        if (m_allocated & (1 << reg1))
+        }
+        if (m_allocated & (1 << reg1)) {
             continue;
-        if (m_allocated & (1 << reg2))
+        }
+        if (m_allocated & (1 << reg2)) {
             continue;
-        if (high && reg1 < 16)
+        }
+        if (high && reg1 < 16) {
             continue;
+        }
         m_allocated |= (1 << reg1) | (1 << reg2);
         m_immRegs &= ~((1 << reg1) | (1 << reg2));
         return reg1;
@@ -2696,8 +2664,7 @@ unsigned char Code::allocateSparePair(bool high)
     return 0xFF;
 }
 
-Reg Code::allocateRegInternal(unsigned size, bool high, bool optional)
-{
+Reg Code::allocateRegInternal(unsigned size, bool high, bool optional) {
     Reg result;
     while (size > 0) {
         unsigned char reg;
@@ -2713,8 +2680,9 @@ Reg Code::allocateRegInternal(unsigned size, bool high, bool optional)
         }
         reg = allocateSpare(high);
         if (reg == 0xFF) {
-            if (optional)
+            if (optional) {
                 break;
+            }
             releaseReg(result);
             throw std::overflow_error("too many registers in use");
         }
@@ -2724,8 +2692,7 @@ Reg Code::allocateRegInternal(unsigned size, bool high, bool optional)
     return result;
 }
 
-Reg Code::allocateRegPreferHigh(unsigned size)
-{
+Reg Code::allocateRegPreferHigh(unsigned size) {
     Reg temp = allocateRegInternal(size, true, true);
     if (temp.size() < (int)size) {
         // Could not get all high registers, so make do with normal registers.
@@ -2735,12 +2702,12 @@ Reg Code::allocateRegPreferHigh(unsigned size)
     return temp;
 }
 
-Reg Code::allocateExplicitReg(unsigned char first_reg, unsigned size)
-{
+Reg Code::allocateExplicitReg(unsigned char first_reg, unsigned size) {
     Reg temp;
     while (size > 0) {
-        if (m_allocated & (1 << first_reg))
+        if (m_allocated & (1 << first_reg)) {
             throw std::overflow_error("arg/return register already in use");
+        }
         m_allocated |= (1 << first_reg);
         m_usedRegs |= (1 << first_reg);
         temp.m_regs.push_back(first_reg);
@@ -2750,15 +2717,15 @@ Reg Code::allocateExplicitReg(unsigned char first_reg, unsigned size)
     return temp;
 }
 
-unsigned char Code::immtemp(unsigned char value)
-{
+unsigned char Code::immtemp(unsigned char value) {
     int index;
 
     // Do we already have a high register with the immediate value in it?
     for (index = 16; index < 32; ++index) {
         if (m_immRegs & (1 << index)) {
-            if (m_immValues[index - 16] == value)
+            if (m_immValues[index - 16] == value) {
                 return index;
+            }
         }
     }
 
@@ -2778,9 +2745,9 @@ unsigned char Code::immtemp(unsigned char value)
     // Start from the end of the register pool so as to avoid clashes
     // with normal register allocation from the start of the register pool.
     for (index = 31; index >= 16; --index) {
-        if (std::find(m_regOrder.begin(), m_regOrder.end(),
-                      (unsigned char)index) == m_regOrder.end())
+        if (std::find(m_regOrder.begin(), m_regOrder.end(), (unsigned char)index) == m_regOrder.end()) {
             continue; // Not an allocatable register.
+        }
         if (!(m_allocated & (1 << index)) && !(m_immRegs & (1 << index))) {
             m_immRegs |= (1 << index);
             m_immValues[index - 16] = value;
@@ -2791,8 +2758,9 @@ unsigned char Code::immtemp(unsigned char value)
 
     // Try finding any high register, reusing immediates if we have to.
     unsigned char reg = allocateSpare(true);
-    if (reg == 0xFF)
+    if (reg == 0xFF) {
         throw std::overflow_error("too many registers in use");
+    }
     m_allocated &= ~(1 << reg); // Not really allocated.
     m_immRegs |= (1 << reg);
     m_immValues[reg - 16] = value;
@@ -2807,8 +2775,7 @@ unsigned char Code::immtemp(unsigned char value)
  *
  * \sa have_tempreg()
  */
-unsigned char Code::tempreg()
-{
+unsigned char Code::tempreg() {
     if (!hasFlag(TempR0) || (m_allocated & (1 << TEMP_REG)) == 0) {
         // We can use "r0" itself.
         return TEMP_REG;
@@ -2827,8 +2794,7 @@ unsigned char Code::tempreg()
  *
  * \sa tempreg()
  */
-bool Code::have_tempreg()
-{
+bool Code::have_tempreg() {
     if (!hasFlag(TempR0) || (m_allocated & (1 << TEMP_REG)) == 0) {
         // We can use "r0" itself.
         return true;
@@ -2840,8 +2806,7 @@ bool Code::have_tempreg()
     }
 }
 
-void Code::add_ptr(unsigned char reg, int offset)
-{
+void Code::add_ptr(unsigned char reg, int offset) {
     if (offset == 0) {
         return;
     } else if (offset > 0 && offset <= 63 && hasFlag(MoveWord)) {
@@ -2849,15 +2814,16 @@ void Code::add_ptr(unsigned char reg, int offset)
     } else if (offset < 0 && offset >= -63 && hasFlag(MoveWord)) {
         immreg(Insn::SBIW, reg, (unsigned char)(-offset));
     } else {
-        offset = -offset;
-        unsigned char low = (unsigned char)offset;
+        offset             = -offset;
+        unsigned char low  = (unsigned char)offset;
         unsigned char high = (unsigned char)(offset >> 8);
         if (low != 0) {
             immreg(Insn::SUBI, reg, low);
-            if (high != 0 || hasFlag(TempR1))
+            if (high != 0 || hasFlag(TempR1)) {
                 immreg(Insn::SBCI, reg + 1, high);
-            else
+            } else {
                 tworeg(Insn::SBC, reg + 1, ZERO_REG);
+            }
         } else {
             immreg(Insn::SUBI, reg + 1, high);
         }
@@ -2874,16 +2840,17 @@ void Code::add_ptr(unsigned char reg, int offset)
  *
  * \sa ld_st_long()
  */
-void Code::ld_st(const Reg &reg, Insn::Type type, unsigned char offset)
-{
+void Code::ld_st(const Reg& reg, Insn::Type type, unsigned char offset) {
     if (offset == PRE_DEC) {
         // Decrement the pointer and load/store from last register down.
-        for (int index = reg.size() - 1; index >= 0; --index)
+        for (int index = reg.size() - 1; index >= 0; --index) {
             memory(type, reg.reg(index), PRE_DEC);
+        }
     } else if (offset == POST_INC) {
         // Increment the pointer and load/store from first register up.
-        for (int index = 0; index < reg.size(); ++index)
+        for (int index = 0; index < reg.size(); ++index) {
             memory(type, reg.reg(index), POST_INC);
+        }
     } else {
         // Access an arbitrary offset relative to X, Y, or Z.
         ld_st_long(reg, type, offset);
@@ -2903,8 +2870,7 @@ void Code::ld_st(const Reg &reg, Insn::Type type, unsigned char offset)
  *
  * \sa ld_st()
  */
-void Code::ld_st_long(const Reg &reg, Insn::Type type, unsigned offset)
-{
+void Code::ld_st_long(const Reg& reg, Insn::Type type, unsigned offset) {
     if (reg.size() == 0) {
         // Nothing to do to load/store an empty register.
     } else if (type == Insn::LD_X && (offset != 0 || reg.size() > 1)) {
@@ -2912,27 +2878,32 @@ void Code::ld_st_long(const Reg &reg, Insn::Type type, unsigned offset)
         // to add the offset to X, perform the store, and then
         // subtract the offset from X.
         add_ptr(26, offset);
-        for (int index = 0; index < reg.size() - 1; ++index)
+        for (int index = 0; index < reg.size() - 1; ++index) {
             memory(type, reg.reg(index), POST_INC);
+        }
         memory(type, reg.reg(reg.size() - 1), 0);
         add_ptr(26, -(offset + reg.size() - 1));
     } else if ((((int)offset) + reg.size()) <= 64) {
         // Store direct to the pointer register with an offset < 64.
-        for (int index = 0; index < reg.size(); ++index)
+        for (int index = 0; index < reg.size(); ++index) {
             memory(type, reg.reg(index), offset + index);
+        }
     } else {
         // Too far away, so adjust the Y or Z pointer before/after accessing.
-        if (type == Insn::LD_Y || type == Insn::ST_Y)
+        if (type == Insn::LD_Y || type == Insn::ST_Y) {
             add_ptr(28, offset);
-        else
+        } else {
             add_ptr(30, offset);
-        for (int index = 0; index < reg.size() - 1; ++index)
+        }
+        for (int index = 0; index < reg.size() - 1; ++index) {
             memory(type, reg.reg(index), POST_INC);
+        }
         memory(type, reg.reg(reg.size() - 1), 0);
-        if (type == Insn::LD_Y || type == Insn::ST_Y)
+        if (type == Insn::LD_Y || type == Insn::ST_Y) {
             add_ptr(28, -(offset + reg.size() - 1));
-        else
+        } else {
             add_ptr(30, -(offset + reg.size() - 1));
+        }
     }
 }
 
@@ -2945,8 +2916,7 @@ void Code::ld_st_long(const Reg &reg, Insn::Type type, unsigned offset)
  *
  * This function is handy when XOR'ing against a key schedule word.
  */
-void Code::ld_xor(const Reg &reg, Insn::Type type, unsigned offset)
-{
+void Code::ld_xor(const Reg& reg, Insn::Type type, unsigned offset) {
     unsigned char temp_reg = tempreg();
     if (reg.size() == 0) {
         // Nothing to do to XOR an empty register.
@@ -2958,20 +2928,22 @@ void Code::ld_xor(const Reg &reg, Insn::Type type, unsigned offset)
         }
     } else {
         // Too far away, so adjust the Y or Z pointer before/after accessing.
-        if (type == Insn::LD_Y)
+        if (type == Insn::LD_Y) {
             add_ptr(28, offset);
-        else
+        } else {
             add_ptr(30, offset);
+        }
         for (int index = 0; index < reg.size() - 1; ++index) {
             memory(type, temp_reg, POST_INC);
             tworeg(Insn::EOR, reg.reg(index), temp_reg);
         }
         memory(type, temp_reg, 0);
         tworeg(Insn::EOR, reg.reg(reg.size() - 1), temp_reg);
-        if (type == Insn::LD_Y)
+        if (type == Insn::LD_Y) {
             add_ptr(28, -(offset + reg.size() - 1));
-        else
+        } else {
             add_ptr(30, -(offset + reg.size() - 1));
+        }
     }
 }
 
@@ -2985,8 +2957,7 @@ void Code::ld_xor(const Reg &reg, Insn::Type type, unsigned offset)
  * This function is handy when XOR'ing a value against a state word in-place.
  * It has the effect of "Y[offset] ^= reg" or "Z[offset] ^= reg".
  */
-void Code::ld_xor_in(const Reg &reg, Insn::Type type, unsigned offset)
-{
+void Code::ld_xor_in(const Reg& reg, Insn::Type type, unsigned offset) {
     unsigned char temp_reg = tempreg();
     if (reg.size() == 0) {
         // Nothing to do to XOR an empty register.
@@ -2995,24 +2966,27 @@ void Code::ld_xor_in(const Reg &reg, Insn::Type type, unsigned offset)
         for (int index = 0; index < reg.size(); ++index) {
             memory(type, temp_reg, offset + index);
             tworeg(Insn::EOR, temp_reg, reg.reg(index));
-            if (type == Insn::LD_Y)
+            if (type == Insn::LD_Y) {
                 memory(Insn::ST_Y, temp_reg, offset + index);
-            else
+            } else {
                 memory(Insn::ST_Z, temp_reg, offset + index);
+            }
         }
     } else {
         // Too far away, so adjust the Y or Z pointer before/after accessing.
-        if (type == Insn::LD_Y)
+        if (type == Insn::LD_Y) {
             add_ptr(28, offset);
-        else
+        } else {
             add_ptr(30, offset);
+        }
         for (int index = 0; index < reg.size() - 1; ++index) {
             memory(type, temp_reg, 0);
             tworeg(Insn::EOR, temp_reg, reg.reg(index));
-            if (type == Insn::LD_Y)
+            if (type == Insn::LD_Y) {
                 memory(Insn::ST_Y, temp_reg, POST_INC);
-            else
+            } else {
                 memory(Insn::ST_Z, temp_reg, POST_INC);
+            }
         }
         memory(type, temp_reg, 0);
         tworeg(Insn::EOR, temp_reg, reg.reg(reg.size() - 1));
@@ -3034,9 +3008,8 @@ void Code::ld_xor_in(const Reg &reg, Insn::Type type, unsigned offset)
  * Cannot use pre-decrement or post-increment.
  * \param count The number of bytes to be zero'ed.
  */
-void Code::st_zero(Insn::Type type, unsigned offset, unsigned count)
-{
-    Reg zeroreg;
+void Code::st_zero(Insn::Type type, unsigned offset, unsigned count) {
+    Reg      zeroreg;
     unsigned index;
     if (hasFlag(TempR1)) {
         zeroreg = allocateReg(1);
@@ -3047,25 +3020,29 @@ void Code::st_zero(Insn::Type type, unsigned offset, unsigned count)
     if (type == Insn::ST_X || (offset + count) > 64) {
         // Too far away from the base register, so increase the pointer,
         // zero the region, and then decrease the pointer to the start.
-        if (type == Insn::ST_X)
+        if (type == Insn::ST_X) {
             add_ptr(26, offset);
-        else if (type == Insn::ST_Y)
+        } else if (type == Insn::ST_Y) {
             add_ptr(28, offset);
-        else
+        } else {
             add_ptr(30, offset);
-        for (index = 0; index < count; ++index)
+        }
+        for (index = 0; index < count; ++index) {
             memory(type, zeroreg.reg(0), POST_INC);
+        }
         int reverse = -(offset + count);
-        if (type == Insn::ST_X)
+        if (type == Insn::ST_X) {
             add_ptr(26, reverse);
-        else if (type == Insn::ST_Y)
+        } else if (type == Insn::ST_Y) {
             add_ptr(28, reverse);
-        else
+        } else {
             add_ptr(30, reverse);
+        }
     } else {
         // We can directly set using explicit offsets from the base register.
-        for (index = 0; index < count; ++index)
+        for (index = 0; index < count; ++index) {
             memory(type, zeroreg.reg(0), offset + index);
+        }
     }
     releaseReg(zeroreg);
 }

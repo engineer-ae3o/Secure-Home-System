@@ -42,8 +42,7 @@ typedef struct ascon_storage_s ascon_storage_t;
 /**
  * \brief Information about how to access non-volatile storage.
  */
-struct ascon_storage_s
-{
+struct ascon_storage_s {
     /** Size of a page in non-volatile storage, which is the minimum
      *  writable unit.  The minimum readable unit is assumed to be 1. */
     size_t page_size;
@@ -75,8 +74,7 @@ struct ascon_storage_s
      *
      * \return The number of bytes that were read, or -1 on error.
      */
-    int (*read)(const ascon_storage_t *storage, size_t offset,
-                unsigned char *data, size_t size);
+    int (*read)(const ascon_storage_t* storage, size_t offset, unsigned char* data, size_t size);
 
     /**
      * \brief Writes data to non-volatile storage.
@@ -95,8 +93,7 @@ struct ascon_storage_s
      * defined by \a offset and \a size will be erased with nothing
      * written over the top.
      */
-    int (*write)(const ascon_storage_t *storage, size_t offset,
-                 const unsigned char *data, size_t size, int erase);
+    int (*write)(const ascon_storage_t* storage, size_t offset, const unsigned char* data, size_t size, int erase);
 };
 
 #ifdef __cplusplus

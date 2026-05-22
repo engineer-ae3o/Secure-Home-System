@@ -41,8 +41,7 @@
 
 /** @endcond */
 
-void ascon_init(ascon_state_t *state)
-{
+void ascon_init(ascon_state_t* state) {
     state->S[0] = 0;
     state->S[1] = 0;
     state->S[2] = 0;
@@ -51,17 +50,14 @@ void ascon_init(ascon_state_t *state)
     ascon_backend_init(state);
 }
 
-void ascon_free(ascon_state_t *state)
-{
+void ascon_free(ascon_state_t* state) {
     if (state) {
         ascon_backend_free(state);
         ascon_clean(state, sizeof(ascon_state_t));
     }
 }
 
-void ascon_add_bytes
-    (ascon_state_t *state, const uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_add_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         ASCON_C64_BYTE_FOR_OFFSET(state, offset) ^= *data++;
         ++offset;
@@ -69,9 +65,7 @@ void ascon_add_bytes
     }
 }
 
-void ascon_overwrite_bytes
-    (ascon_state_t *state, const uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_overwrite_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         ASCON_C64_BYTE_FOR_OFFSET(state, offset) = *data++;
         ++offset;
@@ -79,9 +73,7 @@ void ascon_overwrite_bytes
     }
 }
 
-void ascon_overwrite_with_zeroes
-    (ascon_state_t *state, unsigned offset, unsigned size)
-{
+void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         ASCON_C64_BYTE_FOR_OFFSET(state, offset) = 0;
         ++offset;
@@ -89,9 +81,7 @@ void ascon_overwrite_with_zeroes
     }
 }
 
-void ascon_extract_bytes
-    (const ascon_state_t *state, uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_extract_bytes(const ascon_state_t* state, uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         *data++ = ASCON_C64_BYTE_FOR_OFFSET(state, offset);
         ++offset;
@@ -99,10 +89,7 @@ void ascon_extract_bytes
     }
 }
 
-void ascon_extract_and_add_bytes
-    (const ascon_state_t *state, const uint8_t *input, uint8_t *output,
-     unsigned offset, unsigned size)
-{
+void ascon_extract_and_add_bytes(const ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         *output++ = *input++ ^ ASCON_C64_BYTE_FOR_OFFSET(state, offset);
         ++offset;
@@ -110,33 +97,27 @@ void ascon_extract_and_add_bytes
     }
 }
 
-void ascon_extract_and_overwrite_bytes
-    (ascon_state_t *state, const uint8_t *input, uint8_t *output,
-     unsigned offset, unsigned size)
-{
+void ascon_extract_and_overwrite_bytes(ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
-        unsigned char in = *input++;
-        *output++ = in ^ ASCON_C64_BYTE_FOR_OFFSET(state, offset);
+        unsigned char in                         = *input++;
+        *output++                                = in ^ ASCON_C64_BYTE_FOR_OFFSET(state, offset);
         ASCON_C64_BYTE_FOR_OFFSET(state, offset) = in;
         ++offset;
         --size;
     }
 }
 
-void ascon_release(ascon_state_t *state)
-{
+void ascon_release(ascon_state_t* state) {
     /* Not needed in this implementation */
     (void)state;
 }
 
-void ascon_acquire(ascon_state_t *state)
-{
+void ascon_acquire(ascon_state_t* state) {
     /* Not needed in this implementation */
     (void)state;
 }
 
-void ascon_copy(ascon_state_t *dest, const ascon_state_t *src)
-{
+void ascon_copy(ascon_state_t* dest, const ascon_state_t* src) {
     memcpy(dest->S, src->S, sizeof(dest->S));
 }
 

@@ -22,36 +22,32 @@
 
 #include <ascon/utility.h>
 
-int ascon_bytes_to_hex
-    (char *out, size_t outlen, const unsigned char *in, size_t inlen,
-     int upper_case)
-{
+int ascon_bytes_to_hex(char* out, size_t outlen, const unsigned char* in, size_t inlen, int upper_case) {
     static char const hex_lower[] = "0123456789abcdef";
     static char const hex_upper[] = "0123456789ABCDEF";
-    const char *hex_chars = upper_case ? hex_upper : hex_lower;
-    size_t posn = 0;
+    const char*       hex_chars   = upper_case ? hex_upper : hex_lower;
+    size_t            posn        = 0;
     if (outlen < (inlen * 2U + 1U)) {
-        if (outlen > 0)
+        if (outlen > 0) {
             out[0] = '\0'; /* For safety in case the caller uses the string */
+        }
         return -1;
     }
     while (inlen > 0) {
         unsigned char ch = *in++;
-        out[posn++] = hex_chars[(ch >> 4) & 0x0F];
-        out[posn++] = hex_chars[ch & 0x0F];
+        out[posn++]      = hex_chars[(ch >> 4) & 0x0F];
+        out[posn++]      = hex_chars[ch & 0x0F];
         --inlen;
     }
     out[posn] = '\0';
     return (int)posn;
 }
 
-int ascon_bytes_from_hex
-    (unsigned char *out, size_t outlen, const char *in, size_t inlen)
-{
-    size_t posn = 0;
-    int value = 0;
-    int nibble = 0;
-    int digit = 0;
+int ascon_bytes_from_hex(unsigned char* out, size_t outlen, const char* in, size_t inlen) {
+    size_t posn   = 0;
+    int    value  = 0;
+    int    nibble = 0;
+    int    digit  = 0;
     while (inlen > 0) {
         char ch = *in++;
         --inlen;
@@ -72,9 +68,9 @@ int ascon_bytes_from_hex
                 return -1;
             }
             out[posn++] = value | digit;
-            nibble = 0;
+            nibble      = 0;
         } else {
-            value = digit << 4;
+            value  = digit << 4;
             nibble = 1;
         }
     }

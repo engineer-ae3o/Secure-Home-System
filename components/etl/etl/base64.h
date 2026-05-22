@@ -49,170 +49,136 @@ SOFTWARE.
 * RFC 4648 : base64url(URL - and filename - safe standard)    -    _    = optional   No	                                                  No
 **************************************************************************************************************************************************************************/
 
-namespace etl
-{
-  //***************************************************************************
-  /// Exception base for base64
-  //***************************************************************************
-  class base64_exception : public etl::exception
-  {
-  public:
-
+namespace etl {
+//***************************************************************************
+/// Exception base for base64
+//***************************************************************************
+class base64_exception : public etl::exception {
+    public:
     base64_exception(string_type reason_, string_type file_name_, numeric_type line_number_)
-      : exception(reason_, file_name_, line_number_)
-    {
+        : exception(reason_, file_name_, line_number_) {
     }
-  };
+};
 
-  //***************************************************************************
-  /// buffer overflow exception.
-  //***************************************************************************
-  class base64_overflow : public base64_exception
-  {
-  public:
-
+//***************************************************************************
+/// buffer overflow exception.
+//***************************************************************************
+class base64_overflow : public base64_exception {
+    public:
     base64_overflow(string_type file_name_, numeric_type line_number_)
-      : base64_exception(ETL_ERROR_TEXT("base64:overflow", ETL_BASE64_FILE_ID"A"), file_name_, line_number_)
-    {
+        : base64_exception(ETL_ERROR_TEXT("base64:overflow", ETL_BASE64_FILE_ID "A"), file_name_, line_number_) {
     }
-  };
+};
 
-  //***************************************************************************
-  /// Illegal character exception.
-  //***************************************************************************
-  class base64_invalid_data : public base64_exception
-  {
-  public:
-
+//***************************************************************************
+/// Illegal character exception.
+//***************************************************************************
+class base64_invalid_data : public base64_exception {
+    public:
     base64_invalid_data(string_type file_name_, numeric_type line_number_)
-      : base64_exception(ETL_ERROR_TEXT("base64:invalid data", ETL_BASE64_FILE_ID"B"), file_name_, line_number_)
-    {
+        : base64_exception(ETL_ERROR_TEXT("base64:invalid data", ETL_BASE64_FILE_ID "B"), file_name_, line_number_) {
     }
-  };
+};
 
-  //***************************************************************************
-  /// Invalid decode input length exception.
-  //***************************************************************************
-  class base64_invalid_decode_input_length : public base64_exception
-  {
-  public:
-
+//***************************************************************************
+/// Invalid decode input length exception.
+//***************************************************************************
+class base64_invalid_decode_input_length : public base64_exception {
+    public:
     base64_invalid_decode_input_length(string_type file_name_, numeric_type line_number_)
-      : base64_exception(ETL_ERROR_TEXT("base64:invalid decode input length", ETL_BASE64_FILE_ID"C"), file_name_, line_number_)
-    {
+        : base64_exception(ETL_ERROR_TEXT("base64:invalid decode input length", ETL_BASE64_FILE_ID "C"), file_name_, line_number_) {
     }
-  };
+};
 
-  //***************************************************************************
-  /// Common Base64 definitions
-  //***************************************************************************
-  class base64
-  {
-  public:
+//***************************************************************************
+/// Common Base64 definitions
+//***************************************************************************
+class base64 {
+    public:
+    struct Encoding {
+        enum enum_type {
+            //RFC_1421, // Not implemented
+            //RFC_2045, // Not implemented
+            RFC_2152,
+            RFC_3501,
+            RFC_4648,
+            RFC_4648_PADDING,
+            RFC_4648_URL,
+            RFC_4648_URL_PADDING,
+        };
 
-    struct Encoding
-    {
-      enum enum_type
-      {
-        //RFC_1421, // Not implemented
-        //RFC_2045, // Not implemented
-        RFC_2152,
-        RFC_3501,
-        RFC_4648,
-        RFC_4648_PADDING,
-        RFC_4648_URL,
-        RFC_4648_URL_PADDING,
-      };
-
-      ETL_DECLARE_ENUM_TYPE(Encoding, int)
-      //ETL_ENUM_TYPE(RFC_1421, "RFC_1421") // Not implemented
-      //ETL_ENUM_TYPE(RFC_2045, "RFC_2045") // Not implemented
-      ETL_ENUM_TYPE(RFC_2152,             "RFC_2152")
-      ETL_ENUM_TYPE(RFC_3501,             "RFC_3501")
-      ETL_ENUM_TYPE(RFC_4648,             "RFC_4648")
-      ETL_ENUM_TYPE(RFC_4648_PADDING,     "RFC_4648_PADDING")
-      ETL_ENUM_TYPE(RFC_4648_URL,         "RFC_4648_URL")
-      ETL_ENUM_TYPE(RFC_4648_URL_PADDING, "RFC_4648_URL_PADDING")
-      ETL_END_ENUM_TYPE
+        ETL_DECLARE_ENUM_TYPE(Encoding, int)
+        //ETL_ENUM_TYPE(RFC_1421, "RFC_1421") // Not implemented
+        //ETL_ENUM_TYPE(RFC_2045, "RFC_2045") // Not implemented
+        ETL_ENUM_TYPE(RFC_2152, "RFC_2152")
+        ETL_ENUM_TYPE(RFC_3501, "RFC_3501")
+        ETL_ENUM_TYPE(RFC_4648, "RFC_4648")
+        ETL_ENUM_TYPE(RFC_4648_PADDING, "RFC_4648_PADDING")
+        ETL_ENUM_TYPE(RFC_4648_URL, "RFC_4648_URL")
+        ETL_ENUM_TYPE(RFC_4648_URL_PADDING, "RFC_4648_URL_PADDING")
+        ETL_END_ENUM_TYPE
     };
 
-    struct Padding
-    {
-      enum enum_type
-      {
-        No_Padding  = 0,
-        Use_Padding = 1
-      };
+    struct Padding {
+        enum enum_type {
+            No_Padding  = 0,
+            Use_Padding = 1
+        };
 
-      ETL_DECLARE_ENUM_TYPE(Padding, bool)
-      ETL_ENUM_TYPE(No_Padding,  "No_Padding")
-      ETL_ENUM_TYPE(Use_Padding, "Use_Padding")
-      ETL_END_ENUM_TYPE
+        ETL_DECLARE_ENUM_TYPE(Padding, bool)
+        ETL_ENUM_TYPE(No_Padding, "No_Padding")
+        ETL_ENUM_TYPE(Use_Padding, "Use_Padding")
+        ETL_END_ENUM_TYPE
     };
 
-    struct Non_Coding_Characters
-    {
-      enum enum_type
-      {
-        Ignore = 0,
-        Reject = 1
-      };
+    struct Non_Coding_Characters {
+        enum enum_type {
+            Ignore = 0,
+            Reject = 1
+        };
 
-      ETL_DECLARE_ENUM_TYPE(Non_Coding_Characters, bool)
-      ETL_ENUM_TYPE(Ignore, "Ignore")
-      ETL_ENUM_TYPE(Reject, "Reject")
-      ETL_END_ENUM_TYPE
+        ETL_DECLARE_ENUM_TYPE(Non_Coding_Characters, bool)
+        ETL_ENUM_TYPE(Ignore, "Ignore")
+        ETL_ENUM_TYPE(Reject, "Reject")
+        ETL_END_ENUM_TYPE
     };
 
-    enum
-    {
-      Invalid_Data = etl::integral_limits<int>::max,
-      Min_Encode_Buffer_Size = 4,
-      Min_Decode_Buffer_Size = 3
+    enum {
+        Invalid_Data           = etl::integral_limits<int>::max,
+        Min_Encode_Buffer_Size = 4,
+        Min_Decode_Buffer_Size = 3
     };
 
-  protected:
-
+    protected:
     ETL_CONSTEXPR14
     base64(const char* encoder_table_,
            bool        use_padding_)
-      : encoder_table(encoder_table_)
-      , use_padding(use_padding_)
-    {
+        : encoder_table(encoder_table_), use_padding(use_padding_) {
     }
 
     //*************************************************************************
     // Character set for RFC-1421, RFC-2045, RFC-2152 and RFC-4648
     //*************************************************************************
-    static
-    ETL_CONSTEXPR14
-    const char* character_set_1()
-    {
-      return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    static ETL_CONSTEXPR14 const char* character_set_1() {
+        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     }
 
     //*************************************************************************
     // Character set for RFC-4648-URL
     //*************************************************************************
-    static
-    ETL_CONSTEXPR14
-    const char* character_set_2()
-    {
-      return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    static ETL_CONSTEXPR14 const char* character_set_2() {
+        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
     }
 
     //*************************************************************************
     // Character set for RFC-3501-URL
     //*************************************************************************
-    static
-    ETL_CONSTEXPR14
-    const char* character_set_3()
-    {
-      return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
+    static ETL_CONSTEXPR14 const char* character_set_3() {
+        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,";
     }
 
     const char* encoder_table;
     const bool  use_padding;
-  };
-}
+};
+} // namespace etl
 #endif

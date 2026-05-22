@@ -92,30 +92,27 @@
   * @param  hcrc CRC handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef *hcrc)
-{
-  /* Check the CRC handle allocation */
-  if (hcrc == NULL)
-  {
-    return HAL_ERROR;
-  }
+HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef* hcrc) {
+    /* Check the CRC handle allocation */
+    if (hcrc == NULL) {
+        return HAL_ERROR;
+    }
 
-  /* Check the parameters */
-  assert_param(IS_CRC_ALL_INSTANCE(hcrc->Instance));
+    /* Check the parameters */
+    assert_param(IS_CRC_ALL_INSTANCE(hcrc->Instance));
 
-  if (hcrc->State == HAL_CRC_STATE_RESET)
-  {
-    /* Allocate lock resource and initialize it */
-    hcrc->Lock = HAL_UNLOCKED;
-    /* Init the low level hardware */
-    HAL_CRC_MspInit(hcrc);
-  }
+    if (hcrc->State == HAL_CRC_STATE_RESET) {
+        /* Allocate lock resource and initialize it */
+        hcrc->Lock = HAL_UNLOCKED;
+        /* Init the low level hardware */
+        HAL_CRC_MspInit(hcrc);
+    }
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_READY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_READY;
 
-  /* Return function status */
-  return HAL_OK;
+    /* Return function status */
+    return HAL_OK;
 }
 
 /**
@@ -123,43 +120,40 @@ HAL_StatusTypeDef HAL_CRC_Init(CRC_HandleTypeDef *hcrc)
   * @param  hcrc CRC handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CRC_DeInit(CRC_HandleTypeDef *hcrc)
-{
-  /* Check the CRC handle allocation */
-  if (hcrc == NULL)
-  {
-    return HAL_ERROR;
-  }
+HAL_StatusTypeDef HAL_CRC_DeInit(CRC_HandleTypeDef* hcrc) {
+    /* Check the CRC handle allocation */
+    if (hcrc == NULL) {
+        return HAL_ERROR;
+    }
 
-  /* Check the parameters */
-  assert_param(IS_CRC_ALL_INSTANCE(hcrc->Instance));
+    /* Check the parameters */
+    assert_param(IS_CRC_ALL_INSTANCE(hcrc->Instance));
 
-  /* Check the CRC peripheral state */
-  if (hcrc->State == HAL_CRC_STATE_BUSY)
-  {
-    return HAL_BUSY;
-  }
+    /* Check the CRC peripheral state */
+    if (hcrc->State == HAL_CRC_STATE_BUSY) {
+        return HAL_BUSY;
+    }
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_BUSY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_BUSY;
 
-  /* Reset CRC calculation unit */
-  __HAL_CRC_DR_RESET(hcrc);
+    /* Reset CRC calculation unit */
+    __HAL_CRC_DR_RESET(hcrc);
 
-  /* Reset IDR register content */
-  __HAL_CRC_SET_IDR(hcrc, 0);
+    /* Reset IDR register content */
+    __HAL_CRC_SET_IDR(hcrc, 0);
 
-  /* DeInit the low level hardware */
-  HAL_CRC_MspDeInit(hcrc);
+    /* DeInit the low level hardware */
+    HAL_CRC_MspDeInit(hcrc);
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_RESET;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_RESET;
 
-  /* Process unlocked */
-  __HAL_UNLOCK(hcrc);
+    /* Process unlocked */
+    __HAL_UNLOCK(hcrc);
 
-  /* Return function status */
-  return HAL_OK;
+    /* Return function status */
+    return HAL_OK;
 }
 
 /**
@@ -167,12 +161,11 @@ HAL_StatusTypeDef HAL_CRC_DeInit(CRC_HandleTypeDef *hcrc)
   * @param  hcrc CRC handle
   * @retval None
   */
-__weak void HAL_CRC_MspInit(CRC_HandleTypeDef *hcrc)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcrc);
+__weak void HAL_CRC_MspInit(CRC_HandleTypeDef* hcrc) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcrc);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CRC_MspInit can be implemented in the user file
    */
 }
@@ -182,12 +175,11 @@ __weak void HAL_CRC_MspInit(CRC_HandleTypeDef *hcrc)
   * @param  hcrc CRC handle
   * @retval None
   */
-__weak void HAL_CRC_MspDeInit(CRC_HandleTypeDef *hcrc)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcrc);
+__weak void HAL_CRC_MspDeInit(CRC_HandleTypeDef* hcrc) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcrc);
 
-  /* NOTE : This function should not be modified, when the callback is needed,
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CRC_MspDeInit can be implemented in the user file
    */
 }
@@ -224,26 +216,24 @@ __weak void HAL_CRC_MspDeInit(CRC_HandleTypeDef *hcrc)
   * @param  BufferLength input data buffer length (number of uint32_t words).
   * @retval uint32_t CRC (returned value LSBs for CRC shorter than 32 bits)
   */
-uint32_t HAL_CRC_Accumulate(CRC_HandleTypeDef *hcrc, uint32_t pBuffer[], uint32_t BufferLength)
-{
-  uint32_t index;      /* CRC input data buffer index */
-  uint32_t temp = 0U;  /* CRC output (read from hcrc->Instance->DR register) */
+uint32_t HAL_CRC_Accumulate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength) {
+    uint32_t index;     /* CRC input data buffer index */
+    uint32_t temp = 0U; /* CRC output (read from hcrc->Instance->DR register) */
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_BUSY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_BUSY;
 
-  /* Enter Data to the CRC calculator */
-  for (index = 0U; index < BufferLength; index++)
-  {
-    hcrc->Instance->DR = pBuffer[index];
-  }
-  temp = hcrc->Instance->DR;
+    /* Enter Data to the CRC calculator */
+    for (index = 0U; index < BufferLength; index++) {
+        hcrc->Instance->DR = pBuffer[index];
+    }
+    temp = hcrc->Instance->DR;
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_READY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_READY;
 
-  /* Return the CRC computed value */
-  return temp;
+    /* Return the CRC computed value */
+    return temp;
 }
 
 /**
@@ -254,30 +244,28 @@ uint32_t HAL_CRC_Accumulate(CRC_HandleTypeDef *hcrc, uint32_t pBuffer[], uint32_
   * @param  BufferLength input data buffer length (number of uint32_t words).
   * @retval uint32_t CRC (returned value LSBs for CRC shorter than 32 bits)
   */
-uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef *hcrc, uint32_t pBuffer[], uint32_t BufferLength)
-{
-  uint32_t index;      /* CRC input data buffer index */
-  uint32_t temp = 0U;  /* CRC output (read from hcrc->Instance->DR register) */
+uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef* hcrc, uint32_t pBuffer[], uint32_t BufferLength) {
+    uint32_t index;     /* CRC input data buffer index */
+    uint32_t temp = 0U; /* CRC output (read from hcrc->Instance->DR register) */
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_BUSY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_BUSY;
 
-  /* Reset CRC Calculation Unit (hcrc->Instance->INIT is
+    /* Reset CRC Calculation Unit (hcrc->Instance->INIT is
   *  written in hcrc->Instance->DR) */
-  __HAL_CRC_DR_RESET(hcrc);
+    __HAL_CRC_DR_RESET(hcrc);
 
-  /* Enter 32-bit input data to the CRC calculator */
-  for (index = 0U; index < BufferLength; index++)
-  {
-    hcrc->Instance->DR = pBuffer[index];
-  }
-  temp = hcrc->Instance->DR;
+    /* Enter 32-bit input data to the CRC calculator */
+    for (index = 0U; index < BufferLength; index++) {
+        hcrc->Instance->DR = pBuffer[index];
+    }
+    temp = hcrc->Instance->DR;
 
-  /* Change CRC peripheral state */
-  hcrc->State = HAL_CRC_STATE_READY;
+    /* Change CRC peripheral state */
+    hcrc->State = HAL_CRC_STATE_READY;
 
-  /* Return the CRC computed value */
-  return temp;
+    /* Return the CRC computed value */
+    return temp;
 }
 
 /**
@@ -303,10 +291,9 @@ uint32_t HAL_CRC_Calculate(CRC_HandleTypeDef *hcrc, uint32_t pBuffer[], uint32_t
   * @param  hcrc CRC handle
   * @retval HAL state
   */
-HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef *hcrc)
-{
-  /* Return CRC handle state */
-  return hcrc->State;
+HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef* hcrc) {
+    /* Return CRC handle state */
+    return hcrc->State;
 }
 
 /**
@@ -316,7 +303,6 @@ HAL_CRC_StateTypeDef HAL_CRC_GetState(const CRC_HandleTypeDef *hcrc)
 /**
   * @}
   */
-
 
 #endif /* HAL_CRC_MODULE_ENABLED */
 /**

@@ -38,8 +38,7 @@
 static int acquired = 0;
 #endif
 
-void ascon_init(ascon_state_t *state)
-{
+void ascon_init(ascon_state_t* state) {
 #if defined(ASCON_CHECK_ACQUIRE_RELEASE)
     if (acquired) {
         fprintf(stderr, "acquire and release operations are not balanced\n");
@@ -55,8 +54,7 @@ void ascon_init(ascon_state_t *state)
     ascon_backend_init(state);
 }
 
-void ascon_free(ascon_state_t *state)
-{
+void ascon_free(ascon_state_t* state) {
 #if defined(ASCON_CHECK_ACQUIRE_RELEASE)
     if (!acquired) {
         fprintf(stderr, "acquire and release operations are not balanced\n");
@@ -70,9 +68,7 @@ void ascon_free(ascon_state_t *state)
     }
 }
 
-void ascon_add_bytes
-    (ascon_state_t *state, const uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_add_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         state->B[offset] ^= *data++;
         ++offset;
@@ -80,9 +76,7 @@ void ascon_add_bytes
     }
 }
 
-void ascon_overwrite_bytes
-    (ascon_state_t *state, const uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_overwrite_bytes(ascon_state_t* state, const uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         state->B[offset] = *data++;
         ++offset;
@@ -90,9 +84,7 @@ void ascon_overwrite_bytes
     }
 }
 
-void ascon_overwrite_with_zeroes
-    (ascon_state_t *state, unsigned offset, unsigned size)
-{
+void ascon_overwrite_with_zeroes(ascon_state_t* state, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         state->B[offset] = 0;
         ++offset;
@@ -100,9 +92,7 @@ void ascon_overwrite_with_zeroes
     }
 }
 
-void ascon_extract_bytes
-    (const ascon_state_t *state, uint8_t *data, unsigned offset, unsigned size)
-{
+void ascon_extract_bytes(const ascon_state_t* state, uint8_t* data, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         *data++ = state->B[offset];
         ++offset;
@@ -110,10 +100,7 @@ void ascon_extract_bytes
     }
 }
 
-void ascon_extract_and_add_bytes
-    (const ascon_state_t *state, const uint8_t *input, uint8_t *output,
-     unsigned offset, unsigned size)
-{
+void ascon_extract_and_add_bytes(const ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         *output++ = *input++ ^ state->B[offset];
         ++offset;
@@ -121,21 +108,17 @@ void ascon_extract_and_add_bytes
     }
 }
 
-void ascon_extract_and_overwrite_bytes
-    (ascon_state_t *state, const uint8_t *input, uint8_t *output,
-     unsigned offset, unsigned size)
-{
+void ascon_extract_and_overwrite_bytes(ascon_state_t* state, const uint8_t* input, uint8_t* output, unsigned offset, unsigned size) {
     while (offset < 40 && size > 0) {
         unsigned char in = *input++;
-        *output++ = in ^ state->B[offset];
+        *output++        = in ^ state->B[offset];
         state->B[offset] = in;
         ++offset;
         --size;
     }
 }
 
-void ascon_release(ascon_state_t *state)
-{
+void ascon_release(ascon_state_t* state) {
     /* Not needed in this implementation */
     (void)state;
 #if defined(ASCON_CHECK_ACQUIRE_RELEASE)
@@ -147,8 +130,7 @@ void ascon_release(ascon_state_t *state)
 #endif
 }
 
-void ascon_acquire(ascon_state_t *state)
-{
+void ascon_acquire(ascon_state_t* state) {
     /* Not needed in this implementation */
     (void)state;
 #if defined(ASCON_CHECK_ACQUIRE_RELEASE)
@@ -160,8 +142,7 @@ void ascon_acquire(ascon_state_t *state)
 #endif
 }
 
-void ascon_copy(ascon_state_t *dest, const ascon_state_t *src)
-{
+void ascon_copy(ascon_state_t* dest, const ascon_state_t* src) {
     memcpy(dest->B, src->B, sizeof(dest->B));
 }
 

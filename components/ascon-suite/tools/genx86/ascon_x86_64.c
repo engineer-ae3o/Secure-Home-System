@@ -34,23 +34,22 @@
 /* List of all registers that we can work with */
 typedef struct
 {
-    reg_t *x0;
-    reg_t *x1;
-    reg_t *x2;
-    reg_t *x3;
-    reg_t *x4;
-    reg_t *t0;
-    reg_t *t1;
-    reg_t *t2;
-    reg_t *t3;
-    reg_t *t4;
-    reg_t *t5;
+    reg_t* x0;
+    reg_t* x1;
+    reg_t* x2;
+    reg_t* x3;
+    reg_t* x4;
+    reg_t* t0;
+    reg_t* t1;
+    reg_t* t2;
+    reg_t* t3;
+    reg_t* t4;
+    reg_t* t5;
 
 } reg_names;
 
 /* Applies the S-box to five 64-bit words of the state */
-static void gen_sbox(reg_names *regs)
-{
+static void gen_sbox(reg_names* regs) {
     /* x0 ^= x4;   x4 ^= x3;   x2 ^= x1; */
     binop(IN_XOR, regs->x0, regs->x4);
     binop(IN_XOR, regs->x4, regs->x3);
@@ -94,8 +93,7 @@ static void gen_sbox(reg_names *regs)
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(reg_names *regs, int round)
-{
+static void gen_round(reg_names* regs, int round) {
     int rc;
 
     /* Apply the round constant to x2, and also NOT x2 in the process */
@@ -144,8 +142,7 @@ static void gen_round(reg_names *regs, int round)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * %rdi holds the pointer to the ASCON state on entry and exit.
      *
@@ -157,13 +154,11 @@ static void gen_permute(void)
      *
      * %rbx, %rbp, %r12, %r13, %r14, %r15 must be callee-saved.
      */
-    const char *first_round = REG_RSI;
-    reg_names regs;
-    int round;
-    char *reg_list[] = {
-        REG_RAX, REG_RCX, REG_RDX, REG_R8, REG_R9, REG_RBX,
-        REG_R10, REG_R11, REG_R12, REG_R13, REG_RSI, NULL
-    };
+    const char* first_round = REG_RSI;
+    reg_names   regs;
+    int         round;
+    char*       reg_list[] = {
+        REG_RAX, REG_RCX, REG_RDX, REG_R8, REG_R9, REG_RBX, REG_R10, REG_R11, REG_R12, REG_R13, REG_RSI, NULL};
 
     /* Start the register allocator */
     start_allocator(reg_list, REG_RDI, REG_RSP);
@@ -266,8 +261,7 @@ static void gen_permute(void)
 }
 
 /* Output the function to free sensitive material in registers */
-static void gen_backend_free(void)
-{
+static void gen_backend_free(void) {
     /*
      * %rdi holds the pointer to the ASCON state on entry and exit.
      *
@@ -289,8 +283,7 @@ static void gen_backend_free(void)
     clear_reg(REG_R11);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

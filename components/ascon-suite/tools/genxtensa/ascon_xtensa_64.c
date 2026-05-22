@@ -32,8 +32,7 @@
 #include <string.h>
 #include "copyright.h"
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     /* The default linker scripts for Arduino ESP8266 platforms seem to put
      * assembly code .text sections into iram1 by default instead irom0.
      * This can cause a linker error due to insufficient RAM.  Move the
@@ -50,8 +49,7 @@ static void function_header(const char *name)
     printf("%s:\n", name);
 }
 
-static void function_return(void)
-{
+static void function_return(void) {
     printf("#ifdef __XTENSA_WINDOWED_ABI__\n");
     printf("\tretw.n\n");
     printf("#else\n");
@@ -59,33 +57,32 @@ static void function_return(void)
     printf("#endif\n");
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\t.size\t%s, .-%s\n", name, name);
 }
 
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0_h;
-    const char *x1_h;
-    const char *x2_h;
-    const char *x3_h;
-    const char *x4_h;
-    const char *x0_l;
-    const char *x1_l;
-    const char *x2_l;
-    const char *x3_l;
-    const char *x4_l;
-    const char *x0;
-    const char *x1;
-    const char *x2;
-    const char *x3;
-    const char *x4;
-    const char *t0;
-    const char *t1;
-    const char *t2;
-    const char *t3;
+    const char* x0_h;
+    const char* x1_h;
+    const char* x2_h;
+    const char* x3_h;
+    const char* x4_h;
+    const char* x0_l;
+    const char* x1_l;
+    const char* x2_l;
+    const char* x3_l;
+    const char* x4_l;
+    const char* x0;
+    const char* x1;
+    const char* x2;
+    const char* x3;
+    const char* x4;
+    const char* t0;
+    const char* t1;
+    const char* t2;
+    const char* t3;
 
 } reg_names;
 
@@ -93,30 +90,29 @@ typedef struct
 #define INVERT_REG "a15"
 
 /* Generates a binary operator */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
-    if (!strcmp(name, "mov"))
+static void binop(const char* name, const char* reg1, const char* reg2) {
+    if (!strcmp(name, "mov")) {
         printf("\t%s\t%s, %s\n", name, reg1, reg2);
-    else if (!strcmp(name, "not")) /* Pseudo-instruction for doing a NOT */
+    } else if (!strcmp(name, "not")) { /* Pseudo-instruction for doing a NOT */
         printf("\txor\t%s, %s, %s\n", reg1, reg2, INVERT_REG);
-    else
+    } else {
         printf("\t%s\t%s, %s, %s\n", name, reg1, reg1, reg2);
+    }
 }
 
 /* Generates a unary operator */
-static void unyop(const char *name, const char *dest, const char *src)
-{
-    if (!strcmp(name, "not")) /* Pseudo-instruction for doing a NOT */
+static void unyop(const char* name, const char* dest, const char* src) {
+    if (!strcmp(name, "not")) { /* Pseudo-instruction for doing a NOT */
         printf("\txor\t%s, %s, %s\n", dest, src, INVERT_REG);
-    else
+    } else {
         printf("\t%s\t%s, %s\n", name, dest, src);
+    }
 }
 
 static int num_literals = 0;
 
 /* Load an immediate value into a register */
-static void loadimm(const char *reg, int value)
-{
+static void loadimm(const char* reg, int value) {
     if (value >= -32 && value <= 95) {
         printf("\tmovi.n\t%s, %d\n", reg, value);
     } else if (value >= -2048 && value <= 2048) {
@@ -129,30 +125,29 @@ static void loadimm(const char *reg, int value)
 }
 
 /* Applies the S-box to five 32-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
-    binop("xor", regs->x0, regs->x4);       /* x0 ^= x4; */
-    binop("xor", regs->x4, regs->x3);       /* x4 ^= x3; */
-    binop("xor", regs->x2, regs->x1);       /* x2 ^= x1; */
-    binop("mov", regs->t1, regs->x0);       /* t1 = x0; */
-    unyop("not", regs->t0, regs->x0);       /* t0 = (~x0) & x1; */
-    unyop("not", regs->t2, regs->x1);       /* x0 ^= (~x1) & x2; */
+static void gen_sbox(const reg_names* regs) {
+    binop("xor", regs->x0, regs->x4); /* x0 ^= x4; */
+    binop("xor", regs->x4, regs->x3); /* x4 ^= x3; */
+    binop("xor", regs->x2, regs->x1); /* x2 ^= x1; */
+    binop("mov", regs->t1, regs->x0); /* t1 = x0; */
+    unyop("not", regs->t0, regs->x0); /* t0 = (~x0) & x1; */
+    unyop("not", regs->t2, regs->x1); /* x0 ^= (~x1) & x2; */
     binop("and", regs->t0, regs->x1);
     binop("and", regs->t2, regs->x2);
     binop("xor", regs->x0, regs->t2);
-    unyop("not", regs->t2, regs->x2);       /* x1 ^= (~x2) & x3; */
+    unyop("not", regs->t2, regs->x2); /* x1 ^= (~x2) & x3; */
     binop("and", regs->t2, regs->x3);
     binop("xor", regs->x1, regs->t2);
-    unyop("not", regs->t2, regs->x4);       /* x3 ^= (~x4) & t1; */
+    unyop("not", regs->t2, regs->x4); /* x3 ^= (~x4) & t1; */
     binop("and", regs->t2, regs->t1);
     binop("xor", regs->x3, regs->t2);
-    unyop("not", regs->t2, regs->x3);       /* x2 ^= (~x3) & x4; */
+    unyop("not", regs->t2, regs->x3); /* x2 ^= (~x3) & x4; */
     binop("and", regs->t2, regs->x4);
     binop("xor", regs->x2, regs->t2);
-    binop("xor", regs->x4, regs->t0);       /* x4 ^= t0; */
-    binop("xor", regs->x1, regs->x0);       /* x1 ^= x0; */
-    binop("xor", regs->x3, regs->x2);       /* x3 ^= x2; */
-    binop("xor", regs->x0, regs->x4);       /* x0 ^= x4; */
+    binop("xor", regs->x4, regs->t0); /* x4 ^= t0; */
+    binop("xor", regs->x1, regs->x0); /* x1 ^= x0; */
+    binop("xor", regs->x3, regs->x2); /* x3 ^= x2; */
+    binop("xor", regs->x0, regs->x4); /* x0 ^= x4; */
 
 #if 0
     /* This is done as part of the round constant */
@@ -161,34 +156,29 @@ static void gen_sbox(const reg_names *regs)
 }
 
 /* Applies the S-box to the high words of the state */
-static void gen_sbox_high(const reg_names *regs)
-{
+static void gen_sbox_high(const reg_names* regs) {
     reg_names regs2 = *regs;
-    regs2.x0 = regs2.x0_h;
-    regs2.x1 = regs2.x1_h;
-    regs2.x2 = regs2.x2_h;
-    regs2.x3 = regs2.x3_h;
-    regs2.x4 = regs2.x4_h;
+    regs2.x0        = regs2.x0_h;
+    regs2.x1        = regs2.x1_h;
+    regs2.x2        = regs2.x2_h;
+    regs2.x3        = regs2.x3_h;
+    regs2.x4        = regs2.x4_h;
     gen_sbox(&regs2);
 }
 
 /* Applies the S-box to the low words of the state */
-static void gen_sbox_low(const reg_names *regs)
-{
+static void gen_sbox_low(const reg_names* regs) {
     reg_names regs2 = *regs;
-    regs2.x0 = regs2.x0_l;
-    regs2.x1 = regs2.x1_l;
-    regs2.x2 = regs2.x2_l;
-    regs2.x3 = regs2.x3_l;
-    regs2.x4 = regs2.x4_l;
+    regs2.x0        = regs2.x0_l;
+    regs2.x1        = regs2.x1_l;
+    regs2.x2        = regs2.x2_l;
+    regs2.x3        = regs2.x3_l;
+    regs2.x4        = regs2.x4_l;
     gen_sbox(&regs2);
 }
 
 /* Rotates the contents of a 64-bit register right */
-static void ror64
-    (const char *dest_h, const char *dest_l,
-     const char *src_h, const char *src_l, int shift)
-{
+static void ror64(const char* dest_h, const char* dest_l, const char* src_h, const char* src_l, int shift) {
     /* Xtensa doesn't have an explicit "ror" instruction, but it does
      * have a "shift right combined" (SRC) instruction that can do the
      * same thing by concatenating two 32-bit registers and shifting
@@ -208,10 +198,7 @@ static void ror64
 }
 
 /* reg ^= rotate(reg, shift1) ^ rotate(reg, shift2) */
-static void linear
-    (const reg_names *regs, const char *reg_h, const char *reg_l,
-     int shift1, int shift2)
-{
+static void linear(const reg_names* regs, const char* reg_h, const char* reg_l, int shift1, int shift2) {
     ror64(regs->t3, regs->t2, reg_h, reg_l, shift1);
     ror64(regs->t1, regs->t0, reg_h, reg_l, shift2);
     binop("xor", reg_h, regs->t3);
@@ -221,8 +208,7 @@ static void linear
 }
 
 /* Generate the code for a single sliced ASCON round */
-static void gen_round_sliced(const reg_names *regs, int round)
-{
+static void gen_round_sliced(const reg_names* regs, int round) {
     /* Apply the inverted round constant to x2 */
     int rc = ~(((0x0F - round) << 4) | round);
     loadimm(regs->t0, rc);
@@ -241,9 +227,9 @@ static void gen_round_sliced(const reg_names *regs, int round)
     /* x4 ^= rightRotate7_64(x4)  ^ rightRotate41_64(x4); */
     linear(regs, regs->x0_h, regs->x0_l, 19, 28);
     linear(regs, regs->x1_h, regs->x1_l, 61, 39);
-    linear(regs, regs->x2_h, regs->x2_l,  1,  6);
+    linear(regs, regs->x2_h, regs->x2_l, 1, 6);
     linear(regs, regs->x3_h, regs->x3_l, 10, 17);
-    linear(regs, regs->x4_h, regs->x4_l,  7, 41);
+    linear(regs, regs->x4_h, regs->x4_l, 7, 41);
 
     /* a15 was destroyed by the linear layer, so reload -1 into it
      * before the next round needs to do a "not" operation */
@@ -251,8 +237,7 @@ static void gen_round_sliced(const reg_names *regs, int round)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * a0 holds the return address pointer (link register).
      * a1 holds the stack pointer.
@@ -268,7 +253,7 @@ static void gen_permute(void)
      * a12-a15 must be callee-saved in this case.
      */
     reg_names regs;
-    int round;
+    int       round;
     regs.x0_h = "a4";
     regs.x1_h = "a5";
     regs.x2_h = "a6";
@@ -279,10 +264,10 @@ static void gen_permute(void)
     regs.x2_l = "a11";
     regs.x3_l = "a12";
     regs.x4_l = "a13";
-    regs.t0 = "a2";
-    regs.t1 = "a3";
-    regs.t2 = "a14";
-    regs.t3 = "a15";
+    regs.t0   = "a2";
+    regs.t1   = "a3";
+    regs.t2   = "a14";
+    regs.t3   = "a15";
     /* a15 is also used to hold the constant -1 to invert words */
 
     /* Establish the stack frame.  We need to save a2 for later to
@@ -330,8 +315,9 @@ static void gen_permute(void)
     printf("\tbeqz\ta3, .L0\n");
     printf("\tbeqi\ta3, 4, .L4\n");
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         /* Note: 9 and 11 cannot be encoded as an immediate constant
          * with the "beqi" instruction, so we need a temporary */
         if (round == 9 || round == 11) {
@@ -399,8 +385,7 @@ static void gen_permute(void)
 
 /* Output the function to free sensitive material in registers.
  * This is only used on Xtensa platforms without register windows. */
-static void gen_backend_free(void)
-{
+static void gen_backend_free(void) {
     /* a2 has already been destroyed by the caller loading the
      * state pointer into it. */
     loadimm("a3", 0);
@@ -414,8 +399,7 @@ static void gen_backend_free(void)
     loadimm("a11", 0);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

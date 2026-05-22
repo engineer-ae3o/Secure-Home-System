@@ -27,15 +27,17 @@
 /* Direct XOR of the key and plaintext data with the random data.
  * No rotation of the shares is performed.  This is used by AVR. */
 
-typedef union { uint64_t w; uint8_t b[8]; } random_bytes_t;
+typedef union {
+    uint64_t w;
+    uint8_t  b[8];
+} random_bytes_t;
 
-void ascon_masked_word_x2_zero
-    (ascon_masked_word_t *word, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[0] = ascon_trng_generate_64(trng);
-    for (index = 0; index < 8; ++index)
+    for (index = 0; index < 8; ++index) {
         word->B[index + 8] = word->B[index];
+    }
 #if ASCON_MASKED_MAX_SHARES >= 3
     word->S[2] = 0;
 #endif
@@ -44,14 +46,12 @@ void ascon_masked_word_x2_zero
 #endif
 }
 
-void ascon_masked_word_x2_load
-    (ascon_masked_word_t *word, const uint8_t *data,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
-    for (index = 0; index < 8; ++index)
+    for (index = 0; index < 8; ++index) {
         word->B[index] = data[index] ^ word->B[index + 8];
+    }
 #if ASCON_MASKED_MAX_SHARES >= 3
     word->S[2] = 0;
 #endif
@@ -60,16 +60,15 @@ void ascon_masked_word_x2_load
 #endif
 }
 
-void ascon_masked_word_x2_load_partial
-    (ascon_masked_word_t *word, const uint8_t *data, unsigned size,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
-    for (index = 0; index < size; ++index)
+    for (index = 0; index < size; ++index) {
         word->B[index] = data[index] ^ word->B[index + 8];
-    for (; index < 8; ++index)
+    }
+    for (; index < 8; ++index) {
         word->B[index] = word->B[index + 8];
+    }
 #if ASCON_MASKED_MAX_SHARES >= 3
     word->S[2] = 0;
 #endif
@@ -78,10 +77,7 @@ void ascon_masked_word_x2_load_partial
 #endif
 }
 
-void ascon_masked_word_x2_load_32
-    (ascon_masked_word_t *word, const uint8_t *data1,
-     const uint8_t *data2, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     for (index = 0; index < 4; ++index) {
@@ -96,28 +92,23 @@ void ascon_masked_word_x2_load_32
 #endif
 }
 
-void ascon_masked_word_x2_store
-    (uint8_t *data, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x2_store(uint8_t* data, const ascon_masked_word_t* word) {
     unsigned index;
-    for (index = 0; index < 8; ++index)
+    for (index = 0; index < 8; ++index) {
         data[index] = word->B[index] ^ word->B[index + 8];
+    }
 }
 
-void ascon_masked_word_x2_store_partial
-    (uint8_t *data, unsigned size, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x2_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word) {
     unsigned index;
-    for (index = 0; index < size; ++index)
+    for (index = 0; index < size; ++index) {
         data[index] = word->B[index] ^ word->B[index + 8];
+    }
 }
 
-void ascon_masked_word_x2_randomize
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random;
-    unsigned index;
+    unsigned       index;
     random.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
         dest->B[index]     = src->B[index] ^ random.b[index];
@@ -125,19 +116,15 @@ void ascon_masked_word_x2_randomize
     }
 }
 
-void ascon_masked_word_x2_xor
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src)
-{
+void ascon_masked_word_x2_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src) {
     unsigned index;
     for (index = 0; index < 8; ++index) {
-        dest->B[index]     ^= src->B[index];
+        dest->B[index] ^= src->B[index];
         dest->B[index + 8] ^= src->B[index + 8];
     }
 }
 
-void ascon_masked_word_x2_replace
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src, unsigned size)
-{
+void ascon_masked_word_x2_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size) {
     unsigned index;
     for (index = 0; index < size; ++index) {
         dest->B[index]     = src->B[index];
@@ -147,12 +134,9 @@ void ascon_masked_word_x2_replace
 
 #if ASCON_MASKED_MAX_SHARES >= 3
 
-void ascon_masked_word_x2_from_x3
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random;
-    unsigned index;
+    unsigned       index;
     random.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
         dest->B[index] = random.b[index] ^ src->B[index];
@@ -169,12 +153,9 @@ void ascon_masked_word_x2_from_x3
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_masked_word_x2_from_x4
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x2_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random;
-    unsigned index;
+    unsigned       index;
     random.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
         dest->B[index] =
@@ -190,23 +171,19 @@ void ascon_masked_word_x2_from_x4
 
 #if ASCON_MASKED_MAX_SHARES >= 3
 
-void ascon_masked_word_x3_zero
-    (ascon_masked_word_t *word, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
-    for (index = 0; index < 8; ++index)
+    for (index = 0; index < 8; ++index) {
         word->B[index] = word->B[index + 8] ^ word->B[index + 16];
+    }
 #if ASCON_MASKED_MAX_SHARES >= 4
     word->S[3] = 0;
 #endif
 }
 
-void ascon_masked_word_x3_load
-    (ascon_masked_word_t *word, const uint8_t *data,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -219,10 +196,7 @@ void ascon_masked_word_x3_load
 #endif
 }
 
-void ascon_masked_word_x3_load_partial
-    (ascon_masked_word_t *word, const uint8_t *data, unsigned size,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -230,17 +204,15 @@ void ascon_masked_word_x3_load_partial
         word->B[index] =
             (word->B[index + 8] ^ data[index]) ^ word->B[index + 16];
     }
-    for (; index < 8; ++index)
+    for (; index < 8; ++index) {
         word->B[index] = word->B[index + 8] ^ word->B[index + 16];
+    }
 #if ASCON_MASKED_MAX_SHARES >= 4
     word->S[3] = 0;
 #endif
 }
 
-void ascon_masked_word_x3_load_32
-    (ascon_masked_word_t *word, const uint8_t *data1,
-     const uint8_t *data2, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -255,53 +227,43 @@ void ascon_masked_word_x3_load_32
 #endif
 }
 
-void ascon_masked_word_x3_store
-    (uint8_t *data, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x3_store(uint8_t* data, const ascon_masked_word_t* word) {
     unsigned index;
-    for (index = 0; index < 8; ++index)
+    for (index = 0; index < 8; ++index) {
         data[index] = word->B[index] ^ word->B[index + 8] ^ word->B[index + 16];
+    }
 }
 
-void ascon_masked_word_x3_store_partial
-    (uint8_t *data, unsigned size, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x3_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word) {
     unsigned index;
-    for (index = 0; index < size; ++index)
+    for (index = 0; index < size; ++index) {
         data[index] = word->B[index] ^ word->B[index + 8] ^ word->B[index + 16];
+    }
 }
 
-void ascon_masked_word_x3_randomize
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
-        dest->B[index]
-            = (random1.b[index] ^ src->B[index]) ^ random2.b[index];
+        dest->B[index]      = (random1.b[index] ^ src->B[index]) ^ random2.b[index];
         dest->B[index + 8]  = src->B[index + 8] ^ random1.b[index];
         dest->B[index + 16] = src->B[index + 16] ^ random2.b[index];
     }
 }
 
-void ascon_masked_word_x3_xor
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src)
-{
+void ascon_masked_word_x3_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src) {
     unsigned index;
     for (index = 0; index < 8; ++index) {
-        dest->B[index]      ^= src->B[index];
-        dest->B[index + 8]  ^= src->B[index + 8];
+        dest->B[index] ^= src->B[index];
+        dest->B[index + 8] ^= src->B[index + 8];
         dest->B[index + 16] ^= src->B[index + 16];
     }
 }
 
-void ascon_masked_word_x3_replace
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src, unsigned size)
-{
+void ascon_masked_word_x3_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size) {
     unsigned index;
     for (index = 0; index < size; ++index) {
         dest->B[index]      = src->B[index];
@@ -310,17 +272,14 @@ void ascon_masked_word_x3_replace
     }
 }
 
-void ascon_masked_word_x3_from_x2
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
-        dest->B[index] = (random1.b[index] ^ src->B[index]) ^ random2.b[index];
+        dest->B[index]      = (random1.b[index] ^ src->B[index]) ^ random2.b[index];
         dest->B[index + 8]  = (random1.b[index] ^ src->B[index + 8]);
         dest->B[index + 16] = random2.b[index];
     }
@@ -331,13 +290,10 @@ void ascon_masked_word_x3_from_x2
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_masked_word_x3_from_x4
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x3_from_x4(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
@@ -356,9 +312,7 @@ void ascon_masked_word_x3_from_x4
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_masked_word_x4_zero
-    (ascon_masked_word_t *word, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_zero(ascon_masked_word_t* word, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -369,10 +323,7 @@ void ascon_masked_word_x4_zero
     }
 }
 
-void ascon_masked_word_x4_load
-    (ascon_masked_word_t *word, const uint8_t *data,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_load(ascon_masked_word_t* word, const uint8_t* data, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -384,10 +335,7 @@ void ascon_masked_word_x4_load
     }
 }
 
-void ascon_masked_word_x4_load_partial
-    (ascon_masked_word_t *word, const uint8_t *data, unsigned size,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_load_partial(ascon_masked_word_t* word, const uint8_t* data, unsigned size, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -403,10 +351,7 @@ void ascon_masked_word_x4_load_partial
     }
 }
 
-void ascon_masked_word_x4_load_32
-    (ascon_masked_word_t *word, const uint8_t *data1,
-     const uint8_t *data2, ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_load_32(ascon_masked_word_t* word, const uint8_t* data1, const uint8_t* data2, ascon_trng_state_t* trng) {
     unsigned index;
     word->S[1] = ascon_trng_generate_64(trng);
     word->S[2] = ascon_trng_generate_64(trng);
@@ -421,9 +366,7 @@ void ascon_masked_word_x4_load_32
     }
 }
 
-void ascon_masked_word_x4_store
-    (uint8_t *data, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word) {
     unsigned index;
     for (index = 0; index < 8; ++index) {
         data[index] =
@@ -432,9 +375,7 @@ void ascon_masked_word_x4_store
     }
 }
 
-void ascon_masked_word_x4_store_partial
-    (uint8_t *data, unsigned size, const ascon_masked_word_t *word)
-{
+void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const ascon_masked_word_t* word) {
     unsigned index;
     for (index = 0; index < size; ++index) {
         data[index] =
@@ -443,42 +384,34 @@ void ascon_masked_word_x4_store_partial
     }
 }
 
-void ascon_masked_word_x4_randomize
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_randomize(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
     random_bytes_t random3;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     random3.w = ascon_trng_generate_64(trng);
     for (index = 0; index < 8; ++index) {
-        dest->B[index]
-            = (random1.b[index] ^ src->B[index]) ^ random2.b[index] ^
-              random3.b[index];
+        dest->B[index]      = (random1.b[index] ^ src->B[index]) ^ random2.b[index] ^
+                              random3.b[index];
         dest->B[index + 8]  = src->B[index + 8] ^ random1.b[index];
         dest->B[index + 16] = src->B[index + 16] ^ random2.b[index];
         dest->B[index + 24] = src->B[index + 24] ^ random3.b[index];
     }
 }
 
-void ascon_masked_word_x4_xor
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src)
-{
+void ascon_masked_word_x4_xor(ascon_masked_word_t* dest, const ascon_masked_word_t* src) {
     unsigned index;
     for (index = 0; index < 8; ++index) {
-        dest->B[index]      ^= src->B[index];
-        dest->B[index + 8]  ^= src->B[index + 8];
+        dest->B[index] ^= src->B[index];
+        dest->B[index + 8] ^= src->B[index + 8];
         dest->B[index + 16] ^= src->B[index + 16];
         dest->B[index + 24] ^= src->B[index + 24];
     }
 }
 
-void ascon_masked_word_x4_replace
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src, unsigned size)
-{
+void ascon_masked_word_x4_replace(ascon_masked_word_t* dest, const ascon_masked_word_t* src, unsigned size) {
     unsigned index;
     for (index = 0; index < size; ++index) {
         dest->B[index]      = src->B[index];
@@ -488,14 +421,11 @@ void ascon_masked_word_x4_replace
     }
 }
 
-void ascon_masked_word_x4_from_x2
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_from_x2(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
     random_bytes_t random3;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     random3.w = ascon_trng_generate_64(trng);
@@ -509,14 +439,11 @@ void ascon_masked_word_x4_from_x2
     }
 }
 
-void ascon_masked_word_x4_from_x3
-    (ascon_masked_word_t *dest, const ascon_masked_word_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_masked_word_x4_from_x3(ascon_masked_word_t* dest, const ascon_masked_word_t* src, ascon_trng_state_t* trng) {
     random_bytes_t random1;
     random_bytes_t random2;
     random_bytes_t random3;
-    unsigned index;
+    unsigned       index;
     random1.w = ascon_trng_generate_64(trng);
     random2.w = ascon_trng_generate_64(trng);
     random3.w = ascon_trng_generate_64(trng);
@@ -532,13 +459,11 @@ void ascon_masked_word_x4_from_x3
 
 #endif /* ASCON_MASKED_MAX_SHARES >= 4 */
 
-void ascon_masked_word_pad(ascon_masked_word_t *word, unsigned offset)
-{
+void ascon_masked_word_pad(ascon_masked_word_t* word, unsigned offset) {
     word->B[offset] ^= 0x80;
 }
 
-void ascon_masked_word_separator(ascon_masked_word_t *word)
-{
+void ascon_masked_word_separator(ascon_masked_word_t* word) {
     word->B[7] ^= 1;
 }
 

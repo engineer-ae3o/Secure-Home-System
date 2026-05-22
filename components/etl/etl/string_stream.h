@@ -40,9 +40,8 @@ SOFTWARE.
 #include "string_view.h"
 #include "basic_string_stream.h"
 
-namespace etl
-{
-  typedef etl::basic_string_stream<etl::format_spec, etl::istring, etl::string_view> string_stream;
+namespace etl {
+typedef etl::basic_string_stream<etl::format_spec, etl::istring, etl::string_view> string_stream;
 }
 
 #endif

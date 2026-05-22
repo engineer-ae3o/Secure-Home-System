@@ -43,10 +43,7 @@ static uint8_t const ASCON80PQ_IV2[4] = {0xa2, 0x40, 0x0c, 0x06};
  * \param k Points to the key.
  * \param iv Initialization vector value for the ASCON state.
  */
-static void ascon80pq_siv_init
-    (ascon_state_t *state, const unsigned char *npub,
-     const unsigned char *k, const uint8_t iv[4])
-{
+static void ascon80pq_siv_init(ascon_state_t* state, const unsigned char* npub, const unsigned char* k, const uint8_t iv[4]) {
     ascon_init(state);
     ascon_overwrite_bytes(state, iv, 0, 4);
     ascon_overwrite_bytes(state, k, 4, ASCON80PQ_KEY_SIZE);
@@ -67,10 +64,7 @@ static void ascon80pq_siv_init
  * This operates the ASCON permutation in OFB mode, which can be used to
  * perform both encryption and decryption.
  */
-static void ascon_siv_encrypt_8_80pq
-    (ascon_state_t *state, unsigned char *dest,
-     const unsigned char *src, size_t len, uint8_t first_round)
-{
+static void ascon_siv_encrypt_8_80pq(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round) {
     unsigned char block[8];
     while (len >= 8) {
         ascon_permute(state, first_round);
@@ -87,13 +81,7 @@ static void ascon_siv_encrypt_8_80pq
     }
 }
 
-void ascon80pq_siv_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k)
-{
+void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
     ascon_state_t state;
 
     /* Set the length of the returned ciphertext */
@@ -103,8 +91,9 @@ void ascon80pq_siv_encrypt
     ascon80pq_siv_init(&state, npub, k, ASCON80PQ_IV1);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_8(&state, ad, adlen, 6, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state);
@@ -127,20 +116,15 @@ void ascon80pq_siv_encrypt
     ascon_free(&state);
 }
 
-int ascon80pq_siv_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k)
-{
+int ascon80pq_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON80PQ_TAG_SIZE];
-    int result;
+    int           result;
 
     /* Set the length of the returned plaintext */
-    if (clen < ASCON80PQ_TAG_SIZE)
+    if (clen < ASCON80PQ_TAG_SIZE) {
         return -1;
+    }
     clen -= ASCON80PQ_TAG_SIZE;
     *mlen = clen;
 
@@ -155,8 +139,9 @@ int ascon80pq_siv_decrypt
     ascon80pq_siv_init(&state, npub, k, ASCON80PQ_IV1);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_8(&state, ad, adlen, 6, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state);

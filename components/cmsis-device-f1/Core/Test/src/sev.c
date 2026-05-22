@@ -8,4 +8,3 @@ void sev() {
     __SEV();
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

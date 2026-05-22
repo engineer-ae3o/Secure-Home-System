@@ -42,53 +42,47 @@ typedef struct
 } ascon_locations_t;
 
 // Load a single byte from the state.
-static void load_byte
-    (Code &code, const Reg &reg, int offset, int share, int byte)
-{
+static void load_byte(Code& code, const Reg& reg, int offset, int share, int byte) {
     offset += share * 8;
-    if (offset < 64)
-        code.ldz(reg, offset + 7 - byte);       // Big endian order.
-    else
-        code.ldlocal(reg, offset + byte - 64);  // Little endian order.
+    if (offset < 64) {
+        code.ldz(reg, offset + 7 - byte); // Big endian order.
+    } else {
+        code.ldlocal(reg, offset + byte - 64); // Little endian order.
+    }
 }
 
 // Store a single byte to the state.
-static void store_byte
-    (Code &code, const Reg &reg, int offset, int share, int byte)
-{
+static void store_byte(Code& code, const Reg& reg, int offset, int share, int byte) {
     offset += share * 8;
-    if (offset < 64)
-        code.stz(reg, offset + 7 - byte);       // Big endian order.
-    else
-        code.stlocal(reg, offset + byte - 64);  // Little endian order.
+    if (offset < 64) {
+        code.stz(reg, offset + 7 - byte); // Big endian order.
+    } else {
+        code.stlocal(reg, offset + byte - 64); // Little endian order.
+    }
 }
 
 // Load a 64-bit word from the state.
-static void load_word
-    (Code &code, const Reg &reg, int offset, int share)
-{
+static void load_word(Code& code, const Reg& reg, int offset, int share) {
     offset += share * 8;
-    if (offset < 64)
-        code.ldz(reg.reversed(), offset);       // Big endian order.
-    else
-        code.ldlocal(reg, offset - 64);         // Little endian order.
+    if (offset < 64) {
+        code.ldz(reg.reversed(), offset); // Big endian order.
+    } else {
+        code.ldlocal(reg, offset - 64); // Little endian order.
+    }
 }
 
 // Store a 64-bit word to the state.
-static void store_word
-    (Code &code, const Reg &reg, int offset, int share)
-{
+static void store_word(Code& code, const Reg& reg, int offset, int share) {
     offset += share * 8;
-    if (offset < 64)
-        code.stz(reg.reversed(), offset);       // Big endian order.
-    else
-        code.stlocal(reg, offset - 64);         // Little endian order.
+    if (offset < 64) {
+        code.stz(reg.reversed(), offset); // Big endian order.
+    } else {
+        code.stlocal(reg, offset - 64); // Little endian order.
+    }
 }
 
 // Compute "x ^= (~y) & z" using a 2-share masked representation.
-static void bic_xor
-    (Code &code, Reg &x_a, Reg &x_b, Reg &y_a, Reg &y_b, Reg &z_a, Reg &z_b)
-{
+static void bic_xor(Code& code, Reg& x_a, Reg& x_b, Reg& y_a, Reg& y_b, Reg& z_a, Reg& z_b) {
     // x_a ^= (~y_a) & z_b;
     // x_a ^= (~y_a) & z_a;
     // x_b ^= y_b & z_b;
@@ -111,9 +105,7 @@ static void bic_xor
     code.releaseReg(t2);
 }
 
-static void ascon_substitute
-    (Code &code, const ascon_locations_t &locations, int offset, Reg &x2_a)
-{
+static void ascon_substitute(Code& code, const ascon_locations_t& locations, int offset, Reg& x2_a) {
     // Allocate and load the registers for all byte shares.
     // The x2.a value has already been loaded by the calling function.
     Reg x0_a = code.allocateReg(1);
@@ -142,38 +134,38 @@ static void ascon_substitute
     Reg t1_b = code.allocateReg(1);
 
     // Start of the substitution layer, first share.
-    code.logxor(x0_a, x4_a);        // x0_a ^= x4_a;
-    code.logxor(x4_a, x3_a);        // x4_a ^= x3_a;
-    code.logxor(x2_a, x1_a);        // x2_a ^= x1_a;
-    code.move(t1_a, x0_a);          // t1_a  = x0_a;
+    code.logxor(x0_a, x4_a); // x0_a ^= x4_a;
+    code.logxor(x4_a, x3_a); // x4_a ^= x3_a;
+    code.logxor(x2_a, x1_a); // x2_a ^= x1_a;
+    code.move(t1_a, x0_a);   // t1_a  = x0_a;
 
     // Start of the substitution layer, second share.
-    code.logxor(x0_b, x4_b);        // x0_b ^= x4_b;
-    code.logxor(x4_b, x3_b);        // x4_b ^= x3_b;
-    code.logxor(x2_b, x1_b);        // x2_b ^= x1_b;
-    code.move(t1_b, x0_b);          // t1_b  = x0_b;
+    code.logxor(x0_b, x4_b); // x0_b ^= x4_b;
+    code.logxor(x4_b, x3_b); // x4_b ^= x3_b;
+    code.logxor(x2_b, x1_b); // x2_b ^= x1_b;
+    code.move(t1_b, x0_b);   // t1_b  = x0_b;
 
     // Create zero as a pair of random shares, t0_b = t0_a.
     load_byte(code, t0_a, locations.loc[5], 0, offset);
     code.move(t0_b, t0_a);
 
     // Middle part of the substitution layer, Chi5.
-    bic_xor(code, t0_a, t0_b, x0_a, x0_b, x1_a, x1_b);  // t0 ^= (~x0) & x1;
-    bic_xor(code, x0_a, x0_b, x1_a, x1_b, x2_a, x2_b);  // x0 ^= (~x1) & x2;
-    bic_xor(code, x1_a, x1_b, x2_a, x2_b, x3_a, x3_b);  // x1 ^= (~x2) & x3;
-    bic_xor(code, x2_a, x2_b, x3_a, x3_b, x4_a, x4_b);  // x2 ^= (~x3) & x4;
-    bic_xor(code, x3_a, x3_b, x4_a, x4_b, t1_a, t1_b);  // x3 ^= (~x4) & t1;
-    code.logxor(x4_a, t0_a);        // x4_a ^= t0_a;
-    code.logxor(x4_b, t0_b);        // x4_b ^= t0_b;
+    bic_xor(code, t0_a, t0_b, x0_a, x0_b, x1_a, x1_b); // t0 ^= (~x0) & x1;
+    bic_xor(code, x0_a, x0_b, x1_a, x1_b, x2_a, x2_b); // x0 ^= (~x1) & x2;
+    bic_xor(code, x1_a, x1_b, x2_a, x2_b, x3_a, x3_b); // x1 ^= (~x2) & x3;
+    bic_xor(code, x2_a, x2_b, x3_a, x3_b, x4_a, x4_b); // x2 ^= (~x3) & x4;
+    bic_xor(code, x3_a, x3_b, x4_a, x4_b, t1_a, t1_b); // x3 ^= (~x4) & t1;
+    code.logxor(x4_a, t0_a);                           // x4_a ^= t0_a;
+    code.logxor(x4_b, t0_b);                           // x4_b ^= t0_b;
 
     // End of the substitution layer.
-    code.logxor(x1_a, x0_a);        // x1_a ^= x0_a;
-    code.logxor(x0_a, x4_a);        // x0_a ^= x4_a;
-    code.logxor(x3_a, x2_a);        // x3_a ^= x2_a;
-    code.lognot(x2_a);              // x2_a = ~x2_a;
-    code.logxor(x1_b, x0_b);        // x1_b ^= x0_b;
-    code.logxor(x0_b, x4_b);        // x0_b ^= x4_b;
-    code.logxor(x3_b, x2_b);        // x3_b ^= x2_b;
+    code.logxor(x1_a, x0_a); // x1_a ^= x0_a;
+    code.logxor(x0_a, x4_a); // x0_a ^= x4_a;
+    code.logxor(x3_a, x2_a); // x3_a ^= x2_a;
+    code.lognot(x2_a);       // x2_a = ~x2_a;
+    code.logxor(x1_b, x0_b); // x1_b ^= x0_b;
+    code.logxor(x0_b, x4_b); // x0_b ^= x4_b;
+    code.logxor(x3_b, x2_b); // x3_b ^= x2_b;
 
     // Write all values back to the state except for x2_a which we
     // keep in registers between rounds.
@@ -204,26 +196,24 @@ static void ascon_substitute
     code.releaseReg(t1_b);
 }
 
-static void ascon_diffuse
-    (Code &code, const ascon_locations_t &locations, const Reg &x,
-     int word, int shift1, int shift2, int share = 0)
-{
+static void ascon_diffuse(Code& code, const ascon_locations_t& locations, const Reg& x, int word, int shift1, int shift2, int share = 0) {
     // Compute "x ^= (x >>> shift1) ^ (x >>> shift2)".
     Reg t = code.allocateReg(8);
-    if (word != 2 || share != 0) // x2_a is already in registers.
+    if (word != 2 || share != 0) { // x2_a is already in registers.
         load_word(code, x, locations.loc[word], share);
+    }
     code.move(t, x);
     code.ror(t, shift1);
     code.logxor(t, x);
     code.ror(x, shift2);
     code.logxor(x, t);
-    if (word != 2 || share != 0)
+    if (word != 2 || share != 0) {
         store_word(code, x, locations.loc[word], share);
+    }
     code.releaseReg(t);
 }
 
-void gen_ascon_x2_permutation(Code &code, int max_shares)
-{
+void gen_ascon_x2_permutation(Code& code, int max_shares) {
     // Set up the function prologue with 24 bytes of local variable storage.
     //
     // Z points to the permutation state on input and output.
@@ -238,8 +228,7 @@ void gen_ascon_x2_permutation(Code &code, int max_shares)
     //      16 bytes for a copy of the x3.a and x3.b shares.
     //      16 bytes for a copy of the x4.a and x4.b shares.
     //      8 bytes for t0.a to hold the randomness from round to round.
-    Reg round = code.prologue_masked_permutation
-        ("ascon_x2_permute", (max_shares == 2) ? 24 : 40);
+    Reg round = code.prologue_masked_permutation("ascon_x2_permute", (max_shares == 2) ? 24 : 40);
 
     // We are short on registers, so allow r0 to be used as a temporary.
     code.setFlag(Code::TempR0);
@@ -263,11 +252,11 @@ void gen_ascon_x2_permutation(Code &code, int max_shares)
     if (max_shares == 2) {
         // When the maximum number of shares is 2, we can keep x0, x1, x2, x3
         // in their original location.  We transfer x4 and t0 to the stack.
-        locations.st[0] = 0;
-        locations.st[1] = 16;
-        locations.st[2] = 32;
-        locations.st[3] = 48;
-        locations.st[4] = 64;
+        locations.st[0]  = 0;
+        locations.st[1]  = 16;
+        locations.st[2]  = 32;
+        locations.st[3]  = 48;
+        locations.st[4]  = 64;
         locations.loc[0] = 0;
         locations.loc[1] = 16;
         locations.loc[2] = 32;
@@ -277,11 +266,11 @@ void gen_ascon_x2_permutation(Code &code, int max_shares)
     } else {
         // When the maximum number of shares is 3, we can keep x0, x1, x2
         // in their original location.  We transfer x3, x4, t0 to the stack.
-        locations.st[0] = 0;
-        locations.st[1] = 24;
-        locations.st[2] = 48;
-        locations.st[3] = 72;
-        locations.st[4] = 96;
+        locations.st[0]  = 0;
+        locations.st[1]  = 24;
+        locations.st[2]  = 48;
+        locations.st[3]  = 72;
+        locations.st[4]  = 96;
         locations.loc[0] = 0;
         locations.loc[1] = 24;
         locations.loc[2] = 48;
@@ -334,17 +323,17 @@ void gen_ascon_x2_permutation(Code &code, int max_shares)
     // Perform the linear diffusion layer on each of the state words.
     // "x2.a" is still in registers, but nothing else is.
     t0 = code.allocateReg(8);
-    ascon_diffuse(code, locations, t0, 0, 19, 28, 1);   // Second share.
+    ascon_diffuse(code, locations, t0, 0, 19, 28, 1); // Second share.
     ascon_diffuse(code, locations, t0, 1, 61, 39, 1);
-    ascon_diffuse(code, locations, t0, 2,  1,  6, 1);
+    ascon_diffuse(code, locations, t0, 2, 1, 6, 1);
     ascon_diffuse(code, locations, t0, 3, 10, 17, 1);
-    ascon_diffuse(code, locations, t0, 4,  7, 41, 1);
+    ascon_diffuse(code, locations, t0, 4, 7, 41, 1);
 
-    ascon_diffuse(code, locations, t0, 0, 19, 28, 0);   // First share.
+    ascon_diffuse(code, locations, t0, 0, 19, 28, 0); // First share.
     ascon_diffuse(code, locations, t0, 1, 61, 39, 0);
-    ascon_diffuse(code, locations, x2, 2,  1,  6, 0);
+    ascon_diffuse(code, locations, x2, 2, 1, 6, 0);
     ascon_diffuse(code, locations, t0, 3, 10, 17, 0);
-    ascon_diffuse(code, locations, t0, 4,  7, 41, 0);
+    ascon_diffuse(code, locations, t0, 4, 7, 41, 0);
 
     // Rotate t0_a right by 13 bits to produce the preseved random value
     // for the next round.  Equivalent to rotate left by 3 and right by 16.
@@ -381,33 +370,32 @@ void gen_ascon_x2_permutation(Code &code, int max_shares)
 }
 
 /* Load a big-endian 64-bit word from a byte buffer */
-#define be_load_word64(ptr) \
+#define be_load_word64(ptr)           \
     ((((uint64_t)((ptr)[0])) << 56) | \
      (((uint64_t)((ptr)[1])) << 48) | \
      (((uint64_t)((ptr)[2])) << 40) | \
      (((uint64_t)((ptr)[3])) << 32) | \
      (((uint64_t)((ptr)[4])) << 24) | \
      (((uint64_t)((ptr)[5])) << 16) | \
-     (((uint64_t)((ptr)[6])) << 8) | \
-      ((uint64_t)((ptr)[7])))
+     (((uint64_t)((ptr)[6])) << 8) |  \
+     ((uint64_t)((ptr)[7])))
 
 /* Store a big-endian 64-bit word into a byte buffer */
-#define be_store_word64(ptr, x) \
-    do { \
-        uint64_t _x = (x); \
-        (ptr)[0] = (uint8_t)(_x >> 56); \
-        (ptr)[1] = (uint8_t)(_x >> 48); \
-        (ptr)[2] = (uint8_t)(_x >> 40); \
-        (ptr)[3] = (uint8_t)(_x >> 32); \
-        (ptr)[4] = (uint8_t)(_x >> 24); \
-        (ptr)[5] = (uint8_t)(_x >> 16); \
-        (ptr)[6] = (uint8_t)(_x >> 8); \
-        (ptr)[7] = (uint8_t)_x; \
+#define be_store_word64(ptr, x)            \
+    do {                                   \
+        uint64_t _x = (x);                 \
+        (ptr)[0]    = (uint8_t)(_x >> 56); \
+        (ptr)[1]    = (uint8_t)(_x >> 48); \
+        (ptr)[2]    = (uint8_t)(_x >> 40); \
+        (ptr)[3]    = (uint8_t)(_x >> 32); \
+        (ptr)[4]    = (uint8_t)(_x >> 24); \
+        (ptr)[5]    = (uint8_t)(_x >> 16); \
+        (ptr)[6]    = (uint8_t)(_x >> 8);  \
+        (ptr)[7]    = (uint8_t)_x;         \
     } while (0)
 
 // Get a random 64-bit word.
-static uint64_t get_random(void)
-{
+static uint64_t get_random(void) {
     static bool initialized = false;
     if (!initialized) {
         srand(time(NULL));
@@ -420,16 +408,14 @@ static uint64_t get_random(void)
 }
 
 // Mask the input state.
-static void mask
-    (unsigned char out[120], const unsigned char in[40], int max_shares)
-{
+static void mask(unsigned char out[120], const unsigned char in[40], int max_shares) {
     uint64_t word;
     uint64_t random;
-    int index;
+    int      index;
     memset(out, 0, 120);
     for (index = 0; index < 5; ++index) {
         random = get_random();
-        word = be_load_word64(in + index * 8);
+        word   = be_load_word64(in + index * 8);
         word ^= random;
         be_store_word64(out + index * max_shares * 8, word);
         be_store_word64(out + index * max_shares * 8 + 8, random);
@@ -437,47 +423,29 @@ static void mask
 }
 
 // Unmask the output state.
-static void unmask
-    (unsigned char out[40], const unsigned char in[120], int max_shares)
-{
+static void unmask(unsigned char out[40], const unsigned char in[120], int max_shares) {
     uint64_t word;
     uint64_t random;
-    int index;
+    int      index;
     for (index = 0; index < 5; ++index) {
-        word = be_load_word64(in + index * max_shares * 8);
+        word   = be_load_word64(in + index * max_shares * 8);
         random = be_load_word64(in + index * max_shares * 8 + 8);
         word ^= random;
         be_store_word64(out + index * 8, word);
     }
 }
 
-bool test_ascon_x2_permutation(Code &code, int max_shares)
-{
+bool test_ascon_x2_permutation(Code& code, int max_shares) {
     static unsigned char const input[40] = {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
-    };
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27};
     static unsigned char const output_12[40] = {
-        0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43,
-        0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c, 0x17, 0x64,
-        0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74,
-        0x96, 0xb1, 0x71, 0x75, 0xb4, 0xcb, 0x68, 0x63,
-        0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5
-    };
+        0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43, 0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c, 0x17, 0x64, 0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74, 0x96, 0xb1, 0x71, 0x75, 0xb4, 0xcb, 0x68, 0x63, 0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5};
     static unsigned char const output_8[40] = {
-        0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed,
-        0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf, 0xca, 0xd7,
-        0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0,
-        0x89, 0x2a, 0x02, 0x15, 0x1f, 0x95, 0x94, 0x6e,
-        0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7
-    };
+        0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed, 0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf, 0xca, 0xd7, 0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0, 0x89, 0x2a, 0x02, 0x15, 0x1f, 0x95, 0x94, 0x6e, 0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7};
     unsigned char state[120];
     unsigned char result[40];
     unsigned char preserve[8];
-    int ok;
+    int           ok;
     mask(state, input, max_shares);
     be_store_word64(preserve, get_random());
     code.exec_masked_permutation(state, 120, 0, preserve, 8);

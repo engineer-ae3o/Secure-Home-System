@@ -45,7 +45,7 @@ extern "C" {
   * @{
   */
 
-#if defined (FLASH) || defined (DBGMCU)
+#if defined(FLASH) || defined(DBGMCU)
 
 /** @defgroup SYSTEM_LL SYSTEM
   * @{
@@ -71,16 +71,14 @@ extern "C" {
   * @{
   */
 
-
-
 /** @defgroup SYSTEM_LL_EC_TRACE DBGMCU TRACE Pin Assignment
   * @{
   */
-#define LL_DBGMCU_TRACE_NONE               0x00000000U                                     /*!< TRACE pins not assigned (default state) */
-#define LL_DBGMCU_TRACE_ASYNCH             DBGMCU_CR_TRACE_IOEN                            /*!< TRACE pin assignment for Asynchronous Mode */
-#define LL_DBGMCU_TRACE_SYNCH_SIZE1        (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE_0) /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 1 */
-#define LL_DBGMCU_TRACE_SYNCH_SIZE2        (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE_1) /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 2 */
-#define LL_DBGMCU_TRACE_SYNCH_SIZE4        (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE)   /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 4 */
+#define LL_DBGMCU_TRACE_NONE 0x00000000U                                            /*!< TRACE pins not assigned (default state) */
+#define LL_DBGMCU_TRACE_ASYNCH DBGMCU_CR_TRACE_IOEN                                 /*!< TRACE pin assignment for Asynchronous Mode */
+#define LL_DBGMCU_TRACE_SYNCH_SIZE1 (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE_0) /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 1 */
+#define LL_DBGMCU_TRACE_SYNCH_SIZE2 (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE_1) /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 2 */
+#define LL_DBGMCU_TRACE_SYNCH_SIZE4 (DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE)   /*!< TRACE pin assignment for Synchronous Mode with a TRACEDATA size of 4 */
 /**
   * @}
   */
@@ -88,39 +86,39 @@ extern "C" {
 /** @defgroup SYSTEM_LL_EC_APB1_GRP1_STOP_IP DBGMCU APB1 GRP1 STOP IP
   * @{
   */
-#define LL_DBGMCU_APB1_GRP1_TIM2_STOP      DBGMCU_CR_DBG_TIM2_STOP          /*!< TIM2 counter stopped when core is halted */
-#define LL_DBGMCU_APB1_GRP1_TIM3_STOP      DBGMCU_CR_DBG_TIM3_STOP          /*!< TIM3 counter stopped when core is halted */
-#define LL_DBGMCU_APB1_GRP1_TIM4_STOP      DBGMCU_CR_DBG_TIM4_STOP          /*!< TIM4 counter stopped when core is halted */
+#define LL_DBGMCU_APB1_GRP1_TIM2_STOP DBGMCU_CR_DBG_TIM2_STOP /*!< TIM2 counter stopped when core is halted */
+#define LL_DBGMCU_APB1_GRP1_TIM3_STOP DBGMCU_CR_DBG_TIM3_STOP /*!< TIM3 counter stopped when core is halted */
+#define LL_DBGMCU_APB1_GRP1_TIM4_STOP DBGMCU_CR_DBG_TIM4_STOP /*!< TIM4 counter stopped when core is halted */
 #if defined(DBGMCU_CR_DBG_TIM5_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM5_STOP      DBGMCU_CR_DBG_TIM5_STOP          /*!< TIM5 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM5_STOP */
+#define LL_DBGMCU_APB1_GRP1_TIM5_STOP DBGMCU_CR_DBG_TIM5_STOP /*!< TIM5 counter stopped when core is halted */
+#endif                                                        /* DBGMCU_CR_DBG_TIM5_STOP */
 #if defined(DBGMCU_CR_DBG_TIM6_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM6_STOP      DBGMCU_CR_DBG_TIM6_STOP          /*!< TIM6 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM6_STOP */
+#define LL_DBGMCU_APB1_GRP1_TIM6_STOP DBGMCU_CR_DBG_TIM6_STOP /*!< TIM6 counter stopped when core is halted */
+#endif                                                        /* DBGMCU_CR_DBG_TIM6_STOP */
 #if defined(DBGMCU_CR_DBG_TIM7_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM7_STOP      DBGMCU_CR_DBG_TIM7_STOP          /*!< TIM7 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM7_STOP */
+#define LL_DBGMCU_APB1_GRP1_TIM7_STOP DBGMCU_CR_DBG_TIM7_STOP /*!< TIM7 counter stopped when core is halted */
+#endif                                                        /* DBGMCU_CR_DBG_TIM7_STOP */
 #if defined(DBGMCU_CR_DBG_TIM12_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM12_STOP     DBGMCU_CR_DBG_TIM12_STOP         /*!< TIM12 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM12_STOP */
+#define LL_DBGMCU_APB1_GRP1_TIM12_STOP DBGMCU_CR_DBG_TIM12_STOP /*!< TIM12 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM12_STOP */
 #if defined(DBGMCU_CR_DBG_TIM13_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM13_STOP     DBGMCU_CR_DBG_TIM13_STOP         /*!< TIM13 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM13_STOP */
+#define LL_DBGMCU_APB1_GRP1_TIM13_STOP DBGMCU_CR_DBG_TIM13_STOP /*!< TIM13 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM13_STOP */
 #if defined(DBGMCU_CR_DBG_TIM14_STOP)
-#define LL_DBGMCU_APB1_GRP1_TIM14_STOP     DBGMCU_CR_DBG_TIM14_STOP         /*!< TIM14 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM14_STOP */
-#define LL_DBGMCU_APB1_GRP1_WWDG_STOP      DBGMCU_CR_DBG_WWDG_STOP          /*!< Debug Window Watchdog stopped when Core is halted */
-#define LL_DBGMCU_APB1_GRP1_IWDG_STOP      DBGMCU_CR_DBG_IWDG_STOP          /*!< Debug Independent Watchdog stopped when Core is halted */
-#define LL_DBGMCU_APB1_GRP1_I2C1_STOP      DBGMCU_CR_DBG_I2C1_SMBUS_TIMEOUT /*!< I2C1 SMBUS timeout mode stopped when Core is halted */
+#define LL_DBGMCU_APB1_GRP1_TIM14_STOP DBGMCU_CR_DBG_TIM14_STOP        /*!< TIM14 counter stopped when core is halted */
+#endif                                                                 /* DBGMCU_CR_DBG_TIM14_STOP */
+#define LL_DBGMCU_APB1_GRP1_WWDG_STOP DBGMCU_CR_DBG_WWDG_STOP          /*!< Debug Window Watchdog stopped when Core is halted */
+#define LL_DBGMCU_APB1_GRP1_IWDG_STOP DBGMCU_CR_DBG_IWDG_STOP          /*!< Debug Independent Watchdog stopped when Core is halted */
+#define LL_DBGMCU_APB1_GRP1_I2C1_STOP DBGMCU_CR_DBG_I2C1_SMBUS_TIMEOUT /*!< I2C1 SMBUS timeout mode stopped when Core is halted */
 #if defined(DBGMCU_CR_DBG_I2C2_SMBUS_TIMEOUT)
-#define LL_DBGMCU_APB1_GRP1_I2C2_STOP      DBGMCU_CR_DBG_I2C2_SMBUS_TIMEOUT /*!< I2C2 SMBUS timeout mode stopped when Core is halted */
-#endif /* DBGMCU_CR_DBG_I2C2_SMBUS_TIMEOUT */
+#define LL_DBGMCU_APB1_GRP1_I2C2_STOP DBGMCU_CR_DBG_I2C2_SMBUS_TIMEOUT /*!< I2C2 SMBUS timeout mode stopped when Core is halted */
+#endif                                                                 /* DBGMCU_CR_DBG_I2C2_SMBUS_TIMEOUT */
 #if defined(DBGMCU_CR_DBG_CAN1_STOP)
-#define LL_DBGMCU_APB1_GRP1_CAN1_STOP      DBGMCU_CR_DBG_CAN1_STOP          /*!< CAN1 debug stopped when Core is halted  */
-#endif /* DBGMCU_CR_DBG_CAN1_STOP */
+#define LL_DBGMCU_APB1_GRP1_CAN1_STOP DBGMCU_CR_DBG_CAN1_STOP /*!< CAN1 debug stopped when Core is halted  */
+#endif                                                        /* DBGMCU_CR_DBG_CAN1_STOP */
 #if defined(DBGMCU_CR_DBG_CAN2_STOP)
-#define LL_DBGMCU_APB1_GRP1_CAN2_STOP      DBGMCU_CR_DBG_CAN2_STOP          /*!< CAN2 debug stopped when Core is halted  */
-#endif /* DBGMCU_CR_DBG_CAN2_STOP */
+#define LL_DBGMCU_APB1_GRP1_CAN2_STOP DBGMCU_CR_DBG_CAN2_STOP /*!< CAN2 debug stopped when Core is halted  */
+#endif                                                        /* DBGMCU_CR_DBG_CAN2_STOP */
 /**
   * @}
   */
@@ -128,28 +126,28 @@ extern "C" {
 /** @defgroup SYSTEM_LL_EC_APB2_GRP1_STOP_IP DBGMCU APB2 GRP1 STOP IP
   * @{
   */
-#define LL_DBGMCU_APB2_GRP1_TIM1_STOP      DBGMCU_CR_DBG_TIM1_STOP   /*!< TIM1 counter stopped when core is halted */
+#define LL_DBGMCU_APB2_GRP1_TIM1_STOP DBGMCU_CR_DBG_TIM1_STOP /*!< TIM1 counter stopped when core is halted */
 #if defined(DBGMCU_CR_DBG_TIM8_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM8_STOP      DBGMCU_CR_DBG_TIM8_STOP   /*!< TIM8 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_CAN1_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM8_STOP DBGMCU_CR_DBG_TIM8_STOP /*!< TIM8 counter stopped when core is halted */
+#endif                                                        /* DBGMCU_CR_DBG_CAN1_STOP */
 #if defined(DBGMCU_CR_DBG_TIM9_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM9_STOP      DBGMCU_CR_DBG_TIM9_STOP   /*!< TIM9 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM9_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM9_STOP DBGMCU_CR_DBG_TIM9_STOP /*!< TIM9 counter stopped when core is halted */
+#endif                                                        /* DBGMCU_CR_DBG_TIM9_STOP */
 #if defined(DBGMCU_CR_DBG_TIM10_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM10_STOP     DBGMCU_CR_DBG_TIM10_STOP   /*!< TIM10 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM10_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM10_STOP DBGMCU_CR_DBG_TIM10_STOP /*!< TIM10 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM10_STOP */
 #if defined(DBGMCU_CR_DBG_TIM11_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM11_STOP     DBGMCU_CR_DBG_TIM11_STOP   /*!< TIM11 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM11_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM11_STOP DBGMCU_CR_DBG_TIM11_STOP /*!< TIM11 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM11_STOP */
 #if defined(DBGMCU_CR_DBG_TIM15_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM15_STOP     DBGMCU_CR_DBG_TIM15_STOP   /*!< TIM15 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM15_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM15_STOP DBGMCU_CR_DBG_TIM15_STOP /*!< TIM15 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM15_STOP */
 #if defined(DBGMCU_CR_DBG_TIM16_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM16_STOP     DBGMCU_CR_DBG_TIM16_STOP   /*!< TIM16 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM16_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM16_STOP DBGMCU_CR_DBG_TIM16_STOP /*!< TIM16 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM16_STOP */
 #if defined(DBGMCU_CR_DBG_TIM17_STOP)
-#define LL_DBGMCU_APB2_GRP1_TIM17_STOP     DBGMCU_CR_DBG_TIM17_STOP   /*!< TIM17 counter stopped when core is halted */
-#endif /* DBGMCU_CR_DBG_TIM17_STOP */
+#define LL_DBGMCU_APB2_GRP1_TIM17_STOP DBGMCU_CR_DBG_TIM17_STOP /*!< TIM17 counter stopped when core is halted */
+#endif                                                          /* DBGMCU_CR_DBG_TIM17_STOP */
 /**
   * @}
   */
@@ -158,9 +156,9 @@ extern "C" {
   * @{
   */
 #if defined(FLASH_ACR_LATENCY)
-#define LL_FLASH_LATENCY_0                 0x00000000U             /*!< FLASH Zero Latency cycle */
-#define LL_FLASH_LATENCY_1                 FLASH_ACR_LATENCY_0     /*!< FLASH One Latency cycle */
-#define LL_FLASH_LATENCY_2                 FLASH_ACR_LATENCY_1     /*!< FLASH Two wait states */
+#define LL_FLASH_LATENCY_0 0x00000000U         /*!< FLASH Zero Latency cycle */
+#define LL_FLASH_LATENCY_1 FLASH_ACR_LATENCY_0 /*!< FLASH One Latency cycle */
+#define LL_FLASH_LATENCY_2 FLASH_ACR_LATENCY_1 /*!< FLASH Two wait states */
 #else
 #endif /* FLASH_ACR_LATENCY */
 /**
@@ -178,8 +176,6 @@ extern "C" {
   * @{
   */
 
-
-
 /** @defgroup SYSTEM_LL_EF_DBGMCU DBGMCU
   * @{
   */
@@ -194,9 +190,8 @@ extern "C" {
   * @rmtoll DBGMCU_IDCODE DEV_ID        LL_DBGMCU_GetDeviceID
   * @retval Values between Min_Data=0x00 and Max_Data=0xFFF
   */
-__STATIC_INLINE uint32_t LL_DBGMCU_GetDeviceID(void)
-{
-  return (uint32_t)(READ_BIT(DBGMCU->IDCODE, DBGMCU_IDCODE_DEV_ID));
+__STATIC_INLINE uint32_t LL_DBGMCU_GetDeviceID(void) {
+    return (uint32_t)(READ_BIT(DBGMCU->IDCODE, DBGMCU_IDCODE_DEV_ID));
 }
 
 /**
@@ -210,9 +205,8 @@ __STATIC_INLINE uint32_t LL_DBGMCU_GetDeviceID(void)
   * @rmtoll DBGMCU_IDCODE REV_ID        LL_DBGMCU_GetRevisionID
   * @retval Values between Min_Data=0x00 and Max_Data=0xFFFF
   */
-__STATIC_INLINE uint32_t LL_DBGMCU_GetRevisionID(void)
-{
-  return (uint32_t)(READ_BIT(DBGMCU->IDCODE, DBGMCU_IDCODE_REV_ID) >> DBGMCU_IDCODE_REV_ID_Pos);
+__STATIC_INLINE uint32_t LL_DBGMCU_GetRevisionID(void) {
+    return (uint32_t)(READ_BIT(DBGMCU->IDCODE, DBGMCU_IDCODE_REV_ID) >> DBGMCU_IDCODE_REV_ID_Pos);
 }
 
 /**
@@ -220,9 +214,8 @@ __STATIC_INLINE uint32_t LL_DBGMCU_GetRevisionID(void)
   * @rmtoll DBGMCU_CR    DBG_SLEEP     LL_DBGMCU_EnableDBGSleepMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_EnableDBGSleepMode(void)
-{
-  SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP);
+__STATIC_INLINE void LL_DBGMCU_EnableDBGSleepMode(void) {
+    SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP);
 }
 
 /**
@@ -230,9 +223,8 @@ __STATIC_INLINE void LL_DBGMCU_EnableDBGSleepMode(void)
   * @rmtoll DBGMCU_CR    DBG_SLEEP     LL_DBGMCU_DisableDBGSleepMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_DisableDBGSleepMode(void)
-{
-  CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP);
+__STATIC_INLINE void LL_DBGMCU_DisableDBGSleepMode(void) {
+    CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_SLEEP);
 }
 
 /**
@@ -240,9 +232,8 @@ __STATIC_INLINE void LL_DBGMCU_DisableDBGSleepMode(void)
   * @rmtoll DBGMCU_CR    DBG_STOP      LL_DBGMCU_EnableDBGStopMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_EnableDBGStopMode(void)
-{
-  SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STOP);
+__STATIC_INLINE void LL_DBGMCU_EnableDBGStopMode(void) {
+    SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STOP);
 }
 
 /**
@@ -250,9 +241,8 @@ __STATIC_INLINE void LL_DBGMCU_EnableDBGStopMode(void)
   * @rmtoll DBGMCU_CR    DBG_STOP      LL_DBGMCU_DisableDBGStopMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_DisableDBGStopMode(void)
-{
-  CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STOP);
+__STATIC_INLINE void LL_DBGMCU_DisableDBGStopMode(void) {
+    CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STOP);
 }
 
 /**
@@ -260,9 +250,8 @@ __STATIC_INLINE void LL_DBGMCU_DisableDBGStopMode(void)
   * @rmtoll DBGMCU_CR    DBG_STANDBY   LL_DBGMCU_EnableDBGStandbyMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_EnableDBGStandbyMode(void)
-{
-  SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STANDBY);
+__STATIC_INLINE void LL_DBGMCU_EnableDBGStandbyMode(void) {
+    SET_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STANDBY);
 }
 
 /**
@@ -270,9 +259,8 @@ __STATIC_INLINE void LL_DBGMCU_EnableDBGStandbyMode(void)
   * @rmtoll DBGMCU_CR    DBG_STANDBY   LL_DBGMCU_DisableDBGStandbyMode
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_DisableDBGStandbyMode(void)
-{
-  CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STANDBY);
+__STATIC_INLINE void LL_DBGMCU_DisableDBGStandbyMode(void) {
+    CLEAR_BIT(DBGMCU->CR, DBGMCU_CR_DBG_STANDBY);
 }
 
 /**
@@ -287,9 +275,8 @@ __STATIC_INLINE void LL_DBGMCU_DisableDBGStandbyMode(void)
   *         @arg @ref LL_DBGMCU_TRACE_SYNCH_SIZE4
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_SetTracePinAssignment(uint32_t PinAssignment)
-{
-  MODIFY_REG(DBGMCU->CR, DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE, PinAssignment);
+__STATIC_INLINE void LL_DBGMCU_SetTracePinAssignment(uint32_t PinAssignment) {
+    MODIFY_REG(DBGMCU->CR, DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE, PinAssignment);
 }
 
 /**
@@ -303,9 +290,8 @@ __STATIC_INLINE void LL_DBGMCU_SetTracePinAssignment(uint32_t PinAssignment)
   *         @arg @ref LL_DBGMCU_TRACE_SYNCH_SIZE2
   *         @arg @ref LL_DBGMCU_TRACE_SYNCH_SIZE4
   */
-__STATIC_INLINE uint32_t LL_DBGMCU_GetTracePinAssignment(void)
-{
-  return (uint32_t)(READ_BIT(DBGMCU->CR, DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE));
+__STATIC_INLINE uint32_t LL_DBGMCU_GetTracePinAssignment(void) {
+    return (uint32_t)(READ_BIT(DBGMCU->CR, DBGMCU_CR_TRACE_IOEN | DBGMCU_CR_TRACE_MODE));
 }
 
 /**
@@ -346,9 +332,8 @@ __STATIC_INLINE uint32_t LL_DBGMCU_GetTracePinAssignment(void)
   *         (*) value not defined in all devices.
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_APB1_GRP1_FreezePeriph(uint32_t Periphs)
-{
-  SET_BIT(DBGMCU->CR, Periphs);
+__STATIC_INLINE void LL_DBGMCU_APB1_GRP1_FreezePeriph(uint32_t Periphs) {
+    SET_BIT(DBGMCU->CR, Periphs);
 }
 
 /**
@@ -390,9 +375,8 @@ __STATIC_INLINE void LL_DBGMCU_APB1_GRP1_FreezePeriph(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_APB1_GRP1_UnFreezePeriph(uint32_t Periphs)
-{
-  CLEAR_BIT(DBGMCU->CR, Periphs);
+__STATIC_INLINE void LL_DBGMCU_APB1_GRP1_UnFreezePeriph(uint32_t Periphs) {
+    CLEAR_BIT(DBGMCU->CR, Periphs);
 }
 
 /**
@@ -418,9 +402,8 @@ __STATIC_INLINE void LL_DBGMCU_APB1_GRP1_UnFreezePeriph(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_APB2_GRP1_FreezePeriph(uint32_t Periphs)
-{
-  SET_BIT(DBGMCU->CR, Periphs);
+__STATIC_INLINE void LL_DBGMCU_APB2_GRP1_FreezePeriph(uint32_t Periphs) {
+    SET_BIT(DBGMCU->CR, Periphs);
 }
 
 /**
@@ -446,9 +429,8 @@ __STATIC_INLINE void LL_DBGMCU_APB2_GRP1_FreezePeriph(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
   */
-__STATIC_INLINE void LL_DBGMCU_APB2_GRP1_UnFreezePeriph(uint32_t Periphs)
-{
-  CLEAR_BIT(DBGMCU->CR, Periphs);
+__STATIC_INLINE void LL_DBGMCU_APB2_GRP1_UnFreezePeriph(uint32_t Periphs) {
+    CLEAR_BIT(DBGMCU->CR, Periphs);
 }
 /**
   * @}
@@ -468,9 +450,8 @@ __STATIC_INLINE void LL_DBGMCU_APB2_GRP1_UnFreezePeriph(uint32_t Periphs)
   *         @arg @ref LL_FLASH_LATENCY_2
   * @retval None
   */
-__STATIC_INLINE void LL_FLASH_SetLatency(uint32_t Latency)
-{
-  MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, Latency);
+__STATIC_INLINE void LL_FLASH_SetLatency(uint32_t Latency) {
+    MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, Latency);
 }
 
 /**
@@ -481,9 +462,8 @@ __STATIC_INLINE void LL_FLASH_SetLatency(uint32_t Latency)
   *         @arg @ref LL_FLASH_LATENCY_1
   *         @arg @ref LL_FLASH_LATENCY_2
   */
-__STATIC_INLINE uint32_t LL_FLASH_GetLatency(void)
-{
-  return (uint32_t)(READ_BIT(FLASH->ACR, FLASH_ACR_LATENCY));
+__STATIC_INLINE uint32_t LL_FLASH_GetLatency(void) {
+    return (uint32_t)(READ_BIT(FLASH->ACR, FLASH_ACR_LATENCY));
 }
 
 /**
@@ -491,9 +471,8 @@ __STATIC_INLINE uint32_t LL_FLASH_GetLatency(void)
   * @rmtoll FLASH_ACR    PRFTBE        LL_FLASH_EnablePrefetch
   * @retval None
   */
-__STATIC_INLINE void LL_FLASH_EnablePrefetch(void)
-{
-  SET_BIT(FLASH->ACR, FLASH_ACR_PRFTBE);
+__STATIC_INLINE void LL_FLASH_EnablePrefetch(void) {
+    SET_BIT(FLASH->ACR, FLASH_ACR_PRFTBE);
 }
 
 /**
@@ -501,9 +480,8 @@ __STATIC_INLINE void LL_FLASH_EnablePrefetch(void)
   * @rmtoll FLASH_ACR    PRFTBE        LL_FLASH_DisablePrefetch
   * @retval None
   */
-__STATIC_INLINE void LL_FLASH_DisablePrefetch(void)
-{
-  CLEAR_BIT(FLASH->ACR, FLASH_ACR_PRFTBE);
+__STATIC_INLINE void LL_FLASH_DisablePrefetch(void) {
+    CLEAR_BIT(FLASH->ACR, FLASH_ACR_PRFTBE);
 }
 
 /**
@@ -511,9 +489,8 @@ __STATIC_INLINE void LL_FLASH_DisablePrefetch(void)
   * @rmtoll FLASH_ACR    PRFTBS        LL_FLASH_IsPrefetchEnabled
   * @retval State of bit (1 or 0).
   */
-__STATIC_INLINE uint32_t LL_FLASH_IsPrefetchEnabled(void)
-{
-  return (READ_BIT(FLASH->ACR, FLASH_ACR_PRFTBS) == (FLASH_ACR_PRFTBS));
+__STATIC_INLINE uint32_t LL_FLASH_IsPrefetchEnabled(void) {
+    return (READ_BIT(FLASH->ACR, FLASH_ACR_PRFTBS) == (FLASH_ACR_PRFTBS));
 }
 
 #endif /* FLASH_ACR_LATENCY */
@@ -522,9 +499,8 @@ __STATIC_INLINE uint32_t LL_FLASH_IsPrefetchEnabled(void)
   * @rmtoll FLASH_ACR    HLFCYA        LL_FLASH_EnableHalfCycleAccess
   * @retval None
   */
-__STATIC_INLINE void LL_FLASH_EnableHalfCycleAccess(void)
-{
-  SET_BIT(FLASH->ACR, FLASH_ACR_HLFCYA);
+__STATIC_INLINE void LL_FLASH_EnableHalfCycleAccess(void) {
+    SET_BIT(FLASH->ACR, FLASH_ACR_HLFCYA);
 }
 
 /**
@@ -532,9 +508,8 @@ __STATIC_INLINE void LL_FLASH_EnableHalfCycleAccess(void)
   * @rmtoll FLASH_ACR    HLFCYA        LL_FLASH_DisableHalfCycleAccess
   * @retval None
   */
-__STATIC_INLINE void LL_FLASH_DisableHalfCycleAccess(void)
-{
-  CLEAR_BIT(FLASH->ACR, FLASH_ACR_HLFCYA);
+__STATIC_INLINE void LL_FLASH_DisableHalfCycleAccess(void) {
+    CLEAR_BIT(FLASH->ACR, FLASH_ACR_HLFCYA);
 }
 
 /**
@@ -542,11 +517,9 @@ __STATIC_INLINE void LL_FLASH_DisableHalfCycleAccess(void)
   * @rmtoll FLASH_ACR    HLFCYA        LL_FLASH_IsHalfCycleAccessEnabled
   * @retval State of bit (1 or 0).
   */
-__STATIC_INLINE uint32_t LL_FLASH_IsHalfCycleAccessEnabled(void)
-{
-  return (READ_BIT(FLASH->ACR, FLASH_ACR_HLFCYA) == (FLASH_ACR_HLFCYA));
+__STATIC_INLINE uint32_t LL_FLASH_IsHalfCycleAccessEnabled(void) {
+    return (READ_BIT(FLASH->ACR, FLASH_ACR_HLFCYA) == (FLASH_ACR_HLFCYA));
 }
-
 
 /**
   * @}
@@ -571,5 +544,3 @@ __STATIC_INLINE uint32_t LL_FLASH_IsHalfCycleAccessEnabled(void)
 #endif
 
 #endif /* __STM32F1xx_LL_SYSTEM_H */
-
-

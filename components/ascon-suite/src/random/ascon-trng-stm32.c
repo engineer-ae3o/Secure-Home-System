@@ -27,13 +27,12 @@
 
 extern RNG_HandleTypeDef ASCON_TRNG_STM32;
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     uint32_t x;
-    int ok = 1;
+    int      ok = 1;
     while (outlen >= sizeof(x)) {
         if (HAL_RNG_GenerateRandomNumber(&ASCON_TRNG_STM32, &x) != HAL_OK) {
-            x = 0xABADBEEF; /* This is a problem! */
+            x  = 0xABADBEEF; /* This is a problem! */
             ok = 0;
         }
         memcpy(out, &x, sizeof(x));
@@ -42,7 +41,7 @@ int ascon_trng_generate(unsigned char *out, size_t outlen)
     }
     if (outlen > 0) {
         if (HAL_RNG_GenerateRandomNumber(&ASCON_TRNG_STM32, &x) != HAL_OK) {
-            x = 0xABADBEEF; /* This is a problem! */
+            x  = 0xABADBEEF; /* This is a problem! */
             ok = 0;
         }
         memcpy(out, &x, outlen);
@@ -50,36 +49,32 @@ int ascon_trng_generate(unsigned char *out, size_t outlen)
     return ok;
 }
 
-int ascon_trng_init(ascon_trng_state_t *state)
-{
+int ascon_trng_init(ascon_trng_state_t* state) {
     /* Test that the TRNG works by generating a single word */
     uint32_t x;
     return HAL_RNG_GenerateRandomNumber(&ASCON_TRNG_STM32, &x) == HAL_OK;
 }
 
-void ascon_trng_free(ascon_trng_state_t *state)
-{
+void ascon_trng_free(ascon_trng_state_t* state) {
     (void)state;
 }
 
-uint32_t ascon_trng_generate_32(ascon_trng_state_t *state)
-{
+uint32_t ascon_trng_generate_32(ascon_trng_state_t* state) {
     uint32_t x;
     (void)state;
-    if (HAL_RNG_GenerateRandomNumber(&ASCON_TRNG_STM32, &x) == HAL_OK)
+    if (HAL_RNG_GenerateRandomNumber(&ASCON_TRNG_STM32, &x) == HAL_OK) {
         return x;
-    else
+    } else {
         return 0xABADBEEFU; /* This is a problem! */
+    }
 }
 
-uint64_t ascon_trng_generate_64(ascon_trng_state_t *state)
-{
+uint64_t ascon_trng_generate_64(ascon_trng_state_t* state) {
     return ((uint64_t)ascon_trng_generate_32(state)) |
-          (((uint64_t)ascon_trng_generate_32(state)) << 32);
+           (((uint64_t)ascon_trng_generate_32(state)) << 32);
 }
 
-int ascon_trng_reseed(ascon_trng_state_t *state)
-{
+int ascon_trng_reseed(ascon_trng_state_t* state) {
     return ascon_trng_init(state);
 }
 

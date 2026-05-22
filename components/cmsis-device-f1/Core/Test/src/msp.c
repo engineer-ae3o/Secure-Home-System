@@ -30,7 +30,7 @@ void set_msp_ns() {
     // CHECK-LABEL: <set_msp_ns>:
 #if __ARM_FEATURE_CMSE == 3
     // CHECK-S: msr msp_ns, {{r[0-9]+}}
-     __TZ_set_MSP_NS(0x0815u);
+    __TZ_set_MSP_NS(0x0815u);
 #endif
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }

@@ -24,8 +24,7 @@
 
 #include "version.h"
 
-int ascon_suite_version(void)
-{
+int ascon_suite_version(void) {
     return ASCON_SUITE_VERSION;
 }
 

@@ -31,10 +31,9 @@
  *----------------------------------------------------------------------------*/
 /* ToDo: add here your necessary defines for device initialization
          following is an example for different system frequencies */
-#define XTAL            (12000000U)       /* Oscillator frequency             */
+#define XTAL (12000000U) /* Oscillator frequency             */
 
-#define SYSTEM_CLOCK    (5 * XTAL)
-
+#define SYSTEM_CLOCK (5 * XTAL)
 
 /*----------------------------------------------------------------------------
   System Core Clock Variable
@@ -42,70 +41,66 @@
 /* ToDo: initialize SystemCoreClock with the system core clock frequency value
          achieved after system intitialization.
          This means system core clock frequency after call to SystemInit() */
-uint32_t SystemCoreClock = SYSTEM_CLOCK;  /* System Clock Frequency (Core Clock)*/
-
-
+uint32_t SystemCoreClock = SYSTEM_CLOCK; /* System Clock Frequency (Core Clock)*/
 
 /*----------------------------------------------------------------------------
   Clock functions
  *----------------------------------------------------------------------------*/
 
-void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
+void SystemCoreClockUpdate(void) /* Get Core Clock Frequency      */
 {
-/* ToDo: add code to calculate the system frequency based upon the current
+    /* ToDo: add code to calculate the system frequency based upon the current
          register settings.
          This function can be used to retrieve the system core clock frequeny
          after user changed register sittings. */
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 }
-
 
 /*----------------------------------------------------------------------------
   System Initialization
  *----------------------------------------------------------------------------*/
-void SystemInit (void)
-{
-/* ToDo: add code to initialize the system
+void SystemInit(void) {
+    /* ToDo: add code to initialize the system
    Do not use global variables because this function is called before
    reaching pre-main. RW section may be overwritten afterwards.          */
-  SystemCoreClock = SYSTEM_CLOCK;
+    SystemCoreClock = SYSTEM_CLOCK;
 
-  // Invalidate entire Unified TLB
-  __set_TLBIALL(0);
+    // Invalidate entire Unified TLB
+    __set_TLBIALL(0);
 
-  // Invalidate entire branch predictor array
-  __set_BPIALL(0);
-  __DSB();
-  __ISB();
+    // Invalidate entire branch predictor array
+    __set_BPIALL(0);
+    __DSB();
+    __ISB();
 
-  //  Invalidate instruction cache and flush branch target cache
-  __set_ICIALLU(0);
-  __DSB();
-  __ISB();
+    //  Invalidate instruction cache and flush branch target cache
+    __set_ICIALLU(0);
+    __DSB();
+    __ISB();
 
-  //  Invalidate data cache
-  L1C_InvalidateDCacheAll();
-  
-  // Create Translation Table
-  MMU_CreateTranslationTable();
+    //  Invalidate data cache
+    L1C_InvalidateDCacheAll();
 
-  // Enable MMU
-  MMU_Enable();
+    // Create Translation Table
+    MMU_CreateTranslationTable();
 
-  // Enable Caches
-  L1C_EnableCaches();
-  L1C_EnableBTAC();
+    // Enable MMU
+    MMU_Enable();
 
-#if (__L2C_PRESENT == 1) 
-  // Enable GIC
-  L2C_Enable();
+    // Enable Caches
+    L1C_EnableCaches();
+    L1C_EnableBTAC();
+
+#if (__L2C_PRESENT == 1)
+    // Enable GIC
+    L2C_Enable();
 #endif
 
 #if ((__FPU_PRESENT == 1) && (__FPU_USED == 1))
-  // Enable FPU
-  __FPU_Enable();
+    // Enable FPU
+    __FPU_Enable();
 #endif
 
-  // IRQ Initialize
-  IRQ_Initialize();
+    // IRQ Initialize
+    IRQ_Initialize();
 }

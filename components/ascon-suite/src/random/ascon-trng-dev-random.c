@@ -56,16 +56,14 @@
 #endif
 
 #if !defined(ascon_getrandom)
-static int ascon_dev_random_open(void)
-{
+static int ascon_dev_random_open(void) {
     return open(RANDOM_DEVICE, O_RDONLY);
 }
 #else
 #define ascon_dev_random_open() -1
 #endif
 
-static int ascon_dev_random_read(int fd, unsigned char *out, size_t outlen)
-{
+static int ascon_dev_random_read(int fd, unsigned char* out, size_t outlen) {
 #if defined(ascon_getrandom)
     /* Keep looping until we get some data or a permanent error. */
     (void)fd;
@@ -92,8 +90,9 @@ static int ascon_dev_random_read(int fd, unsigned char *out, size_t outlen)
             if (ret == (int)outlen) {
                 return 1;
             } else if (ret < 0) {
-                if (errno != EINTR && errno != EAGAIN)
+                if (errno != EINTR && errno != EAGAIN) {
                     break;
+                }
             }
         }
     }
@@ -103,15 +102,15 @@ static int ascon_dev_random_read(int fd, unsigned char *out, size_t outlen)
 #endif
 }
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
 #if defined(ascon_getrandom)
     return ascon_dev_random_read(-1, out, outlen);
 #else
     int fd = ascon_dev_random_open();
     int ok = ascon_dev_random_read(fd, out, outlen);
-    if (fd >= 0)
+    if (fd >= 0) {
         close(fd);
+    }
     return ok;
 #endif
 }

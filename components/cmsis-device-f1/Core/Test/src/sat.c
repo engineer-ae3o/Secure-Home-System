@@ -23,4 +23,3 @@ void usat() {
     volatile uint32_t d = __USAT(u32, 5u);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

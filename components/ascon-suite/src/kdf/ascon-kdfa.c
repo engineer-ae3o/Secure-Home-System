@@ -27,31 +27,21 @@
 #include "hash/ascon-xof-internal.h"
 #include <string.h>
 
-void ascon_kdfa
-    (unsigned char *out, size_t outlen,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen)
-{
+void ascon_kdfa(unsigned char* out, size_t outlen, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen) {
     ascon_kdfa_state_t state;
     ascon_kdfa_init(&state, key, keylen, custom, customlen, outlen);
     ascon_xofa_squeeze(&(state.state), out, outlen);
     ascon_xofa_free(&(state.state));
 }
 
-void ascon_kdfa_init
-    (ascon_kdfa_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen)
-{
+void ascon_kdfa_init(ascon_kdfa_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     ascon_xofa_init_custom(&(state->state), "KDF", custom, customlen, outlen);
     ascon_xofa_absorb(&(state->state), key, keylen);
 }
 
-void ascon_kdfa_reinit
-    (ascon_kdfa_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen)
-{
+void ascon_kdfa_reinit(ascon_kdfa_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
 #if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-        defined(ASCON_BACKEND_DIRECT_XOR)
+    defined(ASCON_BACKEND_DIRECT_XOR)
     ascon_kdfa_init(state, key, keylen, custom, customlen, outlen);
 #else
     ascon_kdfa_free(state);
@@ -59,14 +49,12 @@ void ascon_kdfa_reinit
 #endif
 }
 
-void ascon_kdfa_free(ascon_kdfa_state_t *state)
-{
-    if (state)
+void ascon_kdfa_free(ascon_kdfa_state_t* state) {
+    if (state) {
         ascon_xofa_free(&(state->state));
+    }
 }
 
-void ascon_kdfa_squeeze
-    (ascon_kdfa_state_t *state, unsigned char *out, size_t outlen)
-{
+void ascon_kdfa_squeeze(ascon_kdfa_state_t* state, unsigned char* out, size_t outlen) {
     ascon_xofa_squeeze(&(state->state), out, outlen);
 }

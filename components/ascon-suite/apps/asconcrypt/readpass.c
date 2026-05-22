@@ -30,18 +30,19 @@
 #endif
 #include <string.h>
 
-int read_password(const char *prompt, char *password, size_t len)
-{
+int read_password(const char* prompt, char* password, size_t len) {
 #if defined(HAVE_GETPASS)
-    char *pwd = getpass(prompt);
+    char*  pwd = getpass(prompt);
     size_t plen, plen2;
-    if (!pwd)
+    if (!pwd) {
         return 0;
+    }
     plen = strlen(pwd);
-    if (plen >= len)
+    if (plen >= len) {
         plen2 = len - 1;
-    else
+    } else {
         plen2 = plen;
+    }
     memcpy(password, pwd, plen2);
     password[plen2] = '\0';
     ascon_clean(pwd, plen);

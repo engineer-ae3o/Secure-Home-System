@@ -1,19 +1,16 @@
 ---
-BasedOnStyle: LLVM
 Language: Cpp
-Standard: gnu++23
+BasedOnStyle: LLVM
+Standard: Latest
 
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
-NamespaceIndentation: None
 IndentCaseLabels: true
 
 AccessModifierOffset: 0
 
 ColumnLimit: 0
-
-BreakBeforeBraces: Attach
 InsertBraces: true
 
 PointerAlignment: Left
@@ -24,6 +21,13 @@ SpaceInEmptyParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceAfterTemplateKeyword: false
+
+NamespaceIndentation: All
+BreakBeforeBraces: Custom
+
+BraceWrapping:
+    AfterStruct: false
+    AfterClass: false
 
 AlignConsecutiveAssignments:
     Enabled: true

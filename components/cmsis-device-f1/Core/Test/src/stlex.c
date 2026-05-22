@@ -3,7 +3,7 @@
 
 #include "cmsis_compiler.h"
 
-static volatile uint8_t v8;
+static volatile uint8_t  v8;
 static volatile uint16_t v16;
 static volatile uint32_t v32;
 

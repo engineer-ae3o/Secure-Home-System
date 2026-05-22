@@ -62,7 +62,7 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_xof_state_t xof;  /**< Internal ASCON-XOF state */
+    ascon_xof_state_t xof; /**< Internal ASCON-XOF state */
 
 } ascon_kmac_state_t;
 
@@ -90,11 +90,7 @@ typedef struct
  * The customization string allows the application to perform domain
  * separation between different uses of the KMAC algorithm.
  */
-void ascon_kmac
-    (const unsigned char *key, size_t keylen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *custom, size_t customlen,
-     unsigned char *out, size_t outlen);
+void ascon_kmac(const unsigned char* key, size_t keylen, const unsigned char* in, size_t inlen, const unsigned char* custom, size_t customlen, unsigned char* out, size_t outlen);
 
 /**
  * \brief Initializes an incremental KMAC state using ASCON-XOF.
@@ -108,9 +104,7 @@ void ascon_kmac
  *
  * \sa ascon_kmac_update(), ascon_kmac_squeeze()
  */
-void ascon_kmac_init
-    (ascon_kmac_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_kmac_init(ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Re-initializes an incremental KMAC state using ASCON-XOF.
@@ -127,16 +121,14 @@ void ascon_kmac_init
  *
  * \sa ascon_kmac_init()
  */
-void ascon_kmac_reinit
-    (ascon_kmac_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_kmac_reinit(ascon_kmac_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Frees the ASCON-KMAC state and destroys any sensitive material.
  *
  * \param state KMAC state to be freed.
  */
-void ascon_kmac_free(ascon_kmac_state_t *state);
+void ascon_kmac_free(ascon_kmac_state_t* state);
 
 /**
  * \brief Absorbs more input data into an incremental ASCON-KMAC state.
@@ -147,8 +139,7 @@ void ascon_kmac_free(ascon_kmac_state_t *state);
  *
  * \sa ascon_kmac_init(), ascon_kmac_squeeze()
  */
-void ascon_kmac_absorb
-    (ascon_kmac_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_kmac_absorb(ascon_kmac_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Squeezes output data from an incremental ASCON-KMAC state.
@@ -159,8 +150,7 @@ void ascon_kmac_absorb
  *
  * \sa ascon_kmac_init(), ascon_kmac_absorb()
  */
-void ascon_kmac_squeeze
-    (ascon_kmac_state_t *state, unsigned char *out, size_t outlen);
+void ascon_kmac_squeeze(ascon_kmac_state_t* state, unsigned char* out, size_t outlen);
 
 /**
  * \brief Computes a KMAC value using ASCON-XOFA.
@@ -177,11 +167,7 @@ void ascon_kmac_squeeze
  * The customization string allows the application to perform domain
  * separation between different uses of the KMAC algorithm.
  */
-void ascon_kmaca
-    (const unsigned char *key, size_t keylen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *custom, size_t customlen,
-     unsigned char *out, size_t outlen);
+void ascon_kmaca(const unsigned char* key, size_t keylen, const unsigned char* in, size_t inlen, const unsigned char* custom, size_t customlen, unsigned char* out, size_t outlen);
 
 /**
  * \brief Initializes an incremental KMAC state using ASCON-XOFA.
@@ -195,9 +181,7 @@ void ascon_kmaca
  *
  * \sa ascon_kmaca_update(), ascon_kmaca_squeeze()
  */
-void ascon_kmaca_init
-    (ascon_kmaca_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_kmaca_init(ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Re-initializes an incremental KMAC state using ASCON-XOFA.
@@ -214,16 +198,14 @@ void ascon_kmaca_init
  *
  * \sa ascon_kmaca_init()
  */
-void ascon_kmaca_reinit
-    (ascon_kmaca_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_kmaca_reinit(ascon_kmaca_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Frees the ASCON-KMACA state and destroys any sensitive material.
  *
  * \param state KMAC state to be freed.
  */
-void ascon_kmaca_free(ascon_kmaca_state_t *state);
+void ascon_kmaca_free(ascon_kmaca_state_t* state);
 
 /**
  * \brief Absorbs more input data into an incremental ASCON-KMACA state.
@@ -234,8 +216,7 @@ void ascon_kmaca_free(ascon_kmaca_state_t *state);
  *
  * \sa ascon_kmaca_init(), ascon_kmaca_squeeze()
  */
-void ascon_kmaca_absorb
-    (ascon_kmaca_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_kmaca_absorb(ascon_kmaca_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Squeezes output data from an incremental ASCON-KMACA state.
@@ -246,8 +227,7 @@ void ascon_kmaca_absorb
  *
  * \sa ascon_kmaca_init(), ascon_kmaca_absorb()
  */
-void ascon_kmaca_squeeze
-    (ascon_kmaca_state_t *state, unsigned char *out, size_t outlen);
+void ascon_kmaca_squeeze(ascon_kmaca_state_t* state, unsigned char* out, size_t outlen);
 
 #ifdef __cplusplus
 }

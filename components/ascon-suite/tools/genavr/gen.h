@@ -28,25 +28,25 @@
 // Information about a test vector for a block cipher.
 typedef struct
 {
-    const char *name;
+    const char*   name;
     unsigned char key[48];
-    unsigned key_len;
+    unsigned      key_len;
     unsigned char plaintext[16];
     unsigned char ciphertext[16];
 
 } block_cipher_test_vector_t;
 
 // ASCON permutation.
-void gen_ascon_permutation(Code &code);
-void gen_ascon_cleanup(Code &code);
-bool test_ascon_permutation(Code &code);
+void gen_ascon_permutation(Code& code);
+void gen_ascon_cleanup(Code& code);
+bool test_ascon_permutation(Code& code);
 
 // 2-share version of the ASCON permutation.
-void gen_ascon_x2_permutation(Code &code, int max_shares);
-bool test_ascon_x2_permutation(Code &code, int max_shares);
+void gen_ascon_x2_permutation(Code& code, int max_shares);
+bool test_ascon_x2_permutation(Code& code, int max_shares);
 
 // 3-share version of the ASCON permutation.
-void gen_ascon_x3_permutation(Code &code);
-bool test_ascon_x3_permutation(Code &code);
+void gen_ascon_x3_permutation(Code& code);
+bool test_ascon_x3_permutation(Code& code);
 
 #endif

@@ -46,29 +46,28 @@
 /* List of all registers that we can work with */
 typedef struct
 {
-    reg_t *x0_e;
-    reg_t *x1_e;
-    reg_t *x2_e;
-    reg_t *x3_e;
-    reg_t *x4_e;
-    reg_t *x0_o;
-    reg_t *x1_o;
-    reg_t *x2_o;
-    reg_t *x3_o;
-    reg_t *x4_o;
-    reg_t *x0;
-    reg_t *x1;
-    reg_t *x2;
-    reg_t *x3;
-    reg_t *x4;
-    reg_t *t0;
-    reg_t *t1;
+    reg_t* x0_e;
+    reg_t* x1_e;
+    reg_t* x2_e;
+    reg_t* x3_e;
+    reg_t* x4_e;
+    reg_t* x0_o;
+    reg_t* x1_o;
+    reg_t* x2_o;
+    reg_t* x3_o;
+    reg_t* x4_o;
+    reg_t* x0;
+    reg_t* x1;
+    reg_t* x2;
+    reg_t* x3;
+    reg_t* x4;
+    reg_t* t0;
+    reg_t* t1;
 
 } reg_names;
 
 /* Applies the S-box to five 32-bit words of the state */
-static void gen_sbox(reg_names *regs)
-{
+static void gen_sbox(reg_names* regs) {
     /* x0 ^= x4;   x4 ^= x3;   x2 ^= x1; */
     binop(IN_XOR, regs->x0, regs->x4);
     binop(IN_XOR, regs->x4, regs->x3);
@@ -123,14 +122,11 @@ static void gen_sbox(reg_names *regs)
 }
 
 /* Generate the code for a single sliced ASCON round */
-static void gen_round_sliced(reg_names *regs, int round)
-{
+static void gen_round_sliced(reg_names* regs, int round) {
     /* Round constants for all rounds */
     static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12,
-        6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3
-    };
-    reg_t *t2;
+        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    reg_t* t2;
 
     /* Set up to operate on the even words which are currently in registers */
     regs->x0 = regs->x0_e;
@@ -296,8 +292,7 @@ static void gen_round_sliced(reg_names *regs, int round)
 }
 
 /* Generate the body of the 32-bit sliced ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * The "state" and "first_round" arguments are on the stack on entry.
      *
@@ -305,13 +300,12 @@ static void gen_permute(void)
      *
      * ebx, esi, edi, and ebp must be callee-saved.
      */
-    reg_names regs;
-    const char *state;
-    const char *first_round;
-    int round;
-    char *reg_list[] = {
-        REG_EBX, REG_ECX, REG_EDX, REG_ESI, REG_EDI, REG_EAX, REG_EBP, NULL
-    };
+    reg_names   regs;
+    const char* state;
+    const char* first_round;
+    int         round;
+    char*       reg_list[] = {
+        REG_EBX, REG_ECX, REG_EDX, REG_ESI, REG_EDI, REG_EAX, REG_EBP, NULL};
 
     /* Set up the stack frame, and load the arguments into eax and ebp */
 #if X86_64_PLATFORM
@@ -326,7 +320,7 @@ static void gen_permute(void)
     move_direct(REG_RAX, REG_RDI);
     move_direct(REG_RBP, REG_RSI);
     move_direct(REG_R8, REG_RDI); /* Save in r8 for the later store */
-    state = REG_RAX;
+    state       = REG_RAX;
     first_round = REG_EBP;
     flush_pipeline();
 #else
@@ -342,7 +336,7 @@ static void gen_permute(void)
 #endif
     load_machine(REG_EAX, REG_ESP, 48 + 16 + 4);
     load_machine(REG_EBP, REG_ESP, 48 + 16 + 8);
-    state = REG_EAX;
+    state       = REG_EAX;
     first_round = REG_EBP;
     flush_pipeline();
 #endif
@@ -401,8 +395,9 @@ static void gen_permute(void)
     printf(INSNL(cmp) "%s, 4\n", first_round);
     printf("\tje\t.L4\n");
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf(INSNL(cmp) "%s, %d\n", first_round, round);
         printf("\tje\t.L%d\n", round);
     }
@@ -415,8 +410,9 @@ static void gen_permute(void)
     printf(INSNL(cmp) "$4, %s\n", first_round);
     printf("\tje\t.L4\n");
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf(INSNL(cmp) "$%d, %s\n", round, first_round);
         printf("\tje\t.L%d\n", round);
     }
@@ -463,12 +459,13 @@ static void gen_permute(void)
     clear_reg(REG_ECX);
     clear_reg(REG_EDX);
     for (round = 0; round < 48; round += 4) {
-        if ((round % 12) == 0)
+        if ((round % 12) == 0) {
             store_machine(REG_EAX, REG_ESP, round);
-        else if ((round % 12) == 4)
+        } else if ((round % 12) == 4) {
             store_machine(REG_ECX, REG_ESP, round);
-        else
+        } else {
             store_machine(REG_EDX, REG_ESP, round);
+        }
     }
 
     /* Pop the stack frame */
@@ -497,8 +494,7 @@ static void gen_permute(void)
 #endif
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

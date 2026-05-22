@@ -11,4 +11,3 @@ void clz() {
     volatile uint32_t c = __CLZ(a);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

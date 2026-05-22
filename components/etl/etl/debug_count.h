@@ -42,139 +42,122 @@ SOFTWARE.
 
 #if defined(ETL_DEBUG_COUNT)
 
-  #define ETL_DECLARE_DEBUG_COUNT              etl::debug_count etl_debug_count
-  #define ETL_SET_DEBUG_COUNT(n)               etl_debug_count.set(n)
-  #define ETL_GET_DEBUG_COUNT                  etl_debug_count.get()
-  #define ETL_INCREMENT_DEBUG_COUNT            ++etl_debug_count
-  #define ETL_DECREMENT_DEBUG_COUNT            --etl_debug_count
-  #define ETL_ADD_DEBUG_COUNT(n)               etl_debug_count += (n)
-  #define ETL_SUBTRACT_DEBUG_COUNT(n)          etl_debug_count -= (n)
-  #define ETL_RESET_DEBUG_COUNT                etl_debug_count.clear()
-  #define ETL_OBJECT_RESET_DEBUG_COUNT(object) object.etl_debug_count.clear()
-  #define ETL_OBJECT_GET_DEBUG_COUNT(object)   object.etl_debug_count.get()
+#define ETL_DECLARE_DEBUG_COUNT etl::debug_count etl_debug_count
+#define ETL_SET_DEBUG_COUNT(n) etl_debug_count.set(n)
+#define ETL_GET_DEBUG_COUNT etl_debug_count.get()
+#define ETL_INCREMENT_DEBUG_COUNT ++etl_debug_count
+#define ETL_DECREMENT_DEBUG_COUNT --etl_debug_count
+#define ETL_ADD_DEBUG_COUNT(n) etl_debug_count += (n)
+#define ETL_SUBTRACT_DEBUG_COUNT(n) etl_debug_count -= (n)
+#define ETL_RESET_DEBUG_COUNT etl_debug_count.clear()
+#define ETL_OBJECT_RESET_DEBUG_COUNT(object) object.etl_debug_count.clear()
+#define ETL_OBJECT_GET_DEBUG_COUNT(object) object.etl_debug_count.get()
 
-namespace etl
-{
-  //***************************************************************************
-  /// Used to count instances.
-  /// Asserts if the count is decremented below zero.
-  /// Asserts if the count is not zero when destructed.
-  /// Does nothing in a non-debug build.
-  ///\ingroup reference
-  //***************************************************************************
-  class debug_count
-  {
-  public:
+namespace etl {
+//***************************************************************************
+/// Used to count instances.
+/// Asserts if the count is decremented below zero.
+/// Asserts if the count is not zero when destructed.
+/// Does nothing in a non-debug build.
+///\ingroup reference
+//***************************************************************************
+class debug_count {
+    public:
     debug_count()
-      : count(0)
-    {
+        : count(0) {
     }
 
-    ~debug_count()
-    {
-      assert(count == 0);
+    ~debug_count() {
+        assert(count == 0);
     }
 
-    debug_count& operator++()
-    {
-      ++count;
-      return *this;
+    debug_count& operator++() {
+        ++count;
+        return *this;
     }
 
-    debug_count& operator--()
-    {
-      --count;
-      assert(count >= 0);
-      return *this;
+    debug_count& operator--() {
+        --count;
+        assert(count >= 0);
+        return *this;
     }
 
-    template <typename T>
-    debug_count& operator+=(T n)
-    {
-      count += int32_t(n);
-      return *this;
+    template<typename T>
+    debug_count& operator+=(T n) {
+        count += int32_t(n);
+        return *this;
     }
 
-    template <typename T>
-    debug_count& operator-=(T n)
-    {
-      count -= int32_t(n);
-      return *this;
+    template<typename T>
+    debug_count& operator-=(T n) {
+        count -= int32_t(n);
+        return *this;
     }
 
-    debug_count& operator=(const debug_count& other)
-    {
-      count.store(other.count.load());
+    debug_count& operator=(const debug_count& other) {
+        count.store(other.count.load());
 
-      return *this;
+        return *this;
     }
 
-  #if ETL_HAS_ATOMIC
-    void swap(debug_count& other) ETL_NOEXCEPT  // NOT ATOMIC
+#if ETL_HAS_ATOMIC
+    void swap(debug_count& other) ETL_NOEXCEPT // NOT ATOMIC
     {
-      int32_t temp = other.count.load();
-      other.count.store(count.load());
-      count.store(temp);
+        int32_t temp = other.count.load();
+        other.count.store(count.load());
+        count.store(temp);
     }
-  #else
-    void swap(debug_count& other) ETL_NOEXCEPT
-    {
-      swap(count, other.count);
+#else
+    void swap(debug_count& other) ETL_NOEXCEPT {
+        swap(count, other.count);
     }
-  #endif
+#endif
 
-    operator int32_t() const
-    {
-      return count;
+    operator int32_t() const {
+        return count;
     }
 
-    int32_t get() const
-    {
-      return int32_t(count);
+    int32_t get() const {
+        return int32_t(count);
     }
 
-    void set(int32_t n)
-    {
-      count = n;
+    void set(int32_t n) {
+        count = n;
     }
 
-    void clear()
-    {
-      count = 0;
+    void clear() {
+        count = 0;
     }
 
-  private:
-  #if ETL_HAS_ATOMIC
+    private:
+#if ETL_HAS_ATOMIC
     etl::atomic_int32_t count;
-  #else
+#else
     int32_t count;
-  #endif
-  };
-}  // namespace etl
+#endif
+};
+} // namespace etl
 
-inline void swap(etl::debug_count& lhs, etl::debug_count& rhs)
-{
-  lhs.swap(rhs);
+inline void swap(etl::debug_count& lhs, etl::debug_count& rhs) {
+    lhs.swap(rhs);
 }
 
 #else
-  #define ETL_DECLARE_DEBUG_COUNT              etl::debug_count etl_debug_count
-  #define ETL_SET_DEBUG_COUNT(n)               ETL_DO_NOTHING
-  #define ETL_GET_DEBUG_COUNT                  ETL_DO_NOTHING
-  #define ETL_INCREMENT_DEBUG_COUNT            ETL_DO_NOTHING
-  #define ETL_DECREMENT_DEBUG_COUNT            ETL_DO_NOTHING
-  #define ETL_ADD_DEBUG_COUNT(n)               ETL_DO_NOTHING
-  #define ETL_SUBTRACT_DEBUG_COUNT(n)          ETL_DO_NOTHING
-  #define ETL_RESET_DEBUG_COUNT                ETL_DO_NOTHING
-  #define ETL_OBJECT_RESET_DEBUG_COUNT(object) ETL_DO_NOTHING
-  #define ETL_OBJECT_GET_DEBUG_COUNT(object)   ETL_DO_NOTHING
+#define ETL_DECLARE_DEBUG_COUNT etl::debug_count etl_debug_count
+#define ETL_SET_DEBUG_COUNT(n) ETL_DO_NOTHING
+#define ETL_GET_DEBUG_COUNT ETL_DO_NOTHING
+#define ETL_INCREMENT_DEBUG_COUNT ETL_DO_NOTHING
+#define ETL_DECREMENT_DEBUG_COUNT ETL_DO_NOTHING
+#define ETL_ADD_DEBUG_COUNT(n) ETL_DO_NOTHING
+#define ETL_SUBTRACT_DEBUG_COUNT(n) ETL_DO_NOTHING
+#define ETL_RESET_DEBUG_COUNT ETL_DO_NOTHING
+#define ETL_OBJECT_RESET_DEBUG_COUNT(object) ETL_DO_NOTHING
+#define ETL_OBJECT_GET_DEBUG_COUNT(object) ETL_DO_NOTHING
 
-namespace etl
-{
-  class debug_count
-  {
-  };
-}
-#endif  // ETL_DEBUG_COUNT
+namespace etl {
+class debug_count {
+};
+} // namespace etl
+#endif // ETL_DEBUG_COUNT
 
 #endif

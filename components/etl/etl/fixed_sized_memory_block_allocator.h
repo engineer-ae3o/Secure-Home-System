@@ -36,17 +36,14 @@ SOFTWARE.
 #include "generic_pool.h"
 #include "alignment.h"
 
-namespace etl
-{
-  //*************************************************************************
-  /// The fixed sized memory block pool.
-  /// The allocated memory blocks are all the same size.
-  //*************************************************************************
-  template <size_t VBlock_Size, size_t VAlignment, size_t VSize>
-  class fixed_sized_memory_block_allocator : public imemory_block_allocator
-  {
-  public:
-
+namespace etl {
+//*************************************************************************
+/// The fixed sized memory block pool.
+/// The allocated memory blocks are all the same size.
+//*************************************************************************
+template<size_t VBlock_Size, size_t VAlignment, size_t VSize>
+class fixed_sized_memory_block_allocator : public imemory_block_allocator {
+    public:
     static ETL_CONSTANT size_t Block_Size = VBlock_Size;
     static ETL_CONSTANT size_t Alignment  = VAlignment;
     static ETL_CONSTANT size_t Size       = VSize;
@@ -54,73 +51,60 @@ namespace etl
     //*************************************************************************
     /// Default constructor
     //*************************************************************************
-    fixed_sized_memory_block_allocator()
-    {
+    fixed_sized_memory_block_allocator() {
     }
 
-  protected:
-
+    protected:
     //*************************************************************************
     /// The overridden virtual function to allocate a block.
     //*************************************************************************
-    virtual void* allocate_block(size_t required_size, size_t required_alignment) ETL_OVERRIDE
-    {
-      if ((required_alignment <= Alignment) &&
-          (required_size <= Block_Size) &&
-           !pool.full())
-      {
-        return  pool.template allocate<block>();
-      }
-      else
-      {
-        return ETL_NULLPTR;
-      }
+    virtual void* allocate_block(size_t required_size, size_t required_alignment) ETL_OVERRIDE {
+        if ((required_alignment <= Alignment) &&
+            (required_size <= Block_Size) &&
+            !pool.full()) {
+            return pool.template allocate<block>();
+        } else {
+            return ETL_NULLPTR;
+        }
     }
 
     //*************************************************************************
     /// The overridden virtual function to release a block.
     //*************************************************************************
-    virtual bool release_block(const void* const pblock) ETL_OVERRIDE
-    {
-      if (pool.is_in_pool(pblock))
-      {
-        pool.release(static_cast<const block* const>(pblock));
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+    virtual bool release_block(const void* const pblock) ETL_OVERRIDE {
+        if (pool.is_in_pool(pblock)) {
+            pool.release(static_cast<const block* const>(pblock));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //*************************************************************************
     /// Returns true if the allocator is the owner of the block.
     //*************************************************************************
-    virtual bool is_owner_of_block(const void* const pblock) const ETL_OVERRIDE
-    {
-      return pool.is_in_pool(pblock);
+    virtual bool is_owner_of_block(const void* const pblock) const ETL_OVERRIDE {
+        return pool.is_in_pool(pblock);
     }
 
-  private:
-
+    private:
     /// A structure that has the size Block_Size.
-    struct block
-    {
-      char data[Block_Size];
+    struct block {
+        char data[Block_Size];
     };
 
     /// The generic pool from which allocate memory blocks.
     etl::generic_pool<Block_Size, Alignment, Size> pool;
-  };
+};
 
-  template <size_t VBlock_Size, size_t VAlignment, size_t VSize>
-  ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Block_Size;
+template<size_t VBlock_Size, size_t VAlignment, size_t VSize>
+ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Block_Size;
 
-  template <size_t VBlock_Size, size_t VAlignment, size_t VSize>
-  ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Alignment;
+template<size_t VBlock_Size, size_t VAlignment, size_t VSize>
+ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Alignment;
 
-  template <size_t VBlock_Size, size_t VAlignment, size_t VSize>
-  ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Size;
-}
+template<size_t VBlock_Size, size_t VAlignment, size_t VSize>
+ETL_CONSTANT size_t fixed_sized_memory_block_allocator<VBlock_Size, VAlignment, VSize>::Size;
+} // namespace etl
 
 #endif

@@ -29,19 +29,17 @@
 
 static int volatile due_init_done = 0;
 
-static inline void ascon_trng_init_internal(void)
-{
+static inline void ascon_trng_init_internal(void) {
     if (!due_init_done) {
         /* Once-only initialization of the TRNG peripheral */
         pmc_enable_periph_clk(ID_TRNG);
-        REG_TRNG_CR = TRNG_CR_KEY(0x524E47) | TRNG_CR_ENABLE;
-        REG_TRNG_IDR = TRNG_IDR_DATRDY;
+        REG_TRNG_CR   = TRNG_CR_KEY(0x524E47) | TRNG_CR_ENABLE;
+        REG_TRNG_IDR  = TRNG_IDR_DATRDY;
         due_init_done = 1;
     }
 }
 
-static inline int ascon_trng_generate_word(uint32_t *x)
-{
+static inline int ascon_trng_generate_word(uint32_t* x) {
     /* SAM3X8E's TRNG returns a new random word every 84 clock cycles.
      * If the TRNG is not ready after 100 iterations, assume it has failed. */
     int count = 100;
@@ -55,28 +53,28 @@ static inline int ascon_trng_generate_word(uint32_t *x)
     return 1;
 }
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     uint32_t x;
-    int ok = 1;
+    int      ok = 1;
     ascon_trng_init_internal();
     while (outlen >= sizeof(x)) {
-        if (!ascon_trng_generate_word(&x))
+        if (!ascon_trng_generate_word(&x)) {
             ok = 0;
+        }
         memcpy(out, &x, sizeof(x));
         out += sizeof(x);
         outlen -= sizeof(x);
     }
     if (outlen > 0) {
-        if (!ascon_trng_generate_word(&x))
+        if (!ascon_trng_generate_word(&x)) {
             ok = 0;
+        }
         memcpy(out, &x, outlen);
     }
     return ok;
 }
 
-int ascon_trng_init(ascon_trng_state_t *state)
-{
+int ascon_trng_init(ascon_trng_state_t* state) {
     uint32_t x;
 
     /* Make sure that the peripheral is initialized */
@@ -86,21 +84,18 @@ int ascon_trng_init(ascon_trng_state_t *state)
     return ascon_trng_generate_word(&x);
 }
 
-void ascon_trng_free(ascon_trng_state_t *state)
-{
+void ascon_trng_free(ascon_trng_state_t* state) {
     (void)state;
 }
 
-uint32_t ascon_trng_generate_32(ascon_trng_state_t *state)
-{
+uint32_t ascon_trng_generate_32(ascon_trng_state_t* state) {
     uint32_t word;
     (void)state;
     ascon_trng_generate_word(&word);
     return word;
 }
 
-uint64_t ascon_trng_generate_64(ascon_trng_state_t *state)
-{
+uint64_t ascon_trng_generate_64(ascon_trng_state_t* state) {
     uint32_t low, high;
     (void)state;
     ascon_trng_generate_word(&low);
@@ -108,8 +103,7 @@ uint64_t ascon_trng_generate_64(ascon_trng_state_t *state)
     return ((uint64_t)low) | (((uint64_t)high) << 32);
 }
 
-int ascon_trng_reseed(ascon_trng_state_t *state)
-{
+int ascon_trng_reseed(ascon_trng_state_t* state) {
     return ascon_trng_init(state);
 }
 

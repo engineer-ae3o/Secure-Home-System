@@ -30,8 +30,7 @@
 #include <string.h>
 #include "copyright.h"
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     printf("\n\t.align\t2\n");
     printf("\t.p2align 4,,11\n");
     printf("\t.global\t%s\n", name);
@@ -40,8 +39,7 @@ static void function_header(const char *name)
     printf("\t.cfi_startproc\n");
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\tret\n");
     printf("\t.cfi_endproc\n");
     printf("\t.size\t%s, .-%s\n", name, name);
@@ -50,55 +48,53 @@ static void function_footer(const char *name)
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0;
-    const char *x1;
-    const char *x2;
-    const char *x3;
-    const char *x4;
-    const char *t0;
-    const char *t1;
-    const char *t2;
-    const char *t3;
-    const char *t4;
-    const char *t5;
+    const char* x0;
+    const char* x1;
+    const char* x2;
+    const char* x3;
+    const char* x4;
+    const char* t0;
+    const char* t1;
+    const char* t2;
+    const char* t3;
+    const char* t4;
+    const char* t5;
 
 } reg_names;
 
 /* Generates a binary operator */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
-    if (!strcmp(name, "mov") || !strcmp(name, "mvn"))
+static void binop(const char* name, const char* reg1, const char* reg2) {
+    if (!strcmp(name, "mov") || !strcmp(name, "mvn")) {
         printf("\t%s\t%s, %s\n", name, reg1, reg2);
-    else
+    } else {
         printf("\t%s\t%s, %s, %s\n", name, reg1, reg1, reg2);
+    }
 }
 
 /* Generates a "bic" instruction: dest = ~src1 & src2 */
-static void bic(const char *dest, const char *src1, const char *src2)
-{
+static void bic(const char* dest, const char* src1, const char* src2) {
     printf("\tbic\t%s, %s, %s\n", dest, src2, src1);
 }
 
 /* Applies the S-box to five 64-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
-    binop("eor", regs->x0, regs->x4);           /* x0 ^= x4; */
-    binop("eor", regs->x4, regs->x3);           /* x4 ^= x3; */
-    binop("eor", regs->x2, regs->x1);           /* x2 ^= x1; */
-    binop("mov", regs->t1, regs->x0);           /* t1 = x0; */
-    bic(regs->t0, regs->x0, regs->x1);          /* t0 = (~x0) & x1; */
-    bic(regs->t2, regs->x1, regs->x2);          /* x0 ^= (~x1) & x2; */
+static void gen_sbox(const reg_names* regs) {
+    binop("eor", regs->x0, regs->x4);  /* x0 ^= x4; */
+    binop("eor", regs->x4, regs->x3);  /* x4 ^= x3; */
+    binop("eor", regs->x2, regs->x1);  /* x2 ^= x1; */
+    binop("mov", regs->t1, regs->x0);  /* t1 = x0; */
+    bic(regs->t0, regs->x0, regs->x1); /* t0 = (~x0) & x1; */
+    bic(regs->t2, regs->x1, regs->x2); /* x0 ^= (~x1) & x2; */
     binop("eor", regs->x0, regs->t2);
-    bic(regs->t3, regs->x2, regs->x3);          /* x1 ^= (~x2) & x3; */
+    bic(regs->t3, regs->x2, regs->x3); /* x1 ^= (~x2) & x3; */
     binop("eor", regs->x1, regs->t3);
-    bic(regs->t4, regs->x4, regs->t1);          /* x3 ^= (~x4) & t1; */
+    bic(regs->t4, regs->x4, regs->t1); /* x3 ^= (~x4) & t1; */
     binop("eor", regs->x3, regs->t4);
-    bic(regs->t5, regs->x3, regs->x4);          /* x2 ^= (~x3) & x4; */
+    bic(regs->t5, regs->x3, regs->x4); /* x2 ^= (~x3) & x4; */
     binop("eor", regs->x2, regs->t5);
-    binop("eor", regs->x4, regs->t0);           /* x4 ^= t0; */
-    binop("eor", regs->x1, regs->x0);           /* x1 ^= x0; */
-    binop("eor", regs->x0, regs->x4);           /* x0 ^= x4; */
-    binop("eor", regs->x3, regs->x2);           /* x3 ^= x2; */
+    binop("eor", regs->x4, regs->t0); /* x4 ^= t0; */
+    binop("eor", regs->x1, regs->x0); /* x1 ^= x0; */
+    binop("eor", regs->x0, regs->x4); /* x0 ^= x4; */
+    binop("eor", regs->x3, regs->x2); /* x3 ^= x2; */
 
 #if 0
     /* Inverting x2 is integrated into the round constant for the next round */
@@ -107,12 +103,10 @@ static void gen_sbox(const reg_names *regs)
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(const reg_names *regs, int round)
-{
+static void gen_round(const reg_names* regs, int round) {
     /* Apply the round constant to x2, and also NOT x2 in the process */
-    printf("\tldr\t%s, =0x%llx\n", regs->t5,
-           ~((unsigned long long)(((0x0F - round) << 4) | round))) &
-           0xFFFFFFFFFFFFFFFFULL;
+    printf("\tldr\t%s, =0x%llx\n", regs->t5, ~((unsigned long long)(((0x0F - round) << 4) | round))) &
+        0xFFFFFFFFFFFFFFFFULL;
     printf("\teor\t%s, %s, %s\n", regs->x2, regs->x2, regs->t5);
 
     /* Apply the S-box to the words of the state */
@@ -142,8 +136,7 @@ static void gen_round(const reg_names *regs, int round)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * x0 holds the pointer to the ASCON state on entry and exit.
      *
@@ -156,7 +149,7 @@ static void gen_permute(void)
      * enough registers without worrying about needing the special ones.
      */
     reg_names regs;
-    int round;
+    int       round;
     regs.x0 = "x2";
     regs.x1 = "x3";
     regs.x2 = "x4";
@@ -187,8 +180,9 @@ static void gen_permute(void)
     printf("\tcmp\tw1, #4\n");
     printf("\tbeq\t.L4\n");
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf("\tcmp\tw1, #%d\n", round);
         printf("\tbeq\t.L%d\n", round);
     }
@@ -209,8 +203,7 @@ static void gen_permute(void)
 }
 
 /* Output the function to free sensitive material in registers */
-static void gen_backend_free(void)
-{
+static void gen_backend_free(void) {
     /*
      * The ascon_permute() function stores the state and temporaries
      * in x2-x7 and x9-x12 so technically only those registers need
@@ -236,8 +229,7 @@ static void gen_backend_free(void)
     printf("\tmov\tx15, #0\n");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

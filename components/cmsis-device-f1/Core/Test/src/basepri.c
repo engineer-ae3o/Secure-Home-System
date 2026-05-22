@@ -30,7 +30,7 @@ void set_basepri_ns() {
     // CHECK-LABEL: <set_basepri_ns>:
 #if __ARM_FEATURE_CMSE == 3
     // CHECK-S: msr basepri_ns, {{r[0-9]+}}
-     __TZ_set_BASEPRI_NS(0x0815u);
+    __TZ_set_BASEPRI_NS(0x0815u);
 #endif
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }

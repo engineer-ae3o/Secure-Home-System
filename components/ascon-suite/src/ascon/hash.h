@@ -41,7 +41,7 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_xof_state_t xof;  /**< Internal ASCON-XOF state */
+    ascon_xof_state_t xof; /**< Internal ASCON-XOF state */
 
 } ascon_hash_state_t;
 
@@ -64,7 +64,7 @@ typedef struct
  *
  * \sa ascon_hash_init(), ascon_hash_absorb(), ascon_hash_squeeze()
  */
-void ascon_hash(unsigned char *out, const unsigned char *in, size_t inlen);
+void ascon_hash(unsigned char* out, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Initializes the state for an ASCON-HASH hashing operation.
@@ -73,7 +73,7 @@ void ascon_hash(unsigned char *out, const unsigned char *in, size_t inlen);
  *
  * \sa ascon_hash_update(), ascon_hash_finalize(), ascon_hash()
  */
-void ascon_hash_init(ascon_hash_state_t *state);
+void ascon_hash_init(ascon_hash_state_t* state);
 
 /**
  * \brief Re-initializes the state for an ASCON-HASH hashing operation.
@@ -85,14 +85,14 @@ void ascon_hash_init(ascon_hash_state_t *state);
  *
  * \sa ascon_hash_init()
  */
-void ascon_hash_reinit(ascon_hash_state_t *state);
+void ascon_hash_reinit(ascon_hash_state_t* state);
 
 /**
  * \brief Frees the ASCON-HASH state and destroys any sensitive material.
  *
  * \param state Hash state to be freed.
  */
-void ascon_hash_free(ascon_hash_state_t *state);
+void ascon_hash_free(ascon_hash_state_t* state);
 
 /**
  * \brief Updates an ASCON-HASH state with more input data.
@@ -103,8 +103,7 @@ void ascon_hash_free(ascon_hash_state_t *state);
  *
  * \sa ascon_hash_init(), ascon_hash_finalize()
  */
-void ascon_hash_update
-    (ascon_hash_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_hash_update(ascon_hash_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Returns the final hash value from an ASCON-HASH hashing operation.
@@ -114,7 +113,7 @@ void ascon_hash_update
  *
  * \sa ascon_hash_init(), ascon_hash_update()
  */
-void ascon_hash_finalize(ascon_hash_state_t *state, unsigned char *out);
+void ascon_hash_finalize(ascon_hash_state_t* state, unsigned char* out);
 
 /**
  * \brief Clones a copy of an ASCON-HASH state.
@@ -126,8 +125,7 @@ void ascon_hash_finalize(ascon_hash_state_t *state, unsigned char *out);
  * not previously have been initialized or it has already been freed.
  * The source must be already initialized.
  */
-void ascon_hash_copy
-    (ascon_hash_state_t *dest, const ascon_hash_state_t *src);
+void ascon_hash_copy(ascon_hash_state_t* dest, const ascon_hash_state_t* src);
 
 /**
  * \brief Hashes a block of input data with ASCON-HASHA.
@@ -139,7 +137,7 @@ void ascon_hash_copy
  *
  * \sa ascon_hasha_init(), ascon_hasha_absorb(), ascon_hasha_squeeze()
  */
-void ascon_hasha(unsigned char *out, const unsigned char *in, size_t inlen);
+void ascon_hasha(unsigned char* out, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Initializes the state for an ASCON-HASHA hashing operation.
@@ -148,7 +146,7 @@ void ascon_hasha(unsigned char *out, const unsigned char *in, size_t inlen);
  *
  * \sa ascon_hasha_update(), ascon_hasha_finalize(), ascon_hasha()
  */
-void ascon_hasha_init(ascon_hasha_state_t *state);
+void ascon_hasha_init(ascon_hasha_state_t* state);
 
 /**
  * \brief Re-initializes the state for an ASCON-HASHA hashing operation.
@@ -160,14 +158,14 @@ void ascon_hasha_init(ascon_hasha_state_t *state);
  *
  * \sa ascon_hasha_init()
  */
-void ascon_hasha_reinit(ascon_hasha_state_t *state);
+void ascon_hasha_reinit(ascon_hasha_state_t* state);
 
 /**
  * \brief Frees the ASCON-HASHA state and destroys any sensitive material.
  *
  * \param state Hash state to be freed.
  */
-void ascon_hasha_free(ascon_hasha_state_t *state);
+void ascon_hasha_free(ascon_hasha_state_t* state);
 
 /**
  * \brief Updates an ASCON-HASHA state with more input data.
@@ -178,8 +176,7 @@ void ascon_hasha_free(ascon_hasha_state_t *state);
  *
  * \sa ascon_hasha_init(), ascon_hasha_finalize()
  */
-void ascon_hasha_update
-    (ascon_hasha_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_hasha_update(ascon_hasha_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Returns the final hash value from an ASCON-HASHA hashing operation.
@@ -189,7 +186,7 @@ void ascon_hasha_update
  *
  * \sa ascon_hasha_init(), ascon_hasha_update()
  */
-void ascon_hasha_finalize(ascon_hasha_state_t *state, unsigned char *out);
+void ascon_hasha_finalize(ascon_hasha_state_t* state, unsigned char* out);
 
 /**
  * \brief Clones a copy of an ASCON-HASHA state.
@@ -201,26 +198,22 @@ void ascon_hasha_finalize(ascon_hasha_state_t *state, unsigned char *out);
  * not previously have been initialized or it has already been freed.
  * The source must be already initialized.
  */
-void ascon_hasha_copy
-    (ascon_hasha_state_t *dest, const ascon_hasha_state_t *src);
+void ascon_hasha_copy(ascon_hasha_state_t* dest, const ascon_hasha_state_t* src);
 
 #ifdef __cplusplus
 } /* extern "C" */
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief ASCON-HASH digest algorithm.
  */
-class hash
-{
-public:
+class hash {
+    public:
     /**
      * \brief Constructs a new ASCON-HASH object.
      */
-    inline hash()
-    {
+    inline hash() {
         ::ascon_hash_init(&m_state);
     }
 
@@ -229,16 +222,14 @@ public:
      *
      * \param other The other ASCON-HASH digest object.
      */
-    inline hash(const ascon::hash &other)
-    {
+    inline hash(const ascon::hash& other) {
         ::ascon_hash_copy(&m_state, &other.m_state);
     }
 
     /**
      * \brief Destroys this ASCON-HASH object.
      */
-    inline ~hash()
-    {
+    inline ~hash() {
         ::ascon_hash_free(&m_state);
     }
 
@@ -249,8 +240,7 @@ public:
      *
      * \return A reference to this ASCON-HASH object.
      */
-    inline hash &operator=(const ascon::hash &other)
-    {
+    inline hash& operator=(const ascon::hash& other) {
         if (this != &other) {
             ::ascon_hash_free(&m_state);
             ::ascon_hash_copy(&m_state, &other.m_state);
@@ -261,8 +251,7 @@ public:
     /**
      * \brief Resets this ASCON-HASH object back to its initial state.
      */
-    inline void reset()
-    {
+    inline void reset() {
         ::ascon_hash_reinit(&m_state);
     }
 
@@ -272,8 +261,7 @@ public:
      * \param data Points to the input data to be absorbed into the state.
      * \param len Length of the input data to be absorbed into the state.
      */
-    inline void update(const unsigned char *data, size_t len)
-    {
+    inline void update(const unsigned char* data, size_t len) {
         ::ascon_hash_update(&m_state, data, len);
     }
 
@@ -286,12 +274,9 @@ public:
      * If \a str is NULL, then this function is equivalent to absorbing the
      * empty string into the state.
      */
-    inline void update(const char *str)
-    {
+    inline void update(const char* str) {
         if (str) {
-            ::ascon_hash_update
-                (&m_state, reinterpret_cast<const unsigned char *>(str),
-                 ::strlen(str));
+            ::ascon_hash_update(&m_state, reinterpret_cast<const unsigned char*>(str), ::strlen(str));
         }
     }
 
@@ -300,8 +285,7 @@ public:
      *
      * \param data Reference to the byte array to absorb.
      */
-    inline void update(const ascon::byte_array& data)
-    {
+    inline void update(const ascon::byte_array& data) {
         ::ascon_hash_update(&m_state, data.data(), data.size());
     }
 
@@ -310,8 +294,7 @@ public:
      *
      * The application must call reset() to perform another hashing process.
      */
-    inline void finalize(unsigned char digest[ASCON_HASH_SIZE])
-    {
+    inline void finalize(unsigned char digest[ASCON_HASH_SIZE]) {
         ::ascon_hash_finalize(&m_state, digest);
     }
 
@@ -321,8 +304,7 @@ public:
      *
      * \return A byte array containing the finalized digest.
      */
-    inline ascon::byte_array finalize()
-    {
+    inline ascon::byte_array finalize() {
         ascon::byte_array vec(ASCON_HASH_SIZE);
         ::ascon_hash_finalize(&m_state, vec.data());
         return vec;
@@ -335,10 +317,9 @@ public:
      * \param data Points to the input data to be hashed.
      * \param len Length of the input data to be hashed.
      */
-    static inline void digest
-        (unsigned char result[ASCON_HASH_SIZE],
-         const unsigned char *data, size_t len)
-    {
+    static inline void digest(unsigned char        result[ASCON_HASH_SIZE],
+                              const unsigned char* data,
+                              size_t               len) {
         ::ascon_hash(result, data, len);
     }
 
@@ -347,7 +328,9 @@ public:
      *
      * \return A reference to the state.
      */
-    inline ::ascon_hash_state_t *state() { return &m_state; }
+    inline ::ascon_hash_state_t* state() {
+        return &m_state;
+    }
 
     /**
      * \brief Gets a constant reference to the C version of the
@@ -355,7 +338,9 @@ public:
      *
      * \return A constant reference to the state.
      */
-    inline const ::ascon_hash_state_t *state() const { return &m_state; }
+    inline const ::ascon_hash_state_t* state() const {
+        return &m_state;
+    }
 
 #if !defined(ARDUINO) && !defined(ASCON_NO_STL)
 
@@ -365,11 +350,8 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void update(const std::string& str)
-    {
-        ::ascon_hash_update
-            (&m_state, reinterpret_cast<const unsigned char *>(str.data()),
-             str.size());
+    inline void update(const std::string& str) {
+        ::ascon_hash_update(&m_state, reinterpret_cast<const unsigned char*>(str.data()), str.size());
     }
 
 #elif defined(ARDUINO)
@@ -380,30 +362,25 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void update(const String& str)
-    {
-        ::ascon_hash_update
-            (&m_state, reinterpret_cast<const unsigned char *>(str.c_str()),
-             str.length());
+    inline void update(const String& str) {
+        ::ascon_hash_update(&m_state, reinterpret_cast<const unsigned char*>(str.c_str()), str.length());
     }
 
 #endif /* ARDUINO */
 
-private:
+    private:
     ::ascon_hash_state_t m_state; /**< Internal hash state */
 };
 
 /**
  * \brief ASCON-HASHA digest algorithm.
  */
-class hasha
-{
-public:
+class hasha {
+    public:
     /**
      * \brief Constructs a new ASCON-HASHA object.
      */
-    inline hasha()
-    {
+    inline hasha() {
         ::ascon_hasha_init(&m_state);
     }
 
@@ -412,16 +389,14 @@ public:
      *
      * \param other The other ASCON-HASHA digest object.
      */
-    inline hasha(const ascon::hasha &other)
-    {
+    inline hasha(const ascon::hasha& other) {
         ::ascon_hasha_copy(&m_state, &other.m_state);
     }
 
     /**
      * \brief Destroys this ASCON-HASHA object.
      */
-    inline ~hasha()
-    {
+    inline ~hasha() {
         ::ascon_hasha_free(&m_state);
     }
 
@@ -432,8 +407,7 @@ public:
      *
      * \return A reference to this ASCON-HASHA object.
      */
-    inline hasha &operator=(const ascon::hasha &other)
-    {
+    inline hasha& operator=(const ascon::hasha& other) {
         if (this != &other) {
             ::ascon_hasha_free(&m_state);
             ::ascon_hasha_copy(&m_state, &other.m_state);
@@ -444,8 +418,7 @@ public:
     /**
      * \brief Resets this ASCON-HASHA object back to its initial state.
      */
-    inline void reset()
-    {
+    inline void reset() {
         ::ascon_hasha_reinit(&m_state);
     }
 
@@ -455,8 +428,7 @@ public:
      * \param data Points to the input data to be absorbed into the state.
      * \param len Length of the input data to be absorbed into the state.
      */
-    inline void update(const unsigned char *data, size_t len)
-    {
+    inline void update(const unsigned char* data, size_t len) {
         ::ascon_hasha_update(&m_state, data, len);
     }
 
@@ -469,12 +441,9 @@ public:
      * If \a str is NULL, then this function is equivalent to absorbing the
      * empty string into the state.
      */
-    inline void update(const char *str)
-    {
+    inline void update(const char* str) {
         if (str) {
-            ::ascon_hasha_update
-                (&m_state, reinterpret_cast<const unsigned char *>(str),
-                 ::strlen(str));
+            ::ascon_hasha_update(&m_state, reinterpret_cast<const unsigned char*>(str), ::strlen(str));
         }
     }
 
@@ -483,8 +452,7 @@ public:
      *
      * \param data Reference to the byte array to absorb.
      */
-    inline void update(const ascon::byte_array& data)
-    {
+    inline void update(const ascon::byte_array& data) {
         ::ascon_hasha_update(&m_state, data.data(), data.size());
     }
 
@@ -493,8 +461,7 @@ public:
      *
      * The application must call reset() to perform another hashing process.
      */
-    inline void finalize(unsigned char digest[ASCON_HASHA_SIZE])
-    {
+    inline void finalize(unsigned char digest[ASCON_HASHA_SIZE]) {
         ::ascon_hasha_finalize(&m_state, digest);
     }
 
@@ -504,8 +471,7 @@ public:
      *
      * \return A byte array containing the finalized digest.
      */
-    inline ascon::byte_array finalize()
-    {
+    inline ascon::byte_array finalize() {
         ascon::byte_array vec(ASCON_HASHA_SIZE);
         ::ascon_hasha_finalize(&m_state, vec.data());
         return vec;
@@ -518,10 +484,9 @@ public:
      * \param data Points to the input data to be hashed.
      * \param len Length of the input data to be hashed.
      */
-    static inline void digest
-        (unsigned char result[ASCON_HASH_SIZE],
-         const unsigned char *data, size_t len)
-    {
+    static inline void digest(unsigned char        result[ASCON_HASH_SIZE],
+                              const unsigned char* data,
+                              size_t               len) {
         ::ascon_hasha(result, data, len);
     }
 
@@ -530,7 +495,9 @@ public:
      *
      * \return A reference to the state.
      */
-    inline ::ascon_hasha_state_t *state() { return &m_state; }
+    inline ::ascon_hasha_state_t* state() {
+        return &m_state;
+    }
 
     /**
      * \brief Gets a constant reference to the C version of the
@@ -538,7 +505,9 @@ public:
      *
      * \return A constant reference to the state.
      */
-    inline const ::ascon_hasha_state_t *state() const { return &m_state; }
+    inline const ::ascon_hasha_state_t* state() const {
+        return &m_state;
+    }
 
 #if !defined(ARDUINO) && !defined(ASCON_NO_STL)
 
@@ -548,11 +517,8 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void update(const std::string& str)
-    {
-        ::ascon_hasha_update
-            (&m_state, reinterpret_cast<const unsigned char *>(str.data()),
-             str.size());
+    inline void update(const std::string& str) {
+        ::ascon_hasha_update(&m_state, reinterpret_cast<const unsigned char*>(str.data()), str.size());
     }
 
 #elif defined(ARDUINO)
@@ -563,16 +529,13 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void update(const String& str)
-    {
-        ::ascon_hasha_update
-            (&m_state, reinterpret_cast<const unsigned char *>(str.c_str()),
-             str.length());
+    inline void update(const String& str) {
+        ::ascon_hasha_update(&m_state, reinterpret_cast<const unsigned char*>(str.c_str()), str.length());
     }
 
 #endif /* ARDUINO */
 
-private:
+    private:
     ::ascon_hasha_state_t m_state; /**< Internal hash state */
 };
 

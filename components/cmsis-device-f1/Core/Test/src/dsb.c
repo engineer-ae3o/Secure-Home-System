@@ -8,4 +8,3 @@ void dsb() {
     __DSB();
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

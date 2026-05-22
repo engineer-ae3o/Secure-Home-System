@@ -24,11 +24,10 @@
 #include <ascon/utility.h>
 #include "random/ascon-trng.h"
 
-int ascon_random(unsigned char *out, size_t outlen)
-{
+int ascon_random(unsigned char* out, size_t outlen) {
     ascon_xof_state_t xof;
-    unsigned char seed[ASCON_SYSTEM_SEED_SIZE];
-    int ok = ascon_trng_generate(seed, sizeof(seed));
+    unsigned char     seed[ASCON_SYSTEM_SEED_SIZE];
+    int               ok = ascon_trng_generate(seed, sizeof(seed));
     ascon_xof_init_fixed(&xof, outlen);
     ascon_xof_absorb(&xof, seed, sizeof(seed));
     ascon_xof_squeeze(&xof, out, outlen);

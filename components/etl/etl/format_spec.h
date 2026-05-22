@@ -37,9 +37,8 @@ SOFTWARE.
 #include "basic_format_spec.h"
 #include "string.h"
 
-namespace etl
-{
-  typedef etl::basic_format_spec<etl::istring> format_spec;
+namespace etl {
+typedef etl::basic_format_spec<etl::istring> format_spec;
 }
 
 #endif

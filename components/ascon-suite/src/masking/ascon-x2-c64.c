@@ -33,22 +33,20 @@
  * \param y First input variable.
  * \param z Second input variable.
  */
-#define and_not_xor(x, y, z) \
-    do { \
+#define and_not_xor(x, y, z)                                         \
+    do {                                                             \
         x##_a ^= ((~y##_a) & ascon_mask64_unrotate_share1_0(z##_b)); \
-        x##_a ^= ((~y##_a) & z##_a); \
-        x##_b ^= (y##_b & z##_b); \
-        x##_b ^= (y##_b & ascon_mask64_rotate_share1_0(z##_a)); \
+        x##_a ^= ((~y##_a) & z##_a);                                 \
+        x##_b ^= (y##_b & z##_b);                                    \
+        x##_b ^= (y##_b & ascon_mask64_rotate_share1_0(z##_a));      \
     } while (0)
 
 /* Generate a pre-inverted round constant so that we can
  * avoid NOT'ing x2 in the S-box during the rounds */
-#define ROUND_CONSTANT(round)   \
-        (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
+#define ROUND_CONSTANT(round) \
+    (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
 
-void ascon_x2_permute
-    (ascon_masked_state_t *state, uint8_t first_round, uint64_t *preserve)
-{
+void ascon_x2_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve) {
     static const uint64_t RC[12] = {
         ROUND_CONSTANT(0),
         ROUND_CONSTANT(1),
@@ -61,8 +59,7 @@ void ascon_x2_permute
         ROUND_CONSTANT(8),
         ROUND_CONSTANT(9),
         ROUND_CONSTANT(10),
-        ROUND_CONSTANT(11)
-    };
+        ROUND_CONSTANT(11)};
     uint64_t x0_a, x1_a, x2_a, x3_a, x4_a;
     uint64_t x0_b, x1_b, x2_b, x3_b, x4_b;
     uint64_t t0_a, t0_b, t1_a, t1_b;
@@ -109,22 +106,22 @@ void ascon_x2_permute
         x0_a ^= x4_a;
         x4_a ^= x3_a;
         x2_a ^= x1_a;
-        t1_a  = x0_a;
+        t1_a = x0_a;
 
         /* Start of the substitution layer, second share */
         x0_b ^= x4_b;
         x4_b ^= x3_b;
         x2_b ^= x1_b;
-        t1_b  = x0_b;
+        t1_b = x0_b;
 
         /* Middle part of the substitution layer, Chi5 */
-        t0_b = ascon_mask64_rotate_share1_0(t0_a);  /* t0 = random shares */
-        and_not_xor(t0, x0, x1);                    /* t0 ^= (~x0) & x1; */
-        and_not_xor(x0, x1, x2);                    /* x0 ^= (~x1) & x2; */
-        and_not_xor(x1, x2, x3);                    /* x1 ^= (~x2) & x3; */
-        and_not_xor(x2, x3, x4);                    /* x2 ^= (~x3) & x4; */
-        and_not_xor(x3, x4, t1);                    /* x3 ^= (~x4) & t1; */
-        x4_a ^= t0_a;                               /* x4 ^= t0; */
+        t0_b = ascon_mask64_rotate_share1_0(t0_a); /* t0 = random shares */
+        and_not_xor(t0, x0, x1);                   /* t0 ^= (~x0) & x1; */
+        and_not_xor(x0, x1, x2);                   /* x0 ^= (~x1) & x2; */
+        and_not_xor(x1, x2, x3);                   /* x1 ^= (~x2) & x3; */
+        and_not_xor(x2, x3, x4);                   /* x2 ^= (~x3) & x4; */
+        and_not_xor(x3, x4, t1);                   /* x3 ^= (~x4) & t1; */
+        x4_a ^= t0_a;                              /* x4 ^= t0; */
         x4_b ^= t0_b;
 
         /* End of the substitution layer */
@@ -141,16 +138,16 @@ void ascon_x2_permute
         /* Linear diffusion layer, second share */
         x0_b ^= rightRotate19_64(x0_b) ^ rightRotate28_64(x0_b);
         x1_b ^= rightRotate61_64(x1_b) ^ rightRotate39_64(x1_b);
-        x2_b ^= rightRotate1_64(x2_b)  ^ rightRotate6_64(x2_b);
+        x2_b ^= rightRotate1_64(x2_b) ^ rightRotate6_64(x2_b);
         x3_b ^= rightRotate10_64(x3_b) ^ rightRotate17_64(x3_b);
-        x4_b ^= rightRotate7_64(x4_b)  ^ rightRotate41_64(x4_b);
+        x4_b ^= rightRotate7_64(x4_b) ^ rightRotate41_64(x4_b);
 
         /* Linear diffusion layer, first share */
         x0_a ^= rightRotate19_64(x0_a) ^ rightRotate28_64(x0_a);
         x1_a ^= rightRotate61_64(x1_a) ^ rightRotate39_64(x1_a);
-        x2_a ^= rightRotate1_64(x2_a)  ^ rightRotate6_64(x2_a);
+        x2_a ^= rightRotate1_64(x2_a) ^ rightRotate6_64(x2_a);
         x3_a ^= rightRotate10_64(x3_a) ^ rightRotate17_64(x3_a);
-        x4_a ^= rightRotate7_64(x4_a)  ^ rightRotate41_64(x4_a);
+        x4_a ^= rightRotate7_64(x4_a) ^ rightRotate41_64(x4_a);
 
         /* Rotate the randomness in t0 before the next round */
         t0_a = rightRotate13_64(t0_a);

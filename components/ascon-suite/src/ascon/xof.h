@@ -59,9 +59,9 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_state_t state;    /**< Current hash state */
-    unsigned char count;    /**< Number of bytes in the current block */
-    unsigned char mode;     /**< Hash mode: 0 for absorb, 1 for squeeze */
+    ascon_state_t state; /**< Current hash state */
+    unsigned char count; /**< Number of bytes in the current block */
+    unsigned char mode;  /**< Hash mode: 0 for absorb, 1 for squeeze */
 
 } ascon_xof_state_t;
 
@@ -70,9 +70,9 @@ typedef struct
  */
 typedef struct
 {
-    ascon_state_t state;    /**< Current hash state */
-    unsigned char count;    /**< Number of bytes in the current block */
-    unsigned char mode;     /**< Hash mode: 0 for absorb, 1 for squeeze */
+    ascon_state_t state; /**< Current hash state */
+    unsigned char count; /**< Number of bytes in the current block */
+    unsigned char mode;  /**< Hash mode: 0 for absorb, 1 for squeeze */
 
 } ascon_xofa_state_t;
 
@@ -89,7 +89,7 @@ typedef struct
  *
  * \sa ascon_xof_init(), ascon_xof_absorb(), ascon_xof_squeeze()
  */
-void ascon_xof(unsigned char *out, const unsigned char *in, size_t inlen);
+void ascon_xof(unsigned char* out, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Initializes the state for an ASCON-XOF hashing operation.
@@ -98,7 +98,7 @@ void ascon_xof(unsigned char *out, const unsigned char *in, size_t inlen);
  *
  * \sa ascon_xof_absorb(), ascon_xof_squeeze(), ascon_xof()
  */
-void ascon_xof_init(ascon_xof_state_t *state);
+void ascon_xof_init(ascon_xof_state_t* state);
 
 /**
  * \brief Initializes the state for an incremental ASCON-XOF operation,
@@ -113,7 +113,7 @@ void ascon_xof_init(ascon_xof_state_t *state);
  *
  * \sa ascon_xof_init()
  */
-void ascon_xof_init_fixed(ascon_xof_state_t *state, size_t outlen);
+void ascon_xof_init_fixed(ascon_xof_state_t* state, size_t outlen);
 
 /**
  * \brief Initializes the state for an incremental ASCON-XOF operation,
@@ -137,9 +137,7 @@ void ascon_xof_init_fixed(ascon_xof_state_t *state, size_t outlen);
  *
  * \sa ascon_xof_init()
  */
-void ascon_xof_init_custom
-    (ascon_xof_state_t *state, const char *function_name,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_xof_init_custom(ascon_xof_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Re-initializes the state for an ASCON-XOF hashing operation.
@@ -151,7 +149,7 @@ void ascon_xof_init_custom
  *
  * \sa ascon_xof_init()
  */
-void ascon_xof_reinit(ascon_xof_state_t *state);
+void ascon_xof_reinit(ascon_xof_state_t* state);
 
 /**
  * \brief Re-initializes the state for an incremental ASCON-XOF operation,
@@ -165,7 +163,7 @@ void ascon_xof_reinit(ascon_xof_state_t *state);
  *
  * \sa ascon_xof_init_fixed()
  */
-void ascon_xof_reinit_fixed(ascon_xof_state_t *state, size_t outlen);
+void ascon_xof_reinit_fixed(ascon_xof_state_t* state, size_t outlen);
 
 /**
  * \brief Re-nitializes the state for an incremental ASCON-XOF operation,
@@ -180,16 +178,14 @@ void ascon_xof_reinit_fixed(ascon_xof_state_t *state, size_t outlen);
  *
  * \sa ascon_xof_init_custom()
  */
-void ascon_xof_reinit_custom
-    (ascon_xof_state_t *state, const char *function_name,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_xof_reinit_custom(ascon_xof_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Frees the ASCON-XOF state and destroys any sensitive material.
  *
  * \param state XOF state to be freed.
  */
-void ascon_xof_free(ascon_xof_state_t *state);
+void ascon_xof_free(ascon_xof_state_t* state);
 
 /**
  * \brief Absorbs more input data into an ASCON-XOF state.
@@ -200,8 +196,7 @@ void ascon_xof_free(ascon_xof_state_t *state);
  *
  * \sa ascon_xof_init(), ascon_xof_squeeze()
  */
-void ascon_xof_absorb
-    (ascon_xof_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_xof_absorb(ascon_xof_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Squeezes output data from an ASCON-XOF state.
@@ -212,8 +207,7 @@ void ascon_xof_absorb
  *
  * \sa ascon_xof_init(), ascon_xof_update()
  */
-void ascon_xof_squeeze
-    (ascon_xof_state_t *state, unsigned char *out, size_t outlen);
+void ascon_xof_squeeze(ascon_xof_state_t* state, unsigned char* out, size_t outlen);
 
 /**
  * \brief Absorbs enough zeroes into an ASCON-XOF state to pad the
@@ -225,7 +219,7 @@ void ascon_xof_squeeze
  * This function can avoid unnecessary XOR-with-zero operations
  * to save some time when padding is required.
  */
-void ascon_xof_pad(ascon_xof_state_t *state);
+void ascon_xof_pad(ascon_xof_state_t* state);
 
 /**
  * \brief Clones a copy of an ASCON-XOF state.
@@ -237,7 +231,7 @@ void ascon_xof_pad(ascon_xof_state_t *state);
  * not previously have been initialized or it has already been freed.
  * The source must be already initialized.
  */
-void ascon_xof_copy(ascon_xof_state_t *dest, const ascon_xof_state_t *src);
+void ascon_xof_copy(ascon_xof_state_t* dest, const ascon_xof_state_t* src);
 
 /**
  * \brief Hashes a block of input data with ASCON-XOFA and generates a
@@ -252,7 +246,7 @@ void ascon_xof_copy(ascon_xof_state_t *dest, const ascon_xof_state_t *src);
  *
  * \sa ascon_xofa_init(), ascon_xofa_absorb(), ascon_xofa_squeeze()
  */
-void ascon_xofa(unsigned char *out, const unsigned char *in, size_t inlen);
+void ascon_xofa(unsigned char* out, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Initializes the state for an ASCON-XOFA hashing operation.
@@ -261,7 +255,7 @@ void ascon_xofa(unsigned char *out, const unsigned char *in, size_t inlen);
  *
  * \sa ascon_xofa_absorb(), ascon_xofa_squeeze(), ascon_xofa()
  */
-void ascon_xofa_init(ascon_xofa_state_t *state);
+void ascon_xofa_init(ascon_xofa_state_t* state);
 
 /**
  * \brief Initializes the state for an incremental ASCON-XOFA operation,
@@ -276,7 +270,7 @@ void ascon_xofa_init(ascon_xofa_state_t *state);
  *
  * \sa ascon_xofa_init()
  */
-void ascon_xofa_init_fixed(ascon_xofa_state_t *state, size_t outlen);
+void ascon_xofa_init_fixed(ascon_xofa_state_t* state, size_t outlen);
 
 /**
  * \brief Initializes the state for an incremental ASCON-XOFA operation,
@@ -300,9 +294,7 @@ void ascon_xofa_init_fixed(ascon_xofa_state_t *state, size_t outlen);
  *
  * \sa ascon_xofa_init()
  */
-void ascon_xofa_init_custom
-    (ascon_xofa_state_t *state, const char *function_name,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_xofa_init_custom(ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Re-initializes the state for an ASCON-XOFA hashing operation.
@@ -314,7 +306,7 @@ void ascon_xofa_init_custom
  *
  * \sa ascon_xof_init()
  */
-void ascon_xofa_reinit(ascon_xofa_state_t *state);
+void ascon_xofa_reinit(ascon_xofa_state_t* state);
 
 /**
  * \brief Re-initializes the state for an incremental ASCON-XOFA operation,
@@ -328,7 +320,7 @@ void ascon_xofa_reinit(ascon_xofa_state_t *state);
  *
  * \sa ascon_xof_init_fixed()
  */
-void ascon_xofa_reinit_fixed(ascon_xofa_state_t *state, size_t outlen);
+void ascon_xofa_reinit_fixed(ascon_xofa_state_t* state, size_t outlen);
 
 /**
  * \brief Re-nitializes the state for an incremental ASCON-XOFA operation,
@@ -343,16 +335,14 @@ void ascon_xofa_reinit_fixed(ascon_xofa_state_t *state, size_t outlen);
  *
  * \sa ascon_xofa_init_custom()
  */
-void ascon_xofa_reinit_custom
-    (ascon_xofa_state_t *state, const char *function_name,
-     const unsigned char *custom, size_t customlen, size_t outlen);
+void ascon_xofa_reinit_custom(ascon_xofa_state_t* state, const char* function_name, const unsigned char* custom, size_t customlen, size_t outlen);
 
 /**
  * \brief Frees the ASCON-XOFA state and destroys any sensitive material.
  *
  * \param state XOF state to be freed.
  */
-void ascon_xofa_free(ascon_xofa_state_t *state);
+void ascon_xofa_free(ascon_xofa_state_t* state);
 
 /**
  * \brief Absorbs more input data into an ASCON-XOFA state.
@@ -363,8 +353,7 @@ void ascon_xofa_free(ascon_xofa_state_t *state);
  *
  * \sa ascon_xofa_init(), ascon_xofa_squeeze()
  */
-void ascon_xofa_absorb
-    (ascon_xofa_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_xofa_absorb(ascon_xofa_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Squeezes output data from an ASCON-XOFA state.
@@ -375,8 +364,7 @@ void ascon_xofa_absorb
  *
  * \sa ascon_xofa_init(), ascon_xofa_update()
  */
-void ascon_xofa_squeeze
-    (ascon_xofa_state_t *state, unsigned char *out, size_t outlen);
+void ascon_xofa_squeeze(ascon_xofa_state_t* state, unsigned char* out, size_t outlen);
 
 /**
  * \brief Absorbs enough zeroes into an ASCON-XOFA state to pad the
@@ -388,7 +376,7 @@ void ascon_xofa_squeeze
  * This function can avoid unnecessary XOR-with-zero operations
  * to save some time when padding is required.
  */
-void ascon_xofa_pad(ascon_xofa_state_t *state);
+void ascon_xofa_pad(ascon_xofa_state_t* state);
 
 /**
  * \brief Clones a copy of an ASCON-XOFA state.
@@ -400,15 +388,14 @@ void ascon_xofa_pad(ascon_xofa_state_t *state);
  * not previously have been initialized or it has already been freed.
  * The source must be already initialized.
  */
-void ascon_xofa_copy(ascon_xofa_state_t *dest, const ascon_xofa_state_t *src);
+void ascon_xofa_copy(ascon_xofa_state_t* dest, const ascon_xofa_state_t* src);
 
 #ifdef __cplusplus
 } /* extern "C" */
 
 #include <ascon/utility.h>
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief ASCON-XOF with a specific output length.
@@ -437,21 +424,20 @@ namespace ascon
  * \endcode
  */
 template<size_t outlen>
-class xof_with_output_length
-{
-public:
+class xof_with_output_length {
+    public:
     /**
      * \brief Constucts a new ASCON-XOF object.
      *
      * After construction, the new object is ready to accept input
      * data with absorb().
      */
-    inline xof_with_output_length()
-    {
-        if (outlen == 0)
+    inline xof_with_output_length() {
+        if (outlen == 0) {
             ::ascon_xof_init(&m_state);
-        else
+        } else {
             ::ascon_xof_init_fixed(&m_state, outlen);
+        }
     }
 
     /**
@@ -460,9 +446,7 @@ public:
      * \param other The other object to copy, which must have the same
      * output length as this class.
      */
-    inline xof_with_output_length
-        (const ascon::xof_with_output_length<outlen> &other)
-    {
+    inline xof_with_output_length(const ascon::xof_with_output_length<outlen>& other) {
         ::ascon_xof_copy(&m_state, &other.m_state);
     }
 
@@ -475,12 +459,8 @@ public:
      * \param custom Points to the customization string.
      * \param customlen Number of bytes in the customization string.
      */
-    inline explicit xof_with_output_length
-        (const char *function_name, const unsigned char *custom = 0,
-         size_t customlen = 0)
-    {
-        ::ascon_xof_init_custom
-            (&m_state, function_name, custom, customlen, outlen);
+    inline explicit xof_with_output_length(const char* function_name, const unsigned char* custom = 0, size_t customlen = 0) {
+        ::ascon_xof_init_custom(&m_state, function_name, custom, customlen, outlen);
     }
 
     /**
@@ -491,18 +471,14 @@ public:
      * empty for no function name.
      * \param custom The customization string.
      */
-    inline xof_with_output_length
-        (const char *function_name, const ascon::byte_array &custom)
-    {
-        ::ascon_xof_init_custom
-            (&m_state, function_name, custom.data(), custom.size(), outlen);
+    inline xof_with_output_length(const char* function_name, const ascon::byte_array& custom) {
+        ::ascon_xof_init_custom(&m_state, function_name, custom.data(), custom.size(), outlen);
     }
 
     /**
      * \brief Destroys this ASCON-XOF object.
      */
-    inline ~xof_with_output_length()
-    {
+    inline ~xof_with_output_length() {
         ::ascon_xof_free(&m_state);
     }
 
@@ -514,9 +490,7 @@ public:
      *
      * \return A reference to this ASCON-XOF object.
      */
-    inline xof_with_output_length<outlen> &operator=
-        (const ascon::xof_with_output_length<outlen> &other)
-    {
+    inline xof_with_output_length<outlen>& operator=(const ascon::xof_with_output_length<outlen>& other) {
         if (this != &other) {
             ::ascon_xof_free(&m_state);
             ::ascon_xof_copy(&m_state, &other.m_state);
@@ -527,12 +501,12 @@ public:
     /**
      * \brief Resets this ASCON-XOF object back to the initial state.
      */
-    inline void reset()
-    {
-        if (outlen == 0)
+    inline void reset() {
+        if (outlen == 0) {
             ::ascon_xof_reinit(&m_state);
-        else
+        } else {
             ::ascon_xof_reinit_fixed(&m_state, outlen);
+        }
     }
 
     /**
@@ -541,8 +515,7 @@ public:
      * \param data Points to the input data to be absorbed into the state.
      * \param len Length of the input data to be absorbed into the state.
      */
-    inline void absorb(const unsigned char *data, size_t len)
-    {
+    inline void absorb(const unsigned char* data, size_t len) {
         ::ascon_xof_absorb(&m_state, data, len);
     }
 
@@ -555,12 +528,9 @@ public:
      * If \a str is NULL, then this function is equivalent to absorbing the
      * empty string into the state.
      */
-    inline void absorb(const char *str)
-    {
+    inline void absorb(const char* str) {
         if (str) {
-            ::ascon_xof_absorb
-                (&m_state, reinterpret_cast<const unsigned char *>(str),
-                 ::strlen(str));
+            ::ascon_xof_absorb(&m_state, reinterpret_cast<const unsigned char*>(str), ::strlen(str));
         }
     }
 
@@ -569,8 +539,7 @@ public:
      *
      * \param data Reference to the byte array to absorb.
      */
-    inline void absorb(const ascon::byte_array& data)
-    {
+    inline void absorb(const ascon::byte_array& data) {
         ::ascon_xof_absorb(&m_state, data.data(), data.size());
     }
 
@@ -580,8 +549,7 @@ public:
      * \param data Points to the output buffer to receive the squeezed data.
      * \param len Number of bytes of data to squeeze out of the state.
      */
-    inline void squeeze(unsigned char *data, size_t len)
-    {
+    inline void squeeze(unsigned char* data, size_t len) {
         ::ascon_xof_squeeze(&m_state, data, len);
     }
 
@@ -592,8 +560,7 @@ public:
      *
      * \return A byte array containing the squeezed data.
      */
-    ascon::byte_array squeeze(size_t len)
-    {
+    ascon::byte_array squeeze(size_t len) {
         ascon::byte_array vec(len);
         ::ascon_xof_squeeze(&m_state, vec.data(), len);
         return vec;
@@ -609,8 +576,7 @@ public:
      * This function can avoid unnecessary XOR-with-zero operations
      * to save some time when padding is required.
      */
-    inline void pad()
-    {
+    inline void pad() {
         ::ascon_xof_pad(&m_state);
     }
 
@@ -619,14 +585,18 @@ public:
      *
      * \return A reference to the state.
      */
-    inline ::ascon_xof_state_t *state() { return &m_state; }
+    inline ::ascon_xof_state_t* state() {
+        return &m_state;
+    }
 
     /**
      * \brief Gets a constant reference to the C version of the ASCON-XOF state.
      *
      * \return A constant reference to the state.
      */
-    inline const ::ascon_xof_state_t *state() const { return &m_state; }
+    inline const ::ascon_xof_state_t* state() const {
+        return &m_state;
+    }
 
 #if !defined(ARDUINO) && !defined(ASCON_NO_STL)
 
@@ -636,11 +606,8 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void absorb(const std::string& str)
-    {
-        ::ascon_xof_absorb
-            (&m_state, reinterpret_cast<const unsigned char *>(str.data()),
-             str.size());
+    inline void absorb(const std::string& str) {
+        ::ascon_xof_absorb(&m_state, reinterpret_cast<const unsigned char*>(str.data()), str.size());
     }
 
 #elif defined(ARDUINO)
@@ -651,16 +618,13 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void absorb(const String& str)
-    {
-        ::ascon_xof_absorb
-            (&m_state, reinterpret_cast<const unsigned char *>(str.c_str()),
-             str.length());
+    inline void absorb(const String& str) {
+        ::ascon_xof_absorb(&m_state, reinterpret_cast<const unsigned char*>(str.c_str()), str.length());
     }
 
 #endif /* ARDUINO */
 
-private:
+    private:
     ::ascon_xof_state_t m_state; /**< Internal XOF state */
 };
 
@@ -691,21 +655,20 @@ private:
  * \endcode
  */
 template<size_t outlen>
-class xofa_with_output_length
-{
-public:
+class xofa_with_output_length {
+    public:
     /**
      * \brief Constucts a new ASCON-XOFA object.
      *
      * After construction, the new object is ready to accept input
      * data with absorb().
      */
-    inline xofa_with_output_length()
-    {
-        if (outlen == 0)
+    inline xofa_with_output_length() {
+        if (outlen == 0) {
             ::ascon_xofa_init(&m_state);
-        else
+        } else {
             ::ascon_xofa_init_fixed(&m_state, outlen);
+        }
     }
 
     /**
@@ -714,9 +677,7 @@ public:
      * \param other The other object to copy, which must have the same
      * output length as this class.
      */
-    inline xofa_with_output_length
-        (const ascon::xofa_with_output_length<outlen> &other)
-    {
+    inline xofa_with_output_length(const ascon::xofa_with_output_length<outlen>& other) {
         ::ascon_xofa_copy(&m_state, &other.m_state);
     }
 
@@ -729,12 +690,8 @@ public:
      * \param custom Points to the customization string.
      * \param customlen Number of bytes in the customization string.
      */
-    inline explicit xofa_with_output_length
-        (const char *function_name, const unsigned char *custom = 0,
-         size_t customlen = 0)
-    {
-        ::ascon_xofa_init_custom
-            (&m_state, function_name, custom, customlen, outlen);
+    inline explicit xofa_with_output_length(const char* function_name, const unsigned char* custom = 0, size_t customlen = 0) {
+        ::ascon_xofa_init_custom(&m_state, function_name, custom, customlen, outlen);
     }
 
     /**
@@ -745,18 +702,14 @@ public:
      * empty for no function name.
      * \param custom The customization string.
      */
-    inline xofa_with_output_length
-        (const char *function_name, const ascon::byte_array &custom)
-    {
-        ::ascon_xofa_init_custom
-            (&m_state, function_name, custom.data(), custom.size(), outlen);
+    inline xofa_with_output_length(const char* function_name, const ascon::byte_array& custom) {
+        ::ascon_xofa_init_custom(&m_state, function_name, custom.data(), custom.size(), outlen);
     }
 
     /**
      * \brief Destroys this ASCON-XOFA object.
      */
-    inline ~xofa_with_output_length()
-    {
+    inline ~xofa_with_output_length() {
         ::ascon_xofa_free(&m_state);
     }
 
@@ -768,9 +721,7 @@ public:
      *
      * \return A reference to this ASCON-XOFA object.
      */
-    inline xofa_with_output_length<outlen> &operator=
-        (const ascon::xofa_with_output_length<outlen> &other)
-    {
+    inline xofa_with_output_length<outlen>& operator=(const ascon::xofa_with_output_length<outlen>& other) {
         if (this != &other) {
             ::ascon_xofa_free(&m_state);
             ::ascon_xofa_copy(&m_state, &other.m_state);
@@ -781,12 +732,12 @@ public:
     /**
      * \brief Resets this ASCON-XOFA object back to the initial state.
      */
-    inline void reset()
-    {
-        if (outlen == 0)
+    inline void reset() {
+        if (outlen == 0) {
             ::ascon_xofa_reinit(&m_state);
-        else
+        } else {
             ::ascon_xofa_reinit_fixed(&m_state, outlen);
+        }
     }
 
     /**
@@ -795,8 +746,7 @@ public:
      * \param data Points to the input data to be absorbed into the state.
      * \param len Length of the input data to be absorbed into the state.
      */
-    inline void absorb(const unsigned char *data, size_t len)
-    {
+    inline void absorb(const unsigned char* data, size_t len) {
         ::ascon_xofa_absorb(&m_state, data, len);
     }
 
@@ -809,10 +759,10 @@ public:
      * If \a str is NULL, then this function is equivalent to absorbing the
      * empty string into the state.
      */
-    inline void absorb(const char *str)
-    {
-        if (str)
+    inline void absorb(const char* str) {
+        if (str) {
             ::ascon_xofa_absorb(&m_state, str, ::strlen(str));
+        }
     }
 
     /**
@@ -820,8 +770,7 @@ public:
      *
      * \param data Reference to the byte array to absorb.
      */
-    inline void absorb(const ascon::byte_array& data)
-    {
+    inline void absorb(const ascon::byte_array& data) {
         ::ascon_xofa_absorb(&m_state, data.data(), data.size());
     }
 
@@ -831,8 +780,7 @@ public:
      * \param data Points to the output buffer to receive the squeezed data.
      * \param len Number of bytes of data to squeeze out of the state.
      */
-    inline void squeeze(unsigned char *data, size_t len)
-    {
+    inline void squeeze(unsigned char* data, size_t len) {
         ::ascon_xofa_squeeze(&m_state, data, len);
     }
 
@@ -843,8 +791,7 @@ public:
      *
      * \return A byte array containing the squeezed data.
      */
-    inline ascon::byte_array squeeze(size_t len)
-    {
+    inline ascon::byte_array squeeze(size_t len) {
         ascon::byte_array vec(len);
         ::ascon_xofa_squeeze(&m_state, vec.data(), len);
         return vec;
@@ -860,8 +807,7 @@ public:
      * This function can avoid unnecessary XOR-with-zero operations
      * to save some time when padding is required.
      */
-    inline void pad()
-    {
+    inline void pad() {
         ::ascon_xofa_pad(&m_state);
     }
 
@@ -870,14 +816,18 @@ public:
      *
      * \return A reference to the state.
      */
-    inline ::ascon_xofa_state_t *state() { return &m_state; }
+    inline ::ascon_xofa_state_t* state() {
+        return &m_state;
+    }
 
     /**
      * \brief Gets a constant reference to the C version of the ASCON-XOFA state.
      *
      * \return A constant reference to the state.
      */
-    inline const ::ascon_xofa_state_t *state() const { return &m_state; }
+    inline const ::ascon_xofa_state_t* state() const {
+        return &m_state;
+    }
 
 #if !defined(ARDUINO) && !defined(ASCON_NO_STL)
 
@@ -887,8 +837,7 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void absorb(const std::string& str)
-    {
+    inline void absorb(const std::string& str) {
         ::ascon_xofa_absorb(&m_state, str.data(), str.size());
     }
 
@@ -900,14 +849,13 @@ public:
      *
      * \param str Reference to the string to absorb.
      */
-    inline void absorb(const String& str)
-    {
+    inline void absorb(const String& str) {
         ::ascon_xofa_absorb(&m_state, str.c_str(), str.length());
     }
 
 #endif /* ARDUINO */
 
-private:
+    private:
     ::ascon_xofa_state_t m_state; /**< Internal XOF state */
 };
 

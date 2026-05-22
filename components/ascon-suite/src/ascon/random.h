@@ -87,7 +87,7 @@ typedef struct
  *
  * \sa ascon_random_init()
  */
-int ascon_random(unsigned char *out, size_t outlen);
+int ascon_random(unsigned char* out, size_t outlen);
 
 /**
  * \brief Initializes a pseudorandom number generator from the
@@ -109,7 +109,7 @@ int ascon_random(unsigned char *out, size_t outlen);
  *
  * \sa ascon_random_fetch(), ascon_random_feed()
  */
-int ascon_random_init(ascon_random_state_t *state);
+int ascon_random_init(ascon_random_state_t* state);
 
 /**
  * \brief Frees a pseudorandom number generator and destroys any
@@ -119,7 +119,7 @@ int ascon_random_init(ascon_random_state_t *state);
  *
  * \sa ascon_random_init()
  */
-void ascon_random_free(ascon_random_state_t *state);
+void ascon_random_free(ascon_random_state_t* state);
 
 /**
  * \brief Fetches data from a pseudorandom number generator.
@@ -130,8 +130,7 @@ void ascon_random_free(ascon_random_state_t *state);
  *
  * \sa ascon_random_reseed()
  */
-void ascon_random_fetch
-    (ascon_random_state_t *state, unsigned char *out, size_t outlen);
+void ascon_random_fetch(ascon_random_state_t* state, unsigned char* out, size_t outlen);
 
 /**
  * \brief Explicitly re-seeds a pseudorandom number generator from the
@@ -148,7 +147,7 @@ void ascon_random_fetch
  *
  * \sa ascon_random_fetch()
  */
-int ascon_random_reseed(ascon_random_state_t *state);
+int ascon_random_reseed(ascon_random_state_t* state);
 
 /**
  * \brief Feeds entropy into a pseudorandom number generator.
@@ -166,8 +165,7 @@ int ascon_random_reseed(ascon_random_state_t *state);
  * important.  And then only call ascon_random_fetch() when it judges
  * that the entropy pool is sufficiently populated.
  */
-void ascon_random_feed
-    (ascon_random_state_t *state, const unsigned char *entropy, size_t size);
+void ascon_random_feed(ascon_random_state_t* state, const unsigned char* entropy, size_t size);
 
 /**
  * \brief Saves a seed value in non-volatile storage.
@@ -189,8 +187,7 @@ void ascon_random_feed
  * The seed value in non-volatile storage is ASCON_RANDOM_SAVED_SEED_SIZE
  * bytes in size.
  */
-int ascon_random_save_seed
-    (ascon_random_state_t *state, const ascon_storage_t *storage);
+int ascon_random_save_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
 
 /**
  * \brief Loads a saved seed value from non-volatile storage.
@@ -210,8 +207,7 @@ int ascon_random_save_seed
  * PRNG won't restart in the same state if the device loses power before
  * the next explicit save.
  */
-int ascon_random_load_seed
-    (ascon_random_state_t *state, const ascon_storage_t *storage);
+int ascon_random_load_seed(ascon_random_state_t* state, const ascon_storage_t* storage);
 
 #ifdef __cplusplus
 }

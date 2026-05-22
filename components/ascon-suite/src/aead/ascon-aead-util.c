@@ -23,18 +23,15 @@
 #include <ascon/aead.h>
 #include "core/ascon-util.h"
 
-void ascon_aead_set_counter
-    (unsigned char npub[ASCON128_NONCE_SIZE], uint64_t n)
-{
+void ascon_aead_set_counter(unsigned char npub[ASCON128_NONCE_SIZE], uint64_t n) {
     be_store_word64(npub, 0);
     be_store_word64(npub + 8, n);
 }
 
-void ascon_aead_increment_nonce(unsigned char npub[ASCON128_NONCE_SIZE])
-{
+void ascon_aead_increment_nonce(unsigned char npub[ASCON128_NONCE_SIZE]) {
     unsigned index;
     uint16_t carry = 1;
-    for (index = ASCON128_NONCE_SIZE; index > 0; ) {
+    for (index = ASCON128_NONCE_SIZE; index > 0;) {
         --index;
         carry += npub[index];
         npub[index] = (unsigned char)carry;

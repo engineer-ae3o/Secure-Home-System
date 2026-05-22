@@ -33,8 +33,7 @@
 #include <string.h>
 #include "copyright.h"
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     printf("\n\t.align\t2\n");
     printf("\t.global\t%s\n", name);
 #if defined(FORCE_ARM_MODE)
@@ -48,108 +47,103 @@ static void function_header(const char *name)
     printf("%s:\n", name);
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\t.size\t%s, .-%s\n", name, name);
 }
 
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0_e;
-    const char *x1_e;
-    const char *x2_e;
-    const char *x3_e;
-    const char *x4_e;
-    const char *x0_o;
-    const char *x1_o;
-    const char *x2_o;
-    const char *x3_o;
-    const char *x4_o;
-    const char *t0;
-    const char *t1;
-    const char *t2;
-    const char *t3;
+    const char* x0_e;
+    const char* x1_e;
+    const char* x2_e;
+    const char* x3_e;
+    const char* x4_e;
+    const char* x0_o;
+    const char* x1_o;
+    const char* x2_o;
+    const char* x3_o;
+    const char* x4_o;
+    const char* t0;
+    const char* t1;
+    const char* t2;
+    const char* t3;
 
 } reg_names;
 
 #if !defined(FORCE_ARM_MODE)
 
-static int is_low_reg(const char *reg)
-{
+static int is_low_reg(const char* reg) {
     return reg[0] == 'r' && atoi(reg + 1) < 8;
 }
 
 #endif
 
 /* Generates a binary operator, preferring thumb instructions if possible */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
+static void binop(const char* name, const char* reg1, const char* reg2) {
 #if defined(FORCE_ARM_MODE)
     printf("\t%s\t%s, %s\n", name, reg1, reg2);
 #else
-    if (is_low_reg(reg1) && is_low_reg(reg2))
+    if (is_low_reg(reg1) && is_low_reg(reg2)) {
         printf("\t%ss\t%s, %s\n", name, reg1, reg2);
-    else
+    } else {
         printf("\t%s\t%s, %s\n", name, reg1, reg2);
+    }
 #endif
 }
 
 /* Generates a "bic" instruction: dest = src1 & ~src2 */
-static void bic(const char *dest, const char *src1, const char *src2)
-{
+static void bic(const char* dest, const char* src1, const char* src2) {
 #if defined(FORCE_ARM_MODE)
     printf("\tbic\t%s, %s, %s\n", dest, src1, src2);
 #else
-    if (!strcmp(dest, src1) && is_low_reg(src1) && is_low_reg(src2))
+    if (!strcmp(dest, src1) && is_low_reg(src1) && is_low_reg(src2)) {
         printf("\tbics\t%s, %s\n", src1, src2);
-    else
+    } else {
         printf("\tbic\t%s, %s, %s\n", dest, src1, src2);
+    }
 #endif
 }
 
 /* Applies the S-box to five 64-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
-    binop("eor", regs->x0_e, regs->x4_e);       /* x0_e ^= x4_e; */
-    binop("eor", regs->x0_o, regs->x4_o);       /* x0_o ^= x4_o; */
-    binop("eor", regs->x4_e, regs->x3_e);       /* x4_e ^= x3_e; */
-    binop("eor", regs->x4_o, regs->x3_o);       /* x4_o ^= x3_o; */
-    binop("eor", regs->x2_e, regs->x1_e);       /* x2_e ^= x1_e; */
-    binop("eor", regs->x2_o, regs->x1_o);       /* x2_o ^= x1_o; */
-    bic(regs->t0, regs->x1_e, regs->x0_e);      /* t0 = (~x0_e) & x_e1; */
-    bic(regs->t2, regs->x2_e, regs->x1_e);      /* x0_e ^= (~x1_e) & x2_e; */
-    bic(regs->t3, regs->x3_e, regs->x2_e);      /* x1_e ^= (~x2_e) & x3_e; */
+static void gen_sbox(const reg_names* regs) {
+    binop("eor", regs->x0_e, regs->x4_e);  /* x0_e ^= x4_e; */
+    binop("eor", regs->x0_o, regs->x4_o);  /* x0_o ^= x4_o; */
+    binop("eor", regs->x4_e, regs->x3_e);  /* x4_e ^= x3_e; */
+    binop("eor", regs->x4_o, regs->x3_o);  /* x4_o ^= x3_o; */
+    binop("eor", regs->x2_e, regs->x1_e);  /* x2_e ^= x1_e; */
+    binop("eor", regs->x2_o, regs->x1_o);  /* x2_o ^= x1_o; */
+    bic(regs->t0, regs->x1_e, regs->x0_e); /* t0 = (~x0_e) & x_e1; */
+    bic(regs->t2, regs->x2_e, regs->x1_e); /* x0_e ^= (~x1_e) & x2_e; */
+    bic(regs->t3, regs->x3_e, regs->x2_e); /* x1_e ^= (~x2_e) & x3_e; */
     binop("eor", regs->x1_e, regs->t3);
-    bic(regs->t3, regs->x0_e, regs->x4_e);      /* x3_e ^= (~x4_e) & t1; */
+    bic(regs->t3, regs->x0_e, regs->x4_e); /* x3_e ^= (~x4_e) & t1; */
     binop("eor", regs->x0_e, regs->t2);
-    bic(regs->t2, regs->x4_e, regs->x3_e);      /* x2_e ^= (~x3_e) & x4_e; */
+    bic(regs->t2, regs->x4_e, regs->x3_e); /* x2_e ^= (~x3_e) & x4_e; */
     binop("eor", regs->x2_e, regs->t2);
     binop("eor", regs->x3_e, regs->t3);
-    binop("eor", regs->x4_e, regs->t0);         /* x4_e ^= t0_e; */
-    bic(regs->t0, regs->x1_o, regs->x0_o);      /* t0 = (~x0_o) & x_o1; */
-    bic(regs->t2, regs->x2_o, regs->x1_o);      /* x0_o ^= (~x1_o) & x2_o; */
-    bic(regs->t3, regs->x3_o, regs->x2_o);      /* x1_o ^= (~x2_o) & x3_o; */
+    binop("eor", regs->x4_e, regs->t0);    /* x4_e ^= t0_e; */
+    bic(regs->t0, regs->x1_o, regs->x0_o); /* t0 = (~x0_o) & x_o1; */
+    bic(regs->t2, regs->x2_o, regs->x1_o); /* x0_o ^= (~x1_o) & x2_o; */
+    bic(regs->t3, regs->x3_o, regs->x2_o); /* x1_o ^= (~x2_o) & x3_o; */
     binop("eor", regs->x1_o, regs->t3);
-    bic(regs->t3, regs->x0_o, regs->x4_o);      /* x3_o ^= (~x4_o) & t1; */
+    bic(regs->t3, regs->x0_o, regs->x4_o); /* x3_o ^= (~x4_o) & t1; */
     binop("eor", regs->x0_o, regs->t2);
-    bic(regs->t2, regs->x4_o, regs->x3_o);      /* x2_o ^= (~x3_o) & x4_o; */
+    bic(regs->t2, regs->x4_o, regs->x3_o); /* x2_o ^= (~x3_o) & x4_o; */
     binop("eor", regs->x2_o, regs->t2);
     binop("eor", regs->x3_o, regs->t3);
-    binop("eor", regs->x4_o, regs->t0);         /* x4_o ^= t0_o; */
-    binop("eor", regs->x1_e, regs->x0_e);       /* x1_e ^= x0_e; */
-    binop("eor", regs->x1_o, regs->x0_o);       /* x1_o ^= x0_o; */
-    binop("eor", regs->x0_e, regs->x4_e);       /* x0_e ^= x4_e; */
-    binop("eor", regs->x0_o, regs->x4_o);       /* x0_o ^= x4_o; */
-    binop("eor", regs->x3_e, regs->x2_e);       /* x3_e ^= x2_e; */
-    binop("eor", regs->x3_o, regs->x2_o);       /* x3_o ^= x2_o; */
-    binop("mvn", regs->x2_e, regs->x2_e);       /* x2_e = ~x2_e; */
-    binop("mvn", regs->x2_o, regs->x2_o);       /* x2_o = ~x2_o; */
+    binop("eor", regs->x4_o, regs->t0);   /* x4_o ^= t0_o; */
+    binop("eor", regs->x1_e, regs->x0_e); /* x1_e ^= x0_e; */
+    binop("eor", regs->x1_o, regs->x0_o); /* x1_o ^= x0_o; */
+    binop("eor", regs->x0_e, regs->x4_e); /* x0_e ^= x4_e; */
+    binop("eor", regs->x0_o, regs->x4_o); /* x0_o ^= x4_o; */
+    binop("eor", regs->x3_e, regs->x2_e); /* x3_e ^= x2_e; */
+    binop("eor", regs->x3_o, regs->x2_o); /* x3_o ^= x2_o; */
+    binop("mvn", regs->x2_e, regs->x2_e); /* x2_e = ~x2_e; */
+    binop("mvn", regs->x2_o, regs->x2_o); /* x2_o = ~x2_o; */
 }
 
-static void linear_xor
-    (const char *xl, const char *xh, const char *t0, const char *t1, int shift)
-{
+static void linear_xor(const char* xl, const char* xh, const char* t0, const char* t1, int shift) {
     if (shift < 32) {
         printf("\teor\t%s, %s, %s, lsr #%d\n", xl, xl, t0, shift);
         printf("\teor\t%s, %s, %s, lsr #%d\n", xh, xh, t1, shift);
@@ -165,10 +159,7 @@ static void linear_xor
 }
 
 /* Perform a non-sliced linear diffusion step */
-static void linear
-    (const reg_names *regs, const char *xl, const char *xh,
-     int shift1, int shift2)
-{
+static void linear(const reg_names* regs, const char* xl, const char* xh, int shift1, int shift2) {
     binop("mov", regs->t0, xl);
     binop("mov", regs->t1, xh);
     linear_xor(xl, xh, regs->t0, regs->t1, shift1);
@@ -176,11 +167,9 @@ static void linear
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(const reg_names *regs, int round)
-{
+static void gen_round(const reg_names* regs, int round) {
     /* Apply the round constant to x2 */
-    printf("\teor\t%s, %s, #%d\n", regs->x2_e, regs->x2_e,
-           ((0x0F - round) << 4) | round);
+    printf("\teor\t%s, %s, #%d\n", regs->x2_e, regs->x2_e, ((0x0F - round) << 4) | round);
 
     /* Apply the S-box to the even and odd halves of the state */
     gen_sbox(regs);
@@ -204,13 +193,10 @@ static void gen_round(const reg_names *regs, int round)
 }
 
 /* Generate the code for a single sliced ASCON round */
-static void gen_round_sliced(const reg_names *regs, int round)
-{
+static void gen_round_sliced(const reg_names* regs, int round) {
     /* Round constants for all rounds */
     static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12,
-        6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3
-    };
+        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
 
     /* Apply the round constants to x2_e and x2_o */
     printf("\teor\t%s, %s, #%d\n", regs->x2_e, regs->x2_e, RC[round * 2]);
@@ -273,14 +259,12 @@ static void gen_round_sliced(const reg_names *regs, int round)
 }
 
 /* Swap the bytes in a word */
-static void swap(const char *reg)
-{
+static void swap(const char* reg) {
     printf("\trev\t%s, %s\n", reg, reg);
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(int is_sliced)
-{
+static void gen_permute(int is_sliced) {
     /*
      * r0 holds the pointer to the ASCON state on entry and exit.
      *
@@ -294,23 +278,23 @@ static void gen_permute(int is_sliced)
      *
      * lr can be used as a temporary as long as it is saved on the stack.
      */
-    reg_names regs;
-    int round;
-    const char *prefix = is_sliced ? "L" : "LP";
-    regs.x0_e = "r2";
-    regs.x1_e = "r3";
-    regs.x2_e = "r4";
-    regs.x3_e = "r5";
-    regs.x4_e = "r6";
-    regs.x0_o = "r7";
-    regs.x1_o = "r8";
-    regs.x2_o = "r9";
-    regs.x3_o = "r10";
-    regs.x4_o = "fp";
-    regs.t0 = "r0";
-    regs.t1 = "r1";
-    regs.t2 = "ip";
-    regs.t3 = "lr";
+    reg_names   regs;
+    int         round;
+    const char* prefix = is_sliced ? "L" : "LP";
+    regs.x0_e          = "r2";
+    regs.x1_e          = "r3";
+    regs.x2_e          = "r4";
+    regs.x3_e          = "r5";
+    regs.x4_e          = "r6";
+    regs.x0_o          = "r7";
+    regs.x1_o          = "r8";
+    regs.x2_o          = "r9";
+    regs.x3_o          = "r10";
+    regs.x4_o          = "fp";
+    regs.t0            = "r0";
+    regs.t1            = "r1";
+    regs.t2            = "ip";
+    regs.t3            = "lr";
     printf("\tpush\t{r4, r5, r6, r7, r8, r9, r10, fp, lr}\n");
 
     /* Load all words of the state into registers */
@@ -336,11 +320,16 @@ static void gen_permute(int is_sliced)
         printf("\tldr\t%s, [r0, #%d]\n", regs.x3_e, 28);
         printf("\tldr\t%s, [r0, #%d]\n", regs.x4_o, 32);
         printf("\tldr\t%s, [r0, #%d]\n", regs.x4_e, 36);
-        swap(regs.x0_o); swap(regs.x0_e);
-        swap(regs.x1_o); swap(regs.x1_e);
-        swap(regs.x2_o); swap(regs.x2_e);
-        swap(regs.x3_o); swap(regs.x3_e);
-        swap(regs.x4_o); swap(regs.x4_e);
+        swap(regs.x0_o);
+        swap(regs.x0_e);
+        swap(regs.x1_o);
+        swap(regs.x1_e);
+        swap(regs.x2_o);
+        swap(regs.x2_e);
+        swap(regs.x3_o);
+        swap(regs.x3_e);
+        swap(regs.x4_o);
+        swap(regs.x4_e);
     }
     printf("\tpush\t{r0}\n"); /* Free up r0 for use as an extra temporary */
 
@@ -355,8 +344,9 @@ static void gen_permute(int is_sliced)
     printf("\tcmp\tr1, #4\n");
     printf("\tbeq\t.%s4\n", prefix);
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf("\tcmp\tr1, #%d\n", round);
         printf("\tbeq\t.%s%d\n", prefix, round);
     }
@@ -365,10 +355,11 @@ static void gen_permute(int is_sliced)
     /* Unroll the rounds */
     for (round = 0; round < 12; ++round) {
         printf(".%s%d:\n", prefix, round);
-        if (is_sliced)
+        if (is_sliced) {
             gen_round_sliced(&regs, round);
-        else
+        } else {
             gen_round(&regs, round);
+        }
     }
 
     /* Store the words back to the state */
@@ -386,11 +377,16 @@ static void gen_permute(int is_sliced)
         printf("\tstr\t%s, [r0, #%d]\n", regs.x4_e, 32);
         printf("\tstr\t%s, [r0, #%d]\n", regs.x4_o, 36);
     } else {
-        swap(regs.x0_o); swap(regs.x0_e);
-        swap(regs.x1_o); swap(regs.x1_e);
-        swap(regs.x2_o); swap(regs.x2_e);
-        swap(regs.x3_o); swap(regs.x3_e);
-        swap(regs.x4_o); swap(regs.x4_e);
+        swap(regs.x0_o);
+        swap(regs.x0_e);
+        swap(regs.x1_o);
+        swap(regs.x1_e);
+        swap(regs.x2_o);
+        swap(regs.x2_e);
+        swap(regs.x3_o);
+        swap(regs.x3_e);
+        swap(regs.x4_o);
+        swap(regs.x4_e);
         printf("\tstr\t%s, [r0, #%d]\n", regs.x0_o, 0);
         printf("\tstr\t%s, [r0, #%d]\n", regs.x0_e, 4);
         printf("\tstr\t%s, [r0, #%d]\n", regs.x1_o, 8);
@@ -421,8 +417,7 @@ static void gen_permute(int is_sliced)
     printf("\tpop\t{r4, r5, r6, r7, r8, r9, r10, fp, pc}\n");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

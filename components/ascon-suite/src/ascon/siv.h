@@ -73,12 +73,7 @@ extern "C" {
  *
  * \sa ascon128_siv_decrypt()
  */
-void ascon128_siv_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon128_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-128-SIV.
@@ -101,12 +96,7 @@ void ascon128_siv_encrypt
  *
  * \sa ascon128_siv_encrypt()
  */
-int ascon128_siv_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon128_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Encrypts and authenticates a packet with ASCON-128a-SIV.
@@ -125,12 +115,7 @@ int ascon128_siv_decrypt
  *
  * \sa ascon128a_siv_decrypt()
  */
-void ascon128a_siv_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon128a_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-128a-SIV.
@@ -153,12 +138,7 @@ void ascon128a_siv_encrypt
  *
  * \sa ascon128a_siv_encrypt()
  */
-int ascon128a_siv_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon128a_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Encrypts and authenticates a packet with ASCON-80pq-SIV.
@@ -177,12 +157,7 @@ int ascon128a_siv_decrypt
  *
  * \sa ascon80pq_siv_decrypt()
  */
-void ascon80pq_siv_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon80pq_siv_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-80pq-SIV.
@@ -205,28 +180,25 @@ void ascon80pq_siv_encrypt
  *
  * \sa ascon80pq_siv_encrypt()
  */
-int ascon80pq_siv_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon80pq_siv_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 #ifdef __cplusplus
 }
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128-SIV.
  */
-class siv128 : public aead
-{
+class siv128 : public aead {
     /* Disable copy operations */
-    inline siv128(const siv128 &) : aead() {}
-    inline siv128& operator=(const siv128 &) { return *this; }
-public:
+    inline siv128(const siv128&) : aead() {
+    }
+    inline siv128& operator=(const siv128&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-128-SIV object.
      *
@@ -257,33 +229,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON128_KEY_SIZE];       /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE];   /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                    /**< Internal AEAD state */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128a-SIV.
  */
-class siv128a : public aead
-{
+class siv128a : public aead {
     /* Disable copy operations */
-    inline siv128a(const siv128a &) : aead() {}
-    inline siv128a& operator=(const siv128a &) { return *this; }
-public:
+    inline siv128a(const siv128a&) : aead() {
+    }
+    inline siv128a& operator=(const siv128a&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-128a-SIV object.
      *
@@ -314,33 +287,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON128_KEY_SIZE];       /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE];   /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                    /**< Internal AEAD state */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-80pq-SIV.
  */
-class siv80pq : public aead
-{
+class siv80pq : public aead {
     /* Disable copy operations */
-    inline siv80pq(const siv80pq &) : aead() {}
-    inline siv80pq& operator=(const siv80pq &) { return *this; }
-public:
+    inline siv80pq(const siv80pq&) : aead() {
+    }
+    inline siv80pq& operator=(const siv80pq&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-80pq-SIV object.
      *
@@ -371,22 +345,20 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON80PQ_KEY_SIZE];      /**< Key */
-        unsigned char nonce[ASCON80PQ_NONCE_SIZE];  /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON80PQ_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                     /**< Internal AEAD state */
 };
 
 } /* namespace ascon */

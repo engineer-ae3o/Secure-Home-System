@@ -39,11 +39,10 @@ extern "C" {
  *
  * This structure should be treated as opaque.
  */
-typedef union
-{
-    uint64_t S[4];      /**< 64-bit version of the masked shares */
-    uint32_t W[8];      /**< 32-bit version of the masked shares */
-    uint8_t B[32];      /**< 8-bit version of the masked shares */
+typedef union {
+    uint64_t S[4];  /**< 64-bit version of the masked shares */
+    uint32_t W[8];  /**< 32-bit version of the masked shares */
+    uint8_t  B[32]; /**< 8-bit version of the masked shares */
 
 } ascon_masked_key_word_t;
 
@@ -96,15 +95,14 @@ typedef struct
  * Keys can be masked to protect them from casual snooping in memory.
  * Or they may be masked for later use by a masked cipher.
  */
-void ascon_masked_key_128_init
-    (ascon_masked_key_128_t *masked, const unsigned char *key);
+void ascon_masked_key_128_init(ascon_masked_key_128_t* masked, const unsigned char* key);
 
 /**
  * \brief Frees a masked 128-bit key and destroys all sensitive material.
  *
  * \param masked Points to the masked key to be freed.
  */
-void ascon_masked_key_128_free(ascon_masked_key_128_t *masked);
+void ascon_masked_key_128_free(ascon_masked_key_128_t* masked);
 
 /**
  * \brief Randomizes a masked 128-bit key by mixing in fresh random material.
@@ -113,7 +111,7 @@ void ascon_masked_key_128_free(ascon_masked_key_128_t *masked);
  *
  * Long-lived keys should be randomized regularly to mix in fresh randomness.
  */
-void ascon_masked_key_128_randomize(ascon_masked_key_128_t *masked);
+void ascon_masked_key_128_randomize(ascon_masked_key_128_t* masked);
 
 /**
  * \brief Extracts the plain version of a 128-bit key from its masked version.
@@ -121,8 +119,7 @@ void ascon_masked_key_128_randomize(ascon_masked_key_128_t *masked);
  * \param masked Points to the masked key to be extracted.
  * \param key Points to a 16 byte buffer to receive the extracted key.
  */
-void ascon_masked_key_128_extract
-    (const ascon_masked_key_128_t *masked, unsigned char *key);
+void ascon_masked_key_128_extract(const ascon_masked_key_128_t* masked, unsigned char* key);
 
 /**
  * \brief Initializes a masked 160-bit key for ASCON.
@@ -133,15 +130,14 @@ void ascon_masked_key_128_extract
  * Keys can be masked to protect them from casual snooping in memory.
  * Or they may be masked for later use by a masked cipher.
  */
-void ascon_masked_key_160_init
-    (ascon_masked_key_160_t *masked, const unsigned char *key);
+void ascon_masked_key_160_init(ascon_masked_key_160_t* masked, const unsigned char* key);
 
 /**
  * \brief Frees a masked 160-bit key and destroys all sensitive material.
  *
  * \param masked Points to the masked key to be freed.
  */
-void ascon_masked_key_160_free(ascon_masked_key_160_t *masked);
+void ascon_masked_key_160_free(ascon_masked_key_160_t* masked);
 
 /**
  * \brief Randomizes a masked 160-bit key by mixing in fresh random material.
@@ -150,7 +146,7 @@ void ascon_masked_key_160_free(ascon_masked_key_160_t *masked);
  *
  * Long-lived keys should be randomized regularly to mix in fresh randomness.
  */
-void ascon_masked_key_160_randomize(ascon_masked_key_160_t *masked);
+void ascon_masked_key_160_randomize(ascon_masked_key_160_t* masked);
 
 /**
  * \brief Extracts the plain version of a 160-bit key from its masked version.
@@ -158,8 +154,7 @@ void ascon_masked_key_160_randomize(ascon_masked_key_160_t *masked);
  * \param masked Points to the masked key to be extracted.
  * \param key Points to a 20 byte buffer to receive the extracted key.
  */
-void ascon_masked_key_160_extract
-    (const ascon_masked_key_160_t *masked, unsigned char *key);
+void ascon_masked_key_160_extract(const ascon_masked_key_160_t* masked, unsigned char* key);
 
 #ifdef __cplusplus
 }

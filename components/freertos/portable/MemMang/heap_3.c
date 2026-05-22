@@ -26,7 +26,6 @@
  *
  */
 
-
 /*
  * Implementation of pvPortMalloc() and vPortFree() that relies on the
  * compilers own malloc() and free() implementations.
@@ -50,46 +49,42 @@
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
-#if ( configSUPPORT_DYNAMIC_ALLOCATION == 0 )
-    #error This file must not be used if configSUPPORT_DYNAMIC_ALLOCATION is 0
+#if (configSUPPORT_DYNAMIC_ALLOCATION == 0)
+#error This file must not be used if configSUPPORT_DYNAMIC_ALLOCATION is 0
 #endif
 
 /*-----------------------------------------------------------*/
 
-void * pvPortMalloc( size_t xWantedSize )
-{
-    void * pvReturn;
+void* pvPortMalloc(size_t xWantedSize) {
+    void* pvReturn;
 
     vTaskSuspendAll();
     {
-        pvReturn = malloc( xWantedSize );
-        traceMALLOC( pvReturn, xWantedSize );
+        pvReturn = malloc(xWantedSize);
+        traceMALLOC(pvReturn, xWantedSize);
     }
-    ( void ) xTaskResumeAll();
+    (void)xTaskResumeAll();
 
-    #if ( configUSE_MALLOC_FAILED_HOOK == 1 )
+#if (configUSE_MALLOC_FAILED_HOOK == 1)
     {
-        if( pvReturn == NULL )
-        {
+        if (pvReturn == NULL) {
             vApplicationMallocFailedHook();
         }
     }
-    #endif
+#endif
 
     return pvReturn;
 }
 /*-----------------------------------------------------------*/
 
-void vPortFree( void * pv )
-{
-    if( pv != NULL )
-    {
+void vPortFree(void* pv) {
+    if (pv != NULL) {
         vTaskSuspendAll();
         {
-            free( pv );
-            traceFREE( pv, 0 );
+            free(pv);
+            traceFREE(pv, 0);
         }
-        ( void ) xTaskResumeAll();
+        (void)xTaskResumeAll();
     }
 }
 /*-----------------------------------------------------------*/
@@ -99,8 +94,7 @@ void vPortFree( void * pv )
  * This function must be called by the application before restarting the
  * scheduler.
  */
-void vPortHeapResetState( void )
-{
+void vPortHeapResetState(void) {
     /* No state needs to be re-initialised in heap_3. */
 }
 /*-----------------------------------------------------------*/

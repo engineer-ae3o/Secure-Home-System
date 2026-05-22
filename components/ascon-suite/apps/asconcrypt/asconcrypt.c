@@ -41,96 +41,117 @@
 
 #define ASCON_PBKDF2_ROUNDS 8192
 
-#define ASCON_BUFSIZ        BUFSIZ
-#define ASCON_PWSIZ         1024
+#define ASCON_BUFSIZ BUFSIZ
+#define ASCON_PWSIZ 1024
 
 #define ASCON_MAX_FILE_SIZE (1024ULL * 1024ULL * 1024ULL * 1024ULL)
 
-#define MODE_DECRYPT        0
-#define MODE_ENCRYPT        1
-#define MODE_DETECT         2
-#define MODE_GENERATE       3
+#define MODE_DECRYPT 0
+#define MODE_ENCRYPT 1
+#define MODE_DETECT 2
+#define MODE_GENERATE 3
 
 static char full_password[ASCON_PWSIZ];
 static char confirm_password[ASCON_PWSIZ];
 static char temp_filename[ASCON_BUFSIZ];
 
-static void usage(const char *progname);
-static void password_error(const char *filename);
-static int generate_password(const char *keyfile);
-static int read_keyfile(const char *keyfile);
-static int is_encrypted_filename(const char *filename);
-static const char *strip_suffix(const char *filename);
-static const char *add_suffix(const char *filename, const char *suffix);
-static int encrypt_file(const char *infilename, const char *outfilename);
-static int decrypt_file(const char *infilename, const char *outfilename);
+static void        usage(const char* progname);
+static void        password_error(const char* filename);
+static int         generate_password(const char* keyfile);
+static int         read_keyfile(const char* keyfile);
+static int         is_encrypted_filename(const char* filename);
+static const char* strip_suffix(const char* filename);
+static const char* add_suffix(const char* filename, const char* suffix);
+static int         encrypt_file(const char* infilename, const char* outfilename);
+static int         decrypt_file(const char* infilename, const char* outfilename);
 
-int main(int argc, char *argv[])
-{
-    const char *progname = argv[0];
-    int opt_mode = MODE_DETECT;
-    const char *opt_password = NULL;
-    const char *opt_keyfile = NULL;
-    const char *opt_output = NULL;
-    int opt, posn;
-    int exit_val = 0;
+int main(int argc, char* argv[]) {
+    const char* progname     = argv[0];
+    int         opt_mode     = MODE_DETECT;
+    const char* opt_password = NULL;
+    const char* opt_keyfile  = NULL;
+    const char* opt_output   = NULL;
+    int         opt, posn;
+    int         exit_val = 0;
 
 #if defined(HAVE_GETOPT)
     /* Process the command-line options */
     while ((opt = getopt(argc, argv, "edp:k:o:g:")) != -1) {
         switch (opt) {
-        case 'e': opt_mode = MODE_ENCRYPT; break;
-        case 'd': opt_mode = MODE_DECRYPT; break;
-        case 'p': opt_password = optarg; break;
-        case 'k': opt_keyfile = optarg; break;
-        case 'o': opt_output = optarg; break;
+            case 'e':
+                opt_mode = MODE_ENCRYPT;
+                break;
+            case 'd':
+                opt_mode = MODE_DECRYPT;
+                break;
+            case 'p':
+                opt_password = optarg;
+                break;
+            case 'k':
+                opt_keyfile = optarg;
+                break;
+            case 'o':
+                opt_output = optarg;
+                break;
 
-        case 'g':
-            opt_mode = MODE_GENERATE;
-            opt_keyfile = optarg;
-            break;
+            case 'g':
+                opt_mode    = MODE_GENERATE;
+                opt_keyfile = optarg;
+                break;
 
-        default:
-            usage(progname);
-            return 1;
+            default:
+                usage(progname);
+                return 1;
         }
     }
 #else
-    /* Simple command-line parser for systems without getopt() */
-    #define GET_OPTARG(var) \
-        do { \
-            (var) = NULL; \
-            if (opts[0] == '\0') { \
-                if ((optind + 1) < argc) { \
-                    (var) = argv[optind + 1]; \
-                    ++optind; \
-                } else { \
-                    error = 1; \
-                } \
-            } else { \
-                (var) = opts; \
-                opts = ""; \
-            } \
-        } while (0)
+/* Simple command-line parser for systems without getopt() */
+#define GET_OPTARG(var)                   \
+    do {                                  \
+        (var) = NULL;                     \
+        if (opts[0] == '\0') {            \
+            if ((optind + 1) < argc) {    \
+                (var) = argv[optind + 1]; \
+                ++optind;                 \
+            } else {                      \
+                error = 1;                \
+            }                             \
+        } else {                          \
+            (var) = opts;                 \
+            opts  = "";                   \
+        }                                 \
+    } while (0)
     int optind = 1;
     while (optind < argc && argv[optind][0] == '-' &&
            argv[optind][1] != '\0') {
-        const char *opts = argv[optind] + 1;
+        const char* opts = argv[optind] + 1;
         while ((opt = *opts++) != '\0') {
             int error = 0;
             switch (opt) {
-            case 'e': opt_mode = MODE_ENCRYPT; break;
-            case 'd': opt_mode = MODE_DECRYPT; break;
-            case 'p': GET_OPTARG(opt_password); break;
-            case 'k': GET_OPTARG(opt_keyfile); break;
-            case 'o': GET_OPTARG(opt_output); break;
+                case 'e':
+                    opt_mode = MODE_ENCRYPT;
+                    break;
+                case 'd':
+                    opt_mode = MODE_DECRYPT;
+                    break;
+                case 'p':
+                    GET_OPTARG(opt_password);
+                    break;
+                case 'k':
+                    GET_OPTARG(opt_keyfile);
+                    break;
+                case 'o':
+                    GET_OPTARG(opt_output);
+                    break;
 
-            case 'g':
-                opt_mode = MODE_GENERATE;
-                GET_OPTARG(opt_keyfile);
-                break;
+                case 'g':
+                    opt_mode = MODE_GENERATE;
+                    GET_OPTARG(opt_keyfile);
+                    break;
 
-            default: error = 1; break;
+                default:
+                    error = 1;
+                    break;
             }
             if (error) {
                 usage(progname);
@@ -143,7 +164,7 @@ int main(int argc, char *argv[])
 
     /* Validate the arguments */
     if ((opt_mode == MODE_GENERATE && optind < argc) ||
-            (opt_mode != MODE_GENERATE && optind >= argc)) {
+        (opt_mode != MODE_GENERATE && optind >= argc)) {
         usage(progname);
         return 1;
     }
@@ -160,8 +181,9 @@ int main(int argc, char *argv[])
 
     /* Handle password file generation */
     if (opt_mode == MODE_GENERATE) {
-        if (!generate_password(opt_keyfile))
+        if (!generate_password(opt_keyfile)) {
             return 1;
+        }
         return 0;
     }
 
@@ -172,15 +194,17 @@ int main(int argc, char *argv[])
         int mixture = 0;
         for (posn = optind; posn < argc; ++posn) {
             if (is_encrypted_filename(argv[posn])) {
-                if (opt_mode == MODE_ENCRYPT)
+                if (opt_mode == MODE_ENCRYPT) {
                     mixture = 1;
-                else
+                } else {
                     opt_mode = MODE_DECRYPT;
+                }
             } else {
-                if (opt_mode == MODE_DECRYPT)
+                if (opt_mode == MODE_DECRYPT) {
                     mixture = 1;
-                else
+                } else {
                     opt_mode = MODE_ENCRYPT;
+                }
             }
         }
         if (mixture) {
@@ -212,8 +236,7 @@ int main(int argc, char *argv[])
 #if defined(HAVE_ISATTY)
         /* Must have a real tty for stdin and stdout to prompt for a password */
         if (!isatty(0) || !isatty(1)) {
-            fprintf(stderr, "%s: cannot prompt for a password without a terminal\n",
-                    progname);
+            fprintf(stderr, "%s: cannot prompt for a password without a terminal\n", progname);
             return 1;
         }
 #endif
@@ -222,15 +245,11 @@ int main(int argc, char *argv[])
          * If we are decrypting, then only ask for the password once. */
         have_password = 0;
         if (opt_mode == MODE_DECRYPT) {
-            have_password = read_password
-                ("Password: ", full_password, sizeof(full_password));
+            have_password = read_password("Password: ", full_password, sizeof(full_password));
         } else {
-            have_password = read_password
-                ("Password: ", full_password, sizeof(full_password));
+            have_password = read_password("Password: ", full_password, sizeof(full_password));
             if (have_password) {
-                have_password = read_password
-                    ("Confirm Password: ", confirm_password,
-                     sizeof(confirm_password));
+                have_password = read_password("Confirm Password: ", confirm_password, sizeof(confirm_password));
                 if (!have_password || strcmp(full_password, confirm_password) != 0) {
                     fprintf(stderr, "%s: passwords do not match\n", progname);
                     ascon_clean(full_password, sizeof(full_password));
@@ -251,28 +270,32 @@ int main(int argc, char *argv[])
 
     /* Encrypt or decrypt the supplied files */
     for (posn = optind; posn < argc; ++posn) {
-        const char *filename;
+        const char* filename;
         if (!strcmp(argv[posn], "-") && !opt_output) {
             /* If we are encrypting standard input and there is no output
              * filename given, default to writing to standard output. */
             opt_output = "-";
         }
         if (opt_mode == MODE_DECRYPT) {
-            if (opt_output)
+            if (opt_output) {
                 filename = opt_output;
-            else if (is_encrypted_filename(argv[posn]))
+            } else if (is_encrypted_filename(argv[posn])) {
                 filename = strip_suffix(argv[posn]);
-            else
+            } else {
                 filename = add_suffix(argv[posn], ".decrypted");
-            if (!decrypt_file(argv[posn], filename))
+            }
+            if (!decrypt_file(argv[posn], filename)) {
                 exit_val = 1;
+            }
         } else {
-            if (opt_output)
+            if (opt_output) {
                 filename = opt_output;
-            else
+            } else {
                 filename = add_suffix(argv[posn], ".ascon");
-            if (!encrypt_file(argv[posn], filename))
+            }
+            if (!encrypt_file(argv[posn], filename)) {
                 exit_val = 1;
+            }
         }
         opt_output = NULL; /* Can only use the -o option once */
     }
@@ -284,8 +307,7 @@ int main(int argc, char *argv[])
 }
 
 /* Print usage information for the program */
-static void usage(const char *progname)
-{
+static void usage(const char* progname) {
     fprintf(stderr, "\n");
     fprintf(stderr, "Usage: %s [-e|-d] [-p PASSWORD | -k KEYFILE] [-o OUTPUT] INPUT ...\n", progname);
     fprintf(stderr, "   or: %s -g KEYFILE\n", progname);
@@ -300,28 +322,26 @@ static void usage(const char *progname)
 }
 
 /* Print an error for a password that is too long */
-static void password_error(const char *filename)
-{
-    fprintf(stderr, "%s: password is too long, maximum is %d bytes\n",
-            filename, ASCON_PWSIZ - 1);
+static void password_error(const char* filename) {
+    fprintf(stderr, "%s: password is too long, maximum is %d bytes\n", filename, ASCON_PWSIZ - 1);
 }
 
 /* Number of characters to put in a generated password */
 #define DEFAULT_PASSWORD_LENGTH 40
 
 /* Generates a random password and writes it to keyfile */
-static int generate_password(const char *keyfile)
-{
+static int generate_password(const char* keyfile) {
     /* Uses the same ASCII encoding as https://www.aescrypt.com/ */
     static char const pw_chars[] =
         "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%$";
     unsigned char password[DEFAULT_PASSWORD_LENGTH];
-    unsigned posn;
-    SAFEFILE file;
+    unsigned      posn;
+    SAFEFILE      file;
 
     /* Try to open keyfile before we start */
-    if (!safe_file_open_write(&file, keyfile))
+    if (!safe_file_open_write(&file, keyfile)) {
         return 0;
+    }
 
     /* Generate random bytes for the password */
     if (!ascon_random(password, sizeof(password))) {
@@ -333,8 +353,9 @@ static int generate_password(const char *keyfile)
 
     /* Reduce each byte to modulo 64 and convert into ASCII.  This will throw
      * away some of the bits, but any random bit is as good as any other. */
-    for (posn = 0; posn < sizeof(password); ++posn)
+    for (posn = 0; posn < sizeof(password); ++posn) {
         password[posn] = (unsigned char)pw_chars[password[posn] & 0x3F];
+    }
 
     /* Write the generated password to keyfile */
     safe_file_write(&file, password, sizeof(password));
@@ -347,18 +368,19 @@ static int generate_password(const char *keyfile)
 }
 
 /* Reads the password from a key file */
-static int read_keyfile(const char *keyfile)
-{
+static int read_keyfile(const char* keyfile) {
     SAFEFILE file;
-    int len, posn;
+    int      len, posn;
 
     /* Read the contents of the key file */
-    if (!safe_file_open_read(&file, keyfile))
+    if (!safe_file_open_read(&file, keyfile)) {
         return 0;
+    }
     len = safe_file_read(&file, full_password, sizeof(full_password));
     safe_file_close(&file);
-    if (len < 0)
+    if (len < 0) {
         return 0;
+    }
 
     /* Find the end of line marker for the first line of the file */
     posn = 0;
@@ -380,71 +402,66 @@ static int read_keyfile(const char *keyfile)
 }
 
 /* Determine if a filename appears to be for an encrypted file */
-static int is_encrypted_filename(const char *filename)
-{
+static int is_encrypted_filename(const char* filename) {
     size_t len = strlen(filename);
-    if (len >= 6)
+    if (len >= 6) {
         return !strncmp(filename + len - 6, ".ascon", 6);
-    else
+    } else {
         return 1;
+    }
 }
 
 /* Strips the ".ascon" suffix from a filename */
-static const char *strip_suffix(const char *filename)
-{
+static const char* strip_suffix(const char* filename) {
     size_t len = strlen(filename) - 6;
-    if (len >= sizeof(temp_filename))
+    if (len >= sizeof(temp_filename)) {
         len = sizeof(temp_filename);
+    }
     memcpy(temp_filename, filename, len);
     temp_filename[len] = '\0';
     return temp_filename;
 }
 
 /* Adds a suffix to a filename */
-static const char *add_suffix(const char *filename, const char *suffix)
-{
+static const char* add_suffix(const char* filename, const char* suffix) {
     snprintf(temp_filename, sizeof(temp_filename), "%s%s", filename, suffix);
     return temp_filename;
 }
 
 /* Bytes to be written to the header portion of the file */
-struct asconcrypt_header
-{
-    char magic[10];             /* "ASCONcrypt" */
-    unsigned char version[2];   /* Version number */
-    unsigned char salt[16];     /* Salt value */
+struct asconcrypt_header {
+    char          magic[10];  /* "ASCONcrypt" */
+    unsigned char version[2]; /* Version number */
+    unsigned char salt[16];   /* Salt value */
 };
 
 /* Bytes to be written to the "SIV block" portion of the file */
-struct asconcrypt_siv_block
-{
-    unsigned char key[20];      /* Key value for the payload */
-    unsigned char nonce[16];    /* Nonce value for the payload */
-    unsigned char tag[16];      /* Tag value to authenticate the block */
+struct asconcrypt_siv_block {
+    unsigned char key[20];   /* Key value for the payload */
+    unsigned char nonce[16]; /* Nonce value for the payload */
+    unsigned char tag[16];   /* Tag value to authenticate the block */
 };
 
 /* Header plus the "SIV block" */
-struct asconcrypt_full_header
-{
-    struct asconcrypt_header header;
+struct asconcrypt_full_header {
+    struct asconcrypt_header    header;
     struct asconcrypt_siv_block siv;
 };
 
 /* Encrypts a file */
-static int encrypt_file(const char *infilename, const char *outfilename)
-{
-    struct asconcrypt_header header;
+static int encrypt_file(const char* infilename, const char* outfilename) {
+    struct asconcrypt_header    header;
     struct asconcrypt_siv_block siv;
     struct asconcrypt_siv_block siv_copy;
-    unsigned char kn[20 + 16];
-    int exit_val = 0;
-    size_t clen = 0;
-    SAFEFILE input;
-    SAFEFILE output;
-    ascon80pq_state_t state;
-    unsigned char data[ASCON_BUFSIZ];
-    uint64_t size;
-    int len;
+    unsigned char               kn[20 + 16];
+    int                         exit_val = 0;
+    size_t                      clen     = 0;
+    SAFEFILE                    input;
+    SAFEFILE                    output;
+    ascon80pq_state_t           state;
+    unsigned char               data[ASCON_BUFSIZ];
+    uint64_t                    size;
+    int                         len;
 
     /* Open the input and output files.  If we can't do this then
      * there is nothing we can do - bail out. */
@@ -464,32 +481,28 @@ static int encrypt_file(const char *infilename, const char *outfilename)
     /* Allocate the salt, key, and nonce randomly */
     memset(&siv, 0, sizeof(siv));
     if (!ascon_random(header.salt, sizeof(header.salt)) ||
-            !ascon_random(siv.key, sizeof(siv.key) + sizeof(siv.nonce))) {
+        !ascon_random(siv.key, sizeof(siv.key) + sizeof(siv.nonce))) {
         fprintf(stderr, "FATAL: system random number generator does not appear to be working!\n");
         goto cleanup;
     }
     siv_copy = siv;
 
     /* Run PBKDF2 to derive the key and nonce to use to encrypt the SIV block */
-    ascon_pbkdf2(kn, sizeof(kn),
-                 (const unsigned char *)full_password, strlen(full_password),
-                 header.salt, sizeof(header.salt), ASCON_PBKDF2_ROUNDS);
+    ascon_pbkdf2(kn, sizeof(kn), (const unsigned char*)full_password, strlen(full_password), header.salt, sizeof(header.salt), ASCON_PBKDF2_ROUNDS);
 
     /* Encrypt the SIV block and generate the tag */
-    ascon80pq_siv_encrypt
-        (siv.key, &clen, siv.key, sizeof(siv.key) + sizeof(siv.nonce),
-         (const unsigned char *)&header, sizeof(header), kn + 20, kn);
+    ascon80pq_siv_encrypt(siv.key, &clen, siv.key, sizeof(siv.key) + sizeof(siv.nonce), (const unsigned char*)&header, sizeof(header), kn + 20, kn);
 
     /* Write the header and SIV block to the output file */
     exit_val = 1;
     if (!safe_file_write(&output, &header, sizeof(header)) ||
-            !safe_file_write(&output, &siv, sizeof(siv))) {
+        !safe_file_write(&output, &siv, sizeof(siv))) {
         exit_val = 0;
     }
 
     /* Read the input file, encrypt it, and write to the output file */
     ascon80pq_aead_init(&state, siv_copy.nonce, siv_copy.key);
-    ascon80pq_aead_start(&state, (const unsigned char *)&siv, sizeof(siv));
+    ascon80pq_aead_start(&state, (const unsigned char*)&siv, sizeof(siv));
     size = 0;
     while (exit_val) {
         len = safe_file_read(&input, data, sizeof(data));
@@ -505,17 +518,20 @@ static int encrypt_file(const char *infilename, const char *outfilename)
                 break;
             }
             ascon80pq_aead_encrypt_block(&state, data, data, len);
-            if (!safe_file_write(&output, data, len))
+            if (!safe_file_write(&output, data, len)) {
                 exit_val = 0;
-            if (len < (int)sizeof(data))
+            }
+            if (len < (int)sizeof(data)) {
                 break; /* Short last block - we're done */
+            }
         }
     }
     ascon80pq_aead_encrypt_finalize(&state, data);
     ascon80pq_aead_free(&state);
     if (exit_val) {
-        if (!safe_file_write(&output, data, ASCON80PQ_TAG_SIZE))
+        if (!safe_file_write(&output, data, ASCON80PQ_TAG_SIZE)) {
             exit_val = 0;
+        }
     }
 
 cleanup:
@@ -527,27 +543,27 @@ cleanup:
     ascon_clean(&siv_copy, sizeof(siv_copy));
     ascon_clean(kn, sizeof(kn));
     ascon_clean(data, sizeof(data));
-    if (!exit_val)
+    if (!exit_val) {
         safe_file_delete(&output);
+    }
     return exit_val;
 }
 
 /* Decrypt a file */
-static int decrypt_file(const char *infilename, const char *outfilename)
-{
+static int decrypt_file(const char* infilename, const char* outfilename) {
     struct asconcrypt_full_header header;
-    struct asconcrypt_siv_block siv_copy;
-    unsigned char kn[20 + 16];
-    int exit_val = 0;
-    size_t mlen = 0;
-    int bad_format;
-    SAFEFILE input;
-    SAFEFILE output;
-    ascon80pq_state_t state;
-    unsigned char data[ASCON_BUFSIZ];
-    uint64_t size;
-    int len;
-    int result;
+    struct asconcrypt_siv_block   siv_copy;
+    unsigned char                 kn[20 + 16];
+    int                           exit_val = 0;
+    size_t                        mlen     = 0;
+    int                           bad_format;
+    SAFEFILE                      input;
+    SAFEFILE                      output;
+    ascon80pq_state_t             state;
+    unsigned char                 data[ASCON_BUFSIZ];
+    uint64_t                      size;
+    int                           len;
+    int                           result;
 
     /* Open the input and output files.  If we can't do this then
      * there is nothing we can do - bail out. */
@@ -565,29 +581,22 @@ static int decrypt_file(const char *infilename, const char *outfilename)
         bad_format = 1;
     } else {
         if (memcmp(header.header.magic, "ASCONcrypt", 10) != 0 ||
-                header.header.version[0] != 0 ||
-                header.header.version[1] != 1) {
+            header.header.version[0] != 0 ||
+            header.header.version[1] != 1) {
             bad_format = 1;
         }
     }
     if (bad_format) {
-        fprintf(stderr, "%s: unrecognized encrypted file format\n",
-                infilename);
+        fprintf(stderr, "%s: unrecognized encrypted file format\n", infilename);
         goto cleanup;
     }
 
     /* Run PBKDF2 to derive the key and nonce to use to decrypt the SIV block */
-    ascon_pbkdf2(kn, sizeof(kn),
-                 (const unsigned char *)full_password, strlen(full_password),
-                 header.header.salt, sizeof(header.header.salt),
-                 ASCON_PBKDF2_ROUNDS);
+    ascon_pbkdf2(kn, sizeof(kn), (const unsigned char*)full_password, strlen(full_password), header.header.salt, sizeof(header.header.salt), ASCON_PBKDF2_ROUNDS);
 
     /* Decrypt the SIV block and check the tag */
     siv_copy = header.siv;
-    if (ascon80pq_siv_decrypt
-            (header.siv.key, &mlen, header.siv.key, sizeof(header.siv),
-             (const unsigned char *)&(header.header), sizeof(header.header),
-             kn + 20, kn) != 0) {
+    if (ascon80pq_siv_decrypt(header.siv.key, &mlen, header.siv.key, sizeof(header.siv), (const unsigned char*)&(header.header), sizeof(header.header), kn + 20, kn) != 0) {
         fprintf(stderr, "%s: password is incorrect\n", infilename);
         goto cleanup;
     }
@@ -602,9 +611,8 @@ static int decrypt_file(const char *infilename, const char *outfilename)
 
     /* Read the input file, decrypt it, and write to the output file */
     ascon80pq_aead_init(&state, header.siv.nonce, header.siv.key);
-    ascon80pq_aead_start
-        (&state, (const unsigned char *)&siv_copy, sizeof(siv_copy));
-    size = 0;
+    ascon80pq_aead_start(&state, (const unsigned char*)&siv_copy, sizeof(siv_copy));
+    size     = 0;
     exit_val = 1;
     while (exit_val) {
         len = safe_file_read(&input, data + 16, sizeof(data) - 16);
@@ -620,19 +628,20 @@ static int decrypt_file(const char *infilename, const char *outfilename)
                 break;
             }
             ascon80pq_aead_decrypt_block(&state, data, data, len);
-            if (!safe_file_write(&output, data, len))
+            if (!safe_file_write(&output, data, len)) {
                 exit_val = 0;
+            }
             memmove(data, data + len, 16);
-            if (len < (int)(sizeof(data) - 16))
+            if (len < (int)(sizeof(data) - 16)) {
                 break; /* Short last block - we're done */
+            }
         }
     }
     result = ascon80pq_aead_decrypt_finalize(&state, data);
     ascon80pq_aead_free(&state);
     if (result != 0 && exit_val) {
         exit_val = 0;
-        fprintf(stderr, "%s: file is corrupt and failed to decrypt\n",
-                infilename);
+        fprintf(stderr, "%s: file is corrupt and failed to decrypt\n", infilename);
         goto cleanup;
     }
 
@@ -644,7 +653,8 @@ cleanup:
     ascon_clean(&siv_copy, sizeof(siv_copy));
     ascon_clean(kn, sizeof(kn));
     ascon_clean(data, sizeof(data));
-    if (!exit_val)
+    if (!exit_val) {
         safe_file_delete(&output);
+    }
     return exit_val;
 }

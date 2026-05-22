@@ -72,28 +72,28 @@ extern "C" {
 /** @defgroup BUS_LL_EC_AHB1_GRP1_PERIPH  AHB1 GRP1 PERIPH
   * @{
   */
-#define LL_AHB1_GRP1_PERIPH_ALL            (uint32_t)0xFFFFFFFFU
-#define LL_AHB1_GRP1_PERIPH_CRC            RCC_AHBENR_CRCEN
-#define LL_AHB1_GRP1_PERIPH_DMA1           RCC_AHBENR_DMA1EN
+#define LL_AHB1_GRP1_PERIPH_ALL (uint32_t)0xFFFFFFFFU
+#define LL_AHB1_GRP1_PERIPH_CRC RCC_AHBENR_CRCEN
+#define LL_AHB1_GRP1_PERIPH_DMA1 RCC_AHBENR_DMA1EN
 #if defined(DMA2)
-#define LL_AHB1_GRP1_PERIPH_DMA2           RCC_AHBENR_DMA2EN
+#define LL_AHB1_GRP1_PERIPH_DMA2 RCC_AHBENR_DMA2EN
 #endif /*DMA2*/
 #if defined(ETH)
-#define LL_AHB1_GRP1_PERIPH_ETHMAC         RCC_AHBENR_ETHMACEN
-#define LL_AHB1_GRP1_PERIPH_ETHMACRX       RCC_AHBENR_ETHMACRXEN
-#define LL_AHB1_GRP1_PERIPH_ETHMACTX       RCC_AHBENR_ETHMACTXEN
+#define LL_AHB1_GRP1_PERIPH_ETHMAC RCC_AHBENR_ETHMACEN
+#define LL_AHB1_GRP1_PERIPH_ETHMACRX RCC_AHBENR_ETHMACRXEN
+#define LL_AHB1_GRP1_PERIPH_ETHMACTX RCC_AHBENR_ETHMACTXEN
 #endif /*ETH*/
-#define LL_AHB1_GRP1_PERIPH_FLASH          RCC_AHBENR_FLITFEN
+#define LL_AHB1_GRP1_PERIPH_FLASH RCC_AHBENR_FLITFEN
 #if defined(FSMC_Bank1)
-#define LL_AHB1_GRP1_PERIPH_FSMC           RCC_AHBENR_FSMCEN
+#define LL_AHB1_GRP1_PERIPH_FSMC RCC_AHBENR_FSMCEN
 #endif /*FSMC_Bank1*/
 #if defined(USB_OTG_FS)
-#define LL_AHB1_GRP1_PERIPH_OTGFS          RCC_AHBENR_OTGFSEN
+#define LL_AHB1_GRP1_PERIPH_OTGFS RCC_AHBENR_OTGFSEN
 #endif /*USB_OTG_FS*/
 #if defined(SDIO)
-#define LL_AHB1_GRP1_PERIPH_SDIO           RCC_AHBENR_SDIOEN
+#define LL_AHB1_GRP1_PERIPH_SDIO RCC_AHBENR_SDIOEN
 #endif /*SDIO*/
-#define LL_AHB1_GRP1_PERIPH_SRAM           RCC_AHBENR_SRAMEN
+#define LL_AHB1_GRP1_PERIPH_SRAM RCC_AHBENR_SRAMEN
 /**
   * @}
   */
@@ -101,68 +101,68 @@ extern "C" {
 /** @defgroup BUS_LL_EC_APB1_GRP1_PERIPH  APB1 GRP1 PERIPH
   * @{
   */
-#define LL_APB1_GRP1_PERIPH_ALL            (uint32_t)0xFFFFFFFFU
-#define LL_APB1_GRP1_PERIPH_BKP            RCC_APB1ENR_BKPEN
+#define LL_APB1_GRP1_PERIPH_ALL (uint32_t)0xFFFFFFFFU
+#define LL_APB1_GRP1_PERIPH_BKP RCC_APB1ENR_BKPEN
 #if defined(CAN1)
-#define LL_APB1_GRP1_PERIPH_CAN1           RCC_APB1ENR_CAN1EN
+#define LL_APB1_GRP1_PERIPH_CAN1 RCC_APB1ENR_CAN1EN
 #endif /*CAN1*/
 #if defined(CAN2)
-#define LL_APB1_GRP1_PERIPH_CAN2           RCC_APB1ENR_CAN2EN
+#define LL_APB1_GRP1_PERIPH_CAN2 RCC_APB1ENR_CAN2EN
 #endif /*CAN2*/
 #if defined(CEC)
-#define LL_APB1_GRP1_PERIPH_CEC            RCC_APB1ENR_CECEN
+#define LL_APB1_GRP1_PERIPH_CEC RCC_APB1ENR_CECEN
 #endif /*CEC*/
 #if defined(DAC)
-#define LL_APB1_GRP1_PERIPH_DAC1           RCC_APB1ENR_DACEN
+#define LL_APB1_GRP1_PERIPH_DAC1 RCC_APB1ENR_DACEN
 #endif /*DAC*/
-#define LL_APB1_GRP1_PERIPH_I2C1           RCC_APB1ENR_I2C1EN
+#define LL_APB1_GRP1_PERIPH_I2C1 RCC_APB1ENR_I2C1EN
 #if defined(I2C2)
-#define LL_APB1_GRP1_PERIPH_I2C2           RCC_APB1ENR_I2C2EN
+#define LL_APB1_GRP1_PERIPH_I2C2 RCC_APB1ENR_I2C2EN
 #endif /*I2C2*/
-#define LL_APB1_GRP1_PERIPH_PWR            RCC_APB1ENR_PWREN
+#define LL_APB1_GRP1_PERIPH_PWR RCC_APB1ENR_PWREN
 #if defined(SPI2)
-#define LL_APB1_GRP1_PERIPH_SPI2           RCC_APB1ENR_SPI2EN
+#define LL_APB1_GRP1_PERIPH_SPI2 RCC_APB1ENR_SPI2EN
 #endif /*SPI2*/
 #if defined(SPI3)
-#define LL_APB1_GRP1_PERIPH_SPI3           RCC_APB1ENR_SPI3EN
+#define LL_APB1_GRP1_PERIPH_SPI3 RCC_APB1ENR_SPI3EN
 #endif /*SPI3*/
 #if defined(TIM12)
-#define LL_APB1_GRP1_PERIPH_TIM12          RCC_APB1ENR_TIM12EN
+#define LL_APB1_GRP1_PERIPH_TIM12 RCC_APB1ENR_TIM12EN
 #endif /*TIM12*/
 #if defined(TIM13)
-#define LL_APB1_GRP1_PERIPH_TIM13          RCC_APB1ENR_TIM13EN
+#define LL_APB1_GRP1_PERIPH_TIM13 RCC_APB1ENR_TIM13EN
 #endif /*TIM13*/
 #if defined(TIM14)
-#define LL_APB1_GRP1_PERIPH_TIM14          RCC_APB1ENR_TIM14EN
+#define LL_APB1_GRP1_PERIPH_TIM14 RCC_APB1ENR_TIM14EN
 #endif /*TIM14*/
-#define LL_APB1_GRP1_PERIPH_TIM2           RCC_APB1ENR_TIM2EN
-#define LL_APB1_GRP1_PERIPH_TIM3           RCC_APB1ENR_TIM3EN
+#define LL_APB1_GRP1_PERIPH_TIM2 RCC_APB1ENR_TIM2EN
+#define LL_APB1_GRP1_PERIPH_TIM3 RCC_APB1ENR_TIM3EN
 #if defined(TIM4)
-#define LL_APB1_GRP1_PERIPH_TIM4           RCC_APB1ENR_TIM4EN
+#define LL_APB1_GRP1_PERIPH_TIM4 RCC_APB1ENR_TIM4EN
 #endif /*TIM4*/
 #if defined(TIM5)
-#define LL_APB1_GRP1_PERIPH_TIM5           RCC_APB1ENR_TIM5EN
+#define LL_APB1_GRP1_PERIPH_TIM5 RCC_APB1ENR_TIM5EN
 #endif /*TIM5*/
 #if defined(TIM6)
-#define LL_APB1_GRP1_PERIPH_TIM6           RCC_APB1ENR_TIM6EN
+#define LL_APB1_GRP1_PERIPH_TIM6 RCC_APB1ENR_TIM6EN
 #endif /*TIM6*/
 #if defined(TIM7)
-#define LL_APB1_GRP1_PERIPH_TIM7           RCC_APB1ENR_TIM7EN
+#define LL_APB1_GRP1_PERIPH_TIM7 RCC_APB1ENR_TIM7EN
 #endif /*TIM7*/
 #if defined(UART4)
-#define LL_APB1_GRP1_PERIPH_UART4          RCC_APB1ENR_UART4EN
+#define LL_APB1_GRP1_PERIPH_UART4 RCC_APB1ENR_UART4EN
 #endif /*UART4*/
 #if defined(UART5)
-#define LL_APB1_GRP1_PERIPH_UART5          RCC_APB1ENR_UART5EN
+#define LL_APB1_GRP1_PERIPH_UART5 RCC_APB1ENR_UART5EN
 #endif /*UART5*/
-#define LL_APB1_GRP1_PERIPH_USART2         RCC_APB1ENR_USART2EN
+#define LL_APB1_GRP1_PERIPH_USART2 RCC_APB1ENR_USART2EN
 #if defined(USART3)
-#define LL_APB1_GRP1_PERIPH_USART3         RCC_APB1ENR_USART3EN
+#define LL_APB1_GRP1_PERIPH_USART3 RCC_APB1ENR_USART3EN
 #endif /*USART3*/
 #if defined(USB)
-#define LL_APB1_GRP1_PERIPH_USB            RCC_APB1ENR_USBEN
+#define LL_APB1_GRP1_PERIPH_USB RCC_APB1ENR_USBEN
 #endif /*USB*/
-#define LL_APB1_GRP1_PERIPH_WWDG           RCC_APB1ENR_WWDGEN
+#define LL_APB1_GRP1_PERIPH_WWDG RCC_APB1ENR_WWDGEN
 /**
   * @}
   */
@@ -170,52 +170,52 @@ extern "C" {
 /** @defgroup BUS_LL_EC_APB2_GRP1_PERIPH  APB2 GRP1 PERIPH
   * @{
   */
-#define LL_APB2_GRP1_PERIPH_ALL            (uint32_t)0xFFFFFFFFU
-#define LL_APB2_GRP1_PERIPH_ADC1           RCC_APB2ENR_ADC1EN
+#define LL_APB2_GRP1_PERIPH_ALL (uint32_t)0xFFFFFFFFU
+#define LL_APB2_GRP1_PERIPH_ADC1 RCC_APB2ENR_ADC1EN
 #if defined(ADC2)
-#define LL_APB2_GRP1_PERIPH_ADC2           RCC_APB2ENR_ADC2EN
+#define LL_APB2_GRP1_PERIPH_ADC2 RCC_APB2ENR_ADC2EN
 #endif /*ADC2*/
 #if defined(ADC3)
-#define LL_APB2_GRP1_PERIPH_ADC3           RCC_APB2ENR_ADC3EN
+#define LL_APB2_GRP1_PERIPH_ADC3 RCC_APB2ENR_ADC3EN
 #endif /*ADC3*/
-#define LL_APB2_GRP1_PERIPH_AFIO           RCC_APB2ENR_AFIOEN
-#define LL_APB2_GRP1_PERIPH_GPIOA          RCC_APB2ENR_IOPAEN
-#define LL_APB2_GRP1_PERIPH_GPIOB          RCC_APB2ENR_IOPBEN
-#define LL_APB2_GRP1_PERIPH_GPIOC          RCC_APB2ENR_IOPCEN
-#define LL_APB2_GRP1_PERIPH_GPIOD          RCC_APB2ENR_IOPDEN
+#define LL_APB2_GRP1_PERIPH_AFIO RCC_APB2ENR_AFIOEN
+#define LL_APB2_GRP1_PERIPH_GPIOA RCC_APB2ENR_IOPAEN
+#define LL_APB2_GRP1_PERIPH_GPIOB RCC_APB2ENR_IOPBEN
+#define LL_APB2_GRP1_PERIPH_GPIOC RCC_APB2ENR_IOPCEN
+#define LL_APB2_GRP1_PERIPH_GPIOD RCC_APB2ENR_IOPDEN
 #if defined(GPIOE)
-#define LL_APB2_GRP1_PERIPH_GPIOE          RCC_APB2ENR_IOPEEN
+#define LL_APB2_GRP1_PERIPH_GPIOE RCC_APB2ENR_IOPEEN
 #endif /*GPIOE*/
 #if defined(GPIOF)
-#define LL_APB2_GRP1_PERIPH_GPIOF          RCC_APB2ENR_IOPFEN
+#define LL_APB2_GRP1_PERIPH_GPIOF RCC_APB2ENR_IOPFEN
 #endif /*GPIOF*/
 #if defined(GPIOG)
-#define LL_APB2_GRP1_PERIPH_GPIOG          RCC_APB2ENR_IOPGEN
+#define LL_APB2_GRP1_PERIPH_GPIOG RCC_APB2ENR_IOPGEN
 #endif /*GPIOG*/
-#define LL_APB2_GRP1_PERIPH_SPI1           RCC_APB2ENR_SPI1EN
+#define LL_APB2_GRP1_PERIPH_SPI1 RCC_APB2ENR_SPI1EN
 #if defined(TIM10)
-#define LL_APB2_GRP1_PERIPH_TIM10          RCC_APB2ENR_TIM10EN
+#define LL_APB2_GRP1_PERIPH_TIM10 RCC_APB2ENR_TIM10EN
 #endif /*TIM10*/
 #if defined(TIM11)
-#define LL_APB2_GRP1_PERIPH_TIM11          RCC_APB2ENR_TIM11EN
+#define LL_APB2_GRP1_PERIPH_TIM11 RCC_APB2ENR_TIM11EN
 #endif /*TIM11*/
 #if defined(TIM15)
-#define LL_APB2_GRP1_PERIPH_TIM15          RCC_APB2ENR_TIM15EN
+#define LL_APB2_GRP1_PERIPH_TIM15 RCC_APB2ENR_TIM15EN
 #endif /*TIM15*/
 #if defined(TIM16)
-#define LL_APB2_GRP1_PERIPH_TIM16          RCC_APB2ENR_TIM16EN
+#define LL_APB2_GRP1_PERIPH_TIM16 RCC_APB2ENR_TIM16EN
 #endif /*TIM16*/
 #if defined(TIM17)
-#define LL_APB2_GRP1_PERIPH_TIM17          RCC_APB2ENR_TIM17EN
+#define LL_APB2_GRP1_PERIPH_TIM17 RCC_APB2ENR_TIM17EN
 #endif /*TIM17*/
-#define LL_APB2_GRP1_PERIPH_TIM1           RCC_APB2ENR_TIM1EN
+#define LL_APB2_GRP1_PERIPH_TIM1 RCC_APB2ENR_TIM1EN
 #if defined(TIM8)
-#define LL_APB2_GRP1_PERIPH_TIM8           RCC_APB2ENR_TIM8EN
+#define LL_APB2_GRP1_PERIPH_TIM8 RCC_APB2ENR_TIM8EN
 #endif /*TIM8*/
 #if defined(TIM9)
-#define LL_APB2_GRP1_PERIPH_TIM9           RCC_APB2ENR_TIM9EN
+#define LL_APB2_GRP1_PERIPH_TIM9 RCC_APB2ENR_TIM9EN
 #endif /*TIM9*/
-#define LL_APB2_GRP1_PERIPH_USART1         RCC_APB2ENR_USART1EN
+#define LL_APB2_GRP1_PERIPH_USART1 RCC_APB2ENR_USART1EN
 /**
   * @}
   */
@@ -264,13 +264,12 @@ extern "C" {
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_AHB1_GRP1_EnableClock(uint32_t Periphs)
-{
-  __IO uint32_t tmpreg;
-  SET_BIT(RCC->AHBENR, Periphs);
-  /* Delay after an RCC peripheral clock enabling */
-  tmpreg = READ_BIT(RCC->AHBENR, Periphs);
-  (void)tmpreg;
+__STATIC_INLINE void LL_AHB1_GRP1_EnableClock(uint32_t Periphs) {
+    __IO uint32_t tmpreg;
+    SET_BIT(RCC->AHBENR, Periphs);
+    /* Delay after an RCC peripheral clock enabling */
+    tmpreg = READ_BIT(RCC->AHBENR, Periphs);
+    (void)tmpreg;
 }
 
 /**
@@ -302,9 +301,8 @@ __STATIC_INLINE void LL_AHB1_GRP1_EnableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval State of Periphs (1 or 0).
 */
-__STATIC_INLINE uint32_t LL_AHB1_GRP1_IsEnabledClock(uint32_t Periphs)
-{
-  return (READ_BIT(RCC->AHBENR, Periphs) == Periphs);
+__STATIC_INLINE uint32_t LL_AHB1_GRP1_IsEnabledClock(uint32_t Periphs) {
+    return (READ_BIT(RCC->AHBENR, Periphs) == Periphs);
 }
 
 /**
@@ -336,9 +334,8 @@ __STATIC_INLINE uint32_t LL_AHB1_GRP1_IsEnabledClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_AHB1_GRP1_DisableClock(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->AHBENR, Periphs);
+__STATIC_INLINE void LL_AHB1_GRP1_DisableClock(uint32_t Periphs) {
+    CLEAR_BIT(RCC->AHBENR, Periphs);
 }
 
 #if defined(RCC_AHBRSTR_SUPPORT)
@@ -354,9 +351,8 @@ __STATIC_INLINE void LL_AHB1_GRP1_DisableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_AHB1_GRP1_ForceReset(uint32_t Periphs)
-{
-  SET_BIT(RCC->AHBRSTR, Periphs);
+__STATIC_INLINE void LL_AHB1_GRP1_ForceReset(uint32_t Periphs) {
+    SET_BIT(RCC->AHBRSTR, Periphs);
 }
 
 /**
@@ -371,9 +367,8 @@ __STATIC_INLINE void LL_AHB1_GRP1_ForceReset(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_AHB1_GRP1_ReleaseReset(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->AHBRSTR, Periphs);
+__STATIC_INLINE void LL_AHB1_GRP1_ReleaseReset(uint32_t Periphs) {
+    CLEAR_BIT(RCC->AHBRSTR, Periphs);
 }
 #endif /* RCC_AHBRSTR_SUPPORT */
 
@@ -442,13 +437,12 @@ __STATIC_INLINE void LL_AHB1_GRP1_ReleaseReset(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB1_GRP1_EnableClock(uint32_t Periphs)
-{
-  __IO uint32_t tmpreg;
-  SET_BIT(RCC->APB1ENR, Periphs);
-  /* Delay after an RCC peripheral clock enabling */
-  tmpreg = READ_BIT(RCC->APB1ENR, Periphs);
-  (void)tmpreg;
+__STATIC_INLINE void LL_APB1_GRP1_EnableClock(uint32_t Periphs) {
+    __IO uint32_t tmpreg;
+    SET_BIT(RCC->APB1ENR, Periphs);
+    /* Delay after an RCC peripheral clock enabling */
+    tmpreg = READ_BIT(RCC->APB1ENR, Periphs);
+    (void)tmpreg;
 }
 
 /**
@@ -508,9 +502,8 @@ __STATIC_INLINE void LL_APB1_GRP1_EnableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval State of Periphs (1 or 0).
 */
-__STATIC_INLINE uint32_t LL_APB1_GRP1_IsEnabledClock(uint32_t Periphs)
-{
-  return (READ_BIT(RCC->APB1ENR, Periphs) == Periphs);
+__STATIC_INLINE uint32_t LL_APB1_GRP1_IsEnabledClock(uint32_t Periphs) {
+    return (READ_BIT(RCC->APB1ENR, Periphs) == Periphs);
 }
 
 /**
@@ -570,9 +563,8 @@ __STATIC_INLINE uint32_t LL_APB1_GRP1_IsEnabledClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB1_GRP1_DisableClock(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->APB1ENR, Periphs);
+__STATIC_INLINE void LL_APB1_GRP1_DisableClock(uint32_t Periphs) {
+    CLEAR_BIT(RCC->APB1ENR, Periphs);
 }
 
 /**
@@ -633,9 +625,8 @@ __STATIC_INLINE void LL_APB1_GRP1_DisableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB1_GRP1_ForceReset(uint32_t Periphs)
-{
-  SET_BIT(RCC->APB1RSTR, Periphs);
+__STATIC_INLINE void LL_APB1_GRP1_ForceReset(uint32_t Periphs) {
+    SET_BIT(RCC->APB1RSTR, Periphs);
 }
 
 /**
@@ -696,9 +687,8 @@ __STATIC_INLINE void LL_APB1_GRP1_ForceReset(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB1_GRP1_ReleaseReset(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->APB1RSTR, Periphs);
+__STATIC_INLINE void LL_APB1_GRP1_ReleaseReset(uint32_t Periphs) {
+    CLEAR_BIT(RCC->APB1RSTR, Periphs);
 }
 
 /**
@@ -758,13 +748,12 @@ __STATIC_INLINE void LL_APB1_GRP1_ReleaseReset(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB2_GRP1_EnableClock(uint32_t Periphs)
-{
-  __IO uint32_t tmpreg;
-  SET_BIT(RCC->APB2ENR, Periphs);
-  /* Delay after an RCC peripheral clock enabling */
-  tmpreg = READ_BIT(RCC->APB2ENR, Periphs);
-  (void)tmpreg;
+__STATIC_INLINE void LL_APB2_GRP1_EnableClock(uint32_t Periphs) {
+    __IO uint32_t tmpreg;
+    SET_BIT(RCC->APB2ENR, Periphs);
+    /* Delay after an RCC peripheral clock enabling */
+    tmpreg = READ_BIT(RCC->APB2ENR, Periphs);
+    (void)tmpreg;
 }
 
 /**
@@ -816,9 +805,8 @@ __STATIC_INLINE void LL_APB2_GRP1_EnableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval State of Periphs (1 or 0).
 */
-__STATIC_INLINE uint32_t LL_APB2_GRP1_IsEnabledClock(uint32_t Periphs)
-{
-  return (READ_BIT(RCC->APB2ENR, Periphs) == Periphs);
+__STATIC_INLINE uint32_t LL_APB2_GRP1_IsEnabledClock(uint32_t Periphs) {
+    return (READ_BIT(RCC->APB2ENR, Periphs) == Periphs);
 }
 
 /**
@@ -870,9 +858,8 @@ __STATIC_INLINE uint32_t LL_APB2_GRP1_IsEnabledClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB2_GRP1_DisableClock(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->APB2ENR, Periphs);
+__STATIC_INLINE void LL_APB2_GRP1_DisableClock(uint32_t Periphs) {
+    CLEAR_BIT(RCC->APB2ENR, Periphs);
 }
 
 /**
@@ -925,9 +912,8 @@ __STATIC_INLINE void LL_APB2_GRP1_DisableClock(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB2_GRP1_ForceReset(uint32_t Periphs)
-{
-  SET_BIT(RCC->APB2RSTR, Periphs);
+__STATIC_INLINE void LL_APB2_GRP1_ForceReset(uint32_t Periphs) {
+    SET_BIT(RCC->APB2RSTR, Periphs);
 }
 
 /**
@@ -980,15 +966,13 @@ __STATIC_INLINE void LL_APB2_GRP1_ForceReset(uint32_t Periphs)
   *         (*) value not defined in all devices.
   * @retval None
 */
-__STATIC_INLINE void LL_APB2_GRP1_ReleaseReset(uint32_t Periphs)
-{
-  CLEAR_BIT(RCC->APB2RSTR, Periphs);
+__STATIC_INLINE void LL_APB2_GRP1_ReleaseReset(uint32_t Periphs) {
+    CLEAR_BIT(RCC->APB2RSTR, Periphs);
 }
 
 /**
   * @}
   */
-
 
 /**
   * @}
@@ -1009,4 +993,3 @@ __STATIC_INLINE void LL_APB2_GRP1_ReleaseReset(uint32_t Periphs)
 #endif
 
 #endif /* __STM32F1xx_LL_BUS_H */
-

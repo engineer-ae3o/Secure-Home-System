@@ -106,9 +106,9 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_state_t state;    /**< Current hash state */
-    unsigned char count;    /**< Number of bytes in the current block */
-    unsigned char mode;     /**< Hash mode: 0 for absorb, 1 for squeeze */
+    ascon_state_t state; /**< Current hash state */
+    unsigned char count; /**< Number of bytes in the current block */
+    unsigned char mode;  /**< Hash mode: 0 for absorb, 1 for squeeze */
 
 } ascon_prf_state_t;
 
@@ -128,10 +128,7 @@ typedef struct
  *
  * \sa ascon_prf_fixed(), ascon_prf_short(), ascon_mac()
  */
-void ascon_prf
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key);
+void ascon_prf(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key);
 
 /**
  * \brief Processes a key and input data with ASCON-Prf to produce a
@@ -150,10 +147,7 @@ void ascon_prf
  *
  * \sa ascon_prf(), ascon_prf_short(), ascon_mac()
  */
-void ascon_prf_fixed
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key);
+void ascon_prf_fixed(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key);
 
 /**
  * \brief Processes a key and input data with ASCON-PrfShort to produce a tag.
@@ -172,10 +166,7 @@ void ascon_prf_fixed
  *
  * \sa ascon_prf(), ascon_prf_fixed(), ascon_mac()
  */
-int ascon_prf_short
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key);
+int ascon_prf_short(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key);
 
 /**
  * \brief Processes a key and input data with ASCON-Mac to produce a tag.
@@ -190,10 +181,10 @@ int ascon_prf_short
  *
  * \sa ascon_mac_verify(), ascon_prf()
  */
-void ascon_mac
-    (unsigned char *tag,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key);
+void ascon_mac(unsigned char*       tag,
+               const unsigned char* in,
+               size_t               inlen,
+               const unsigned char* key);
 
 /**
  * \brief Verifies an ASCON-Mac tag value.
@@ -207,10 +198,10 @@ void ascon_mac
  *
  * \sa ascon_mac(), ascon_prf()
  */
-int ascon_mac_verify
-    (const unsigned char *tag,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key);
+int ascon_mac_verify(const unsigned char* tag,
+                     const unsigned char* in,
+                     size_t               inlen,
+                     const unsigned char* key);
 
 /**
  * \brief Initializes the state for an incremental ASCON-Prf operation.
@@ -222,7 +213,7 @@ int ascon_mac_verify
  *
  * \sa ascon_prf_fixed_init(), ascon_prf_absorb(), ascon_prf_squeeze()
  */
-void ascon_prf_init(ascon_prf_state_t *state, const unsigned char *key);
+void ascon_prf_init(ascon_prf_state_t* state, const unsigned char* key);
 
 /**
  * \brief Initializes the state for an incremental ASCON-Prf operation
@@ -236,8 +227,7 @@ void ascon_prf_init(ascon_prf_state_t *state, const unsigned char *key);
  *
  * \sa ascon_prf_init(), ascon_prf_absorb(), ascon_prf_squeeze()
  */
-void ascon_prf_fixed_init
-    (ascon_prf_state_t *state, const unsigned char *key, size_t outlen);
+void ascon_prf_fixed_init(ascon_prf_state_t* state, const unsigned char* key, size_t outlen);
 
 /**
  * \brief Re-initializes the state for an incremental ASCON-Prf operation.
@@ -250,7 +240,7 @@ void ascon_prf_fixed_init
  *
  * \sa ascon_prf_fixed_reinit(), ascon_prf_init()
  */
-void ascon_prf_reinit(ascon_prf_state_t *state, const unsigned char *key);
+void ascon_prf_reinit(ascon_prf_state_t* state, const unsigned char* key);
 
 /**
  * \brief Re-initializes the state for an incremental ASCON-Prf operation
@@ -265,15 +255,14 @@ void ascon_prf_reinit(ascon_prf_state_t *state, const unsigned char *key);
  *
  * \sa ascon_prf_reinit(), ascon_prf_fixed_init()
  */
-void ascon_prf_fixed_reinit
-    (ascon_prf_state_t *state, const unsigned char *key, size_t outlen);
+void ascon_prf_fixed_reinit(ascon_prf_state_t* state, const unsigned char* key, size_t outlen);
 
 /**
  * \brief Frees the ASCON-Prf state and destroys any sensitive material.
  *
  * \param state PRF state to be freed.
  */
-void ascon_prf_free(ascon_prf_state_t *state);
+void ascon_prf_free(ascon_prf_state_t* state);
 
 /**
  * \brief Absorbs input data into an incremental ASCON-Prf state.
@@ -284,8 +273,7 @@ void ascon_prf_free(ascon_prf_state_t *state);
  *
  * \sa ascon_prf_init(), ascon_prf_squeeze()
  */
-void ascon_prf_absorb
-    (ascon_prf_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_prf_absorb(ascon_prf_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Squeezes output from an incremental ASCON-Prf operation.
@@ -299,8 +287,7 @@ void ascon_prf_absorb
  *
  * \sa ascon_prf_init(), ascon_prf_absorb()
  */
-void ascon_prf_squeeze
-    (ascon_prf_state_t *state, unsigned char *out, size_t outlen);
+void ascon_prf_squeeze(ascon_prf_state_t* state, unsigned char* out, size_t outlen);
 
 #ifdef __cplusplus
 }

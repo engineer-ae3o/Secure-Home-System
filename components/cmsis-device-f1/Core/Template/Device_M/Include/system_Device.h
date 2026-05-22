@@ -1,4 +1,4 @@
-/*************************************************************************//**
+/*************************************************************************/ /**
  * @file     system_<Device>.h
  * @brief    CMSIS-Core(M) Device Peripheral Access Layer Header File for
  *           Device <Device>
@@ -22,11 +22,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 /* ToDo: rename this file from 'system_Device.h' to 'system_<Device>.h according to your device naming */
 
-#ifndef SYSTEM_<Device>_H   /* ToDo: replace '<Device>' with your device name */
-#define SYSTEM_<Device>_H
+#ifndef SYSTEM_ < Device> _H /* ToDo: replace '<Device>' with your device name */
+#define SYSTEM_ <Device> _H
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,7 +37,7 @@ extern "C" {
 /**
   \brief Exception / Interrupt Handler Function Prototype
 */
-typedef void(*VECTOR_TABLE_Type)(void);
+typedef void (*VECTOR_TABLE_Type)(void);
 
 /**
   \brief System Clock Frequency (Core Clock)
@@ -49,15 +49,14 @@ extern uint32_t SystemCoreClock;
 
    Initialize the System and update the SystemCoreClock variable.
  */
-extern void SystemInit (void);
-
+extern void SystemInit(void);
 
 /**
   \brief  Update SystemCoreClock variable.
 
    Updates the SystemCoreClock with current core Clock retrieved from cpu registers.
  */
-extern void SystemCoreClockUpdate (void);
+extern void SystemCoreClockUpdate(void);
 
 #ifdef __cplusplus
 }

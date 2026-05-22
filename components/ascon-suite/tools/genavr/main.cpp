@@ -25,14 +25,12 @@
 #include <iostream>
 #include <cstring>
 
-enum Mode
-{
+enum Mode {
     Generate,
     Test
 };
 
-static void header(std::ostream &ostream, const char *include, const char *define)
-{
+static void header(std::ostream& ostream, const char* include, const char* define) {
     ostream << "#include \"" << include << "\"" << std::endl;
     ostream << "#if " << define << std::endl;
     ostream << copyright_message;
@@ -40,14 +38,12 @@ static void header(std::ostream &ostream, const char *include, const char *defin
     ostream << "/* Automatically generated - do not edit */" << std::endl;
 }
 
-static void footer(std::ostream &ostream)
-{
+static void footer(std::ostream& ostream) {
     ostream << std::endl;
     ostream << "#endif" << std::endl;
 }
 
-static bool ascon(enum Mode mode)
-{
+static bool ascon(enum Mode mode) {
     Code code;
     gen_ascon_permutation(code);
     if (mode == Generate) {
@@ -67,8 +63,7 @@ static bool ascon(enum Mode mode)
     return true;
 }
 
-static bool ascon_x2_2(enum Mode mode)
-{
+static bool ascon_x2_2(enum Mode mode) {
     Code code;
     gen_ascon_x2_permutation(code, 2);
     if (mode == Generate) {
@@ -85,8 +80,7 @@ static bool ascon_x2_2(enum Mode mode)
     return true;
 }
 
-static bool ascon_x2_3(enum Mode mode)
-{
+static bool ascon_x2_3(enum Mode mode) {
     Code code;
     gen_ascon_x2_permutation(code, 3);
     if (mode == Generate) {
@@ -104,8 +98,7 @@ static bool ascon_x2_3(enum Mode mode)
     return true;
 }
 
-static bool ascon_x3(enum Mode mode)
-{
+static bool ascon_x3(enum Mode mode) {
     Code code;
     gen_ascon_x3_permutation(code);
     if (mode == Generate) {
@@ -123,15 +116,14 @@ static bool ascon_x3(enum Mode mode)
 
 typedef bool (*gen_code)(enum Mode mode);
 
-int main(int argc, char *argv[])
-{
-    bool generate = true;
-    int exit_val = 0;
-    gen_code gen1 = 0;
-    gen_code gen2 = 0;
-    gen_code gen3 = 0;
-    const char *define = "xyzzy";
-    const char *include = "xyzzy";
+int main(int argc, char* argv[]) {
+    bool        generate = true;
+    int         exit_val = 0;
+    gen_code    gen1     = 0;
+    gen_code    gen2     = 0;
+    gen_code    gen3     = 0;
+    const char* define   = "xyzzy";
+    const char* include  = "xyzzy";
 
     if (argc > 1 && !strcmp(argv[1], "--test")) {
         generate = false;
@@ -141,39 +133,46 @@ int main(int argc, char *argv[])
             return 1;
         }
         if (!strcmp(argv[1], "ASCON")) {
-            gen1 = ascon;
+            gen1    = ascon;
             include = "ascon-select-backend.h";
-            define = "defined(ASCON_BACKEND_AVR5)";
+            define  = "defined(ASCON_BACKEND_AVR5)";
         } else if (!strcmp(argv[1], "ASCON-x2")) {
-            gen1 = ascon_x2_2;
-            gen2 = ascon_x2_3;
+            gen1    = ascon_x2_2;
+            gen2    = ascon_x2_3;
             include = "ascon-masked-backend.h";
-            define = "defined(ASCON_MASKED_X2_BACKEND_AVR5)";
+            define  = "defined(ASCON_MASKED_X2_BACKEND_AVR5)";
         } else if (!strcmp(argv[1], "ASCON-x3")) {
-            gen1 = ascon_x3;
+            gen1    = ascon_x3;
             include = "ascon-masked-backend.h";
-            define = "defined(ASCON_MASKED_X3_BACKEND_AVR5) && ASCON_MASKED_MAX_SHARES >= 3";
+            define  = "defined(ASCON_MASKED_X3_BACKEND_AVR5) && ASCON_MASKED_MAX_SHARES >= 3";
         }
     }
 
     if (generate) {
         header(std::cout, include, define);
-        if (gen1)
+        if (gen1) {
             gen1(Generate);
-        if (gen2)
+        }
+        if (gen2) {
             gen2(Generate);
-        if (gen3)
+        }
+        if (gen3) {
             gen3(Generate);
+        }
         footer(std::cout);
     } else {
-        if (!ascon(Test))
+        if (!ascon(Test)) {
             exit_val = 1;
-        if (!ascon_x2_2(Test))
+        }
+        if (!ascon_x2_2(Test)) {
             exit_val = 1;
-        if (!ascon_x2_3(Test))
+        }
+        if (!ascon_x2_3(Test)) {
             exit_val = 1;
-        if (!ascon_x3(Test))
+        }
+        if (!ascon_x3(Test)) {
             exit_val = 1;
+        }
     }
 
     return exit_val;

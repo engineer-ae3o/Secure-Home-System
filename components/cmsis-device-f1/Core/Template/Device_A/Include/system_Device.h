@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/**************************************************************************/ /**
  * @file     system_<Device>.h
  * @brief    CMSIS Cortex-A Device Peripheral Access Layer
  * @version  V5.00
@@ -22,8 +22,8 @@
  * limitations under the License.
  */
 
-#ifndef SYSTEM_<Device>_H   /* ToDo: replace '<Device>' with your device name */
-#define SYSTEM_<Device>_H
+#ifndef SYSTEM_ < Device> _H /* ToDo: replace '<Device>' with your device name */
+#define SYSTEM_ <Device> _H
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,21 +31,21 @@ extern "C" {
 
 #include <stdint.h>
 
-extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+extern uint32_t SystemCoreClock; /*!< System Clock Frequency (Core Clock)  */
 
 /**
   \brief Setup the microcontroller system.
 
    Initialize the System and update the SystemCoreClock variable.
  */
-extern void SystemInit (void);
+extern void SystemInit(void);
 
 /**
   \brief  Update SystemCoreClock variable.
 
    Updates the SystemCoreClock with current core Clock retrieved from cpu registers.
  */
-extern void SystemCoreClockUpdate (void);
+extern void SystemCoreClockUpdate(void);
 
 /**
   \brief  Create Translation Table.

@@ -37,38 +37,35 @@ SOFTWARE.
 
 #include <stddef.h>
 
-namespace etl 
-{
-  //***************************************************************************
-  /// Calculates the smallest value that, when squared, will be not greater than VALUE.
-  //***************************************************************************
-  template <size_t VALUE, size_t I = 1>
-  struct sqrt
-  {
-    typedef typename etl::conditional<((I * I) > VALUE), 
+namespace etl {
+//***************************************************************************
+/// Calculates the smallest value that, when squared, will be not greater than VALUE.
+//***************************************************************************
+template<size_t VALUE, size_t I = 1>
+struct sqrt {
+    typedef typename etl::conditional<((I * I) > VALUE),
                                       etl::constant<intmax_t, I - 1>,
-                                      etl::sqrt<VALUE, I + 1> >::type type;
+                                      etl::sqrt<VALUE, I + 1>>::type type;
 
 #if ETL_USING_CPP11
     static constexpr size_t value = type::value;
 #else
-    enum
-    {
-      // Recursive definition.
-      value = type::value
+    enum {
+        // Recursive definition.
+        value = type::value
     };
 #endif
-  };
+};
 
 #if ETL_USING_CPP11
-  template <size_t VALUE, size_t I>
-  constexpr size_t sqrt<VALUE, I>::value;
+template<size_t VALUE, size_t I>
+constexpr size_t sqrt<VALUE, I>::value;
 #endif
 
 #if ETL_USING_CPP17
-  template <size_t VALUE, size_t I = 1>
-  inline constexpr size_t sqrt_v = sqrt<VALUE, I>::value;
+template<size_t VALUE, size_t I = 1>
+inline constexpr size_t sqrt_v = sqrt<VALUE, I>::value;
 #endif
-}
+} // namespace etl
 
 #endif

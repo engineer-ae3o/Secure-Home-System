@@ -42,8 +42,7 @@
 #define X4_E 32
 #define X4_O 36
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     printf("\n\t.align\t2\n");
     printf("\t.global\t%s\n", name);
     printf("\t.thumb\n");
@@ -52,48 +51,45 @@ static void function_header(const char *name)
     printf("%s:\n", name);
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\t.size\t%s, .-%s\n", name, name);
 }
 
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0;
-    const char *x1;
-    const char *x2;
-    const char *x3;
-    const char *x4;
-    const char *x0_alt;
-    const char *x1_alt;
-    const char *x2_alt;
-    const char *x3_alt;
-    const char *x4_alt;
-    const char *x5_alt;
-    const char *t0;
-    const char *t1;
-    const char *t2;
+    const char* x0;
+    const char* x1;
+    const char* x2;
+    const char* x3;
+    const char* x4;
+    const char* x0_alt;
+    const char* x1_alt;
+    const char* x2_alt;
+    const char* x3_alt;
+    const char* x4_alt;
+    const char* x5_alt;
+    const char* t0;
+    const char* t1;
+    const char* t2;
 
 } reg_names;
 
-static int is_low_reg(const char *reg)
-{
+static int is_low_reg(const char* reg) {
     return reg[0] == 'r' && atoi(reg + 1) < 8;
 }
 
 /* Generates a binary operator, preferring thumb instructions if possible */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
-    if (is_low_reg(reg1) && is_low_reg(reg2))
+static void binop(const char* name, const char* reg1, const char* reg2) {
+    if (is_low_reg(reg1) && is_low_reg(reg2)) {
         printf("\t%ss\t%s, %s\n", name, reg1, reg2);
-    else
+    } else {
         printf("\t%s\t%s, %s\n", name, reg1, reg2);
+    }
 }
 
 /* Generates a "bic" instruction: dest = src1 & ~src2 */
-static void bic(const char *dest, const char *src1, const char *src2)
-{
+static void bic(const char* dest, const char* src1, const char* src2) {
     if (!strcmp(dest, src1) && is_low_reg(src1) && is_low_reg(src2)) {
         printf("\tbics\t%s, %s\n", src1, src2);
     } else if (is_low_reg(dest) && is_low_reg(src1) && is_low_reg(src2)) {
@@ -106,34 +102,32 @@ static void bic(const char *dest, const char *src1, const char *src2)
 }
 
 /* Applies the S-box to five 32-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
-    binop("eor", regs->x0, regs->x4);       /* x0 ^= x4; */
-    binop("eor", regs->x4, regs->x3);       /* x4 ^= x3; */
-    binop("eor", regs->x2, regs->x1);       /* x2 ^= x1; */
-    binop("mov", regs->t1, regs->x0);       /* t1 = x0; */
-    bic(regs->t0, regs->x1, regs->x0);      /* t0 = (~x0) & x1; */
-    bic(regs->t2, regs->x2, regs->x1);      /* x0 ^= (~x1) & x2; */
+static void gen_sbox(const reg_names* regs) {
+    binop("eor", regs->x0, regs->x4);  /* x0 ^= x4; */
+    binop("eor", regs->x4, regs->x3);  /* x4 ^= x3; */
+    binop("eor", regs->x2, regs->x1);  /* x2 ^= x1; */
+    binop("mov", regs->t1, regs->x0);  /* t1 = x0; */
+    bic(regs->t0, regs->x1, regs->x0); /* t0 = (~x0) & x1; */
+    bic(regs->t2, regs->x2, regs->x1); /* x0 ^= (~x1) & x2; */
     binop("eor", regs->x0, regs->t2);
-    bic(regs->t2, regs->x3, regs->x2);      /* x1 ^= (~x2) & x3; */
+    bic(regs->t2, regs->x3, regs->x2); /* x1 ^= (~x2) & x3; */
     binop("eor", regs->x1, regs->t2);
-    bic(regs->t2, regs->t1, regs->x4);      /* x3 ^= (~x4) & t1; */
+    bic(regs->t2, regs->t1, regs->x4); /* x3 ^= (~x4) & t1; */
     binop("eor", regs->x3, regs->t2);
-    bic(regs->t2, regs->x4, regs->x3);      /* x2 ^= (~x3) & x4; */
+    bic(regs->t2, regs->x4, regs->x3); /* x2 ^= (~x3) & x4; */
     binop("eor", regs->x2, regs->t2);
-    binop("eor", regs->x4, regs->t0);       /* x4 ^= t0; */
-    binop("eor", regs->x1, regs->x0);       /* x1 ^= x0; */
-    binop("eor", regs->x0, regs->x4);       /* x0 ^= x4; */
-    binop("eor", regs->x3, regs->x2);       /* x3 ^= x2; */
-    binop("mvn", regs->x2, regs->x2);       /* x2 = ~x2; */
+    binop("eor", regs->x4, regs->t0); /* x4 ^= t0; */
+    binop("eor", regs->x1, regs->x0); /* x1 ^= x0; */
+    binop("eor", regs->x0, regs->x4); /* x0 ^= x4; */
+    binop("eor", regs->x3, regs->x2); /* x3 ^= x2; */
+    binop("mvn", regs->x2, regs->x2); /* x2 = ~x2; */
 }
 
 /* Rotate a value right and shift the result into a destination register */
-static void rotate
-    (const char *dest, const char *src, const char *immreg, int shift)
-{
-    if (shift != -1)
+static void rotate(const char* dest, const char* src, const char* immreg, int shift) {
+    if (shift != -1) {
         printf("\tmovs\t%s, #%d\n", immreg, shift);
+    }
     if (!strcmp(dest, src)) {
         printf("\trors\t%s, %s, %s\n", dest, dest, immreg);
     } else {
@@ -143,14 +137,11 @@ static void rotate
 }
 
 /* Generate the code for a single sliced ASCON round */
-static void gen_round_sliced(const reg_names *regs, int round)
-{
+static void gen_round_sliced(const reg_names* regs, int round) {
     /* Round constants for all rounds */
     static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12,
-        6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3
-    };
-    const char *immreg;
+        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    const char* immreg;
 
     /* Apply the round constant to x2_e */
     printf("\tmovs\t%s, #%d\n", regs->t0, RC[round * 2]);
@@ -280,8 +271,7 @@ static void gen_round_sliced(const reg_names *regs, int round)
 }
 
 /* Generate the body of the 32-bit sliced ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * r0 holds the pointer to the ASCON state on entry and exit.
      *
@@ -296,21 +286,21 @@ static void gen_permute(void)
      * lr can be used as a temporary as long as it is saved on the stack.
      */
     reg_names regs;
-    int round;
-    regs.x0 = "r3";
-    regs.x1 = "r4";
-    regs.x2 = "r5";
-    regs.x3 = "r6";
-    regs.x4 = "r7";
+    int       round;
+    regs.x0     = "r3";
+    regs.x1     = "r4";
+    regs.x2     = "r5";
+    regs.x3     = "r6";
+    regs.x4     = "r7";
     regs.x0_alt = "r8";
     regs.x1_alt = "r9";
     regs.x2_alt = "r10";
     regs.x3_alt = "fp";
     regs.x4_alt = "ip";
     regs.x5_alt = "lr";
-    regs.t0 = "r0";
-    regs.t1 = "r1";
-    regs.t2 = "r2";
+    regs.t0     = "r0";
+    regs.t1     = "r1";
+    regs.t2     = "r2";
     printf("\tpush\t{r4, r5, r6, r7, lr}\n");
     binop("mov", "r2", "r8");
     binop("mov", "r3", "r9");
@@ -408,8 +398,7 @@ static void gen_permute(void)
     printf("\tpop\t{r4, r5, r6, r7, pc}\n");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

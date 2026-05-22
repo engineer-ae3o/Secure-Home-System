@@ -6,7 +6,7 @@
 volatile static int32_t s32_1 = 0x47;
 volatile static int32_t s32_2 = 0x11;
 volatile static int32_t s32_3 = 0x15;
-volatile static uint8_t u8 = 5u;
+volatile static uint8_t u8    = 5u;
 
 /* ADD8 */
 
@@ -469,7 +469,7 @@ void pkhtb() {
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
 
-void sxtb16_ror() {    
+void sxtb16_ror() {
     // CHECK-LABEL: <sxtb16_ror>:
     // CHECK: sxtb16 {{r[0-9]+}}, {{r[0-9]+}}, ror #8
     volatile uint32_t result = __SXTB16_RORn(s32_1, 8);

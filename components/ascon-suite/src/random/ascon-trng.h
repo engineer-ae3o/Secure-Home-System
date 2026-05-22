@@ -70,8 +70,8 @@ typedef struct
      *  systems without a fast "get random word" operation for masking. */
     ascon_state_t prng;
 
-    /** Rate of squeezing data out of the PRNG state */
-    #define ASCON_TRNG_MIXER_RATE 8U
+/** Rate of squeezing data out of the PRNG state */
+#define ASCON_TRNG_MIXER_RATE 8U
 #endif
 
 } ascon_trng_state_t;
@@ -88,7 +88,7 @@ typedef struct
  * This function should try to generate high quality random data even
  * if it is a little slower.
  */
-int ascon_trng_generate(unsigned char *out, size_t outlen);
+int ascon_trng_generate(unsigned char* out, size_t outlen);
 
 /**
  * \brief Initializes the random number source for generating a sequence
@@ -99,14 +99,14 @@ int ascon_trng_generate(unsigned char *out, size_t outlen);
  * \return Non-zero if the random number source was initialized,
  * or zero if there is no random number source available.
  */
-int ascon_trng_init(ascon_trng_state_t *state);
+int ascon_trng_init(ascon_trng_state_t* state);
 
 /**
  * \brief Frees the random number source and destroys any sensitive material.
  *
  * \param state State information for the source.
  */
-void ascon_trng_free(ascon_trng_state_t *state);
+void ascon_trng_free(ascon_trng_state_t* state);
 
 /**
  * \brief Generates a 32-bit random value for masking operations.
@@ -118,7 +118,7 @@ void ascon_trng_free(ascon_trng_state_t *state);
  * This function must operate quickly as it is used in high frequency
  * masking operations.  The source may not be reseeded automatically.
  */
-uint32_t ascon_trng_generate_32(ascon_trng_state_t *state);
+uint32_t ascon_trng_generate_32(ascon_trng_state_t* state);
 
 /**
  * \brief Generates a 64-bit random value for masking operations.
@@ -130,7 +130,7 @@ uint32_t ascon_trng_generate_32(ascon_trng_state_t *state);
  * This function must operate quickly as it is used in high frequency
  * masking operations.  The source may not be reseeded automatically.
  */
-uint64_t ascon_trng_generate_64(ascon_trng_state_t *state);
+uint64_t ascon_trng_generate_64(ascon_trng_state_t* state);
 
 /**
  * \brief Reseeds the random number source.
@@ -143,7 +143,7 @@ uint64_t ascon_trng_generate_64(ascon_trng_state_t *state);
  * Not all random numbers sources require reseeding, but it is a good
  * idea to call this on a regular basis regardless.
  */
-int ascon_trng_reseed(ascon_trng_state_t *state);
+int ascon_trng_reseed(ascon_trng_state_t* state);
 
 #ifdef __cplusplus
 }

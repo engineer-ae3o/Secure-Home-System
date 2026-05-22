@@ -37,50 +37,47 @@
  */
 #if defined(HKDF_ALG_NAME)
 
-#define HKDF_CONCAT_INNER(name,suffix) name##suffix
-#define HKDF_CONCAT(name,suffix) HKDF_CONCAT_INNER(name,suffix)
+#define HKDF_CONCAT_INNER(name, suffix) name##suffix
+#define HKDF_CONCAT(name, suffix) HKDF_CONCAT_INNER(name, suffix)
 
-int HKDF_ALG_NAME
-    (unsigned char *out, size_t outlen,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *salt, size_t saltlen,
-     const unsigned char *info, size_t infolen)
-{
+int HKDF_ALG_NAME(unsigned char* out, size_t outlen, const unsigned char* key, size_t keylen, const unsigned char* salt, size_t saltlen, const unsigned char* info, size_t infolen) {
     HKDF_STATE state;
-    if (outlen > (size_t)(HKDF_HMAC_SIZE * 255))
+    if (outlen > (size_t)(HKDF_HMAC_SIZE * 255)) {
         return -1;
-    HKDF_CONCAT(HKDF_ALG_NAME,_extract)(&state, key, keylen, salt, saltlen);
-    HKDF_CONCAT(HKDF_ALG_NAME,_expand)(&state, info, infolen, out, outlen);
+    }
+    HKDF_CONCAT(HKDF_ALG_NAME, _extract)(&state, key, keylen, salt, saltlen);
+    HKDF_CONCAT(HKDF_ALG_NAME, _expand)(&state, info, infolen, out, outlen);
     ascon_clean(&state, sizeof(state));
     return 0;
 }
 
-void HKDF_CONCAT(HKDF_ALG_NAME,_extract)
-    (HKDF_STATE *state,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *salt, size_t saltlen)
-{
+void HKDF_CONCAT(HKDF_ALG_NAME, _extract)(HKDF_STATE*          state,
+                                          const unsigned char* key,
+                                          size_t               keylen,
+                                          const unsigned char* salt,
+                                          size_t               saltlen) {
     HKDF_HMAC_STATE hmac;
     HKDF_HMAC_INIT(&hmac, salt, saltlen);
     HKDF_HMAC_UPDATE(&hmac, key, keylen);
     HKDF_HMAC_FINALIZE(&hmac, salt, saltlen, state->prk);
     HKDF_HMAC_FREE(&hmac);
     state->counter = 1;
-    state->posn = HKDF_HMAC_SIZE;
+    state->posn    = HKDF_HMAC_SIZE;
 }
 
-int HKDF_CONCAT(HKDF_ALG_NAME,_expand)
-    (HKDF_STATE *state,
-     const unsigned char *info, size_t infolen,
-     unsigned char *out, size_t outlen)
-{
+int HKDF_CONCAT(HKDF_ALG_NAME, _expand)(HKDF_STATE*          state,
+                                        const unsigned char* info,
+                                        size_t               infolen,
+                                        unsigned char*       out,
+                                        size_t               outlen) {
     HKDF_HMAC_STATE hmac;
-    size_t len;
+    size_t          len;
 
     /* Deal with left-over data from the last output block */
     len = HKDF_HMAC_SIZE - state->posn;
-    if (len > outlen)
+    if (len > outlen) {
         len = outlen;
+    }
     memcpy(out, state->out + state->posn, len);
     out += len;
     outlen -= len;
@@ -97,8 +94,9 @@ int HKDF_CONCAT(HKDF_ALG_NAME,_expand)
 
         /* Squeeze out the next block of data */
         HKDF_HMAC_INIT(&hmac, state->prk, sizeof(state->prk));
-        if (state->counter != 1)
+        if (state->counter != 1) {
             HKDF_HMAC_UPDATE(&hmac, state->out, sizeof(state->out));
+        }
         HKDF_HMAC_UPDATE(&hmac, info, infolen);
         HKDF_HMAC_UPDATE(&hmac, &(state->counter), 1);
         HKDF_HMAC_FINALIZE(&hmac, state->prk, sizeof(state->prk), state->out);
@@ -107,8 +105,9 @@ int HKDF_CONCAT(HKDF_ALG_NAME,_expand)
 
         /* Copy the data to the output buffer */
         len = HKDF_HMAC_SIZE;
-        if (len > outlen)
+        if (len > outlen) {
             len = outlen;
+        }
         memcpy(out, state->out, len);
         state->posn = len;
         out += len;
@@ -117,8 +116,7 @@ int HKDF_CONCAT(HKDF_ALG_NAME,_expand)
     return 0;
 }
 
-void HKDF_CONCAT(HKDF_ALG_NAME,_free)(HKDF_STATE *state)
-{
+void HKDF_CONCAT(HKDF_ALG_NAME, _free)(HKDF_STATE* state) {
     ascon_clean(state, sizeof(HKDF_STATE));
 }
 

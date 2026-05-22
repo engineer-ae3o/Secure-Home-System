@@ -4,7 +4,8 @@
 
 __NO_RETURN
 static void func() {
-    while(1);
+    while (1)
+        ;
 }
 
 void noreturn() {

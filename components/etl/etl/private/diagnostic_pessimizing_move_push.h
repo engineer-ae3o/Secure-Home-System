@@ -34,11 +34,11 @@ SOFTWARE.
  */
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__llvm__)
-  #pragma GCC diagnostic push 
-  #pragma GCC diagnostic ignored "-Wpessimizing-move"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpessimizing-move"
 #endif
 
 #if defined(__clang__) || defined(__llvm__)
-  #pragma clang diagnostic push 
-  #pragma clang diagnostic ignored "-Wpessimizing-move"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpessimizing-move"
 #endif

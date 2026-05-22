@@ -31,7 +31,7 @@
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 /* *INDENT-ON* */
 
@@ -46,17 +46,17 @@
  */
 
 #ifndef configENABLE_MVE
-    #error configENABLE_MVE must be defined in FreeRTOSConfig.h. Set configENABLE_MVE to 1 to enable the MVE or 0 to disable the MVE.
+#error configENABLE_MVE must be defined in FreeRTOSConfig.h. Set configENABLE_MVE to 1 to enable the MVE or 0 to disable the MVE.
 #endif /* configENABLE_MVE */
 /*-----------------------------------------------------------*/
 
 /**
  * Architecture specifics.
  */
-#define portARCH_NAME                    "Cortex-M55"
-#define portHAS_ARMV8M_MAIN_EXTENSION    1
-#define portARMV8M_MINOR_VERSION         1
-#define portDONT_DISCARD                 __attribute__( ( used ) )
+#define portARCH_NAME "Cortex-M55"
+#define portHAS_ARMV8M_MAIN_EXTENSION 1
+#define portARMV8M_MINOR_VERSION 1
+#define portDONT_DISCARD __attribute__((used))
 /*-----------------------------------------------------------*/
 
 /* ARMv8-M common port configurations. */
@@ -66,13 +66,13 @@
 /**
  * @brief Critical section management.
  */
-#define portDISABLE_INTERRUPTS()    ulSetInterruptMask()
-#define portENABLE_INTERRUPTS()     vClearInterruptMask( 0 )
+#define portDISABLE_INTERRUPTS() ulSetInterruptMask()
+#define portENABLE_INTERRUPTS() vClearInterruptMask(0)
 /*-----------------------------------------------------------*/
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
-    }
+}
 #endif
 /* *INDENT-ON* */
 

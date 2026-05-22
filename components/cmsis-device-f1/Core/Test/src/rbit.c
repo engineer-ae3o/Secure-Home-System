@@ -11,4 +11,3 @@ void rbit() {
     volatile uint32_t c = __RBIT(a);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

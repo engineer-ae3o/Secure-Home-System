@@ -40,7 +40,7 @@ extern "C" {
  * \param buf Points to the buffer to clear.
  * \param size Size of the buffer to clear in bytes.
  */
-void ascon_clean(void *buf, unsigned size);
+void ascon_clean(void* buf, unsigned size);
 
 /**
  * \brief Converts an array of bytes into a hexadecimal string.
@@ -60,9 +60,7 @@ void ascon_clean(void *buf, unsigned size);
  * The result \a out buffer will be NUL-terminated except when the
  * function returns -1.
  */
-int ascon_bytes_to_hex
-    (char *out, size_t outlen, const unsigned char *in, size_t inlen,
-     int upper_case);
+int ascon_bytes_to_hex(char* out, size_t outlen, const unsigned char* in, size_t inlen, int upper_case);
 
 /**
  * \brief Converts a hexadecimal string into an array of bytes.
@@ -79,8 +77,7 @@ int ascon_bytes_to_hex
  * Both uppercase and lowercase hexadecimal characters are recognized.
  * Whitespace characters are ignored.  All other characters are invalid.
  */
-int ascon_bytes_from_hex
-    (unsigned char *out, size_t outlen, const char *in, size_t inlen);
+int ascon_bytes_from_hex(unsigned char* out, size_t outlen, const char* in, size_t inlen);
 
 #ifdef __cplusplus
 }
@@ -94,10 +91,9 @@ int ascon_bytes_from_hex
 #include <vector>
 #include <string.h>
 
-namespace ascon
-{
+namespace ascon {
 
-    /**
+/**
      * \brief C++ type for an array of bytes.
      *
      * On systems with the Standard Template Library (STL), this is
@@ -106,137 +102,148 @@ namespace ascon
      * On other systems like Arduino, this is replaced with a minimal
      * implementation with a subset of the std::vector API.
      */
-    typedef std::vector<unsigned char> byte_array;
-}
+typedef std::vector<unsigned char> byte_array;
+} // namespace ascon
 
 #else /* ASCON_NO_STL */
 
 #include <string.h>
 
-namespace ascon
-{
+namespace ascon {
 
-class byte_array
-{
-public:
-    inline byte_array() : p(0) {}
+class byte_array {
+    public:
+    inline byte_array() : p(0) {
+    }
 
-    inline byte_array(const byte_array &other)
-        : p(other.p)
-    {
-        if (p)
+    inline byte_array(const byte_array& other)
+        : p(other.p) {
+        if (p) {
             ++(p->ref);
+        }
     }
 
     explicit byte_array(size_t size, unsigned char value = 0);
 
-    inline ~byte_array()
-    {
-        if (p && (--(p->ref)) == 0)
+    inline ~byte_array() {
+        if (p && (--(p->ref)) == 0) {
             delete p;
+        }
     }
 
-    inline byte_array &operator=(const byte_array &other)
-    {
+    inline byte_array& operator=(const byte_array& other) {
         if (p != other.p) {
-            if (other.p)
+            if (other.p) {
                 ++(other.p->ref);
-            if (p && (--(p->ref)) == 0)
+            }
+            if (p && (--(p->ref)) == 0) {
                 delete p;
+            }
             p = other.p;
         }
         return *this;
     }
 
-    unsigned char &operator[](size_t pos);
-    const unsigned char &operator[](size_t pos) const;
+    unsigned char&       operator[](size_t pos);
+    const unsigned char& operator[](size_t pos) const;
 
-    inline size_t size() const { return p ? p->size : 0; }
-    inline size_t capacity() const { return p ? p->capacity : 0; }
-    inline bool empty() const { return !p || p->size == 0; }
+    inline size_t size() const {
+        return p ? p->size : 0;
+    }
+    inline size_t capacity() const {
+        return p ? p->capacity : 0;
+    }
+    inline bool empty() const {
+        return !p || p->size == 0;
+    }
 
-    inline unsigned char *data()
-    {
+    inline unsigned char* data() {
         if (p) {
-            if (p->ref > 1)
+            if (p->ref > 1) {
                 detach();
+            }
             return p->data;
         } else {
             return 0;
         }
     }
-    inline const unsigned char *data() const { return p ? p->data : 0; }
+    inline const unsigned char* data() const {
+        return p ? p->data : 0;
+    }
 
     void reserve(size_t size);
     void resize(size_t size);
 
-    inline void clear()
-    {
-        if (p && (--(p->ref)) == 0)
+    inline void clear() {
+        if (p && (--(p->ref)) == 0) {
             delete p;
+        }
         p = 0;
     }
 
     void push_back(unsigned char value);
     void pop_back();
 
-    inline bool operator==(const byte_array &other) const
-    {
+    inline bool operator==(const byte_array& other) const {
         return cmp(other) == 0;
     }
-    inline bool operator!=(const byte_array &other) const
-    {
+    inline bool operator!=(const byte_array& other) const {
         return cmp(other) != 0;
     }
-    inline bool operator<(const byte_array &other) const
-    {
+    inline bool operator<(const byte_array& other) const {
         return cmp(other) < 0;
     }
-    inline bool operator<=(const byte_array &other) const
-    {
+    inline bool operator<=(const byte_array& other) const {
         return cmp(other) <= 0;
     }
-    inline bool operator>(const byte_array &other) const
-    {
+    inline bool operator>(const byte_array& other) const {
         return cmp(other) > 0;
     }
-    inline bool operator>=(const byte_array &other) const
-    {
+    inline bool operator>=(const byte_array& other) const {
         return cmp(other) >= 0;
     }
 
-    typedef unsigned char *iterator;
-    typedef const unsigned char *const_iterator;
+    typedef unsigned char*       iterator;
+    typedef const unsigned char* const_iterator;
 
-    inline iterator begin() { return data(); }
-    inline iterator end() { return data() + size(); }
-    inline const_iterator begin() const { return data(); }
-    inline const_iterator end() const { return data() + size(); }
-    inline const_iterator cbegin() const { return data(); }
-    inline const_iterator cend() const { return data() + size(); }
+    inline iterator begin() {
+        return data();
+    }
+    inline iterator end() {
+        return data() + size();
+    }
+    inline const_iterator begin() const {
+        return data();
+    }
+    inline const_iterator end() const {
+        return data() + size();
+    }
+    inline const_iterator cbegin() const {
+        return data();
+    }
+    inline const_iterator cend() const {
+        return data() + size();
+    }
 
-private:
-    struct byte_array_private
-    {
-        size_t ref;
-        size_t size;
-        size_t capacity;
-        unsigned char *data;
+    private:
+    struct byte_array_private {
+        size_t         ref;
+        size_t         size;
+        size_t         capacity;
+        unsigned char* data;
 
         inline byte_array_private(size_t reserve)
-            : ref(1)
-            , size(0)
-            , capacity(reserve)
-            , data(new unsigned char [reserve])
-        {
+            : ref(1), size(0), capacity(reserve), data(new unsigned char[reserve]) {
         }
-        inline ~byte_array_private() { delete[] data; }
+        inline ~byte_array_private() {
+            delete[] data;
+        }
     };
 
-    mutable byte_array_private *p;
+    mutable byte_array_private* p;
 
     void detach(size_t capacity = 0) const;
-    int cmp(const byte_array &other) const;
+    int  cmp(const byte_array& other) const;
 };
 
 } /* namespace ascon */
@@ -247,8 +254,7 @@ private:
 
 #include <string>
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief Converts a hexadecimal string into a byte array.
@@ -259,14 +265,14 @@ namespace ascon
  * \return The byte array version of \a str.  Returns an empty byte
  * array if the input is invalid.
  */
-static inline byte_array bytes_from_hex(const char *str, size_t len)
-{
+static inline byte_array bytes_from_hex(const char* str, size_t len) {
     byte_array vec(len / 2);
-    int result = ::ascon_bytes_from_hex(vec.data(), vec.size(), str, len);
-    if (result != -1)
+    int        result = ::ascon_bytes_from_hex(vec.data(), vec.size(), str, len);
+    if (result != -1) {
         return vec;
-    else
+    } else {
         return byte_array();
+    }
 }
 
 /**
@@ -277,8 +283,7 @@ static inline byte_array bytes_from_hex(const char *str, size_t len)
  * \return The byte array version of \a str.  Returns an empty byte
  * array if the input is invalid.
  */
-static inline byte_array bytes_from_hex(const char *str)
-{
+static inline byte_array bytes_from_hex(const char* str) {
     return bytes_from_hex(str, str ? ::strlen(str) : 0);
 }
 
@@ -290,8 +295,7 @@ static inline byte_array bytes_from_hex(const char *str)
  *
  * \return A C++ byte array containing the data.
  */
-static inline byte_array bytes_from_data(const unsigned char *data, size_t len)
-{
+static inline byte_array bytes_from_data(const unsigned char* data, size_t len) {
     byte_array result(len);
     ::memcpy(result.data(), data, len);
     return result;
@@ -309,12 +313,9 @@ static inline byte_array bytes_from_data(const unsigned char *data, size_t len)
  *
  * \return The hexadecimal string version of \a in.
  */
-static inline std::string bytes_to_hex
-    (const unsigned char *in, size_t len, bool upper_case = false)
-{
+static inline std::string bytes_to_hex(const unsigned char* in, size_t len, bool upper_case = false) {
     char out[len * 2U + 1U];
-    ::ascon_bytes_to_hex
-        (out, sizeof(out), in, len, upper_case ? 1 : 0);
+    ::ascon_bytes_to_hex(out, sizeof(out), in, len, upper_case ? 1 : 0);
     return std::string(out);
 }
 
@@ -327,13 +328,10 @@ static inline std::string bytes_to_hex
  *
  * \return The hexadecimal string version of \a in.
  */
-static inline std::string bytes_to_hex
-    (const byte_array &in, bool upper_case = false)
-{
+static inline std::string bytes_to_hex(const byte_array& in, bool upper_case = false) {
     size_t len = in.size();
-    char out[len * 2U + 1U];
-    ::ascon_bytes_to_hex
-        (out, sizeof(out), in.data(), len, upper_case ? 1 : 0);
+    char   out[len * 2U + 1U];
+    ::ascon_bytes_to_hex(out, sizeof(out), in.data(), len, upper_case ? 1 : 0);
     return std::string(out);
 }
 
@@ -345,8 +343,7 @@ static inline std::string bytes_to_hex
  * \return The byte array version of \a str.  Returns an empty byte
  * array if the input is invalid.
  */
-static inline byte_array bytes_from_hex(const std::string &str)
-{
+static inline byte_array bytes_from_hex(const std::string& str) {
     return bytes_from_hex(str.data(), str.size());
 }
 
@@ -358,50 +355,40 @@ static inline byte_array bytes_from_hex(const std::string &str)
 
 #include <WString.h>
 
-namespace ascon
-{
+namespace ascon {
 
-static inline String bytes_to_hex
-    (const unsigned char *in, size_t len, bool upper_case = false)
-{
+static inline String bytes_to_hex(const unsigned char* in, size_t len, bool upper_case = false) {
     char out[len * 2U + 1U];
-    ::ascon_bytes_to_hex
-        (out, sizeof(out), in, len, upper_case ? 1 : 0);
+    ::ascon_bytes_to_hex(out, sizeof(out), in, len, upper_case ? 1 : 0);
     return String(out);
 }
 
-static inline String bytes_to_hex
-    (const byte_array &in, bool upper_case = false)
-{
+static inline String bytes_to_hex(const byte_array& in, bool upper_case = false) {
     size_t len = in.size();
-    char out[len * 2U + 1U];
-    ::ascon_bytes_to_hex
-        (out, sizeof(out), in.data(), len, upper_case ? 1 : 0);
+    char   out[len * 2U + 1U];
+    ::ascon_bytes_to_hex(out, sizeof(out), in.data(), len, upper_case ? 1 : 0);
     return String(out);
 }
 
-static inline byte_array bytes_from_hex(const char *str, size_t len)
-{
+static inline byte_array bytes_from_hex(const char* str, size_t len) {
     byte_array vec(len / 2);
-    int result = ::ascon_bytes_from_hex(vec.data(), vec.size(), str, len);
-    if (result != -1)
+    int        result = ::ascon_bytes_from_hex(vec.data(), vec.size(), str, len);
+    if (result != -1) {
         return vec;
-    else
+    } else {
         return byte_array();
+    }
 }
 
-static inline byte_array bytes_from_hex(const char *str)
-{
+static inline byte_array bytes_from_hex(const char* str) {
     return bytes_from_hex(str, str ? ::strlen(str) : 0);
 }
 
-static inline byte_array bytes_from_hex(const String &str)
-{
+static inline byte_array bytes_from_hex(const String& str) {
     return bytes_from_hex(str.c_str(), str.length());
 }
 
-static inline byte_array bytes_from_data(const unsigned char *data, size_t len)
-{
+static inline byte_array bytes_from_data(const unsigned char* data, size_t len) {
     byte_array result(len);
     ::memcpy(result.data(), data, len);
     return result;

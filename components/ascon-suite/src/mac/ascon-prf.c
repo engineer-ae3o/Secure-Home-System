@@ -35,11 +35,7 @@
  */
 #define ASCON_PRF_RATE_OUT 16
 
-void ascon_prf
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key)
-{
+void ascon_prf(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key) {
     ascon_prf_state_t state;
     ascon_prf_fixed_init(&state, key, 0);
     ascon_prf_absorb(&state, in, inlen);
@@ -47,11 +43,7 @@ void ascon_prf
     ascon_prf_free(&state);
 }
 
-void ascon_prf_fixed
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key)
-{
+void ascon_prf_fixed(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key) {
     ascon_prf_state_t state;
     ascon_prf_fixed_init(&state, key, outlen);
     ascon_prf_absorb(&state, in, inlen);
@@ -59,17 +51,15 @@ void ascon_prf_fixed
     ascon_prf_free(&state);
 }
 
-int ascon_prf_short
-    (unsigned char *out, size_t outlen,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key)
-{
+int ascon_prf_short(unsigned char* out, size_t outlen, const unsigned char* in, size_t inlen, const unsigned char* key) {
     ascon_state_t state;
     unsigned char iv[8] = {0x80, 0x00, 0x4c, 0x80, 0x00, 0x00, 0x00, 0x00};
-    if (inlen > ASCON_PRF_SHORT_MAX_INPUT_SIZE)
+    if (inlen > ASCON_PRF_SHORT_MAX_INPUT_SIZE) {
         return -1;
-    if (outlen > ASCON_PRF_SHORT_MAX_OUTPUT_SIZE)
+    }
+    if (outlen > ASCON_PRF_SHORT_MAX_OUTPUT_SIZE) {
         return -1;
+    }
     iv[1] = (unsigned char)(inlen * 8U);
     ascon_init(&state);
     ascon_overwrite_bytes(&state, iv, 0, 8);
@@ -82,11 +72,10 @@ int ascon_prf_short
     return 0;
 }
 
-void ascon_mac
-    (unsigned char *tag,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key)
-{
+void ascon_mac(unsigned char*       tag,
+               const unsigned char* in,
+               size_t               inlen,
+               const unsigned char* key) {
     ascon_prf_state_t state;
     ascon_prf_fixed_init(&state, key, ASCON_MAC_TAG_SIZE);
     ascon_prf_absorb(&state, in, inlen);
@@ -94,31 +83,28 @@ void ascon_mac
     ascon_prf_free(&state);
 }
 
-int ascon_mac_verify
-    (const unsigned char *tag,
-     const unsigned char *in, size_t inlen,
-     const unsigned char *key)
-{
+int ascon_mac_verify(const unsigned char* tag,
+                     const unsigned char* in,
+                     size_t               inlen,
+                     const unsigned char* key) {
     unsigned char tag2[ASCON_MAC_TAG_SIZE];
-    int result;
+    int           result;
     ascon_mac(tag2, in, inlen, key);
     result = ascon_aead_check_tag(0, 0, tag, tag2, sizeof(tag2));
     ascon_clean(tag2, sizeof(tag2));
     return result;
 }
 
-void ascon_prf_init(ascon_prf_state_t *state, const unsigned char *key)
-{
+void ascon_prf_init(ascon_prf_state_t* state, const unsigned char* key) {
     ascon_prf_fixed_init(state, key, 0);
 }
 
-void ascon_prf_fixed_init
-    (ascon_prf_state_t *state, const unsigned char *key, size_t outlen)
-{
+void ascon_prf_fixed_init(ascon_prf_state_t* state, const unsigned char* key, size_t outlen) {
     unsigned char iv[8] = {0x80, 0x80, 0x8c, 0x00, 0x00, 0x00, 0x00, 0x00};
 #if !defined(__SIZEOF_SIZE_T__) || __SIZEOF_SIZE_T__ >= 4
-    if (outlen >= (((size_t)1) << 29))
+    if (outlen >= (((size_t)1) << 29)) {
         outlen = 0; /* Too large, so switch to arbitrary-length output */
+    }
 #endif
     be_store_word32(iv + 4, (uint32_t)(outlen * 8U));
     ascon_init(&(state->state));
@@ -127,35 +113,29 @@ void ascon_prf_fixed_init
     ascon_permute(&(state->state), 0);
     ascon_release(&(state->state));
     state->count = 0;
-    state->mode = 0;
+    state->mode  = 0;
 }
 
-void ascon_prf_reinit(ascon_prf_state_t *state, const unsigned char *key)
-{
+void ascon_prf_reinit(ascon_prf_state_t* state, const unsigned char* key) {
     ascon_prf_free(state);
     ascon_prf_fixed_init(state, key, 0);
 }
 
-void ascon_prf_fixed_reinit
-    (ascon_prf_state_t *state, const unsigned char *key, size_t outlen)
-{
+void ascon_prf_fixed_reinit(ascon_prf_state_t* state, const unsigned char* key, size_t outlen) {
     ascon_prf_free(state);
     ascon_prf_fixed_init(state, key, outlen);
 }
 
-void ascon_prf_free(ascon_prf_state_t *state)
-{
+void ascon_prf_free(ascon_prf_state_t* state) {
     if (state) {
         ascon_acquire(&(state->state));
         ascon_free(&(state->state));
         state->count = 0;
-        state->mode = 0;
+        state->mode  = 0;
     }
 }
 
-void ascon_prf_absorb
-    (ascon_prf_state_t *state, const unsigned char *in, size_t inlen)
-{
+void ascon_prf_absorb(ascon_prf_state_t* state, const unsigned char* in, size_t inlen) {
     unsigned temp;
 
     /* Acquire access to shared hardware if necessary */
@@ -163,7 +143,7 @@ void ascon_prf_absorb
 
     /* If we were squeezing output, then go back to the absorb phase */
     if (state->mode) {
-        state->mode = 0;
+        state->mode  = 0;
         state->count = 0;
         ascon_permute(&(state->state), 0);
     }
@@ -196,17 +176,16 @@ void ascon_prf_absorb
 
     /* Process the left-over block at the end of the input */
     temp = (unsigned)inlen;
-    if (temp > 0)
+    if (temp > 0) {
         ascon_absorb_partial(&(state->state), in, 0, temp);
+    }
     state->count = temp;
 
     /* Release access to the shared hardware */
     ascon_release(&(state->state));
 }
 
-void ascon_prf_squeeze
-    (ascon_prf_state_t *state, unsigned char *out, size_t outlen)
-{
+void ascon_prf_squeeze(ascon_prf_state_t* state, unsigned char* out, size_t outlen) {
     unsigned temp;
 
     /* Acquire access to shared hardware if necessary */
@@ -217,7 +196,7 @@ void ascon_prf_squeeze
         ascon_pad(&(state->state), state->count);
         ascon_separator(&(state->state));
         state->count = 0;
-        state->mode = 1;
+        state->mode  = 1;
     }
 
     /* Handle left-over partial blocks from last time */

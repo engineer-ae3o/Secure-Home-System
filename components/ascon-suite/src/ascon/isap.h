@@ -87,8 +87,8 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_state_t ke;   /**< Pre-computed key for encryption */
-    ascon_state_t ka;   /**< Pre-computed key for authentication */
+    ascon_state_t ke; /**< Pre-computed key for encryption */
+    ascon_state_t ka; /**< Pre-computed key for authentication */
 
 } ascon128a_isap_aead_key_t;
 
@@ -97,8 +97,8 @@ typedef struct
  */
 typedef struct
 {
-    ascon_state_t ke;   /**< Pre-computed key for encryption */
-    ascon_state_t ka;   /**< Pre-computed key for authentication */
+    ascon_state_t ke; /**< Pre-computed key for encryption */
+    ascon_state_t ka; /**< Pre-computed key for authentication */
 
 } ascon128_isap_aead_key_t;
 
@@ -107,8 +107,8 @@ typedef struct
  */
 typedef struct
 {
-    ascon_state_t ke;   /**< Pre-computed key for encryption */
-    ascon_state_t ka;   /**< Pre-computed key for authentication */
+    ascon_state_t ke; /**< Pre-computed key for encryption */
+    ascon_state_t ka; /**< Pre-computed key for authentication */
 
 } ascon80pq_isap_aead_key_t;
 
@@ -125,8 +125,7 @@ typedef struct
  * \sa ascon128a_isap_aead_free(), ascon128a_isap_aead_encrypt(),
  * ascon128a_isap_aead_decrypt(), ascon128a_isap_aead_load_key()
  */
-void ascon128a_isap_aead_init
-    (ascon128a_isap_aead_key_t *pk, const unsigned char *k);
+void ascon128a_isap_aead_init(ascon128a_isap_aead_key_t* pk, const unsigned char* k);
 
 /**
  * \brief Initializes a pre-computed key for ISAP-A-128A from a
@@ -138,9 +137,8 @@ void ascon128a_isap_aead_init
  * \sa ascon128a_isap_aead_free(), ascon128a_isap_aead_encrypt(),
  * ascon128a_isap_aead_decrypt(), ascon128a_isap_aead_save_key()
  */
-void ascon128a_isap_aead_load_key
-    (ascon128a_isap_aead_key_t *pk,
-     const unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon128a_isap_aead_load_key(ascon128a_isap_aead_key_t* pk,
+                                  const unsigned char        k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Saves a previously pre-computed key for ISAP-A-128A to a buffer.
@@ -151,9 +149,8 @@ void ascon128a_isap_aead_load_key
  * \sa ascon128a_isap_aead_free(), ascon128a_isap_aead_encrypt(),
  * ascon128a_isap_aead_decrypt(), ascon128a_isap_aead_load_key()
  */
-void ascon128a_isap_aead_save_key
-    (ascon128a_isap_aead_key_t *pk,
-     unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon128a_isap_aead_save_key(ascon128a_isap_aead_key_t* pk,
+                                  unsigned char              k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Frees a pre-computed key for ISAP-A-128A.
@@ -162,7 +159,7 @@ void ascon128a_isap_aead_save_key
  *
  * \sa ascon128a_isap_aead_init()
  */
-void ascon128a_isap_aead_free(ascon128a_isap_aead_key_t *pk);
+void ascon128a_isap_aead_free(ascon128a_isap_aead_key_t* pk);
 
 /**
  * \brief Encrypts and authenticates a packet with ISAP-A-128A and
@@ -182,12 +179,7 @@ void ascon128a_isap_aead_free(ascon128a_isap_aead_key_t *pk);
  *
  * \sa ascon128a_isap_aead_decrypt(), ascon128a_isap_aead_init()
  */
-void ascon128a_isap_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon128a_isap_aead_key_t *pk);
+void ascon128a_isap_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon128a_isap_aead_key_t* pk);
 
 /**
  * \brief Decrypts and authenticates a packet with ISAP-A-128A and
@@ -211,12 +203,7 @@ void ascon128a_isap_aead_encrypt
  *
  * \sa ascon128a_isap_aead_encrypt(), ascon128a_isap_aead_init()
  */
-int ascon128a_isap_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon128a_isap_aead_key_t *pk);
+int ascon128a_isap_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon128a_isap_aead_key_t* pk);
 
 /**
  * \brief Initializes a pre-computed key for ISAP-A-128.
@@ -231,8 +218,7 @@ int ascon128a_isap_aead_decrypt
  * \sa ascon128_isap_aead_free(), ascon128_isap_aead_encrypt(),
  * ascon128_isap_aead_decrypt(), ascon128_isap_aead_load_key()
  */
-void ascon128_isap_aead_init
-    (ascon128_isap_aead_key_t *pk, const unsigned char *k);
+void ascon128_isap_aead_init(ascon128_isap_aead_key_t* pk, const unsigned char* k);
 
 /**
  * \brief Initializes a pre-computed key for ISAP-A-128 from a
@@ -244,9 +230,8 @@ void ascon128_isap_aead_init
  * \sa ascon128_isap_aead_free(), ascon128_isap_aead_encrypt(),
  * ascon128_isap_aead_decrypt(), ascon128_isap_aead_save_key()
  */
-void ascon128_isap_aead_load_key
-    (ascon128_isap_aead_key_t *pk,
-     const unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon128_isap_aead_load_key(ascon128_isap_aead_key_t* pk,
+                                 const unsigned char       k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Saves a previously pre-computed key for ISAP-A-128 to a buffer.
@@ -257,9 +242,8 @@ void ascon128_isap_aead_load_key
  * \sa ascon128_isap_aead_free(), ascon128_isap_aead_encrypt(),
  * ascon128_isap_aead_decrypt(), ascon128_isap_aead_load_key()
  */
-void ascon128_isap_aead_save_key
-    (ascon128_isap_aead_key_t *pk,
-     unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon128_isap_aead_save_key(ascon128_isap_aead_key_t* pk,
+                                 unsigned char             k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Frees a pre-computed key for ISAP-A-128.
@@ -268,7 +252,7 @@ void ascon128_isap_aead_save_key
  *
  * \sa ascon128_isap_aead_init()
  */
-void ascon128_isap_aead_free(ascon128_isap_aead_key_t *pk);
+void ascon128_isap_aead_free(ascon128_isap_aead_key_t* pk);
 
 /**
  * \brief Encrypts and authenticates a packet with ISAP-A-128 and
@@ -288,12 +272,7 @@ void ascon128_isap_aead_free(ascon128_isap_aead_key_t *pk);
  *
  * \sa ascon128_isap_aead_decrypt(), ascon128_isap_aead_init()
  */
-void ascon128_isap_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon128_isap_aead_key_t *pk);
+void ascon128_isap_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon128_isap_aead_key_t* pk);
 
 /**
  * \brief Decrypts and authenticates a packet with ISAP-A-128 and
@@ -317,12 +296,7 @@ void ascon128_isap_aead_encrypt
  *
  * \sa ascon128_isap_aead_encrypt(), ascon128_isap_aead_init()
  */
-int ascon128_isap_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon128_isap_aead_key_t *pk);
+int ascon128_isap_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon128_isap_aead_key_t* pk);
 
 /**
  * \brief Initializes a pre-computed key for ISAP-A-80PQ.
@@ -337,8 +311,7 @@ int ascon128_isap_aead_decrypt
  * \sa ascon80pq_isap_aead_free(), ascon80pq_isap_aead_encrypt(),
  * ascon80pq_isap_aead_decrypt(), ascon80pq_isap_aead_load_key()
  */
-void ascon80pq_isap_aead_init
-    (ascon80pq_isap_aead_key_t *pk, const unsigned char *k);
+void ascon80pq_isap_aead_init(ascon80pq_isap_aead_key_t* pk, const unsigned char* k);
 
 /**
  * \brief Initializes a pre-computed key for ISAP-A-80PQ from a
@@ -350,9 +323,8 @@ void ascon80pq_isap_aead_init
  * \sa ascon80pq_isap_aead_free(), ascon80pq_isap_aead_encrypt(),
  * ascon80pq_isap_aead_decrypt(), ascon80pq_isap_aead_save_key()
  */
-void ascon80pq_isap_aead_load_key
-    (ascon80pq_isap_aead_key_t *pk,
-     const unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon80pq_isap_aead_load_key(ascon80pq_isap_aead_key_t* pk,
+                                  const unsigned char        k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Saves a previously pre-computed key for ISAP-A-80PQ to a buffer.
@@ -363,9 +335,8 @@ void ascon80pq_isap_aead_load_key
  * \sa ascon80pq_isap_aead_free(), ascon80pq_isap_aead_encrypt(),
  * ascon80pq_isap_aead_decrypt(), ascon80pq_isap_aead_load_key()
  */
-void ascon80pq_isap_aead_save_key
-    (ascon80pq_isap_aead_key_t *pk,
-     unsigned char k[ASCON_ISAP_SAVED_KEY_SIZE]);
+void ascon80pq_isap_aead_save_key(ascon80pq_isap_aead_key_t* pk,
+                                  unsigned char              k[ASCON_ISAP_SAVED_KEY_SIZE]);
 
 /**
  * \brief Frees a pre-computed key for ISAP-A-80PQ.
@@ -374,7 +345,7 @@ void ascon80pq_isap_aead_save_key
  *
  * \sa ascon80pq_isap_aead_init()
  */
-void ascon80pq_isap_aead_free(ascon80pq_isap_aead_key_t *pk);
+void ascon80pq_isap_aead_free(ascon80pq_isap_aead_key_t* pk);
 
 /**
  * \brief Encrypts and authenticates a packet with ISAP-A-80PQ and
@@ -394,12 +365,7 @@ void ascon80pq_isap_aead_free(ascon80pq_isap_aead_key_t *pk);
  *
  * \sa ascon80pq_isap_aead_decrypt(), ascon80pq_isap_aead_init()
  */
-void ascon80pq_isap_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon80pq_isap_aead_key_t *pk);
+void ascon80pq_isap_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon80pq_isap_aead_key_t* pk);
 
 /**
  * \brief Decrypts and authenticates a packet with ISAP-A-80PQ and
@@ -423,30 +389,27 @@ void ascon80pq_isap_aead_encrypt
  *
  * \sa ascon80pq_isap_aead_encrypt(), ascon80pq_isap_aead_init()
  */
-int ascon80pq_isap_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon80pq_isap_aead_key_t *pk);
+int ascon80pq_isap_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon80pq_isap_aead_key_t* pk);
 
 #ifdef __cplusplus
 }
 
 #include <ascon/aead.h>
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief Encrypts or decrypts sequential packets with ISAP-A-128.
  */
-class isap128 : public aead
-{
+class isap128 : public aead {
     /* Disable copy operations */
-    inline isap128(const isap128 &) : aead() {}
-    inline isap128& operator=(const isap128 &) { return *this; }
-public:
+    inline isap128(const isap128&) : aead() {
+    }
+    inline isap128& operator=(const isap128&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ISAP-A-128 object.
      *
@@ -468,7 +431,7 @@ public:
      *
      * If \a len is 80, then it indicates the ISAP "save key" format.
      */
-    explicit isap128(const unsigned char *key, size_t len);
+    explicit isap128(const unsigned char* key, size_t len);
 
     /**
      * \brief Destroys this ISAP-A-128 object and all sensitive
@@ -489,31 +452,32 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon128_isap_aead_key_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon128_isap_aead_key_t m_key;                          /**< Key */
+    unsigned char            m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ISAP-A-128A.
  */
-class isap128a : public aead
-{
+class isap128a : public aead {
     /* Disable copy operations */
-    inline isap128a(const isap128a &) : aead() {}
-    inline isap128a& operator=(const isap128a &) { return *this; }
-public:
+    inline isap128a(const isap128a&) : aead() {
+    }
+    inline isap128a& operator=(const isap128a&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ISAP-A-128A object.
      *
@@ -535,7 +499,7 @@ public:
      *
      * If \a len is 80, then it indicates the ISAP "save key" format.
      */
-    explicit isap128a(const unsigned char *key, size_t len);
+    explicit isap128a(const unsigned char* key, size_t len);
 
     /**
      * \brief Destroys this ISAP-A-128A object and all sensitive
@@ -556,31 +520,32 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon128a_isap_aead_key_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon128a_isap_aead_key_t m_key;                          /**< Key */
+    unsigned char             m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ISAP-A-80PQ.
  */
-class isap80pq : public aead
-{
+class isap80pq : public aead {
     /* Disable copy operations */
-    inline isap80pq(const isap80pq &) : aead() {}
-    inline isap80pq& operator=(const isap80pq &) { return *this; }
-public:
+    inline isap80pq(const isap80pq&) : aead() {
+    }
+    inline isap80pq& operator=(const isap80pq&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ISAP-A-80PQ object.
      *
@@ -602,7 +567,7 @@ public:
      *
      * If \a len is 80, then it indicates the ISAP "save key" format.
      */
-    explicit isap80pq(const unsigned char *key, size_t len);
+    explicit isap80pq(const unsigned char* key, size_t len);
 
     /**
      * \brief Destroys this ISAP-A-80PQ object and all sensitive
@@ -623,20 +588,18 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon80pq_isap_aead_key_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon80pq_isap_aead_key_t m_key;                          /**< Key */
+    unsigned char             m_nonce[ASCON_ISAP_NONCE_SIZE]; /**< Nonce */
 };
 
 } /* namespace ascon */

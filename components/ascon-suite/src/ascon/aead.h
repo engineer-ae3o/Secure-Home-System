@@ -111,12 +111,7 @@ extern "C" {
  *
  * \sa ascon128_aead_decrypt()
  */
-void ascon128_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon128_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-128.
@@ -139,12 +134,7 @@ void ascon128_aead_encrypt
  *
  * \sa ascon128_aead_encrypt()
  */
-int ascon128_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon128_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Encrypts and authenticates a packet with ASCON-128a.
@@ -163,12 +153,7 @@ int ascon128_aead_decrypt
  *
  * \sa ascon128a_aead_decrypt()
  */
-void ascon128a_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon128a_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-128a.
@@ -191,12 +176,7 @@ void ascon128a_aead_encrypt
  *
  * \sa ascon128a_aead_encrypt()
  */
-int ascon128a_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon128a_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Encrypts and authenticates a packet with ASCON-80pq.
@@ -215,12 +195,7 @@ int ascon128a_aead_decrypt
  *
  * \sa ascon80pq_aead_decrypt()
  */
-void ascon80pq_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+void ascon80pq_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Decrypts and authenticates a packet with ASCON-80pq.
@@ -243,12 +218,7 @@ void ascon80pq_aead_encrypt
  *
  * \sa ascon80pq_aead_encrypt()
  */
-int ascon80pq_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k);
+int ascon80pq_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k);
 
 /* ---------------------------------------------------------------- */
 /*            Utility functions for use with AEAD modes             */
@@ -263,8 +233,7 @@ int ascon80pq_aead_decrypt
  * The value in \a npub is written in big-endian byte order with the
  * leading 8 bytes set to zero.
  */
-void ascon_aead_set_counter
-    (unsigned char npub[ASCON128_NONCE_SIZE], uint64_t n);
+void ascon_aead_set_counter(unsigned char npub[ASCON128_NONCE_SIZE], uint64_t n);
 
 /**
  * \brief Increments a 128-bit nonce value as a packet sequence counter.
@@ -416,9 +385,7 @@ typedef struct
  *
  * \sa ascon128_aead_start(), ascon128_aead_free(), ascon128_aead_reinit()
  */
-void ascon128_aead_init
-    (ascon128_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon128_aead_init(ascon128_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Re-initializes ASCON-128 incremental mode with a new key and nonce.
@@ -433,9 +400,7 @@ void ascon128_aead_init
  *
  * \sa ascon128_aead_init()
  */
-void ascon128_aead_reinit
-    (ascon128_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon128_aead_reinit(ascon128_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Starts encrypting or decrypting a packet with ASCON-128 in
@@ -449,8 +414,7 @@ void ascon128_aead_reinit
  * \sa ascon128_aead_encrypt_block(), ascon128_aead_decrypt_block(),
  * ascon128_aead_encrypt_finalize(), ascon128_aead_decrypt_finalize()
  */
-void ascon128_aead_start
-    (ascon128_state_t *state, const unsigned char *ad, size_t adlen);
+void ascon128_aead_start(ascon128_state_t* state, const unsigned char* ad, size_t adlen);
 
 /**
  * \brief Frees an incremental ASCON-128 state, destroying any sensitive
@@ -460,7 +424,7 @@ void ascon128_aead_start
  *
  * \sa ascon128_aead_init()
  */
-void ascon128_aead_free(ascon128_state_t *state);
+void ascon128_aead_free(ascon128_state_t* state);
 
 /**
  * \brief Encrypts a block of data with ASCON-128 in incremental mode.
@@ -474,9 +438,7 @@ void ascon128_aead_free(ascon128_state_t *state);
  * \sa ascon128_aead_decrypt_block(), ascon128_aead_start(),
  * ascon128_aead_encrypt_finalize()
  */
-void ascon128_aead_encrypt_block
-    (ascon128_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon128_aead_encrypt_block(ascon128_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-128 encryption operation and
@@ -488,8 +450,7 @@ void ascon128_aead_encrypt_block
  *
  * \sa ascon128_aead_encrypt_block(), ascon128_aead_start()
  */
-void ascon128_aead_encrypt_finalize
-    (ascon128_state_t *state, unsigned char *tag);
+void ascon128_aead_encrypt_finalize(ascon128_state_t* state, unsigned char* tag);
 
 /**
  * \brief Decrypts a block of data with ASCON-128 in incremental mode.
@@ -503,9 +464,7 @@ void ascon128_aead_encrypt_finalize
  * \sa ascon128_aead_encrypt_block(), ascon128_aead_start(),
  * ascon128_aead_decrypt_finalize()
  */
-void ascon128_aead_decrypt_block
-    (ascon128_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon128_aead_decrypt_block(ascon128_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-128 decryption operation and
@@ -520,8 +479,7 @@ void ascon128_aead_decrypt_block
  *
  * \sa ascon128_aead_decrypt_block(), ascon128_aead_start()
  */
-int ascon128_aead_decrypt_finalize
-    (ascon128_state_t *state, const unsigned char *tag);
+int ascon128_aead_decrypt_finalize(ascon128_state_t* state, const unsigned char* tag);
 
 /**
  * \brief Initializes ASCON-128a for encrypting or decrypting packets in
@@ -588,9 +546,7 @@ int ascon128_aead_decrypt_finalize
  *
  * \sa ascon128a_aead_start(), ascon128a_aead_free(), ascon128a_aead_reinit()
  */
-void ascon128a_aead_init
-    (ascon128a_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon128a_aead_init(ascon128a_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Re-initializes ASCON-128a incremental mode with a new key and nonce.
@@ -605,9 +561,7 @@ void ascon128a_aead_init
  *
  * \sa ascon128a_aead_init()
  */
-void ascon128a_aead_reinit
-    (ascon128a_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon128a_aead_reinit(ascon128a_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Starts encrypting or decrypting a packet with ASCON-128a in
@@ -621,8 +575,7 @@ void ascon128a_aead_reinit
  * \sa ascon128a_aead_encrypt_block(), ascon128a_aead_decrypt_block(),
  * ascon128a_aead_encrypt_finalize(), ascon128a_aead_decrypt_finalize()
  */
-void ascon128a_aead_start
-    (ascon128a_state_t *state, const unsigned char *ad, size_t adlen);
+void ascon128a_aead_start(ascon128a_state_t* state, const unsigned char* ad, size_t adlen);
 
 /**
  * \brief Frees an incremental ASCON-128a state, destroying any sensitive
@@ -632,7 +585,7 @@ void ascon128a_aead_start
  *
  * \sa ascon128a_aead_init()
  */
-void ascon128a_aead_free(ascon128a_state_t *state);
+void ascon128a_aead_free(ascon128a_state_t* state);
 
 /**
  * \brief Encrypts a block of data with ASCON-128a in incremental mode.
@@ -646,9 +599,7 @@ void ascon128a_aead_free(ascon128a_state_t *state);
  * \sa ascon128a_aead_decrypt_block(), ascon128a_aead_start(),
  * ascon128a_aead_encrypt_finalize()
  */
-void ascon128a_aead_encrypt_block
-    (ascon128a_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon128a_aead_encrypt_block(ascon128a_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-128a encryption operation and
@@ -663,8 +614,7 @@ void ascon128a_aead_encrypt_block
  *
  * \sa ascon128a_aead_encrypt_block(), ascon128a_aead_start()
  */
-void ascon128a_aead_encrypt_finalize
-    (ascon128a_state_t *state, unsigned char *tag);
+void ascon128a_aead_encrypt_finalize(ascon128a_state_t* state, unsigned char* tag);
 
 /**
  * \brief Decrypts a block of data with ASCON-128a in incremental mode.
@@ -678,9 +628,7 @@ void ascon128a_aead_encrypt_finalize
  * \sa ascon128a_aead_encrypt_block(), ascon128a_aead_start(),
  * ascon128a_aead_decrypt_finalize()
  */
-void ascon128a_aead_decrypt_block
-    (ascon128a_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon128a_aead_decrypt_block(ascon128a_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-128a decryption operation and
@@ -698,8 +646,7 @@ void ascon128a_aead_decrypt_block
  *
  * \sa ascon128a_aead_decrypt_block(), ascon128a_aead_start()
  */
-int ascon128a_aead_decrypt_finalize
-    (ascon128a_state_t *state, const unsigned char *tag);
+int ascon128a_aead_decrypt_finalize(ascon128a_state_t* state, const unsigned char* tag);
 
 /**
  * \brief Starts encrypting or decrypting a packet with ASCON-80pq in
@@ -766,9 +713,7 @@ int ascon128a_aead_decrypt_finalize
  *
  * \sa ascon80pq_aead_start(), ascon80pq_aead_free(), ascon80pq_aead_reinit()
  */
-void ascon80pq_aead_init
-    (ascon80pq_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon80pq_aead_init(ascon80pq_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Re-initializes ASCON-80pq incremental mode with a new key and nonce.
@@ -783,9 +728,7 @@ void ascon80pq_aead_init
  *
  * \sa ascon80pq_aead_init()
  */
-void ascon80pq_aead_reinit
-    (ascon80pq_state_t *state, const unsigned char *npub,
-     const unsigned char *k);
+void ascon80pq_aead_reinit(ascon80pq_state_t* state, const unsigned char* npub, const unsigned char* k);
 
 /**
  * \brief Starts encrypting or decrypting a packet with ASCON-80pq in
@@ -799,8 +742,7 @@ void ascon80pq_aead_reinit
  * \sa ascon80pq_aead_encrypt_block(), ascon80pq_aead_decrypt_block(),
  * ascon80pq_aead_encrypt_finalize(), ascon80pq_aead_decrypt_finalize()
  */
-void ascon80pq_aead_start
-    (ascon80pq_state_t *state, const unsigned char *ad, size_t adlen);
+void ascon80pq_aead_start(ascon80pq_state_t* state, const unsigned char* ad, size_t adlen);
 
 /**
  * \brief Frees an incremental ASCON-80pq state, destroying any sensitive
@@ -810,7 +752,7 @@ void ascon80pq_aead_start
  *
  * \sa ascon80pq_aead_init()
  */
-void ascon80pq_aead_free(ascon80pq_state_t *state);
+void ascon80pq_aead_free(ascon80pq_state_t* state);
 
 /**
  * \brief Encrypts a block of data with ASCON-80pq in incremental mode.
@@ -824,9 +766,7 @@ void ascon80pq_aead_free(ascon80pq_state_t *state);
  * \sa ascon80pq_aead_decrypt_block(), ascon80pq_aead_start(),
  * ascon80pq_aead_encrypt_finalize()
  */
-void ascon80pq_aead_encrypt_block
-    (ascon80pq_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon80pq_aead_encrypt_block(ascon80pq_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-80pq encryption operation and
@@ -841,8 +781,7 @@ void ascon80pq_aead_encrypt_block
  *
  * \sa ascon80pq_aead_encrypt_block(), ascon80pq_aead_start()
  */
-void ascon80pq_aead_encrypt_finalize
-    (ascon80pq_state_t *state, unsigned char *tag);
+void ascon80pq_aead_encrypt_finalize(ascon80pq_state_t* state, unsigned char* tag);
 
 /**
  * \brief Decrypts a block of data with ASCON-80pq in incremental mode.
@@ -856,9 +795,7 @@ void ascon80pq_aead_encrypt_finalize
  * \sa ascon80pq_aead_encrypt_block(), ascon80pq_aead_start(),
  * ascon80pq_aead_decrypt_finalize()
  */
-void ascon80pq_aead_decrypt_block
-    (ascon80pq_state_t *state, const unsigned char *in,
-     unsigned char *out, size_t len);
+void ascon80pq_aead_decrypt_block(ascon80pq_state_t* state, const unsigned char* in, unsigned char* out, size_t len);
 
 /**
  * \brief Finalizes an incremental ASCON-80pq decryption operation and
@@ -876,16 +813,14 @@ void ascon80pq_aead_decrypt_block
  *
  * \sa ascon80pq_aead_decrypt_block(), ascon80pq_aead_start()
  */
-int ascon80pq_aead_decrypt_finalize
-    (ascon80pq_state_t *state, const unsigned char *tag);
+int ascon80pq_aead_decrypt_finalize(ascon80pq_state_t* state, const unsigned char* tag);
 
 #ifdef __cplusplus
 }
 
 #include <ascon/utility.h>
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief Common base class for encrypting or decrypting sequential
@@ -943,12 +878,15 @@ namespace ascon
  * transports, the application will need to explicitly call set_nonce()
  * or set_counter() for each packet.
  */
-class aead
-{
+class aead {
     /* Disable copy operations */
-    inline aead(const aead &) {}
-    inline aead& operator=(const aead &) { return *this; }
-public:
+    inline aead(const aead&) {
+    }
+    inline aead& operator=(const aead&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Destroys this AEAD object and all sensitive material within.
      */
@@ -992,7 +930,7 @@ public:
      *
      * \sa set_nonce()
      */
-    virtual bool set_key(const unsigned char *key, size_t len) = 0;
+    virtual bool set_key(const unsigned char* key, size_t len) = 0;
 
     /**
      * \brief Sets a new nonce for this AEAD object while leaving the
@@ -1008,7 +946,7 @@ public:
      *
      * \sa set_key(), set_counter()
      */
-    virtual void set_nonce(const unsigned char *nonce, size_t len) = 0;
+    virtual void set_nonce(const unsigned char* nonce, size_t len) = 0;
 
     /**
      * \brief Sets the nonce in this AEAD object to a 64-bit counter
@@ -1041,9 +979,7 @@ public:
      *
      * \sa decrypt()
      */
-    inline int encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                       const unsigned char *ad = 0, size_t adlen = 0)
-    {
+    inline int encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad = 0, size_t adlen = 0) {
         return do_encrypt(c, m, len, ad, adlen);
     }
 
@@ -1061,7 +997,7 @@ public:
      *
      * \sa decrypt()
      */
-    void encrypt(ascon::byte_array &c, const ascon::byte_array &m);
+    void encrypt(ascon::byte_array& c, const ascon::byte_array& m);
 
     /**
      * \brief Encrypts and authenticates a packet with ASCON.
@@ -1078,8 +1014,7 @@ public:
      *
      * \sa decrypt()
      */
-    void encrypt(ascon::byte_array &c, const ascon::byte_array &m,
-                 const ascon::byte_array &ad);
+    void encrypt(ascon::byte_array& c, const ascon::byte_array& m, const ascon::byte_array& ad);
 
     /**
      * \brief Decrypts and authenticates a packet with ASCON.
@@ -1103,9 +1038,7 @@ public:
      *
      * \sa encrypt()
      */
-    inline int decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                       const unsigned char *ad = 0, size_t adlen = 0)
-    {
+    inline int decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad = 0, size_t adlen = 0) {
         return do_decrypt(m, c, len, ad, adlen);
     }
 
@@ -1127,7 +1060,7 @@ public:
      *
      * \sa encrypt()
      */
-    bool decrypt(ascon::byte_array &m, const ascon::byte_array &c);
+    bool decrypt(ascon::byte_array& m, const ascon::byte_array& c);
 
     /**
      * \brief Decrypts and authenticates a packet with ASCON.
@@ -1148,8 +1081,7 @@ public:
      *
      * \sa encrypt()
      */
-    bool decrypt(ascon::byte_array &m, const ascon::byte_array &c,
-                 const ascon::byte_array &ad);
+    bool decrypt(ascon::byte_array& m, const ascon::byte_array& c, const ascon::byte_array& ad);
 
     /**
      * \brief Clears all sensitive material from this AEAD object.
@@ -1160,11 +1092,12 @@ public:
      */
     virtual void clear() = 0;
 
-protected:
+    protected:
     /**
      * \brief Constructs a new AEAD object.
      */
-    inline aead() {}
+    inline aead() {
+    }
 
     /**
      * \brief Subclass implementation of ASCON encryption.
@@ -1181,9 +1114,7 @@ protected:
      *
      * \sa do_decrypt()
      */
-    virtual int do_encrypt
-        (unsigned char *c, const unsigned char *m, size_t len,
-         const unsigned char *ad, size_t adlen) = 0;
+    virtual int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen) = 0;
 
     /**
      * \brief Subclass implementation of ASCON decryption.
@@ -1203,20 +1134,21 @@ protected:
      *
      * \sa do_encrypt()
      */
-    virtual int do_decrypt
-        (unsigned char *m, const unsigned char *c, size_t len,
-         const unsigned char *ad, size_t adlen) = 0;
+    virtual int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen) = 0;
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128.
  */
-class aead128 : public aead
-{
+class aead128 : public aead {
     /* Disable copy operations */
-    inline aead128(const aead128 &) : aead() {}
-    inline aead128& operator=(const aead128 &) { return *this; }
-public:
+    inline aead128(const aead128&) : aead() {
+    }
+    inline aead128& operator=(const aead128&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-128 object.
      *
@@ -1246,33 +1178,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON128_KEY_SIZE];       /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE];   /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                    /**< Internal AEAD state */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-128a.
  */
-class aead128a : public aead
-{
+class aead128a : public aead {
     /* Disable copy operations */
-    inline aead128a(const aead128a &) : aead() {}
-    inline aead128a& operator=(const aead128a &) { return *this; }
-public:
+    inline aead128a(const aead128a&) : aead() {
+    }
+    inline aead128a& operator=(const aead128a&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-128a object.
      *
@@ -1302,33 +1235,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON128_KEY_SIZE];       /**< Key */
-        unsigned char nonce[ASCON128_NONCE_SIZE];   /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON128_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                    /**< Internal AEAD state */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with ASCON-80pq.
  */
-class aead80pq : public aead
-{
+class aead80pq : public aead {
     /* Disable copy operations */
-    inline aead80pq(const aead80pq &) : aead() {}
-    inline aead80pq& operator=(const aead80pq &) { return *this; }
-public:
+    inline aead80pq(const aead80pq&) : aead() {
+    }
+    inline aead80pq& operator=(const aead80pq&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new ASCON-80pq object.
      *
@@ -1358,22 +1292,20 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
+    private:
     struct {
-        unsigned char key[ASCON80PQ_KEY_SIZE];      /**< Key */
-        unsigned char nonce[ASCON80PQ_NONCE_SIZE];  /**< Nonce */
-    } m_state; /**< Internal AEAD state */
+        unsigned char key[ASCON80PQ_KEY_SIZE];     /**< Key */
+        unsigned char nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
+    } m_state;                                     /**< Internal AEAD state */
 };
 
 } /* namespace ascon */

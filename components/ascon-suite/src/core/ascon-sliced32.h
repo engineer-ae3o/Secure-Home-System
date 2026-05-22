@@ -33,11 +33,11 @@
 /** @cond ascon_bit_separation */
 
 /* http://programming.sirrida.de/perm_fn.html#bit_permute_step */
-#define ascon_bit_permute_step(_y, mask, shift) \
-    do { \
-        uint32_t y = (_y); \
+#define ascon_bit_permute_step(_y, mask, shift)     \
+    do {                                            \
+        uint32_t y = (_y);                          \
         uint32_t t = ((y >> (shift)) ^ y) & (mask); \
-        (_y) = (y ^ t) ^ (t << (shift)); \
+        (_y)       = (y ^ t) ^ (t << (shift));      \
     } while (0)
 
 /* Separates a 32-bit word into two 16-bit halves with all the even
@@ -48,19 +48,19 @@
  * P = [0 16 1 17 2 18 3 19 4 20 5 21 6 22 7 23 8 24
  *      9 25 10 26 11 27 12 28 13 29 14 30 15 31]
  */
-#define ascon_separate(x) \
-    do { \
+#define ascon_separate(x)                           \
+    do {                                            \
         ascon_bit_permute_step((x), 0x22222222, 1); \
         ascon_bit_permute_step((x), 0x0c0c0c0c, 2); \
         ascon_bit_permute_step((x), 0x00f000f0, 4); \
         ascon_bit_permute_step((x), 0x0000ff00, 8); \
     } while (0)
-#define ascon_combine(x) \
-    do { \
+#define ascon_combine(x)                             \
+    do {                                             \
         ascon_bit_permute_step((x), 0x0000aaaa, 15); \
         ascon_bit_permute_step((x), 0x0000cccc, 14); \
         ascon_bit_permute_step((x), 0x0000f0f0, 12); \
-        ascon_bit_permute_step((x), 0x0000ff00, 8); \
+        ascon_bit_permute_step((x), 0x0000ff00, 8);  \
     } while (0)
 
 /** @endcond */
@@ -73,14 +73,14 @@
  * \param offset Offset of the 64-bit word within the state to set at,
  * between 0 and 4.
  */
-#define ascon_set_sliced(state, data, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = be_load_word32((data)); \
-        uint32_t low  = be_load_word32((data) + 4); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] = (high << 16) | (low & 0x0000FFFFU); \
+#define ascon_set_sliced(state, data, offset)                        \
+    do {                                                             \
+        ascon_state_t* s    = (state);                               \
+        uint32_t       high = be_load_word32((data));                \
+        uint32_t       low  = be_load_word32((data) + 4);            \
+        ascon_separate(high);                                        \
+        ascon_separate(low);                                         \
+        s->W[(offset) * 2]     = (high << 16) | (low & 0x0000FFFFU); \
         s->W[(offset) * 2 + 1] = (high & 0xFFFF0000U) | (low >> 16); \
     } while (0)
 
@@ -92,14 +92,14 @@
  * \param offset Offset of the 64-bit word within the state to set at,
  * between 0 and 4.
  */
-#define ascon_set_word64(state, value, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = (uint32_t)((value) >> 32); \
-        uint32_t low  = (uint32_t)(value); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] = (high << 16) | (low & 0x0000FFFFU); \
+#define ascon_set_word64(state, value, offset)                       \
+    do {                                                             \
+        ascon_state_t* s    = (state);                               \
+        uint32_t       high = (uint32_t)((value) >> 32);             \
+        uint32_t       low  = (uint32_t)(value);                     \
+        ascon_separate(high);                                        \
+        ascon_separate(low);                                         \
+        s->W[(offset) * 2]     = (high << 16) | (low & 0x0000FFFFU); \
         s->W[(offset) * 2 + 1] = (high & 0xFFFF0000U) | (low >> 16); \
     } while (0)
 
@@ -111,14 +111,14 @@
  * \param offset Offset of the 64-bit word within the state to absorb at,
  * between 0 and 4.
  */
-#define ascon_absorb_sliced(state, data, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = be_load_word32((data)); \
-        uint32_t low  = be_load_word32((data) + 4); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU); \
+#define ascon_absorb_sliced(state, data, offset)                      \
+    do {                                                              \
+        ascon_state_t* s    = (state);                                \
+        uint32_t       high = be_load_word32((data));                 \
+        uint32_t       low  = be_load_word32((data) + 4);             \
+        ascon_separate(high);                                         \
+        ascon_separate(low);                                          \
+        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU);     \
         s->W[(offset) * 2 + 1] ^= (high & 0xFFFF0000U) | (low >> 16); \
     } while (0)
 
@@ -130,14 +130,14 @@
  * \param offset Offset of the 64-bit word within the state to absorb at,
  * between 0 and 4.
  */
-#define ascon_absorb_word64(state, value, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = (uint32_t)((value) >> 32); \
-        uint32_t low  = (uint32_t)(value); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU); \
+#define ascon_absorb_word64(state, value, offset)                     \
+    do {                                                              \
+        ascon_state_t* s    = (state);                                \
+        uint32_t       high = (uint32_t)((value) >> 32);              \
+        uint32_t       low  = (uint32_t)(value);                      \
+        ascon_separate(high);                                         \
+        ascon_separate(low);                                          \
+        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU);     \
         s->W[(offset) * 2 + 1] ^= (high & 0xFFFF0000U) | (low >> 16); \
     } while (0)
 
@@ -152,12 +152,12 @@
  * The data is absorbed into the low bits of the 64-bit word at \a offset.
  */
 #define ascon_absorb32_low_sliced(state, data, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t low  = be_load_word32((data)); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] ^= (low & 0x0000FFFFU); \
-        s->W[(offset) * 2 + 1] ^= (low >> 16); \
+    do {                                               \
+        ascon_state_t* s   = (state);                  \
+        uint32_t       low = be_load_word32((data));   \
+        ascon_separate(low);                           \
+        s->W[(offset) * 2] ^= (low & 0x0000FFFFU);     \
+        s->W[(offset) * 2 + 1] ^= (low >> 16);         \
     } while (0)
 
 /**
@@ -171,11 +171,11 @@
  * The data is absorbed into the high bits of the 64-bit word at \a offset.
  */
 #define ascon_absorb32_high_sliced(state, data, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = be_load_word32((data)); \
-        ascon_separate(high); \
-        s->W[(offset) * 2] ^= (high << 16); \
+    do {                                                \
+        ascon_state_t* s    = (state);                  \
+        uint32_t       high = be_load_word32((data));   \
+        ascon_separate(high);                           \
+        s->W[(offset) * 2] ^= (high << 16);             \
         s->W[(offset) * 2 + 1] ^= (high & 0xFFFF0000U); \
     } while (0)
 
@@ -187,18 +187,18 @@
  * \param offset Offset of the 64-bit word within the state to extract,
  * between 0 and 4.
  */
-#define ascon_squeeze_sliced(state, data, offset) \
-    do { \
-        const ascon_state_t *s = (state); \
-        uint32_t high, low; \
-        high = (s->W[(offset) * 2] >> 16) | \
+#define ascon_squeeze_sliced(state, data, offset)      \
+    do {                                               \
+        const ascon_state_t* s = (state);              \
+        uint32_t             high, low;                \
+        high = (s->W[(offset) * 2] >> 16) |            \
                (s->W[(offset) * 2 + 1] & 0xFFFF0000U); \
-        low  = (s->W[(offset) * 2] & 0x0000FFFFU) | \
-               (s->W[(offset) * 2 + 1] << 16); \
-        ascon_combine(high); \
-        ascon_combine(low); \
-        be_store_word32((data), high); \
-        be_store_word32((data) + 4, low); \
+        low  = (s->W[(offset) * 2] & 0x0000FFFFU) |    \
+               (s->W[(offset) * 2 + 1] << 16);         \
+        ascon_combine(high);                           \
+        ascon_combine(low);                            \
+        be_store_word32((data), high);                 \
+        be_store_word32((data) + 4, low);              \
     } while (0)
 
 /**
@@ -209,17 +209,17 @@
  * \param offset Offset of the 64-bit word within the state to extract,
  * between 0 and 4.
  */
-#define ascon_squeeze_word64(state, value, offset) \
-    do { \
-        const ascon_state_t *s = (state); \
-        uint32_t high, low; \
-        high = (s->W[(offset) * 2] >> 16) | \
+#define ascon_squeeze_word64(state, value, offset)     \
+    do {                                               \
+        const ascon_state_t* s = (state);              \
+        uint32_t             high, low;                \
+        high = (s->W[(offset) * 2] >> 16) |            \
                (s->W[(offset) * 2 + 1] & 0xFFFF0000U); \
-        low  = (s->W[(offset) * 2] & 0x0000FFFFU) | \
-               (s->W[(offset) * 2 + 1] << 16); \
-        ascon_combine(high); \
-        ascon_combine(low); \
-        (value) = (((uint64_t)high) << 32) | low; \
+        low  = (s->W[(offset) * 2] & 0x0000FFFFU) |    \
+               (s->W[(offset) * 2 + 1] << 16);         \
+        ascon_combine(high);                           \
+        ascon_combine(low);                            \
+        (value) = (((uint64_t)high) << 32) | low;      \
     } while (0)
 
 /**
@@ -231,23 +231,23 @@
  * \param offset Offset of the 64-bit word within the state to absorb
  * and squeeze at, between 0 and 4.
  */
-#define ascon_encrypt_sliced(state, c, m, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high = be_load_word32((m)); \
-        uint32_t low  = be_load_word32((m) + 4); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU); \
+#define ascon_encrypt_sliced(state, c, m, offset)                     \
+    do {                                                              \
+        ascon_state_t* s    = (state);                                \
+        uint32_t       high = be_load_word32((m));                    \
+        uint32_t       low  = be_load_word32((m) + 4);                \
+        ascon_separate(high);                                         \
+        ascon_separate(low);                                          \
+        s->W[(offset) * 2] ^= (high << 16) | (low & 0x0000FFFFU);     \
         s->W[(offset) * 2 + 1] ^= (high & 0xFFFF0000U) | (low >> 16); \
-        high = (s->W[(offset) * 2] >> 16) | \
-               (s->W[(offset) * 2 + 1] & 0xFFFF0000U); \
-        low  = (s->W[(offset) * 2] & 0x0000FFFFU) | \
-               (s->W[(offset) * 2 + 1] << 16); \
-        ascon_combine(high); \
-        ascon_combine(low); \
-        be_store_word32((c), high); \
-        be_store_word32((c) + 4, low); \
+        high = (s->W[(offset) * 2] >> 16) |                           \
+               (s->W[(offset) * 2 + 1] & 0xFFFF0000U);                \
+        low  = (s->W[(offset) * 2] & 0x0000FFFFU) |                   \
+               (s->W[(offset) * 2 + 1] << 16);                        \
+        ascon_combine(high);                                          \
+        ascon_combine(low);                                           \
+        be_store_word32((c), high);                                   \
+        be_store_word32((c) + 4, low);                                \
     } while (0)
 
 /**
@@ -259,24 +259,24 @@
  * \param offset Offset of the 64-bit word within the state to absorb
  * and squeeze at, between 0 and 4.
  */
-#define ascon_decrypt_sliced(state, m, c, offset) \
-    do { \
-        ascon_state_t *s = (state); \
-        uint32_t high, low, high2, low2; \
-        high = be_load_word32((c)); \
-        low  = be_load_word32((c) + 4); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        high2 = high ^ ((s->W[(offset) * 2] >> 16) | \
-                        (s->W[(offset) * 2 + 1] & 0xFFFF0000U)); \
-        low2 = low ^ ((s->W[(offset) * 2] & 0x0000FFFFU) | \
-                      (s->W[(offset) * 2 + 1] << 16)); \
-        s->W[(offset) * 2] = (high << 16) | (low & 0x0000FFFFU); \
-        s->W[(offset) * 2 + 1] = (high & 0xFFFF0000U) | (low >> 16); \
-        ascon_combine(high2); \
-        ascon_combine(low2); \
-        be_store_word32((m), high2); \
-        be_store_word32((m) + 4, low2); \
+#define ascon_decrypt_sliced(state, m, c, offset)                                 \
+    do {                                                                          \
+        ascon_state_t* s = (state);                                               \
+        uint32_t       high, low, high2, low2;                                    \
+        high = be_load_word32((c));                                               \
+        low  = be_load_word32((c) + 4);                                           \
+        ascon_separate(high);                                                     \
+        ascon_separate(low);                                                      \
+        high2                  = high ^ ((s->W[(offset) * 2] >> 16) |             \
+                                         (s->W[(offset) * 2 + 1] & 0xFFFF0000U)); \
+        low2                   = low ^ ((s->W[(offset) * 2] & 0x0000FFFFU) |      \
+                                        (s->W[(offset) * 2 + 1] << 16));          \
+        s->W[(offset) * 2]     = (high << 16) | (low & 0x0000FFFFU);              \
+        s->W[(offset) * 2 + 1] = (high & 0xFFFF0000U) | (low >> 16);              \
+        ascon_combine(high2);                                                     \
+        ascon_combine(low2);                                                      \
+        be_store_word32((m), high2);                                              \
+        be_store_word32((m) + 4, low2);                                           \
     } while (0)
 
 /**
@@ -290,21 +290,21 @@
  * and squeeze at, between 0 and 4.
  */
 #define ascon_decrypt_sliced_no_insert(state, m, c, offset) \
-    do { \
-        const ascon_state_t *s = (state); \
-        uint32_t high, low; \
-        high = be_load_word32((c)); \
-        low  = be_load_word32((c) + 4); \
-        ascon_separate(high); \
-        ascon_separate(low); \
-        high ^= ((s->W[(offset) * 2] >> 16) | \
-                 (s->W[(offset) * 2 + 1] & 0xFFFF0000U)); \
-        low  ^= ((s->W[(offset) * 2] & 0x0000FFFFU) | \
-                 (s->W[(offset) * 2 + 1] << 16)); \
-        ascon_combine(high); \
-        ascon_combine(low); \
-        be_store_word32((m), high); \
-        be_store_word32((m) + 4, low); \
+    do {                                                    \
+        const ascon_state_t* s = (state);                   \
+        uint32_t             high, low;                     \
+        high = be_load_word32((c));                         \
+        low  = be_load_word32((c) + 4);                     \
+        ascon_separate(high);                               \
+        ascon_separate(low);                                \
+        high ^= ((s->W[(offset) * 2] >> 16) |               \
+                 (s->W[(offset) * 2 + 1] & 0xFFFF0000U));   \
+        low ^= ((s->W[(offset) * 2] & 0x0000FFFFU) |        \
+                (s->W[(offset) * 2 + 1] << 16));            \
+        ascon_combine(high);                                \
+        ascon_combine(low);                                 \
+        be_store_word32((m), high);                         \
+        be_store_word32((m) + 4, low);                      \
     } while (0)
 
 #endif /* ASCON_BACKEND_SLICED32 */

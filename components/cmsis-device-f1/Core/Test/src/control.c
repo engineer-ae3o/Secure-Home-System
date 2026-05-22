@@ -36,4 +36,3 @@ void set_control_ns() {
 #endif
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

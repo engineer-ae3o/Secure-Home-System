@@ -21,7 +21,7 @@
 #include "stm32f1xx_ll_crc.h"
 #include "stm32f1xx_ll_bus.h"
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 #include "stm32_assert.h"
 #else
 #define assert_param(expr) ((void)0U)
@@ -31,7 +31,7 @@
   * @{
   */
 
-#if defined (CRC)
+#if defined(CRC)
 
 /** @addtogroup CRC_LL
   * @{
@@ -59,28 +59,24 @@
   *          - SUCCESS: CRC registers are de-initialized
   *          - ERROR: CRC registers are not de-initialized
   */
-ErrorStatus LL_CRC_DeInit(CRC_TypeDef *CRCx)
-{
-  ErrorStatus status = SUCCESS;
+ErrorStatus LL_CRC_DeInit(CRC_TypeDef* CRCx) {
+    ErrorStatus status = SUCCESS;
 
-  /* Check the parameters */
-  assert_param(IS_CRC_ALL_INSTANCE(CRCx));
+    /* Check the parameters */
+    assert_param(IS_CRC_ALL_INSTANCE(CRCx));
 
-  if (CRCx == CRC)
-  {
+    if (CRCx == CRC) {
 
-    /* Reset the CRC calculation unit */
-    LL_CRC_ResetCRCCalculationUnit(CRCx);
+        /* Reset the CRC calculation unit */
+        LL_CRC_ResetCRCCalculationUnit(CRCx);
 
-    /* Reset IDR register */
-    LL_CRC_Write_IDR(CRCx, 0x00U);
-  }
-  else
-  {
-    status = ERROR;
-  }
+        /* Reset IDR register */
+        LL_CRC_Write_IDR(CRCx, 0x00U);
+    } else {
+        status = ERROR;
+    }
 
-  return (status);
+    return (status);
 }
 
 /**

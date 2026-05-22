@@ -27,12 +27,7 @@
 #include <string.h>
 
 /* Implementation of the "F" function from RFC 8018, section 5.2 */
-static void ascon_pbkdf2_hmac_f
-    (ascon_hmac_state_t *state, unsigned char *T, unsigned char *U,
-     const unsigned char *password, size_t passwordlen,
-     const unsigned char *salt, size_t saltlen,
-     unsigned long count, unsigned long blocknum)
-{
+static void ascon_pbkdf2_hmac_f(ascon_hmac_state_t* state, unsigned char* T, unsigned char* U, const unsigned char* password, size_t passwordlen, const unsigned char* salt, size_t saltlen, unsigned long count, unsigned long blocknum) {
     unsigned char b[4];
     be_store_word32(b, blocknum);
     ascon_hmac_init(state, password, passwordlen);
@@ -55,24 +50,18 @@ static void ascon_pbkdf2_hmac_f
     ascon_hmac_free(state);
 }
 
-void ascon_pbkdf2_hmac
-    (unsigned char *out, size_t outlen,
-     const unsigned char *password, size_t passwordlen,
-     const unsigned char *salt, size_t saltlen, unsigned long count)
-{
+void ascon_pbkdf2_hmac(unsigned char* out, size_t outlen, const unsigned char* password, size_t passwordlen, const unsigned char* salt, size_t saltlen, unsigned long count) {
     ascon_hmac_state_t state;
-    unsigned char U[ASCON_HMAC_SIZE];
-    unsigned long blocknum = 1;
+    unsigned char      U[ASCON_HMAC_SIZE];
+    unsigned long      blocknum = 1;
     while (outlen > 0) {
         if (outlen >= ASCON_HMAC_SIZE) {
-            ascon_pbkdf2_hmac_f(&state, out, U, password, passwordlen,
-                                salt, saltlen, count, blocknum);
+            ascon_pbkdf2_hmac_f(&state, out, U, password, passwordlen, salt, saltlen, count, blocknum);
             out += ASCON_HMAC_SIZE;
             outlen -= ASCON_HMAC_SIZE;
         } else {
             unsigned char T[ASCON_HMAC_SIZE];
-            ascon_pbkdf2_hmac_f(&state, T, U, password, passwordlen,
-                                salt, saltlen, count, blocknum);
+            ascon_pbkdf2_hmac_f(&state, T, U, password, passwordlen, salt, saltlen, count, blocknum);
             memcpy(out, T, outlen);
             ascon_clean(T, sizeof(T));
             break;

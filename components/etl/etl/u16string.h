@@ -39,33 +39,27 @@ SOFTWARE.
 
 #include "private/minmax_push.h"
 
-namespace etl
-{
+namespace etl {
 #if ETL_USING_CPP11
-  inline namespace literals
-  {
-    inline namespace string_literals
-    {
-      constexpr etl::u16string_view operator ""_sv(const char16_t* str, size_t length) noexcept
-      {
-        return etl::u16string_view{ str, length };
-      }
-    }
-  }
+inline namespace literals {
+inline namespace string_literals {
+constexpr etl::u16string_view operator""_sv(const char16_t* str, size_t length) noexcept {
+    return etl::u16string_view{str, length};
+}
+} // namespace string_literals
+} // namespace literals
 #endif
 
-  typedef ibasic_string<char16_t> iu16string;
+typedef ibasic_string<char16_t> iu16string;
 
-  //***************************************************************************
-  /// A u16string implementation that uses a fixed size buffer.
-  ///\tparam MAX_SIZE_ The maximum number of elements that can be stored.
-  ///\ingroup u16string
-  //***************************************************************************
-  template <size_t MAX_SIZE_>
-  class u16string : public iu16string
-  {
-  public:
-
+//***************************************************************************
+/// A u16string implementation that uses a fixed size buffer.
+///\tparam MAX_SIZE_ The maximum number of elements that can be stored.
+///\ingroup u16string
+//***************************************************************************
+template<size_t MAX_SIZE_>
+class u16string : public iu16string {
+    public:
     typedef iu16string base_type;
     typedef iu16string interface_type;
 
@@ -77,9 +71,8 @@ namespace etl
     /// Constructor.
     //*************************************************************************
     u16string()
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->initialise();
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->initialise();
     }
 
     //*************************************************************************
@@ -87,9 +80,8 @@ namespace etl
     ///\param other The other string.
     //*************************************************************************
     u16string(const etl::u16string<MAX_SIZE_>& other)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(other);
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(other);
     }
 
     //*************************************************************************
@@ -97,9 +89,8 @@ namespace etl
     ///\param other The other iu16string.
     //*************************************************************************
     u16string(const etl::iu16string& other)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(other);
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(other);
     }
 
     //*************************************************************************
@@ -109,11 +100,10 @@ namespace etl
     ///\param length   The number of characters. Default = npos.
     //*************************************************************************
     u16string(const etl::iu16string& other, size_type position, size_type length = npos)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      ETL_ASSERT(position < other.size(), ETL_ERROR(string_out_of_bounds));
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        ETL_ASSERT(position < other.size(), ETL_ERROR(string_out_of_bounds));
 
-      this->assign(other, position, length);
+        this->assign(other, position, length);
     }
 
     //*************************************************************************
@@ -121,9 +111,8 @@ namespace etl
     ///\param text The initial text of the u16string.
     //*************************************************************************
     ETL_EXPLICIT_STRING_FROM_CHAR u16string(const value_type* text)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(text, text + etl::char_traits<value_type>::length(text));
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(text, text + etl::char_traits<value_type>::length(text));
     }
 
     //*************************************************************************
@@ -132,9 +121,8 @@ namespace etl
     ///\param count The number of characters to copy.
     //*************************************************************************
     u16string(const value_type* text, size_type count)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(text, text + count);
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(text, text + count);
     }
 
     //*************************************************************************
@@ -143,10 +131,9 @@ namespace etl
     ///\param value        The value to fill the u16string with.
     //*************************************************************************
     u16string(size_type count, value_type c)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->initialise();
-      this->resize(count, c);
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->initialise();
+        this->resize(count, c);
     }
 
     //*************************************************************************
@@ -155,11 +142,10 @@ namespace etl
     ///\param first The iterator to the first element.
     ///\param last  The iterator to the last element + 1.
     //*************************************************************************
-    template <typename TIterator>
+    template<typename TIterator>
     u16string(TIterator first, TIterator last, typename etl::enable_if<!etl::is_integral<TIterator>::value, int>::type = 0)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(first, last);
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(first, last);
     }
 
 #if ETL_HAS_INITIALIZER_LIST
@@ -167,9 +153,8 @@ namespace etl
     /// Construct from initializer_list.
     //*************************************************************************
     u16string(std::initializer_list<value_type> init)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(init.begin(), init.end());
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(init.begin(), init.end());
     }
 #endif
 
@@ -178,9 +163,8 @@ namespace etl
     ///\param view The string_view.
     //*************************************************************************
     explicit u16string(const etl::u16string_view& view)
-      : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE)
-    {
-      this->assign(view.begin(), view.end());
+        : iu16string(reinterpret_cast<value_type*>(&buffer), MAX_SIZE) {
+        this->assign(view.begin(), view.end());
     }
 
     //*************************************************************************
@@ -188,43 +172,38 @@ namespace etl
     ///\param position The position of the first character. Default = 0.
     ///\param length   The number of characters. Default = npos.
     //*************************************************************************
-    etl::u16string<MAX_SIZE_> substr(size_type position = 0, size_type length_ = npos) const
-    {
-      etl::u16string<MAX_SIZE_> new_string;
+    etl::u16string<MAX_SIZE_> substr(size_type position = 0, size_type length_ = npos) const {
+        etl::u16string<MAX_SIZE_> new_string;
 
-      if (position != size())
-      {
-        ETL_ASSERT(position < size(), ETL_ERROR(string_out_of_bounds));
+        if (position != size()) {
+            ETL_ASSERT(position < size(), ETL_ERROR(string_out_of_bounds));
 
-        length_ = etl::min(length_, size() - position);
+            length_ = etl::min(length_, size() - position);
 
-        new_string.assign(buffer + position, buffer + position + length_);
-      }
+            new_string.assign(buffer + position, buffer + position + length_);
+        }
 
-      return new_string;
+        return new_string;
     }
 
     //*************************************************************************
     /// Assignment operator.
     //*************************************************************************
-    u16string& operator = (const u16string& rhs)
-    {
-      if (&rhs != this)
-      {
-        this->assign(rhs);
-      }
+    u16string& operator=(const u16string& rhs) {
+        if (&rhs != this) {
+            this->assign(rhs);
+        }
 
-      return *this;
+        return *this;
     }
 
     //*************************************************************************
     /// Assignment operator.
     //*************************************************************************
-    u16string& operator = (const value_type* text)
-    {
-      this->assign(text);
+    u16string& operator=(const value_type* text) {
+        this->assign(text);
 
-      return *this;
+        return *this;
     }
 
     //*************************************************************************
@@ -236,22 +215,19 @@ namespace etl
     void repair()
 #endif
     {
-      etl::iu16string::repair_buffer(buffer);
+        etl::iu16string::repair_buffer(buffer);
     }
 
-  private:
-
+    private:
     value_type buffer[MAX_SIZE + 1];
-  };
+};
 
-  //***************************************************************************
-  /// A u16string_ex implementation that uses a fixed external buffer.
-  ///\ingroup u16string
-  //***************************************************************************
-  class u16string_ext : public iu16string
-  {
-  public:
-
+//***************************************************************************
+/// A u16string_ex implementation that uses a fixed external buffer.
+///\ingroup u16string
+//***************************************************************************
+class u16string_ext : public iu16string {
+    public:
     typedef iu16string base_type;
     typedef iu16string interface_type;
 
@@ -261,9 +237,8 @@ namespace etl
     /// Constructor.
     //*************************************************************************
     u16string_ext(value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->initialise();
+        : iu16string(buffer, buffer_size - 1U) {
+        this->initialise();
     }
 
     //*************************************************************************
@@ -271,9 +246,8 @@ namespace etl
     ///\param other The other u16string_ext.
     //*************************************************************************
     u16string_ext(const etl::u16string_ext& other, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(other);
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(other);
     }
 
     //*************************************************************************
@@ -281,9 +255,8 @@ namespace etl
     ///\param other The other iu16string.
     //*************************************************************************
     u16string_ext(const etl::iu16string& other, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(other);
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(other);
     }
 
     //*************************************************************************
@@ -293,11 +266,10 @@ namespace etl
     ///\param length   The number of characters. Default = npos.
     //*************************************************************************
     u16string_ext(const etl::iu16string& other, value_type* buffer, size_type buffer_size, size_type position, size_type length = npos)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      ETL_ASSERT(position < other.size(), ETL_ERROR(string_out_of_bounds));
+        : iu16string(buffer, buffer_size - 1U) {
+        ETL_ASSERT(position < other.size(), ETL_ERROR(string_out_of_bounds));
 
-      this->assign(other, position, length);
+        this->assign(other, position, length);
     }
 
     //*************************************************************************
@@ -305,17 +277,13 @@ namespace etl
     ///\param text The initial text of the u16string_ext.
     //*************************************************************************
     u16string_ext(const value_type* text, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      // Is the initial text at the same address as the buffer?
-      if (text == buffer)
-      {
-        this->current_size = etl::strlen(buffer);
-      }
-      else
-      {
-        this->assign(text, text + etl::strlen(text));
-      }
+        : iu16string(buffer, buffer_size - 1U) {
+        // Is the initial text at the same address as the buffer?
+        if (text == buffer) {
+            this->current_size = etl::strlen(buffer);
+        } else {
+            this->assign(text, text + etl::strlen(text));
+        }
     }
 
     //*************************************************************************
@@ -324,9 +292,8 @@ namespace etl
     ///\param count The number of characters to copy.
     //*************************************************************************
     u16string_ext(const value_type* text, size_type count, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(text, text + count);
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(text, text + count);
     }
 
     //*************************************************************************
@@ -335,10 +302,9 @@ namespace etl
     ///\param value        The value to fill the u16string_ext with.
     //*************************************************************************
     u16string_ext(size_type count, value_type c, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->initialise();
-      this->resize(count, c);
+        : iu16string(buffer, buffer_size - 1U) {
+        this->initialise();
+        this->resize(count, c);
     }
 
     //*************************************************************************
@@ -347,11 +313,10 @@ namespace etl
     ///\param first The iterator to the first element.
     ///\param last  The iterator to the last element + 1.
     //*************************************************************************
-    template <typename TIterator>
+    template<typename TIterator>
     u16string_ext(TIterator first, TIterator last, value_type* buffer, size_type buffer_size, typename etl::enable_if<!etl::is_integral<TIterator>::value, int>::type = 0)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(first, last);
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(first, last);
     }
 
 #if ETL_HAS_INITIALIZER_LIST
@@ -359,9 +324,8 @@ namespace etl
     /// Construct from initializer_list.
     //*************************************************************************
     u16string_ext(std::initializer_list<value_type> init, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(init.begin(), init.end());
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(init.begin(), init.end());
     }
 #endif
 
@@ -370,46 +334,39 @@ namespace etl
     ///\param view The u16string_view.
     //*************************************************************************
     explicit u16string_ext(const etl::u16string_view& view, value_type* buffer, size_type buffer_size)
-      : iu16string(buffer, buffer_size - 1U)
-    {
-      this->assign(view.begin(), view.end());
+        : iu16string(buffer, buffer_size - 1U) {
+        this->assign(view.begin(), view.end());
     }
 
     //*************************************************************************
     /// Assignment operator.
     //*************************************************************************
-    u16string_ext& operator = (const u16string_ext& rhs)
-    {
-      if (&rhs != this)
-      {
-        this->assign(rhs);
-      }
+    u16string_ext& operator=(const u16string_ext& rhs) {
+        if (&rhs != this) {
+            this->assign(rhs);
+        }
 
-      return *this;
-    }
-
-
-    //*************************************************************************
-    /// Assignment operator.
-    //*************************************************************************
-    u16string_ext& operator = (const iu16string& rhs)
-    {
-      if (&rhs != this)
-      {
-        this->assign(rhs);
-      }
-
-      return *this;
+        return *this;
     }
 
     //*************************************************************************
     /// Assignment operator.
     //*************************************************************************
-    u16string_ext& operator = (const value_type* text)
-    {
-      this->assign(text);
+    u16string_ext& operator=(const iu16string& rhs) {
+        if (&rhs != this) {
+            this->assign(rhs);
+        }
 
-      return *this;
+        return *this;
+    }
+
+    //*************************************************************************
+    /// Assignment operator.
+    //*************************************************************************
+    u16string_ext& operator=(const value_type* text) {
+        this->assign(text);
+
+        return *this;
     }
 
     //*************************************************************************
@@ -423,67 +380,58 @@ namespace etl
     {
     }
 
-  private:
-
+    private:
     //*************************************************************************
     /// Deleted.
     //*************************************************************************
     u16string_ext(const u16string_ext& other) ETL_DELETE;
-  };
+};
 
-  //*************************************************************************
-  /// Hash function.
-  //*************************************************************************
+//*************************************************************************
+/// Hash function.
+//*************************************************************************
 #if ETL_USING_8BIT_TYPES
-  template <>
-  struct hash<etl::iu16string>
-  {
-    size_t operator()(const etl::iu16string& text) const
-    {
-      return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
-                                                     reinterpret_cast<const uint8_t*>(text.data() + text.size()));
+template<>
+struct hash<etl::iu16string> {
+    size_t operator()(const etl::iu16string& text) const {
+        return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
+                                                       reinterpret_cast<const uint8_t*>(text.data() + text.size()));
     }
-  };
+};
 
-  template <size_t SIZE>
-  struct hash<etl::u16string<SIZE> >
-  {
-    size_t operator()(const etl::u16string<SIZE>& text) const
-    {
-      return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
-                                                     reinterpret_cast<const uint8_t*>(text.data() + text.size()));
+template<size_t SIZE>
+struct hash<etl::u16string<SIZE>> {
+    size_t operator()(const etl::u16string<SIZE>& text) const {
+        return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
+                                                       reinterpret_cast<const uint8_t*>(text.data() + text.size()));
     }
-  };
+};
 
-  template <>
-  struct hash<etl::u16string_ext >
-  {
-    size_t operator()(const etl::u16string_ext& text) const
-    {
-      return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
-                                                     reinterpret_cast<const uint8_t*>(text.data() + text.size()));
+template<>
+struct hash<etl::u16string_ext> {
+    size_t operator()(const etl::u16string_ext& text) const {
+        return etl::private_hash::generic_hash<size_t>(reinterpret_cast<const uint8_t*>(text.data()),
+                                                       reinterpret_cast<const uint8_t*>(text.data() + text.size()));
     }
-  };
+};
 #endif
 
-  //***************************************************************************
-  /// Make string from string literal or array
-  //***************************************************************************
-  template<size_t Array_Size>
-  etl::u16string<Array_Size - 1U> make_string(const char16_t(&text)[Array_Size])
-  {
+//***************************************************************************
+/// Make string from string literal or array
+//***************************************************************************
+template<size_t Array_Size>
+etl::u16string<Array_Size - 1U> make_string(const char16_t (&text)[Array_Size]) {
     return etl::u16string<Array_Size - 1U>(text, etl::strlen(text, Array_Size - 1U));
-  }
-
-  //***************************************************************************
-  /// Make string with max capacity from string literal or array
-  //***************************************************************************
-  template<size_t MAX_SIZE, size_t SIZE>
-  etl::u16string<MAX_SIZE> make_string_with_capacity(const char16_t(&text)[SIZE])
-  {
-    return etl::u16string<MAX_SIZE>(text, etl::strlen(text, SIZE));
-  }
 }
+
+//***************************************************************************
+/// Make string with max capacity from string literal or array
+//***************************************************************************
+template<size_t MAX_SIZE, size_t SIZE>
+etl::u16string<MAX_SIZE> make_string_with_capacity(const char16_t (&text)[SIZE]) {
+    return etl::u16string<MAX_SIZE>(text, etl::strlen(text, SIZE));
+}
+} // namespace etl
 
 #include "private/minmax_pop.h"
 

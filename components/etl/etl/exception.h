@@ -37,16 +37,13 @@ SOFTWARE.
 /// The base class for all ETL exceptions.
 ///\ingroup utilities
 
-namespace etl
-{
-  //***************************************************************************
-  ///\ingroup exception
-  /// A low overhead exception base class.
-  //***************************************************************************
-  class exception
-  {
-  public:
-
+namespace etl {
+//***************************************************************************
+///\ingroup exception
+/// A low overhead exception base class.
+//***************************************************************************
+class exception {
+    public:
     typedef const char* string_type;
     typedef int         numeric_type;
 
@@ -56,10 +53,9 @@ namespace etl
     //*************************************************************************
     ETL_CONSTEXPR
     exception(string_type reason_, string_type file_, numeric_type line_)
-      : reason_text(reason_),
-        file_text(file_),
-        line(line_)
-    {
+        : reason_text(reason_),
+          file_text(file_),
+          line(line_) {
     }
 #else
     //*************************************************************************
@@ -67,9 +63,8 @@ namespace etl
     //*************************************************************************
     ETL_CONSTEXPR
     exception(string_type reason_, string_type /*file_*/, numeric_type line_)
-      : reason_text(reason_),
-        line(line_)
-    {
+        : reason_text(reason_),
+          line(line_) {
     }
 #endif
 
@@ -78,23 +73,20 @@ namespace etl
     /// \return const char* to the reason.
     //***************************************************************************
     ETL_CONSTEXPR
-    string_type what() const
-    {
-      return reason_text;
+    string_type what() const {
+        return reason_text;
     }
-
 
     //***************************************************************************
     /// Gets the file for the exception.
     /// \return const char* to the file.
     //***************************************************************************
     ETL_CONSTEXPR
-    string_type file_name() const
-    {
+    string_type file_name() const {
 #if defined(ETL_VERBOSE_ERRORS)
-      return file_text;
+        return file_text;
 #else
-      return "";
+        return "";
 #endif
     }
 
@@ -103,19 +95,17 @@ namespace etl
     /// \return int as line number.
     //***************************************************************************
     ETL_CONSTEXPR
-    numeric_type line_number() const
-    {
-      return line;
+    numeric_type line_number() const {
+        return line;
     }
 
-  private:
-
-    string_type  reason_text; ///< The reason for the exception.
+    private:
+    string_type reason_text; ///< The reason for the exception.
 #if defined(ETL_VERBOSE_ERRORS)
-    string_type  file_text;   ///< The file for the exception.
+    string_type file_text; ///< The file for the exception.
 #endif
-    numeric_type line;   ///< The line for the exception.
-  };
-}
+    numeric_type line; ///< The line for the exception.
+};
+} // namespace etl
 
 #endif

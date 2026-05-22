@@ -8,4 +8,3 @@ void isb() {
     __ISB();
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

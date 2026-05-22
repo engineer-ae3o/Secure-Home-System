@@ -28,11 +28,11 @@
 
 #include <zephyr/random/rand32.h>
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     /* Try to get random data from the Zephyr kernel */
-    if (sys_csrand_get(out, outlen) == 0)
+    if (sys_csrand_get(out, outlen) == 0) {
         return 1;
+    }
 
     /* Something went wrong in sys_csrand_get(); this is a problem! */
     memset(out, 0, outlen);
@@ -43,11 +43,11 @@ int ascon_trng_generate(unsigned char *out, size_t outlen)
 
 #include <zephyr/bluetooth/crypto.h>
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     /* Try to get random data from the Bluetooth stack */
-    if (bt_rand(out, outlen) == 0)
+    if (bt_rand(out, outlen) == 0) {
         return 1;
+    }
 
     /* Something went wrong in bt_rand(); this is a problem! */
     memset(out, 0, outlen);

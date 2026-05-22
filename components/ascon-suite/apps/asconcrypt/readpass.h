@@ -27,6 +27,6 @@
 
 /* Read a password in the terminal without echoing.  Returns zero if
  * this platform doesn't have a method to read passwords without echoing */
-int read_password(const char *prompt, char *password, size_t len);
+int read_password(const char* prompt, char* password, size_t len);
 
 #endif /* READPASS_H */

@@ -41,15 +41,15 @@
 #include "ascon-sliced32.h"
 
 #define ascon_separator(state) ((state)->W[8] ^= 0x01)
-#define ascon_pad(state, offset) \
+#define ascon_pad(state, offset)           \
     ((state)->W[((offset) / 8) * 2 + 1] ^= \
-            (0x80000000U >> (((offset) & 7) * 4)))
+     (0x80000000U >> (((offset) & 7) * 4)))
 
 #define ascon_absorb_8(state, data, offset) \
     ascon_absorb_sliced((state), (data), (offset) / 8)
-#define ascon_absorb_16(state, data, offset) \
-    do { \
-        ascon_absorb_sliced((state), (data), (offset) / 8); \
+#define ascon_absorb_16(state, data, offset)                        \
+    do {                                                            \
+        ascon_absorb_sliced((state), (data), (offset) / 8);         \
         ascon_absorb_sliced((state), (data) + 8, (offset) / 8 + 1); \
     } while (0)
 #define ascon_absorb_partial(state, data, offset, count) \
@@ -57,9 +57,9 @@
 
 #define ascon_squeeze_8(state, data, offset) \
     ascon_squeeze_sliced((state), (data), (offset) / 8)
-#define ascon_squeeze_16(state, data, offset) \
-    do { \
-        ascon_squeeze_sliced((state), (data), (offset) / 8); \
+#define ascon_squeeze_16(state, data, offset)                        \
+    do {                                                             \
+        ascon_squeeze_sliced((state), (data), (offset) / 8);         \
         ascon_squeeze_sliced((state), (data) + 8, (offset) / 8 + 1); \
     } while (0)
 #define ascon_squeeze_partial(state, data, offset, count) \
@@ -67,22 +67,22 @@
 
 #define ascon_encrypt_8(state, dest, src, offset) \
     ascon_encrypt_sliced((state), (dest), (src), (offset) / 8)
-#define ascon_encrypt_16(state, dest, src, offset) \
-    do { \
-        ascon_encrypt_sliced((state), (dest), (src), (offset) / 8); \
+#define ascon_encrypt_16(state, dest, src, offset)                              \
+    do {                                                                        \
+        ascon_encrypt_sliced((state), (dest), (src), (offset) / 8);             \
         ascon_encrypt_sliced((state), (dest) + 8, (src) + 8, (offset) / 8 + 1); \
     } while (0)
-#define ascon_encrypt_partial(state, dest, src, offset, count) \
-    do { \
-        ascon_add_bytes((state), (src), (offset), (count)); \
+#define ascon_encrypt_partial(state, dest, src, offset, count)   \
+    do {                                                         \
+        ascon_add_bytes((state), (src), (offset), (count));      \
         ascon_extract_bytes((state), (dest), (offset), (count)); \
     } while (0)
 
 #define ascon_decrypt_8(state, dest, src, offset) \
     ascon_decrypt_sliced((state), (dest), (src), (offset) / 8)
-#define ascon_decrypt_16(state, dest, src, offset) \
-    do { \
-        ascon_decrypt_sliced((state), (dest), (src), (offset) / 8); \
+#define ascon_decrypt_16(state, dest, src, offset)                              \
+    do {                                                                        \
+        ascon_decrypt_sliced((state), (dest), (src), (offset) / 8);             \
         ascon_decrypt_sliced((state), (dest) + 8, (src) + 8, (offset) / 8 + 1); \
     } while (0)
 #define ascon_decrypt_partial(state, dest, src, offset, count) \
@@ -93,13 +93,13 @@
 #define ascon_separator(state) ((state)->S[4] ^= 0x01)
 #define ascon_pad(state, offset) \
     ((state)->S[(offset) / 8] ^= \
-            (0x8000000000000000ULL >> (((offset) & 7) * 8)))
+     (0x8000000000000000ULL >> (((offset) & 7) * 8)))
 
 #define ascon_absorb_8(state, data, offset) \
     ((state)->S[(offset) / 8] ^= be_load_word64((data)))
-#define ascon_absorb_16(state, data, offset) \
-    do { \
-        ((state)->S[(offset) / 8] ^= be_load_word64((data))); \
+#define ascon_absorb_16(state, data, offset)                          \
+    do {                                                              \
+        ((state)->S[(offset) / 8] ^= be_load_word64((data)));         \
         ((state)->S[(offset) / 8 + 1] ^= be_load_word64((data) + 8)); \
     } while (0)
 #define ascon_absorb_partial(state, data, offset, count) \
@@ -107,46 +107,46 @@
 
 #define ascon_squeeze_8(state, data, offset) \
     be_store_word64((data), (state)->S[(offset) / 8])
-#define ascon_squeeze_16(state, data, offset) \
-    do { \
-        be_store_word64((data), (state)->S[(offset) / 8]); \
+#define ascon_squeeze_16(state, data, offset)                      \
+    do {                                                           \
+        be_store_word64((data), (state)->S[(offset) / 8]);         \
         be_store_word64((data) + 8, (state)->S[(offset) / 8 + 1]); \
     } while (0)
 #define ascon_squeeze_partial(state, data, offset, count) \
     ascon_extract_bytes((state), (data), (offset), (count))
 
-#define ascon_encrypt_8(state, dest, src, offset) \
-    do { \
+#define ascon_encrypt_8(state, dest, src, offset)          \
+    do {                                                   \
         (state)->S[(offset) / 8] ^= be_load_word64((src)); \
         be_store_word64((dest), (state)->S[(offset) / 8]); \
     } while (0)
-#define ascon_encrypt_16(state, dest, src, offset) \
-    do { \
-        (state)->S[(offset) / 8] ^= be_load_word64((src)); \
+#define ascon_encrypt_16(state, dest, src, offset)                 \
+    do {                                                           \
+        (state)->S[(offset) / 8] ^= be_load_word64((src));         \
         (state)->S[(offset) / 8 + 1] ^= be_load_word64((src) + 8); \
-        be_store_word64((dest), (state)->S[(offset) / 8]); \
+        be_store_word64((dest), (state)->S[(offset) / 8]);         \
         be_store_word64((dest) + 8, (state)->S[(offset) / 8 + 1]); \
     } while (0)
-#define ascon_encrypt_partial(state, dest, src, offset, count) \
-    do { \
-        ascon_add_bytes((state), (src), (offset), (count)); \
+#define ascon_encrypt_partial(state, dest, src, offset, count)   \
+    do {                                                         \
+        ascon_add_bytes((state), (src), (offset), (count));      \
         ascon_extract_bytes((state), (dest), (offset), (count)); \
     } while (0)
 
-#define ascon_decrypt_8(state, dest, src, offset) \
-    do { \
-        uint64_t word = be_load_word64((src)); \
+#define ascon_decrypt_8(state, dest, src, offset)                 \
+    do {                                                          \
+        uint64_t word = be_load_word64((src));                    \
         be_store_word64((dest), word ^ (state)->S[(offset) / 8]); \
-        (state)->S[(offset) / 8] = word; \
+        (state)->S[(offset) / 8] = word;                          \
     } while (0)
-#define ascon_decrypt_16(state, dest, src, offset) \
-    do { \
-        uint64_t word = be_load_word64((src)); \
-        be_store_word64((dest), word ^ (state)->S[(offset) / 8]); \
-        (state)->S[(offset) / 8] = word; \
-        word = be_load_word64((src) + 8); \
+#define ascon_decrypt_16(state, dest, src, offset)                        \
+    do {                                                                  \
+        uint64_t word = be_load_word64((src));                            \
+        be_store_word64((dest), word ^ (state)->S[(offset) / 8]);         \
+        (state)->S[(offset) / 8] = word;                                  \
+        word                     = be_load_word64((src) + 8);             \
         be_store_word64((dest) + 8, word ^ (state)->S[(offset) / 8 + 1]); \
-        (state)->S[(offset) / 8 + 1] = word; \
+        (state)->S[(offset) / 8 + 1] = word;                              \
     } while (0)
 #define ascon_decrypt_partial(state, dest, src, offset, count) \
     ascon_extract_and_overwrite_bytes((state), (src), (dest), (offset), (count))
@@ -186,14 +186,14 @@
 
 #else /* ASCON_BACKEND_GENERIC */
 
-#define ascon_separator(state) \
-    do { \
-        uint8_t sep = 0x01; \
+#define ascon_separator(state)                 \
+    do {                                       \
+        uint8_t sep = 0x01;                    \
         ascon_add_bytes((state), &sep, 39, 1); \
     } while (0)
-#define ascon_pad(state, offset) \
-    do { \
-        uint8_t padding = 0x80; \
+#define ascon_pad(state, offset)                         \
+    do {                                                 \
+        uint8_t padding = 0x80;                          \
         ascon_add_bytes((state), &padding, (offset), 1); \
     } while (0)
 
@@ -211,19 +211,19 @@
 #define ascon_squeeze_partial(state, data, offset, count) \
     ascon_extract_bytes((state), (data), (offset), (count))
 
-#define ascon_encrypt_8(state, dest, src, offset) \
-    do { \
-        ascon_add_bytes((state), (src), (offset), 8); \
+#define ascon_encrypt_8(state, dest, src, offset)          \
+    do {                                                   \
+        ascon_add_bytes((state), (src), (offset), 8);      \
         ascon_extract_bytes((state), (dest), (offset), 8); \
     } while (0)
-#define ascon_encrypt_16(state, dest, src, offset) \
-    do { \
-        ascon_add_bytes((state), (src), (offset), 16); \
+#define ascon_encrypt_16(state, dest, src, offset)          \
+    do {                                                    \
+        ascon_add_bytes((state), (src), (offset), 16);      \
         ascon_extract_bytes((state), (dest), (offset), 16); \
     } while (0)
-#define ascon_encrypt_partial(state, dest, src, offset, count) \
-    do { \
-        ascon_add_bytes((state), (src), (offset), (count)); \
+#define ascon_encrypt_partial(state, dest, src, offset, count)   \
+    do {                                                         \
+        ascon_add_bytes((state), (src), (offset), (count));      \
         ascon_extract_bytes((state), (dest), (offset), (count)); \
     } while (0)
 
@@ -243,9 +243,12 @@
  *
  * \param state Points to the ASCON permutation state.
  */
-void ascon_backend_init(ascon_state_t *state);
+void ascon_backend_init(ascon_state_t* state);
 #else
-#define ascon_backend_init(state) do { ; } while (0)
+#define ascon_backend_init(state) \
+    do {                          \
+        ;                         \
+    } while (0)
 #endif
 
 #if defined(ASCON_BACKEND_FREE)
@@ -255,9 +258,12 @@ void ascon_backend_init(ascon_state_t *state);
  *
  * \param state Points to the ASCON permutation state.
  */
-void ascon_backend_free(ascon_state_t *state);
+void ascon_backend_free(ascon_state_t* state);
 #else
-#define ascon_backend_free(state) do { ; } while (0)
+#define ascon_backend_free(state) \
+    do {                          \
+        ;                         \
+    } while (0)
 #endif
 
 #endif

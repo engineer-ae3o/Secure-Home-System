@@ -27,31 +27,21 @@
 #include "hash/ascon-xof-internal.h"
 #include <string.h>
 
-void ascon_kdf
-    (unsigned char *out, size_t outlen,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen)
-{
+void ascon_kdf(unsigned char* out, size_t outlen, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen) {
     ascon_kdf_state_t state;
     ascon_kdf_init(&state, key, keylen, custom, customlen, outlen);
     ascon_xof_squeeze(&(state.state), out, outlen);
     ascon_xof_free(&(state.state));
 }
 
-void ascon_kdf_init
-    (ascon_kdf_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen)
-{
+void ascon_kdf_init(ascon_kdf_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
     ascon_xof_init_custom(&(state->state), "KDF", custom, customlen, outlen);
     ascon_xof_absorb(&(state->state), key, keylen);
 }
 
-void ascon_kdf_reinit
-    (ascon_kdf_state_t *state, const unsigned char *key, size_t keylen,
-     const unsigned char *custom, size_t customlen, size_t outlen)
-{
+void ascon_kdf_reinit(ascon_kdf_state_t* state, const unsigned char* key, size_t keylen, const unsigned char* custom, size_t customlen, size_t outlen) {
 #if defined(ASCON_BACKEND_SLICED64) || defined(ASCON_BACKEND_SLICED32) || \
-        defined(ASCON_BACKEND_DIRECT_XOR)
+    defined(ASCON_BACKEND_DIRECT_XOR)
     ascon_kdf_init(state, key, keylen, custom, customlen, outlen);
 #else
     ascon_kdf_free(state);
@@ -59,14 +49,12 @@ void ascon_kdf_reinit
 #endif
 }
 
-void ascon_kdf_free(ascon_kdf_state_t *state)
-{
-    if (state)
+void ascon_kdf_free(ascon_kdf_state_t* state) {
+    if (state) {
         ascon_xof_free(&(state->state));
+    }
 }
 
-void ascon_kdf_squeeze
-    (ascon_kdf_state_t *state, unsigned char *out, size_t outlen)
-{
+void ascon_kdf_squeeze(ascon_kdf_state_t* state, unsigned char* out, size_t outlen) {
     ascon_xof_squeeze(&(state->state), out, outlen);
 }

@@ -47,23 +47,21 @@
 
 /* Name of an instruction, optionally modified for hosting on RV64I */
 #if RV64I_PLATFORM
-#define INSN(name)  "\t" #name "\t"
+#define INSN(name) "\t" #name "\t"
 #define INSNW(name) "\t" #name "w\t"
 #else
-#define INSN(name)  "\t" #name "\t"
+#define INSN(name) "\t" #name "\t"
 #define INSNW(name) "\t" #name "\t"
 #endif
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     printf("\n\t.align\t1\n");
     printf("\t.globl\t%s\n", name);
     printf("\t.type\t%s, @function\n", name);
     printf("%s:\n", name);
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\tret\n");
     printf("\t.size\t%s, .-%s\n", name, name);
 }
@@ -71,51 +69,46 @@ static void function_footer(const char *name)
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0;
-    const char *x1;
-    const char *x2;
-    const char *x3;
-    const char *x4;
-    const char *x0_e;
-    const char *x1_e;
-    const char *x2_e;
-    const char *x3_e;
-    const char *x4_e;
-    const char *x0_o;
-    const char *x1_o;
-    const char *x2_o;
-    const char *x3_o;
-    const char *x4_o;
-    const char *t0;
-    const char *t1;
-    const char *t2;
-    const char *t3;
-    const char *t4;
+    const char* x0;
+    const char* x1;
+    const char* x2;
+    const char* x3;
+    const char* x4;
+    const char* x0_e;
+    const char* x1_e;
+    const char* x2_e;
+    const char* x3_e;
+    const char* x4_e;
+    const char* x0_o;
+    const char* x1_o;
+    const char* x2_o;
+    const char* x3_o;
+    const char* x4_o;
+    const char* t0;
+    const char* t1;
+    const char* t2;
+    const char* t3;
+    const char* t4;
 
 } reg_names;
 
 /* Generates a binary operator */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
+static void binop(const char* name, const char* reg1, const char* reg2) {
     printf("%s%s, %s, %s\n", name, reg1, reg1, reg2);
 }
 
 /* Generates a binary operator with a different destination */
-static void binop2
-    (const char *name, const char *dest, const char *reg1, const char *reg2)
-{
+static void binop2(const char* name, const char* dest, const char* reg1, const char* reg2) {
     printf("%s%s, %s, %s\n", name, dest, reg1, reg2);
 }
 
 /* Generates a unary operator */
-static void unop(const char *name, const char *reg1, const char *reg2)
-{
+static void unop(const char* name, const char* reg1, const char* reg2) {
     printf("%s%s, %s\n", name, reg1, reg2);
 }
 
 /* Applies the S-box to five 32-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
+static void gen_sbox(const reg_names* regs) {
     /* x0 ^= x4;   x4 ^= x3;   x2 ^= x1; */
     binop(INSN(xor), regs->x0, regs->x4);
     binop(INSN(xor), regs->x2, regs->x1);
@@ -154,42 +147,36 @@ static void gen_sbox(const reg_names *regs)
 }
 
 /* Applies the S-box to the even words of the state */
-static void gen_sbox_even(const reg_names *regs)
-{
+static void gen_sbox_even(const reg_names* regs) {
     reg_names regs2 = *regs;
-    regs2.x0 = regs2.x0_e;
-    regs2.x1 = regs2.x1_e;
-    regs2.x2 = regs2.x2_e;
-    regs2.x3 = regs2.x3_e;
-    regs2.x4 = regs2.x4_e;
+    regs2.x0        = regs2.x0_e;
+    regs2.x1        = regs2.x1_e;
+    regs2.x2        = regs2.x2_e;
+    regs2.x3        = regs2.x3_e;
+    regs2.x4        = regs2.x4_e;
     gen_sbox(&regs2);
 }
 
 /* Applies the S-box to the odd words of the state */
-static void gen_sbox_odd(const reg_names *regs)
-{
+static void gen_sbox_odd(const reg_names* regs) {
     reg_names regs2 = *regs;
-    regs2.x0 = regs2.x0_o;
-    regs2.x1 = regs2.x1_o;
-    regs2.x2 = regs2.x2_o;
-    regs2.x3 = regs2.x3_o;
-    regs2.x4 = regs2.x4_o;
+    regs2.x0        = regs2.x0_o;
+    regs2.x1        = regs2.x1_o;
+    regs2.x2        = regs2.x2_o;
+    regs2.x3        = regs2.x3_o;
+    regs2.x4        = regs2.x4_o;
     gen_sbox(&regs2);
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(const reg_names *regs, int round)
-{
+static void gen_round(const reg_names* regs, int round) {
     /* Sliced round constants for all rounds */
     static const unsigned char RC[12 * 2] = {
-        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12,
-        6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3
-    };
-    const char *even;
+        12, 12, 9, 12, 12, 9, 9, 9, 6, 12, 3, 12, 6, 9, 3, 9, 12, 6, 9, 6, 12, 3, 9, 3};
+    const char* even;
 
     /* Apply the round constant to x2_e, and also NOT it in the process */
-    printf(INSN(xori) "%s, %s, %d\n", regs->x2_e, regs->x2_e,
-           ~((int)(RC[round * 2])));
+    printf(INSN(xori) "%s, %s, %d\n", regs->x2_e, regs->x2_e, ~((int)(RC[round * 2])));
 
     /* Apply the S-box to the even words of the state */
     gen_sbox_even(regs);
@@ -209,8 +196,7 @@ static void gen_round(const reg_names *regs, int round)
 #endif
 
     /* Apply the round constant to x2_o, and also NOT it in the process */
-    printf(INSN(xori) "%s, %s, %d\n", regs->x2_o, regs->x2_o,
-           ~((int)(RC[round * 2 + 1])));
+    printf(INSN(xori) "%s, %s, %d\n", regs->x2_o, regs->x2_o, ~((int)(RC[round * 2 + 1])));
 
     /* Apply the S-box to the odd words of the state */
     gen_sbox_odd(regs);
@@ -395,8 +381,7 @@ static void gen_round(const reg_names *regs, int round)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * x0/zero is hard-wired to zero.
      *
@@ -408,20 +393,20 @@ static void gen_permute(void)
      * t0 can be used as an alternative link register.
      * s1-s11 are callee-saved.
      */
-    const char *first_round = "a1";
-    reg_names regs = { .x0 = 0 };
-    int round;
+    const char* first_round = "a1";
+    reg_names   regs        = {.x0 = 0};
+    int         round;
 #ifdef RV32E
-    regs.x0 = "a2";
-    regs.x1 = "a3";
-    regs.x2 = "a4";
-    regs.x3 = "a5";
-    regs.x4 = "t0";
-    regs.t0 = "t1";
-    regs.t1 = "t2";
-    regs.t2 = "a1";
-    regs.t3 = "s1";
-    regs.t4 = "fp";
+    regs.x0   = "a2";
+    regs.x1   = "a3";
+    regs.x2   = "a4";
+    regs.x3   = "a5";
+    regs.x4   = "t0";
+    regs.t0   = "t1";
+    regs.t1   = "t2";
+    regs.t2   = "a1";
+    regs.t3   = "s1";
+    regs.t4   = "fp";
     regs.x0_e = regs.x0_o = regs.x0;
     regs.x1_e = regs.x1_o = regs.x1;
     regs.x2_e = regs.x2_o = regs.x2;
@@ -438,16 +423,16 @@ static void gen_permute(void)
     regs.x2_o = "t4";
     regs.x3_o = "t5";
     regs.x4_o = "t6";
-    regs.x0 = regs.x0_e;
-    regs.x1 = regs.x1_e;
-    regs.x2 = regs.x2_e;
-    regs.x3 = regs.x3_e;
-    regs.x4 = regs.x4_e;
-    regs.t0 = "t1";
-    regs.t1 = "t2";
-    regs.t2 = "t3";
-    regs.t3 = "a1";
-    regs.t4 = "s1";
+    regs.x0   = regs.x0_e;
+    regs.x1   = regs.x1_e;
+    regs.x2   = regs.x2_e;
+    regs.x3   = regs.x3_e;
+    regs.x4   = regs.x4_e;
+    regs.t0   = "t1";
+    regs.t1   = "t2";
+    regs.t2   = "t3";
+    regs.t3   = "a1";
+    regs.t4   = "s1";
 #endif
 
     /* Create the stack frame and load all words into registers.
@@ -509,8 +494,9 @@ static void gen_permute(void)
     printf("\tli\t%s, 4\n", regs.t0);
     printf("\tbeq\t%s, %s, .L4\n", first_round, regs.t0);
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf("\tli\t%s, %d\n", regs.t0, round);
         printf("\tbeq\t%s, %s, .L%d\n", first_round, regs.t0, round);
     }
@@ -571,8 +557,7 @@ static void gen_permute(void)
 }
 
 /* Output the function to free sensitive material in registers */
-static void gen_backend_free(void)
-{
+static void gen_backend_free(void) {
     /* Clear all the scratch registers that we used in ascon_permute() */
     printf("\tli\ta1, 0\n");
     printf("\tli\ta2, 0\n");
@@ -594,8 +579,7 @@ static void gen_backend_free(void)
 #endif
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

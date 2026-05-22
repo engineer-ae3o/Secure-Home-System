@@ -35,8 +35,7 @@
 #include <wincrypt.h>
 #endif
 
-void ascon_clean(void *buf, unsigned size)
-{
+void ascon_clean(void* buf, unsigned size) {
     /* The safest way to do this is using SecureZeroMemory(), memset_s(), or
      * explicit_bzero() so that the compiler will not optimise away the
      * call to memset() by accident.  If that doesn't work, then we fall
@@ -49,7 +48,7 @@ void ascon_clean(void *buf, unsigned size)
 #elif defined(HAVE_EXPLICIT_BZERO)
     explicit_bzero(buf, size);
 #else
-    volatile unsigned char *d = (volatile unsigned char *)buf;
+    volatile unsigned char* d = (volatile unsigned char*)buf;
     while (size > 0) {
         *d++ = 0;
         --size;

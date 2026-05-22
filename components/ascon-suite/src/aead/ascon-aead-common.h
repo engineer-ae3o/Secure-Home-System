@@ -44,9 +44,7 @@
  * prevent it from being used accidentally by the application when the
  * ciphertext was invalid.
  */
-int ascon_aead_check_tag
-    (unsigned char *plaintext, size_t plaintext_len,
-     const unsigned char *tag1, const unsigned char *tag2, size_t size);
+int ascon_aead_check_tag(unsigned char* plaintext, size_t plaintext_len, const unsigned char* tag1, const unsigned char* tag2, size_t size);
 
 /**
  * \brief Absorbs data into an ASCON state with an 8-byte rate.
@@ -58,9 +56,7 @@ int ascon_aead_check_tag
  * \param last_permute Non-zero to permute the last block, or zero
  * to delay the permutation.
  */
-void ascon_aead_absorb_8
-    (ascon_state_t *state, const unsigned char *data,
-     size_t len, uint8_t first_round, int last_permute);
+void ascon_aead_absorb_8(ascon_state_t* state, const unsigned char* data, size_t len, uint8_t first_round, int last_permute);
 
 /**
  * \brief Absorbs data into an ASCON state with a 16-byte rate.
@@ -72,9 +68,7 @@ void ascon_aead_absorb_8
  * \param last_permute Non-zero to permute the last block, or zero
  * to delay the permutation.
  */
-void ascon_aead_absorb_16
-    (ascon_state_t *state, const unsigned char *data,
-     size_t len, uint8_t first_round, int last_permute);
+void ascon_aead_absorb_16(ascon_state_t* state, const unsigned char* data, size_t len, uint8_t first_round, int last_permute);
 
 /**
  * \brief Encrypts a block of data with an ASCON state and an 8-byte rate.
@@ -89,10 +83,7 @@ void ascon_aead_absorb_16
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_encrypt_8
-    (ascon_state_t *state, unsigned char *dest,
-     const unsigned char *src, size_t len, uint8_t first_round,
-     unsigned char partial);
+unsigned char ascon_aead_encrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Encrypts a block of data with an ASCON state and a 16-byte rate.
@@ -107,10 +98,7 @@ unsigned char ascon_aead_encrypt_8
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_encrypt_16
-    (ascon_state_t *state, unsigned char *dest,
-     const unsigned char *src, size_t len, uint8_t first_round,
-     unsigned char partial);
+unsigned char ascon_aead_encrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Decrypts a block of data with an ASCON state and an 8-byte rate.
@@ -125,10 +113,7 @@ unsigned char ascon_aead_encrypt_16
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_decrypt_8
-    (ascon_state_t *state, unsigned char *dest,
-     const unsigned char *src, size_t len, uint8_t first_round,
-     unsigned char partial);
+unsigned char ascon_aead_decrypt_8(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 /**
  * \brief Decrypts a block of data with an ASCON state and a 16-byte rate.
@@ -143,9 +128,6 @@ unsigned char ascon_aead_decrypt_8
  *
  * \return Partial block length for the last block.
  */
-unsigned char ascon_aead_decrypt_16
-    (ascon_state_t *state, unsigned char *dest,
-     const unsigned char *src, size_t len, uint8_t first_round,
-     unsigned char partial);
+unsigned char ascon_aead_decrypt_16(ascon_state_t* state, unsigned char* dest, const unsigned char* src, size_t len, uint8_t first_round, unsigned char partial);
 
 #endif

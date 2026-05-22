@@ -9,4 +9,3 @@ void clrex() {
     __CLREX();
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

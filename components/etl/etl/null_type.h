@@ -33,12 +33,10 @@ SOFTWARE.
 
 #include <stddef.h>
 
-namespace etl
-{
-  template <size_t N>
-  class null_type
-  {
-  };
-}
+namespace etl {
+template<size_t N>
+class null_type {
+};
+} // namespace etl
 
 #endif

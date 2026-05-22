@@ -4,7 +4,7 @@
 
 #include "cmsis_compiler.h"
 
-static volatile uint8_t v8 = 0x7u;
+static volatile uint8_t  v8  = 0x7u;
 static volatile uint16_t v16 = 0x7u;
 static volatile uint32_t v32 = 0x7u;
 

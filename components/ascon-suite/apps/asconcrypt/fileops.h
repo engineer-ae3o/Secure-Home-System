@@ -52,16 +52,16 @@ typedef struct
 #if defined(USE_POSIX_FDS)
     int fd;
 #else
-    FILE *file;
+    FILE* file;
 #endif
-    const char *filename;
+    const char* filename;
 } SAFEFILE;
 
-int safe_file_open_read(SAFEFILE *file, const char *filename);
-int safe_file_open_write(SAFEFILE *file, const char *filename);
-void safe_file_close(SAFEFILE *file);
-int safe_file_read(SAFEFILE *file, void *data, size_t len);
-int safe_file_write(SAFEFILE *file, const void *data, size_t len);
-void safe_file_delete(SAFEFILE *file);
+int  safe_file_open_read(SAFEFILE* file, const char* filename);
+int  safe_file_open_write(SAFEFILE* file, const char* filename);
+void safe_file_close(SAFEFILE* file);
+int  safe_file_read(SAFEFILE* file, void* data, size_t len);
+int  safe_file_write(SAFEFILE* file, const void* data, size_t len);
+void safe_file_delete(SAFEFILE* file);
 
 #endif /* FILEOPS_H */

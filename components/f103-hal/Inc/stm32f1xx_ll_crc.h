@@ -85,7 +85,6 @@ extern "C" {
   * @}
   */
 
-
 /* Exported functions --------------------------------------------------------*/
 /** @defgroup CRC_LL_Exported_Functions CRC Exported Functions
   * @{
@@ -104,9 +103,8 @@ extern "C" {
   * @param  CRCx CRC Instance
   * @retval None
   */
-__STATIC_INLINE void LL_CRC_ResetCRCCalculationUnit(CRC_TypeDef *CRCx)
-{
-  SET_BIT(CRCx->CR, CRC_CR_RESET);
+__STATIC_INLINE void LL_CRC_ResetCRCCalculationUnit(CRC_TypeDef* CRCx) {
+    SET_BIT(CRCx->CR, CRC_CR_RESET);
 }
 
 /**
@@ -124,9 +122,8 @@ __STATIC_INLINE void LL_CRC_ResetCRCCalculationUnit(CRC_TypeDef *CRCx)
   * @param  InData value to be provided to CRC calculator between between Min_Data=0 and Max_Data=0xFFFFFFFF
   * @retval None
   */
-__STATIC_INLINE void LL_CRC_FeedData32(CRC_TypeDef *CRCx, uint32_t InData)
-{
-  WRITE_REG(CRCx->DR, InData);
+__STATIC_INLINE void LL_CRC_FeedData32(CRC_TypeDef* CRCx, uint32_t InData) {
+    WRITE_REG(CRCx->DR, InData);
 }
 
 /**
@@ -135,9 +132,8 @@ __STATIC_INLINE void LL_CRC_FeedData32(CRC_TypeDef *CRCx, uint32_t InData)
   * @param  CRCx CRC Instance
   * @retval Current CRC calculation result as stored in CRC_DR register (32 bits).
   */
-__STATIC_INLINE uint32_t LL_CRC_ReadData32(const CRC_TypeDef *CRCx)
-{
-  return (uint32_t)(READ_REG(CRCx->DR));
+__STATIC_INLINE uint32_t LL_CRC_ReadData32(const CRC_TypeDef* CRCx) {
+    return (uint32_t)(READ_REG(CRCx->DR));
 }
 
 /**
@@ -147,9 +143,8 @@ __STATIC_INLINE uint32_t LL_CRC_ReadData32(const CRC_TypeDef *CRCx)
   * @param  CRCx CRC Instance
   * @retval Value stored in CRC_IDR register (General-purpose 8-bit data register).
   */
-__STATIC_INLINE uint32_t LL_CRC_Read_IDR(CRC_TypeDef *CRCx)
-{
-  return (uint32_t)(READ_REG(CRCx->IDR));
+__STATIC_INLINE uint32_t LL_CRC_Read_IDR(CRC_TypeDef* CRCx) {
+    return (uint32_t)(READ_REG(CRCx->IDR));
 }
 
 /**
@@ -160,9 +155,8 @@ __STATIC_INLINE uint32_t LL_CRC_Read_IDR(CRC_TypeDef *CRCx)
   * @param  InData value to be stored in CRC_IDR register (8-bit) between Min_Data=0 and Max_Data=0xFF
   * @retval None
   */
-__STATIC_INLINE void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)
-{
-  *((uint8_t __IO *)(&CRCx->IDR)) = (uint8_t) InData;
+__STATIC_INLINE void LL_CRC_Write_IDR(CRC_TypeDef* CRCx, uint32_t InData) {
+    *((uint8_t __IO*)(&CRCx->IDR)) = (uint8_t)InData;
 }
 /**
   * @}
@@ -173,7 +167,7 @@ __STATIC_INLINE void LL_CRC_Write_IDR(CRC_TypeDef *CRCx, uint32_t InData)
   * @{
   */
 
-ErrorStatus LL_CRC_DeInit(CRC_TypeDef *CRCx);
+ErrorStatus LL_CRC_DeInit(CRC_TypeDef* CRCx);
 
 /**
   * @}

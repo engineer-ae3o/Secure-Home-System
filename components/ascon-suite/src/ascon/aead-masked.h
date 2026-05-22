@@ -54,12 +54,7 @@ extern "C" {
  *
  * \sa ascon128_masked_aead_decrypt()
  */
-void ascon128_masked_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_128_t *k);
+void ascon128_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k);
 
 /**
  * \brief Decrypts and authenticates a packet with masked ASCON-128.
@@ -82,12 +77,7 @@ void ascon128_masked_aead_encrypt
  *
  * \sa ascon128_aead_encrypt()
  */
-int ascon128_masked_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_128_t *k);
+int ascon128_masked_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k);
 
 /**
  * \brief Encrypts and authenticates a packet with masked ASCON-128a.
@@ -106,12 +96,7 @@ int ascon128_masked_aead_decrypt
  *
  * \sa ascon128a_masked_aead_decrypt()
  */
-void ascon128a_masked_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_128_t *k);
+void ascon128a_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k);
 
 /**
  * \brief Decrypts and authenticates a packet with masked ASCON-128a.
@@ -134,12 +119,7 @@ void ascon128a_masked_aead_encrypt
  *
  * \sa ascon128a_masked_aead_encrypt()
  */
-int ascon128a_masked_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_128_t *k);
+int ascon128a_masked_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_128_t* k);
 
 /**
  * \brief Encrypts and authenticates a packet with masked ASCON-80pq.
@@ -158,12 +138,7 @@ int ascon128a_masked_aead_decrypt
  *
  * \sa ascon80pq_masked_aead_decrypt()
  */
-void ascon80pq_masked_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_160_t *k);
+void ascon80pq_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_160_t* k);
 
 /**
  * \brief Decrypts and authenticates a packet with masked ASCON-80pq.
@@ -186,28 +161,25 @@ void ascon80pq_masked_aead_encrypt
  *
  * \sa ascon80pq_masked_aead_encrypt()
  */
-int ascon80pq_masked_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_160_t *k);
+int ascon80pq_masked_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_160_t* k);
 
 #ifdef __cplusplus
 }
 
-namespace ascon
-{
+namespace ascon {
 
 /**
  * \brief Base classes for masked versions of ASCON AEAD modes.
  */
-class aead_masked : public aead
-{
+class aead_masked : public aead {
     /* Disable copy operations */
-    inline aead_masked(const aead_masked &) : aead() {}
-    inline aead_masked& operator=(const aead_masked &) { return *this; }
-public:
+    inline aead_masked(const aead_masked&) : aead() {
+    }
+    inline aead_masked& operator=(const aead_masked&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Destroys this masked AEAD object.
      */
@@ -221,23 +193,27 @@ public:
      */
     virtual void randomize_key() = 0;
 
-protected:
+    protected:
     /**
      * \brief Constructs a new masked AEAD object.
      */
-    inline aead_masked() {}
+    inline aead_masked() {
+    }
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with the masked
  * version of ASCON-128.
  */
-class aead128_masked : public aead_masked
-{
+class aead128_masked : public aead_masked {
     /* Disable copy operations */
-    inline aead128_masked(const aead128_masked &) : aead_masked() {}
-    inline aead128_masked& operator=(const aead128_masked &) { return *this; }
-public:
+    inline aead128_masked(const aead128_masked&) : aead_masked() {
+    }
+    inline aead128_masked& operator=(const aead128_masked&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new masked ASCON-128 object.
      *
@@ -268,33 +244,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
-    void randomize_key();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
+    void   randomize_key();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon_masked_key_128_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon_masked_key_128_t m_key;                        /**< Key */
+    unsigned char          m_nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with the masked
  * version of ASCON-128a.
  */
-class aead128a_masked : public aead_masked
-{
+class aead128a_masked : public aead_masked {
     /* Disable copy operations */
-    inline aead128a_masked(const aead128a_masked &) : aead_masked() {}
-    inline aead128a_masked& operator=(const aead128a_masked &) { return *this; }
-public:
+    inline aead128a_masked(const aead128a_masked&) : aead_masked() {
+    }
+    inline aead128a_masked& operator=(const aead128a_masked&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new masked ASCON-128a object.
      *
@@ -325,33 +302,34 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
-    void randomize_key();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
+    void   randomize_key();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon_masked_key_128_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon_masked_key_128_t m_key;                        /**< Key */
+    unsigned char          m_nonce[ASCON128_NONCE_SIZE]; /**< Nonce */
 };
 
 /**
  * \brief Encrypts or decrypts sequential packets with the masked
  * version of ASCON-80pq.
  */
-class aead80pq_masked : public aead_masked
-{
+class aead80pq_masked : public aead_masked {
     /* Disable copy operations */
-    inline aead80pq_masked(const aead80pq_masked &) : aead_masked() {}
-    inline aead80pq_masked& operator=(const aead80pq_masked &) { return *this; }
-public:
+    inline aead80pq_masked(const aead80pq_masked&) : aead_masked() {
+    }
+    inline aead80pq_masked& operator=(const aead80pq_masked&) {
+        return *this;
+    }
+
+    public:
     /**
      * \brief Constructs a new masked ASCON-80pq object.
      *
@@ -382,21 +360,19 @@ public:
     size_t key_size() const;
     size_t tag_size() const;
     size_t nonce_size() const;
-    bool set_key(const unsigned char *key, size_t len);
-    void set_nonce(const unsigned char *nonce, size_t len);
-    void set_counter(uint64_t n);
-    void clear();
-    void randomize_key();
+    bool   set_key(const unsigned char* key, size_t len);
+    void   set_nonce(const unsigned char* nonce, size_t len);
+    void   set_counter(uint64_t n);
+    void   clear();
+    void   randomize_key();
 
-protected:
-    int do_encrypt(unsigned char *c, const unsigned char *m, size_t len,
-                   const unsigned char *ad, size_t adlen);
-    int do_decrypt(unsigned char *m, const unsigned char *c, size_t len,
-                   const unsigned char *ad, size_t adlen);
+    protected:
+    int do_encrypt(unsigned char* c, const unsigned char* m, size_t len, const unsigned char* ad, size_t adlen);
+    int do_decrypt(unsigned char* m, const unsigned char* c, size_t len, const unsigned char* ad, size_t adlen);
 
-private:
-    ascon_masked_key_160_t m_key; /**< Key */
-    unsigned char m_nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
+    private:
+    ascon_masked_key_160_t m_key;                         /**< Key */
+    unsigned char          m_nonce[ASCON80PQ_NONCE_SIZE]; /**< Nonce */
 };
 
 } /* namespace ascon */

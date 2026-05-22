@@ -62,7 +62,7 @@ extern "C" {
  */
 typedef struct
 {
-    ascon_hash_state_t hash;    /**< Internal ASCON-HASH state */
+    ascon_hash_state_t hash; /**< Internal ASCON-HASH state */
 
 } ascon_hmac_state_t;
 
@@ -71,7 +71,7 @@ typedef struct
  */
 typedef struct
 {
-    ascon_hasha_state_t hash;   /**< Internal ASCON-HASHA state */
+    ascon_hasha_state_t hash; /**< Internal ASCON-HASHA state */
 
 } ascon_hmaca_state_t;
 
@@ -85,10 +85,11 @@ typedef struct
  * \param in Points to the data to authenticate.
  * \param inlen Number of bytes of data to authenticate.
  */
-void ascon_hmac
-    (unsigned char *out,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *in, size_t inlen);
+void ascon_hmac(unsigned char*       out,
+                const unsigned char* key,
+                size_t               keylen,
+                const unsigned char* in,
+                size_t               inlen);
 
 /**
  * \brief Initializes an incremental HMAC state using ASCON-HASH.
@@ -102,8 +103,7 @@ void ascon_hmac
  *
  * \sa ascon_hmac_update(), ascon_hmac_finalize()
  */
-void ascon_hmac_init
-    (ascon_hmac_state_t *state, const unsigned char *key, size_t keylen);
+void ascon_hmac_init(ascon_hmac_state_t* state, const unsigned char* key, size_t keylen);
 
 /**
  * \brief Re-initializes an incremental HMAC state using ASCON-HASH.
@@ -120,15 +120,14 @@ void ascon_hmac_init
  *
  * \sa ascon_hmac_init()
  */
-void ascon_hmac_reinit
-    (ascon_hmac_state_t *state, const unsigned char *key, size_t keylen);
+void ascon_hmac_reinit(ascon_hmac_state_t* state, const unsigned char* key, size_t keylen);
 
 /**
  * \brief Frees the ASCON-HMAC state and destroys any sensitive material.
  *
  * \param state HMAC state to be freed.
  */
-void ascon_hmac_free(ascon_hmac_state_t *state);
+void ascon_hmac_free(ascon_hmac_state_t* state);
 
 /**
  * \brief Updates an incremental ASCON-HMAC state with more input data.
@@ -139,8 +138,7 @@ void ascon_hmac_free(ascon_hmac_state_t *state);
  *
  * \sa ascon_hmac_init(), ascon_hmac_finalize()
  */
-void ascon_hmac_update
-    (ascon_hmac_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_hmac_update(ascon_hmac_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Finalizes an incremental ASCON-HMAC state.
@@ -153,9 +151,7 @@ void ascon_hmac_update
  *
  * \sa ascon_hmac_init(), ascon_hmac_update()
  */
-void ascon_hmac_finalize
-    (ascon_hmac_state_t *state, const unsigned char *key, size_t keylen,
-     unsigned char *out);
+void ascon_hmac_finalize(ascon_hmac_state_t* state, const unsigned char* key, size_t keylen, unsigned char* out);
 
 /**
  * \brief Computes a HMAC value using ASCON-HASHA.
@@ -167,10 +163,11 @@ void ascon_hmac_finalize
  * \param in Points to the data to authenticate.
  * \param inlen Number of bytes of data to authenticate.
  */
-void ascon_hmaca
-    (unsigned char *out,
-     const unsigned char *key, size_t keylen,
-     const unsigned char *in, size_t inlen);
+void ascon_hmaca(unsigned char*       out,
+                 const unsigned char* key,
+                 size_t               keylen,
+                 const unsigned char* in,
+                 size_t               inlen);
 
 /**
  * \brief Initializes an incremental HMAC state using ASCON-HASHA.
@@ -184,8 +181,7 @@ void ascon_hmaca
  *
  * \sa ascon_hmaca_update(), ascon_hmaca_finalize()
  */
-void ascon_hmaca_init
-    (ascon_hmaca_state_t *state, const unsigned char *key, size_t keylen);
+void ascon_hmaca_init(ascon_hmaca_state_t* state, const unsigned char* key, size_t keylen);
 
 /**
  * \brief Re-initializes an incremental HMAC state using ASCON-HASHA.
@@ -202,15 +198,14 @@ void ascon_hmaca_init
  *
  * \sa ascon_hmac_init()
  */
-void ascon_hmaca_reinit
-    (ascon_hmaca_state_t *state, const unsigned char *key, size_t keylen);
+void ascon_hmaca_reinit(ascon_hmaca_state_t* state, const unsigned char* key, size_t keylen);
 
 /**
  * \brief Frees the ASCON-HMACA state and destroys any sensitive material.
  *
  * \param state HMAC state to be freed.
  */
-void ascon_hmaca_free(ascon_hmaca_state_t *state);
+void ascon_hmaca_free(ascon_hmaca_state_t* state);
 
 /**
  * \brief Updates an incremental ASCON-HMACA state with more input data.
@@ -221,8 +216,7 @@ void ascon_hmaca_free(ascon_hmaca_state_t *state);
  *
  * \sa ascon_hmaca_init(), ascon_hmaca_finalize()
  */
-void ascon_hmaca_update
-    (ascon_hmaca_state_t *state, const unsigned char *in, size_t inlen);
+void ascon_hmaca_update(ascon_hmaca_state_t* state, const unsigned char* in, size_t inlen);
 
 /**
  * \brief Finalizes an incremental ASCON-HMACA state.
@@ -235,9 +229,7 @@ void ascon_hmaca_update
  *
  * \sa ascon_hmaca_init(), ascon_hmaca_update()
  */
-void ascon_hmaca_finalize
-    (ascon_hmaca_state_t *state, const unsigned char *key, size_t keylen,
-     unsigned char *out);
+void ascon_hmaca_finalize(ascon_hmaca_state_t* state, const unsigned char* key, size_t keylen, unsigned char* out);
 
 #ifdef __cplusplus
 }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 typedef uint32_t IRQn_Type;
-uint32_t SysTick_IRQn;
+uint32_t         SysTick_IRQn;
 
 #include CORE_HEADER
 

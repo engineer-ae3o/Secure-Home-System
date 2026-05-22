@@ -124,6 +124,14 @@ if (CPPCHECK)
     )
 endif()
 
+find_program(CLANG-FORMAT clang-format)
+if (CLANG-FORMAT)
+    add_custom_target(format-all
+        COMMAND ${CLANG-FORMAT} -i --style=file **/*.{c,cpp,h,hpp}
+        COMMENT "Formatting code base"
+    )
+endif()
+
 # Flash via openocd
 add_custom_target(flash
     COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"

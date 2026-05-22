@@ -31,38 +31,47 @@
 #include <getopt.h>
 #endif
 
-#define ASCON_BUFSIZ    BUFSIZ
-#define ASCON_LINESIZ   1024
+#define ASCON_BUFSIZ BUFSIZ
+#define ASCON_LINESIZ 1024
 
-#define ALG_ASCON_HASH  0
+#define ALG_ASCON_HASH 0
 #define ALG_ASCON_HASHA 1
-#define ALG_ASCON_XOF   2
-#define ALG_ASCON_XOFA  3
+#define ALG_ASCON_XOF 2
+#define ALG_ASCON_XOFA 3
 
-static void usage(const char *progname);
-static int hash_file(const char *filename, int algorithm);
-static int check_file(const char *filename, int algorithm);
+static void usage(const char* progname);
+static int  hash_file(const char* filename, int algorithm);
+static int  check_file(const char* filename, int algorithm);
 
-int main(int argc, char *argv[])
-{
-    const char *progname = argv[0];
-    int algorithm = ALG_ASCON_HASH;
-    int check_mode = 0;
-    int opt, index;
-    int exit_val = 0;
+int main(int argc, char* argv[]) {
+    const char* progname   = argv[0];
+    int         algorithm  = ALG_ASCON_HASH;
+    int         check_mode = 0;
+    int         opt, index;
+    int         exit_val = 0;
 
 #if defined(HAVE_GETOPT)
     /* Process the command-line options */
     while ((opt = getopt(argc, argv, "haxyc")) != -1) {
         switch (opt) {
-        case 'h': algorithm = ALG_ASCON_HASH; break;
-        case 'a': algorithm = ALG_ASCON_HASHA; break;
-        case 'x': algorithm = ALG_ASCON_XOF; break;
-        case 'y': algorithm = ALG_ASCON_XOFA; break;
-        case 'c': check_mode = 1; break;
-        default:
-            usage(progname);
-            return 1;
+            case 'h':
+                algorithm = ALG_ASCON_HASH;
+                break;
+            case 'a':
+                algorithm = ALG_ASCON_HASHA;
+                break;
+            case 'x':
+                algorithm = ALG_ASCON_XOF;
+                break;
+            case 'y':
+                algorithm = ALG_ASCON_XOFA;
+                break;
+            case 'c':
+                check_mode = 1;
+                break;
+            default:
+                usage(progname);
+                return 1;
         }
     }
 #else
@@ -70,17 +79,27 @@ int main(int argc, char *argv[])
     int optind = 1;
     while (optind < argc && argv[optind][0] == '-' &&
            argv[optind][1] != '\0') {
-        const char *opts = argv[optind] + 1;
+        const char* opts = argv[optind] + 1;
         while ((opt = *opts++) != '\0') {
             switch (opt) {
-            case 'h': algorithm = ALG_ASCON_HASH; break;
-            case 'a': algorithm = ALG_ASCON_HASHA; break;
-            case 'x': algorithm = ALG_ASCON_XOF; break;
-            case 'y': algorithm = ALG_ASCON_XOFA; break;
-            case 'c': check_mode = 1; break;
-            default:
-                usage(progname);
-                return 1;
+                case 'h':
+                    algorithm = ALG_ASCON_HASH;
+                    break;
+                case 'a':
+                    algorithm = ALG_ASCON_HASHA;
+                    break;
+                case 'x':
+                    algorithm = ALG_ASCON_XOF;
+                    break;
+                case 'y':
+                    algorithm = ALG_ASCON_XOFA;
+                    break;
+                case 'c':
+                    check_mode = 1;
+                    break;
+                default:
+                    usage(progname);
+                    return 1;
             }
         }
         ++optind;
@@ -91,26 +110,29 @@ int main(int argc, char *argv[])
     if (optind < argc) {
         for (index = optind; index < argc; ++index) {
             if (check_mode) {
-                if (!check_file(argv[index], algorithm))
+                if (!check_file(argv[index], algorithm)) {
                     exit_val = 1;
+                }
             } else {
-                if (!hash_file(argv[index], algorithm))
+                if (!hash_file(argv[index], algorithm)) {
                     exit_val = 1;
+                }
             }
         }
     } else if (check_mode) {
-        if (!check_file("-", algorithm))
+        if (!check_file("-", algorithm)) {
             exit_val = 1;
+        }
     } else {
-        if (!hash_file("-", algorithm))
+        if (!hash_file("-", algorithm)) {
             exit_val = 1;
+        }
     }
     return exit_val;
 }
 
 /* Print usage information for the program */
-static void usage(const char *progname)
-{
+static void usage(const char* progname) {
     fprintf(stderr, "\n");
     fprintf(stderr, "Usage: %s [-haxyc] FILE ...\n", progname);
     fprintf(stderr, "\n");
@@ -123,11 +145,9 @@ static void usage(const char *progname)
 }
 
 /* Hashes the contents of a file with ASCON-HASH */
-static int ascon_hash_file
-    (const char *filename, FILE *file, unsigned char hash[ASCON_HASH_SIZE])
-{
-    unsigned char buffer[ASCON_BUFSIZ];
-    int len, ok;
+static int ascon_hash_file(const char* filename, FILE* file, unsigned char hash[ASCON_HASH_SIZE]) {
+    unsigned char      buffer[ASCON_BUFSIZ];
+    int                len, ok;
     ascon_hash_state_t state;
     ascon_hash_init(&state);
     while ((len = fread(buffer, 1, ASCON_BUFSIZ, file)) == ASCON_BUFSIZ) {
@@ -146,11 +166,9 @@ static int ascon_hash_file
 }
 
 /* Hashes the contents of a file with ASCON-HASHA */
-static int ascon_hasha_file
-    (const char *filename, FILE *file, unsigned char hash[ASCON_HASH_SIZE])
-{
-    unsigned char buffer[ASCON_BUFSIZ];
-    int len, ok;
+static int ascon_hasha_file(const char* filename, FILE* file, unsigned char hash[ASCON_HASH_SIZE]) {
+    unsigned char       buffer[ASCON_BUFSIZ];
+    int                 len, ok;
     ascon_hasha_state_t state;
     ascon_hasha_init(&state);
     while ((len = fread(buffer, 1, ASCON_BUFSIZ, file)) == ASCON_BUFSIZ) {
@@ -169,11 +187,9 @@ static int ascon_hasha_file
 }
 
 /* Hashes the contents of a file with ASCON-XOF */
-static int ascon_xof_file
-    (const char *filename, FILE *file, unsigned char hash[ASCON_HASH_SIZE])
-{
-    unsigned char buffer[ASCON_BUFSIZ];
-    int len, ok;
+static int ascon_xof_file(const char* filename, FILE* file, unsigned char hash[ASCON_HASH_SIZE]) {
+    unsigned char     buffer[ASCON_BUFSIZ];
+    int               len, ok;
     ascon_xof_state_t state;
     ascon_xof_init(&state);
     while ((len = fread(buffer, 1, ASCON_BUFSIZ, file)) == ASCON_BUFSIZ) {
@@ -192,11 +208,9 @@ static int ascon_xof_file
 }
 
 /* Hashes the contents of a file with ASCON-XOFA */
-static int ascon_xofa_file
-    (const char *filename, FILE *file, unsigned char hash[ASCON_HASH_SIZE])
-{
-    unsigned char buffer[ASCON_BUFSIZ];
-    int len, ok;
+static int ascon_xofa_file(const char* filename, FILE* file, unsigned char hash[ASCON_HASH_SIZE]) {
+    unsigned char      buffer[ASCON_BUFSIZ];
+    int                len, ok;
     ascon_xofa_state_t state;
     ascon_xofa_init(&state);
     while ((len = fread(buffer, 1, ASCON_BUFSIZ, file)) == ASCON_BUFSIZ) {
@@ -214,11 +228,10 @@ static int ascon_xofa_file
     return ok;
 }
 
-static int hash_file(const char *filename, int algorithm)
-{
+static int hash_file(const char* filename, int algorithm) {
     unsigned char hash[ASCON_HASH_SIZE] = {0};
-    FILE *file;
-    int ok;
+    FILE*         file;
+    int           ok;
 
     /* Open the file to be hashed */
     if (!strcmp(filename, "-")) {
@@ -229,14 +242,15 @@ static int hash_file(const char *filename, int algorithm)
     }
 
     /* Hash the contents of the file with the selected algorithm */
-    if (algorithm == ALG_ASCON_HASHA)
+    if (algorithm == ALG_ASCON_HASHA) {
         ok = ascon_hasha_file(filename, file, hash);
-    else if (algorithm == ALG_ASCON_XOF)
+    } else if (algorithm == ALG_ASCON_XOF) {
         ok = ascon_xof_file(filename, file, hash);
-    else if (algorithm == ALG_ASCON_XOFA)
+    } else if (algorithm == ALG_ASCON_XOFA) {
         ok = ascon_xofa_file(filename, file, hash);
-    else
+    } else {
         ok = ascon_hash_file(filename, file, hash);
+    }
 
     /* Close the file */
     if (strcmp(filename, "-") != 0) {
@@ -246,41 +260,41 @@ static int hash_file(const char *filename, int algorithm)
     /* Print the hash value if no errors occurred */
     if (ok) {
         int posn;
-        for (posn = 0; posn < ASCON_HASH_SIZE; ++posn)
+        for (posn = 0; posn < ASCON_HASH_SIZE; ++posn) {
             printf("%02x", hash[posn]);
+        }
         printf("  %s\n", filename);
     }
     return ok;
 }
 
-static int to_hex_digit(char ch)
-{
-    if (ch >= '0' && ch <= '9')
+static int to_hex_digit(char ch) {
+    if (ch >= '0' && ch <= '9') {
         return ch - '0';
-    else if (ch >= 'a' && ch <= 'f')
+    } else if (ch >= 'a' && ch <= 'f') {
         return ch - 'a' + 10;
-    else if (ch >= 'A' && ch <= 'F')
+    } else if (ch >= 'A' && ch <= 'F') {
         return ch - 'A' + 10;
-    else
+    } else {
         return -1;
+    }
 }
 
-static int check_file(const char *filename, int algorithm)
-{
-    char line[ASCON_LINESIZ];
-    size_t len, posn, hashlen;
-    unsigned char hash[ASCON_HASH_SIZE] = {0};
+static int check_file(const char* filename, int algorithm) {
+    char          line[ASCON_LINESIZ];
+    size_t        len, posn, hashlen;
+    unsigned char hash[ASCON_HASH_SIZE]  = {0};
     unsigned char hash2[ASCON_HASH_SIZE] = {0};
-    const char *check_filename;
-    FILE *file;
-    FILE *file2;
-    int ok = 1;
-    int file_ok;
-    int hex1, hex2;
-    int found = 0;
-    int format_errors = 0;
-    int mismatch_errors = 0;
-    int read_errors = 0;
+    const char*   check_filename;
+    FILE*         file;
+    FILE*         file2;
+    int           ok = 1;
+    int           file_ok;
+    int           hex1, hex2;
+    int           found           = 0;
+    int           format_errors   = 0;
+    int           mismatch_errors = 0;
+    int           read_errors     = 0;
 
     /* Open the file to be hashed */
     if (!strcmp(filename, "-")) {
@@ -294,15 +308,17 @@ static int check_file(const char *filename, int algorithm)
     while (fgets(line, sizeof(line), file)) {
         /* LF and CR characters from from the end of the line */
         len = strlen(line);
-        while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+        while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
             --len;
-        if (!len)
+        }
+        if (!len) {
             continue; /* Ignore empty lines */
+        }
         line[len] = '\0';
 
         /* Parse the line into a hash value and a filename */
         hashlen = 0;
-        posn = 0;
+        posn    = 0;
         while (posn < len && hashlen < ASCON_HASH_SIZE &&
                (hex1 = to_hex_digit(line[posn])) >= 0 &&
                (hex2 = to_hex_digit(line[posn + 1])) >= 0) {
@@ -323,7 +339,7 @@ static int check_file(const char *filename, int algorithm)
             continue;
         }
         check_filename = line + posn;
-        found = 1;
+        found          = 1;
 
         /* Cannot check stdin if we are reading checksums from stdin */
         if (!strcmp(check_filename, "-") && !strcmp(filename, "-")) {
@@ -368,26 +384,19 @@ static int check_file(const char *filename, int algorithm)
 
     /* Report overall results */
     if (!found) {
-        fprintf(stderr, "%s: no properly formatted checksum lines found\n",
-                filename);
+        fprintf(stderr, "%s: no properly formatted checksum lines found\n", filename);
         ok = 0;
     }
     if (format_errors != 0) {
-        fprintf(stderr, "WARNING: %d line%s improperly formatted\n",
-                format_errors,
-                (format_errors > 1 ? "s are" : " is"));
+        fprintf(stderr, "WARNING: %d line%s improperly formatted\n", format_errors, (format_errors > 1 ? "s are" : " is"));
         ok = 0;
     }
     if (mismatch_errors != 0) {
-        fprintf(stderr, "WARNING: %d computed checksum%s did not match\n",
-                mismatch_errors,
-                (mismatch_errors > 1 ? "s" : ""));
+        fprintf(stderr, "WARNING: %d computed checksum%s did not match\n", mismatch_errors, (mismatch_errors > 1 ? "s" : ""));
         ok = 0;
     }
     if (read_errors != 0) {
-        fprintf(stderr, "WARNING: %d listed file%s could not be read\n",
-                read_errors,
-                (read_errors > 1 ? "s" : ""));
+        fprintf(stderr, "WARNING: %d listed file%s could not be read\n", read_errors, (read_errors > 1 ? "s" : ""));
         ok = 0;
     }
 

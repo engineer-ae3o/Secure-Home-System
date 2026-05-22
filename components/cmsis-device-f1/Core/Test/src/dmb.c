@@ -8,4 +8,3 @@ void dmb() {
     __DMB();
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

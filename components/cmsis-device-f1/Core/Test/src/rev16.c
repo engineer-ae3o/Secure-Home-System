@@ -10,4 +10,3 @@ void rev16() {
     volatile uint32_t c = __REV16(a);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

@@ -31,29 +31,29 @@ SOFTWARE.
 // The header include guard has been intentionally omitted.
 // This file is intended to evaluated multiple times by design.
 #ifndef ETL_PUSHED_MIN_MAX
-  #if !defined(ETL_COMPILER_GREEN_HILLS) && !defined(ETL_COMPILER_IAR) && !defined(ETL_COMPILER_TASKING)
-    #if !defined(ETL_COMPILER_ARM5)
-      #pragma push_macro("min")
-      #pragma push_macro("max")
-    #endif
+#if !defined(ETL_COMPILER_GREEN_HILLS) && !defined(ETL_COMPILER_IAR) && !defined(ETL_COMPILER_TASKING)
+#if !defined(ETL_COMPILER_ARM5)
+#pragma push_macro("min")
+#pragma push_macro("max")
+#endif
 
-    #ifdef min
-      #ifndef ETL_RESTORE_MIN
-        #define ETL_RESTORE_MIN
-      #endif
-      #undef min
-    #endif
+#ifdef min
+#ifndef ETL_RESTORE_MIN
+#define ETL_RESTORE_MIN
+#endif
+#undef min
+#endif
 
-    #ifdef max
-      #ifndef ETL_RESTORE_MAX
-        #define ETL_RESTORE_MAX
-      #endif
-      #undef max
-    #endif
-  #endif
+#ifdef max
+#ifndef ETL_RESTORE_MAX
+#define ETL_RESTORE_MAX
+#endif
+#undef max
+#endif
+#endif
 
-  #define ETL_PUSHED_MIN_MAX
-  
+#define ETL_PUSHED_MIN_MAX
+
 #else
-  #error minmax_push without matching pop
+#error minmax_push without matching pop
 #endif

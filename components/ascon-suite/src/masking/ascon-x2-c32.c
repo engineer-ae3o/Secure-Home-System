@@ -34,12 +34,12 @@
  * \param z Second input variable.
  * \param w e or o to indicate which word to operate on.
  */
-#define and_not_xor(x, y, z, w) \
-    do { \
+#define and_not_xor(x, y, z, w)                                               \
+    do {                                                                      \
         x##_a##w ^= ((~y##_a##w) & ascon_mask32_unrotate_share1_0(z##_b##w)); \
-        x##_a##w ^= ((~y##_a##w) & z##_a##w); \
-        x##_b##w ^= (y##_b##w & z##_b##w); \
-        x##_b##w ^= (y##_b##w & ascon_mask32_rotate_share1_0(z##_a##w)); \
+        x##_a##w ^= ((~y##_a##w) & z##_a##w);                                 \
+        x##_b##w ^= (y##_b##w & z##_b##w);                                    \
+        x##_b##w ^= (y##_b##w & ascon_mask32_rotate_share1_0(z##_a##w));      \
     } while (0)
 
 /**
@@ -47,28 +47,28 @@
  *
  * \param w a or b to indicate which share to operate on.
  */
-#define linear(w) \
-    do { \
-        t0 = x0_##w##e ^ rightRotate4(x0_##w##o); \
-        t1 = x0_##w##o ^ rightRotate5(x0_##w##e); \
+#define linear(w)                                  \
+    do {                                           \
+        t0 = x0_##w##e ^ rightRotate4(x0_##w##o);  \
+        t1 = x0_##w##o ^ rightRotate5(x0_##w##e);  \
         t2 = x1_##w##e ^ rightRotate11(x1_##w##e); \
         t3 = x1_##w##o ^ rightRotate11(x1_##w##o); \
-        t4 = x2_##w##e ^ rightRotate2(x2_##w##o); \
-        t5 = x2_##w##o ^ rightRotate3(x2_##w##e); \
-        t6 = x3_##w##e ^ rightRotate3(x3_##w##o); \
-        t7 = x3_##w##o ^ rightRotate4(x3_##w##e); \
+        t4 = x2_##w##e ^ rightRotate2(x2_##w##o);  \
+        t5 = x2_##w##o ^ rightRotate3(x2_##w##e);  \
+        t6 = x3_##w##e ^ rightRotate3(x3_##w##o);  \
+        t7 = x3_##w##o ^ rightRotate4(x3_##w##e);  \
         t8 = x4_##w##e ^ rightRotate17(x4_##w##e); \
         t9 = x4_##w##o ^ rightRotate17(x4_##w##o); \
-        x0_##w##e ^= rightRotate9(t1); \
-        x0_##w##o ^= rightRotate10(t0); \
-        x1_##w##e ^= rightRotate19(t3); \
-        x1_##w##o ^= rightRotate20(t2); \
-        x2_##w##e ^= t5; \
-        x2_##w##o ^= rightRotate1(t4); \
-        x3_##w##e ^= rightRotate5(t6); \
-        x3_##w##o ^= rightRotate5(t7); \
-        x4_##w##e ^= rightRotate3(t9); \
-        x4_##w##o ^= rightRotate4(t8); \
+        x0_##w##e ^= rightRotate9(t1);             \
+        x0_##w##o ^= rightRotate10(t0);            \
+        x1_##w##e ^= rightRotate19(t3);            \
+        x1_##w##o ^= rightRotate20(t2);            \
+        x2_##w##e ^= t5;                           \
+        x2_##w##o ^= rightRotate1(t4);             \
+        x3_##w##e ^= rightRotate5(t6);             \
+        x3_##w##o ^= rightRotate5(t7);             \
+        x4_##w##e ^= rightRotate3(t9);             \
+        x4_##w##o ^= rightRotate4(t8);             \
     } while (0)
 
 /* Generate a pair of pre-inverted round constants so that we can
@@ -76,35 +76,32 @@
 #define ROUND_CONSTANT_PAIR(rc1, rc2) \
     (~((uint32_t)(rc1))), (~((uint32_t)(rc2)))
 
-void ascon_x2_permute
-    (ascon_masked_state_t *state, uint8_t first_round, uint64_t *preserve)
-{
+void ascon_x2_permute(ascon_masked_state_t* state, uint8_t first_round, uint64_t* preserve) {
     static const uint32_t RC[12 * 2] = {
         ROUND_CONSTANT_PAIR(12, 12),
-        ROUND_CONSTANT_PAIR( 9, 12),
-        ROUND_CONSTANT_PAIR(12,  9),
-        ROUND_CONSTANT_PAIR( 9,  9),
-        ROUND_CONSTANT_PAIR( 6, 12),
-        ROUND_CONSTANT_PAIR( 3, 12),
-        ROUND_CONSTANT_PAIR( 6,  9),
-        ROUND_CONSTANT_PAIR( 3,  9),
-        ROUND_CONSTANT_PAIR(12,  6),
-        ROUND_CONSTANT_PAIR( 9,  6),
-        ROUND_CONSTANT_PAIR(12,  3),
-        ROUND_CONSTANT_PAIR( 9,  3)
-    };
-    const uint32_t *rc = RC + first_round * 2;
-    uint32_t x0_ae, x1_ae, x2_ae, x3_ae, x4_ae;
-    uint32_t x0_ao, x1_ao, x2_ao, x3_ao, x4_ao;
-    uint32_t x0_be, x1_be, x2_be, x3_be, x4_be;
-    uint32_t x0_bo, x1_bo, x2_bo, x3_bo, x4_bo;
-    uint32_t t0_ao, t0_bo, t1_ao, t1_bo;
-    uint32_t t0_ae, t0_be, t1_ae, t1_be;
-    uint32_t t6, t7, t8, t9;
+        ROUND_CONSTANT_PAIR(9, 12),
+        ROUND_CONSTANT_PAIR(12, 9),
+        ROUND_CONSTANT_PAIR(9, 9),
+        ROUND_CONSTANT_PAIR(6, 12),
+        ROUND_CONSTANT_PAIR(3, 12),
+        ROUND_CONSTANT_PAIR(6, 9),
+        ROUND_CONSTANT_PAIR(3, 9),
+        ROUND_CONSTANT_PAIR(12, 6),
+        ROUND_CONSTANT_PAIR(9, 6),
+        ROUND_CONSTANT_PAIR(12, 3),
+        ROUND_CONSTANT_PAIR(9, 3)};
+    const uint32_t* rc = RC + first_round * 2;
+    uint32_t        x0_ae, x1_ae, x2_ae, x3_ae, x4_ae;
+    uint32_t        x0_ao, x1_ao, x2_ao, x3_ao, x4_ao;
+    uint32_t        x0_be, x1_be, x2_be, x3_be, x4_be;
+    uint32_t        x0_bo, x1_bo, x2_bo, x3_bo, x4_bo;
+    uint32_t        t0_ao, t0_bo, t1_ao, t1_bo;
+    uint32_t        t0_ae, t0_be, t1_ae, t1_be;
+    uint32_t        t6, t7, t8, t9;
 
     /* Start with the randomness that the caller provided */
-    t0_ae = ((uint32_t *)preserve)[0];
-    t0_ao = ((uint32_t *)preserve)[1];
+    t0_ae = ((uint32_t*)preserve)[0];
+    t0_ao = ((uint32_t*)preserve)[1];
 
     /* Load the state into local variables */
     x0_ae = state->M[0].W[0];
@@ -145,13 +142,13 @@ void ascon_x2_permute
         x0_ae ^= x4_ae;
         x4_ae ^= x3_ae;
         x2_ae ^= x1_ae;
-        t1_ae  = x0_ae;
+        t1_ae = x0_ae;
 
         /* Start of the substitution layer, second share */
         x0_be ^= x4_be;
         x4_be ^= x3_be;
         x2_be ^= x1_be;
-        t1_be  = x0_be;
+        t1_be = x0_be;
 
         /* Middle part of the substitution layer, Chi5 */
         t0_be = ascon_mask32_rotate_share1_0(t0_ae); /* t0 = random shares */
@@ -183,13 +180,13 @@ void ascon_x2_permute
         x0_ao ^= x4_ao;
         x4_ao ^= x3_ao;
         x2_ao ^= x1_ao;
-        t1_ao  = x0_ao;
+        t1_ao = x0_ao;
 
         /* Start of the substitution layer, second share */
         x0_bo ^= x4_bo;
         x4_bo ^= x3_bo;
         x2_bo ^= x1_bo;
-        t1_bo  = x0_bo;
+        t1_bo = x0_bo;
 
         /* Middle part of the substitution layer, Chi5 */
         t0_bo = ascon_mask32_rotate_share1_0(t0_ao); /* t0 = random shares */
@@ -209,17 +206,17 @@ void ascon_x2_permute
         x0_bo ^= x4_bo;
         x3_bo ^= x2_bo;
 
-        /* NOT'ing x2 is done as part of the next round constant */
-        /* x2_ao = ~x2_ao; */
+/* NOT'ing x2 is done as part of the next round constant */
+/* x2_ao = ~x2_ao; */
 
-        /* Linear diffusion layer on each of the shares.  Reuse some of
+/* Linear diffusion layer on each of the shares.  Reuse some of
          * the temporaries from substitution that we no longer require. */
-        #define t0 t0_bo
-        #define t1 t1_ao
-        #define t2 t1_bo
-        #define t3 t0_be
-        #define t4 t1_ae
-        #define t5 t1_be
+#define t0 t0_bo
+#define t1 t1_ao
+#define t2 t1_bo
+#define t3 t0_be
+#define t4 t1_ae
+#define t5 t1_be
         linear(b);
         linear(a);
 
@@ -229,8 +226,8 @@ void ascon_x2_permute
     }
 
     /* Return the final randomness to the caller to preserve it */
-    ((uint32_t *)preserve)[0] = t0_ae;
-    ((uint32_t *)preserve)[1] = t0_ao;
+    ((uint32_t*)preserve)[0] = t0_ae;
+    ((uint32_t*)preserve)[1] = t0_ao;
 
     /* Store the local variables back to the state with a final invert of x2 */
     state->M[0].W[0] = x0_ae;

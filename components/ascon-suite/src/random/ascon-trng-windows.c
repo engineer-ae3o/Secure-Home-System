@@ -35,15 +35,13 @@
  * there is no import library.  Fix this later to dynamically load
  * "Advapi32.dll" and resolve the entry point for RtlGenRandom(). */
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     HCRYPTPROV provider = 0;
-    int ok = 0;
-    if (CryptAcquireContextW
-            (&provider, 0, 0, PROV_RSA_FULL,
-             CRYPT_VERIFYCONTEXT | CRYPT_SILENT)) {
-        if (CryptGenRandom(provider, outlen, out))
+    int        ok       = 0;
+    if (CryptAcquireContextW(&provider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT)) {
+        if (CryptGenRandom(provider, outlen, out)) {
             ok = 1;
+        }
         CryptReleaseContext(provider, 0);
     }
     if (!ok) {

@@ -112,7 +112,7 @@
 
 #ifdef HAL_CEC_MODULE_ENABLED
 
-#if defined (CEC)
+#if defined(CEC)
 
 /** @addtogroup STM32F1xx_HAL_Driver
   * @{
@@ -128,10 +128,10 @@
 /** @defgroup CEC_Private_Constants CEC Private Constants
   * @{
   */
-#define CEC_CFGR_FIELDS (CEC_CFGR_BTEM | CEC_CFGR_BPEM )
-#define CEC_FLAG_TRANSMIT_MASK (CEC_FLAG_TSOM|CEC_FLAG_TEOM|CEC_FLAG_TBTRF)
-#define CEC_FLAG_RECEIVE_MASK (CEC_FLAG_RSOM|CEC_FLAG_REOM|CEC_FLAG_RBTF)
-#define CEC_ESR_ALL_ERROR (CEC_ESR_BTE|CEC_ESR_BPE|CEC_ESR_RBTFE|CEC_ESR_SBE|CEC_ESR_ACKE|CEC_ESR_LINE|CEC_ESR_TBTFE)
+#define CEC_CFGR_FIELDS (CEC_CFGR_BTEM | CEC_CFGR_BPEM)
+#define CEC_FLAG_TRANSMIT_MASK (CEC_FLAG_TSOM | CEC_FLAG_TEOM | CEC_FLAG_TBTRF)
+#define CEC_FLAG_RECEIVE_MASK (CEC_FLAG_RSOM | CEC_FLAG_REOM | CEC_FLAG_RBTF)
+#define CEC_ESR_ALL_ERROR (CEC_ESR_BTE | CEC_ESR_BPE | CEC_ESR_RBTFE | CEC_ESR_SBE | CEC_ESR_ACKE | CEC_ESR_LINE | CEC_ESR_TBTFE)
 #define CEC_RXXFERSIZE_INITIALIZE 0xFFFF /*!< Value used to initialise the RxXferSize of the handle */
 /**
   * @}
@@ -143,8 +143,8 @@
 /** @defgroup CEC_Private_Functions CEC Private Functions
   * @{
   */
-static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef *hcec);
-static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef *hcec);
+static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef* hcec);
+static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef* hcec);
 /**
   * @}
   */
@@ -179,72 +179,67 @@ static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef *hcec);
   * @param hcec CEC handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_Init(CEC_HandleTypeDef *hcec)
-{
-  /* Check the CEC handle allocation */
-  if ((hcec == NULL) || (hcec->Init.RxBuffer == NULL))
-  {
-    return HAL_ERROR;
-  }
-
-  /* Check the parameters */
-  assert_param(IS_CEC_ALL_INSTANCE(hcec->Instance));
-  assert_param(IS_CEC_BIT_TIMING_ERROR_MODE(hcec->Init.TimingErrorFree));
-  assert_param(IS_CEC_BIT_PERIOD_ERROR_MODE(hcec->Init.PeriodErrorFree));
-  assert_param(IS_CEC_ADDRESS(hcec->Init.OwnAddress));
-#if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
-  if (hcec->gState == HAL_CEC_STATE_RESET)
-  {
-    /* Allocate lock resource and initialize it */
-    hcec->Lock = HAL_UNLOCKED;
-
-    hcec->TxCpltCallback  = HAL_CEC_TxCpltCallback;  /* Legacy weak TxCpltCallback  */
-    hcec->RxCpltCallback = HAL_CEC_RxCpltCallback;   /* Legacy weak RxCpltCallback */
-    hcec->ErrorCallback = HAL_CEC_ErrorCallback;     /* Legacy weak ErrorCallback */
-
-    if (hcec->MspInitCallback == NULL)
-    {
-      hcec->MspInitCallback = HAL_CEC_MspInit; /* Legacy weak MspInit  */
+HAL_StatusTypeDef HAL_CEC_Init(CEC_HandleTypeDef* hcec) {
+    /* Check the CEC handle allocation */
+    if ((hcec == NULL) || (hcec->Init.RxBuffer == NULL)) {
+        return HAL_ERROR;
     }
 
-    /* Init the low level hardware */
-    hcec->MspInitCallback(hcec);
-  }
+    /* Check the parameters */
+    assert_param(IS_CEC_ALL_INSTANCE(hcec->Instance));
+    assert_param(IS_CEC_BIT_TIMING_ERROR_MODE(hcec->Init.TimingErrorFree));
+    assert_param(IS_CEC_BIT_PERIOD_ERROR_MODE(hcec->Init.PeriodErrorFree));
+    assert_param(IS_CEC_ADDRESS(hcec->Init.OwnAddress));
+#if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
+    if (hcec->gState == HAL_CEC_STATE_RESET) {
+        /* Allocate lock resource and initialize it */
+        hcec->Lock = HAL_UNLOCKED;
+
+        hcec->TxCpltCallback = HAL_CEC_TxCpltCallback; /* Legacy weak TxCpltCallback  */
+        hcec->RxCpltCallback = HAL_CEC_RxCpltCallback; /* Legacy weak RxCpltCallback */
+        hcec->ErrorCallback  = HAL_CEC_ErrorCallback;  /* Legacy weak ErrorCallback */
+
+        if (hcec->MspInitCallback == NULL) {
+            hcec->MspInitCallback = HAL_CEC_MspInit; /* Legacy weak MspInit  */
+        }
+
+        /* Init the low level hardware */
+        hcec->MspInitCallback(hcec);
+    }
 #else
-  if (hcec->gState == HAL_CEC_STATE_RESET)
-  {
-    /* Allocate lock resource and initialize it */
-    hcec->Lock = HAL_UNLOCKED;
-    /* Init the low level hardware : GPIO, CLOCK */
-    HAL_CEC_MspInit(hcec);
-  }
+    if (hcec->gState == HAL_CEC_STATE_RESET) {
+        /* Allocate lock resource and initialize it */
+        hcec->Lock = HAL_UNLOCKED;
+        /* Init the low level hardware : GPIO, CLOCK */
+        HAL_CEC_MspInit(hcec);
+    }
 #endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
 
-  hcec->gState = HAL_CEC_STATE_BUSY;
+    hcec->gState = HAL_CEC_STATE_BUSY;
 
-  /* Disable the Peripheral */
-  __HAL_CEC_DISABLE(hcec);
+    /* Disable the Peripheral */
+    __HAL_CEC_DISABLE(hcec);
 
-  /* Write to CEC Control Register */
-  MODIFY_REG(hcec->Instance->CFGR, CEC_CFGR_FIELDS, hcec->Init.TimingErrorFree | hcec->Init.PeriodErrorFree);
+    /* Write to CEC Control Register */
+    MODIFY_REG(hcec->Instance->CFGR, CEC_CFGR_FIELDS, hcec->Init.TimingErrorFree | hcec->Init.PeriodErrorFree);
 
-  /* Write to CEC Own Address Register */
-  MODIFY_REG(hcec->Instance->OAR, CEC_OAR_OA, hcec->Init.OwnAddress);
+    /* Write to CEC Own Address Register */
+    MODIFY_REG(hcec->Instance->OAR, CEC_OAR_OA, hcec->Init.OwnAddress);
 
-  /* Configure the prescaler to generate the required 50 microseconds time base.*/
-  MODIFY_REG(hcec->Instance->PRES, CEC_PRES_PRES, 50U * (HAL_RCC_GetPCLK1Freq() / 1000000U) - 1U);
+    /* Configure the prescaler to generate the required 50 microseconds time base.*/
+    MODIFY_REG(hcec->Instance->PRES, CEC_PRES_PRES, 50U * (HAL_RCC_GetPCLK1Freq() / 1000000U) - 1U);
 
-  /* Enable the following CEC Interrupt */
-  __HAL_CEC_ENABLE_IT(hcec, CEC_IT_IE);
+    /* Enable the following CEC Interrupt */
+    __HAL_CEC_ENABLE_IT(hcec, CEC_IT_IE);
 
-  /* Enable the CEC Peripheral */
-  __HAL_CEC_ENABLE(hcec);
+    /* Enable the CEC Peripheral */
+    __HAL_CEC_ENABLE(hcec);
 
-  hcec->ErrorCode = HAL_CEC_ERROR_NONE;
-  hcec->gState = HAL_CEC_STATE_READY;
-  hcec->RxState = HAL_CEC_STATE_READY;
+    hcec->ErrorCode = HAL_CEC_ERROR_NONE;
+    hcec->gState    = HAL_CEC_STATE_READY;
+    hcec->RxState   = HAL_CEC_STATE_READY;
 
-  return HAL_OK;
+    return HAL_OK;
 }
 
 /**
@@ -252,44 +247,41 @@ HAL_StatusTypeDef HAL_CEC_Init(CEC_HandleTypeDef *hcec)
   * @param hcec CEC handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_DeInit(CEC_HandleTypeDef *hcec)
-{
-  /* Check the CEC handle allocation */
-  if (hcec == NULL)
-  {
-    return HAL_ERROR;
-  }
+HAL_StatusTypeDef HAL_CEC_DeInit(CEC_HandleTypeDef* hcec) {
+    /* Check the CEC handle allocation */
+    if (hcec == NULL) {
+        return HAL_ERROR;
+    }
 
-  /* Check the parameters */
-  assert_param(IS_CEC_ALL_INSTANCE(hcec->Instance));
+    /* Check the parameters */
+    assert_param(IS_CEC_ALL_INSTANCE(hcec->Instance));
 
-  hcec->gState = HAL_CEC_STATE_BUSY;
+    hcec->gState = HAL_CEC_STATE_BUSY;
 
 #if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
-  if (hcec->MspDeInitCallback == NULL)
-  {
-    hcec->MspDeInitCallback = HAL_CEC_MspDeInit; /* Legacy weak MspDeInit  */
-  }
+    if (hcec->MspDeInitCallback == NULL) {
+        hcec->MspDeInitCallback = HAL_CEC_MspDeInit; /* Legacy weak MspDeInit  */
+    }
 
-  /* DeInit the low level hardware */
-  hcec->MspDeInitCallback(hcec);
+    /* DeInit the low level hardware */
+    hcec->MspDeInitCallback(hcec);
 
 #else
-  /* DeInit the low level hardware */
-  HAL_CEC_MspDeInit(hcec);
+    /* DeInit the low level hardware */
+    HAL_CEC_MspDeInit(hcec);
 #endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
 
-  __HAL_RCC_CEC_FORCE_RESET();
-  __HAL_RCC_CEC_RELEASE_RESET();
+    __HAL_RCC_CEC_FORCE_RESET();
+    __HAL_RCC_CEC_RELEASE_RESET();
 
-  hcec->ErrorCode = HAL_CEC_ERROR_NONE;
-  hcec->gState = HAL_CEC_STATE_RESET;
-  hcec->RxState = HAL_CEC_STATE_RESET;
+    hcec->ErrorCode = HAL_CEC_ERROR_NONE;
+    hcec->gState    = HAL_CEC_STATE_RESET;
+    hcec->RxState   = HAL_CEC_STATE_RESET;
 
-  /* Process Unlock */
-  __HAL_UNLOCK(hcec);
+    /* Process Unlock */
+    __HAL_UNLOCK(hcec);
 
-  return HAL_OK;
+    return HAL_OK;
 }
 
 /**
@@ -298,45 +290,38 @@ HAL_StatusTypeDef HAL_CEC_DeInit(CEC_HandleTypeDef *hcec)
   * @param  CEC_OwnAddress The CEC own address.
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_SetDeviceAddress(CEC_HandleTypeDef *hcec, uint16_t CEC_OwnAddress)
-{
-  /* Check the parameters */
-  assert_param(IS_CEC_OWN_ADDRESS(CEC_OwnAddress));
+HAL_StatusTypeDef HAL_CEC_SetDeviceAddress(CEC_HandleTypeDef* hcec, uint16_t CEC_OwnAddress) {
+    /* Check the parameters */
+    assert_param(IS_CEC_OWN_ADDRESS(CEC_OwnAddress));
 
-  if ((hcec->gState == HAL_CEC_STATE_READY) && (hcec->RxState == HAL_CEC_STATE_READY))
-  {
-    /* Process Locked */
-    __HAL_LOCK(hcec);
+    if ((hcec->gState == HAL_CEC_STATE_READY) && (hcec->RxState == HAL_CEC_STATE_READY)) {
+        /* Process Locked */
+        __HAL_LOCK(hcec);
 
-    hcec->gState = HAL_CEC_STATE_BUSY;
+        hcec->gState = HAL_CEC_STATE_BUSY;
 
-    /* Disable the Peripheral */
-    __HAL_CEC_DISABLE(hcec);
+        /* Disable the Peripheral */
+        __HAL_CEC_DISABLE(hcec);
 
-    if (CEC_OwnAddress != CEC_OWN_ADDRESS_NONE)
-    {
-      MODIFY_REG(hcec->Instance->OAR, CEC_OAR_OA, hcec->Init.OwnAddress);
+        if (CEC_OwnAddress != CEC_OWN_ADDRESS_NONE) {
+            MODIFY_REG(hcec->Instance->OAR, CEC_OAR_OA, hcec->Init.OwnAddress);
+        } else {
+            CLEAR_BIT(hcec->Instance->OAR, CEC_OAR_OA);
+        }
+
+        hcec->gState    = HAL_CEC_STATE_READY;
+        hcec->ErrorCode = HAL_CEC_ERROR_NONE;
+
+        /* Process Unlocked */
+        __HAL_UNLOCK(hcec);
+
+        /* Enable the Peripheral */
+        __HAL_CEC_ENABLE(hcec);
+
+        return HAL_OK;
+    } else {
+        return HAL_BUSY;
     }
-    else
-    {
-      CLEAR_BIT(hcec->Instance->OAR, CEC_OAR_OA);
-    }
-
-    hcec->gState = HAL_CEC_STATE_READY;
-    hcec->ErrorCode = HAL_CEC_ERROR_NONE;
-
-    /* Process Unlocked */
-    __HAL_UNLOCK(hcec);
-
-    /* Enable the Peripheral */
-    __HAL_CEC_ENABLE(hcec);
-
-    return  HAL_OK;
-  }
-  else
-  {
-    return HAL_BUSY;
-  }
 }
 
 /**
@@ -344,11 +329,10 @@ HAL_StatusTypeDef HAL_CEC_SetDeviceAddress(CEC_HandleTypeDef *hcec, uint16_t CEC
   * @param hcec CEC handle
   * @retval None
   */
-__weak void HAL_CEC_MspInit(CEC_HandleTypeDef *hcec)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcec);
-  /* NOTE : This function should not be modified, when the callback is needed,
+__weak void HAL_CEC_MspInit(CEC_HandleTypeDef* hcec) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcec);
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CEC_MspInit can be implemented in the user file
    */
 }
@@ -358,11 +342,10 @@ __weak void HAL_CEC_MspInit(CEC_HandleTypeDef *hcec)
   * @param hcec CEC handle
   * @retval None
   */
-__weak void HAL_CEC_MspDeInit(CEC_HandleTypeDef *hcec)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcec);
-  /* NOTE : This function should not be modified, when the callback is needed,
+__weak void HAL_CEC_MspDeInit(CEC_HandleTypeDef* hcec) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcec);
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CEC_MspDeInit can be implemented in the user file
    */
 }
@@ -380,80 +363,70 @@ __weak void HAL_CEC_MspDeInit(CEC_HandleTypeDef *hcec)
   * @param  pCallback pointer to the Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_RegisterCallback(CEC_HandleTypeDef *hcec, HAL_CEC_CallbackIDTypeDef CallbackID,
-                                           pCEC_CallbackTypeDef pCallback)
-{
-  HAL_StatusTypeDef status = HAL_OK;
+HAL_StatusTypeDef HAL_CEC_RegisterCallback(CEC_HandleTypeDef* hcec, HAL_CEC_CallbackIDTypeDef CallbackID, pCEC_CallbackTypeDef pCallback) {
+    HAL_StatusTypeDef status = HAL_OK;
 
-  if (pCallback == NULL)
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    return HAL_ERROR;
-  }
-  /* Process locked */
-  __HAL_LOCK(hcec);
+    if (pCallback == NULL) {
+        /* Update the error code */
+        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+        return HAL_ERROR;
+    }
+    /* Process locked */
+    __HAL_LOCK(hcec);
 
-  if (hcec->gState == HAL_CEC_STATE_READY)
-  {
-    switch (CallbackID)
-    {
-      case HAL_CEC_TX_CPLT_CB_ID :
-        hcec->TxCpltCallback = pCallback;
-        break;
+    if (hcec->gState == HAL_CEC_STATE_READY) {
+        switch (CallbackID) {
+            case HAL_CEC_TX_CPLT_CB_ID:
+                hcec->TxCpltCallback = pCallback;
+                break;
 
-      case HAL_CEC_ERROR_CB_ID :
-        hcec->ErrorCallback = pCallback;
-        break;
+            case HAL_CEC_ERROR_CB_ID:
+                hcec->ErrorCallback = pCallback;
+                break;
 
-      case HAL_CEC_MSPINIT_CB_ID :
-        hcec->MspInitCallback = pCallback;
-        break;
+            case HAL_CEC_MSPINIT_CB_ID:
+                hcec->MspInitCallback = pCallback;
+                break;
 
-      case HAL_CEC_MSPDEINIT_CB_ID :
-        hcec->MspDeInitCallback = pCallback;
-        break;
+            case HAL_CEC_MSPDEINIT_CB_ID:
+                hcec->MspDeInitCallback = pCallback;
+                break;
 
-      default :
+            default:
+                /* Update the error code */
+                hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+                /* Return error status */
+                status = HAL_ERROR;
+                break;
+        }
+    } else if (hcec->gState == HAL_CEC_STATE_RESET) {
+        switch (CallbackID) {
+            case HAL_CEC_MSPINIT_CB_ID:
+                hcec->MspInitCallback = pCallback;
+                break;
+
+            case HAL_CEC_MSPDEINIT_CB_ID:
+                hcec->MspDeInitCallback = pCallback;
+                break;
+
+            default:
+                /* Update the error code */
+                hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+                /* Return error status */
+                status = HAL_ERROR;
+                break;
+        }
+    } else {
         /* Update the error code */
         hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
         /* Return error status */
-        status =  HAL_ERROR;
-        break;
+        status = HAL_ERROR;
     }
-  }
-  else if (hcec->gState == HAL_CEC_STATE_RESET)
-  {
-    switch (CallbackID)
-    {
-      case HAL_CEC_MSPINIT_CB_ID :
-        hcec->MspInitCallback = pCallback;
-        break;
 
-      case HAL_CEC_MSPDEINIT_CB_ID :
-        hcec->MspDeInitCallback = pCallback;
-        break;
+    /* Release Lock */
+    __HAL_UNLOCK(hcec);
 
-      default :
-        /* Update the error code */
-        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-        /* Return error status */
-        status =  HAL_ERROR;
-        break;
-    }
-  }
-  else
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    /* Return error status */
-    status =  HAL_ERROR;
-  }
-
-  /* Release Lock */
-  __HAL_UNLOCK(hcec);
-
-  return status;
+    return status;
 }
 
 /**
@@ -468,73 +441,65 @@ HAL_StatusTypeDef HAL_CEC_RegisterCallback(CEC_HandleTypeDef *hcec, HAL_CEC_Call
   *          @arg @ref HAL_CEC_MSPDEINIT_CB_ID MspDeInit callback ID
   * @retval status
   */
-HAL_StatusTypeDef HAL_CEC_UnRegisterCallback(CEC_HandleTypeDef *hcec, HAL_CEC_CallbackIDTypeDef CallbackID)
-{
-  HAL_StatusTypeDef status = HAL_OK;
+HAL_StatusTypeDef HAL_CEC_UnRegisterCallback(CEC_HandleTypeDef* hcec, HAL_CEC_CallbackIDTypeDef CallbackID) {
+    HAL_StatusTypeDef status = HAL_OK;
 
-  /* Process locked */
-  __HAL_LOCK(hcec);
+    /* Process locked */
+    __HAL_LOCK(hcec);
 
-  if (hcec->gState == HAL_CEC_STATE_READY)
-  {
-    switch (CallbackID)
-    {
-      case HAL_CEC_TX_CPLT_CB_ID :
-        hcec->TxCpltCallback = HAL_CEC_TxCpltCallback;  /* Legacy weak  TxCpltCallback */
-        break;
+    if (hcec->gState == HAL_CEC_STATE_READY) {
+        switch (CallbackID) {
+            case HAL_CEC_TX_CPLT_CB_ID:
+                hcec->TxCpltCallback = HAL_CEC_TxCpltCallback; /* Legacy weak  TxCpltCallback */
+                break;
 
-      case HAL_CEC_ERROR_CB_ID :
-        hcec->ErrorCallback = HAL_CEC_ErrorCallback;  /* Legacy weak ErrorCallback   */
-        break;
+            case HAL_CEC_ERROR_CB_ID:
+                hcec->ErrorCallback = HAL_CEC_ErrorCallback; /* Legacy weak ErrorCallback   */
+                break;
 
-      case HAL_CEC_MSPINIT_CB_ID :
-        hcec->MspInitCallback = HAL_CEC_MspInit;
-        break;
+            case HAL_CEC_MSPINIT_CB_ID:
+                hcec->MspInitCallback = HAL_CEC_MspInit;
+                break;
 
-      case HAL_CEC_MSPDEINIT_CB_ID :
-        hcec->MspDeInitCallback = HAL_CEC_MspDeInit;
-        break;
+            case HAL_CEC_MSPDEINIT_CB_ID:
+                hcec->MspDeInitCallback = HAL_CEC_MspDeInit;
+                break;
 
-      default :
+            default:
+                /* Update the error code */
+                hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+                /* Return error status */
+                status = HAL_ERROR;
+                break;
+        }
+    } else if (hcec->gState == HAL_CEC_STATE_RESET) {
+        switch (CallbackID) {
+            case HAL_CEC_MSPINIT_CB_ID:
+                hcec->MspInitCallback = HAL_CEC_MspInit;
+                break;
+
+            case HAL_CEC_MSPDEINIT_CB_ID:
+                hcec->MspDeInitCallback = HAL_CEC_MspDeInit;
+                break;
+
+            default:
+                /* Update the error code */
+                hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+                /* Return error status */
+                status = HAL_ERROR;
+                break;
+        }
+    } else {
         /* Update the error code */
         hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
         /* Return error status */
-        status =  HAL_ERROR;
-        break;
+        status = HAL_ERROR;
     }
-  }
-  else if (hcec->gState == HAL_CEC_STATE_RESET)
-  {
-    switch (CallbackID)
-    {
-      case HAL_CEC_MSPINIT_CB_ID :
-        hcec->MspInitCallback = HAL_CEC_MspInit;
-        break;
 
-      case HAL_CEC_MSPDEINIT_CB_ID :
-        hcec->MspDeInitCallback = HAL_CEC_MspDeInit;
-        break;
+    /* Release Lock */
+    __HAL_UNLOCK(hcec);
 
-      default :
-        /* Update the error code */
-        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-        /* Return error status */
-        status =  HAL_ERROR;
-        break;
-    }
-  }
-  else
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    /* Return error status */
-    status =  HAL_ERROR;
-  }
-
-  /* Release Lock */
-  __HAL_UNLOCK(hcec);
-
-  return status;
+    return status;
 }
 
 /**
@@ -544,34 +509,29 @@ HAL_StatusTypeDef HAL_CEC_UnRegisterCallback(CEC_HandleTypeDef *hcec, HAL_CEC_Ca
   * @param  pCallback pointer to the Rx transfer compelete Callback function
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_RegisterRxCpltCallback(CEC_HandleTypeDef *hcec, pCEC_RxCallbackTypeDef pCallback)
-{
-  HAL_StatusTypeDef status = HAL_OK;
+HAL_StatusTypeDef HAL_CEC_RegisterRxCpltCallback(CEC_HandleTypeDef* hcec, pCEC_RxCallbackTypeDef pCallback) {
+    HAL_StatusTypeDef status = HAL_OK;
 
-  if (pCallback == NULL)
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    return HAL_ERROR;
-  }
-  /* Process locked */
-  __HAL_LOCK(hcec);
+    if (pCallback == NULL) {
+        /* Update the error code */
+        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+        return HAL_ERROR;
+    }
+    /* Process locked */
+    __HAL_LOCK(hcec);
 
-  if (HAL_CEC_STATE_READY == hcec->RxState)
-  {
-    hcec->RxCpltCallback = pCallback;
-  }
-  else
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    /* Return error status */
-    status =  HAL_ERROR;
-  }
+    if (HAL_CEC_STATE_READY == hcec->RxState) {
+        hcec->RxCpltCallback = pCallback;
+    } else {
+        /* Update the error code */
+        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+        /* Return error status */
+        status = HAL_ERROR;
+    }
 
-  /* Release Lock */
-  __HAL_UNLOCK(hcec);
-  return status;
+    /* Release Lock */
+    __HAL_UNLOCK(hcec);
+    return status;
 }
 
 /**
@@ -580,28 +540,24 @@ HAL_StatusTypeDef HAL_CEC_RegisterRxCpltCallback(CEC_HandleTypeDef *hcec, pCEC_R
   * @param  hcec CEC handle
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_UnRegisterRxCpltCallback(CEC_HandleTypeDef *hcec)
-{
-  HAL_StatusTypeDef status = HAL_OK;
+HAL_StatusTypeDef HAL_CEC_UnRegisterRxCpltCallback(CEC_HandleTypeDef* hcec) {
+    HAL_StatusTypeDef status = HAL_OK;
 
-  /* Process locked */
-  __HAL_LOCK(hcec);
+    /* Process locked */
+    __HAL_LOCK(hcec);
 
-  if (HAL_CEC_STATE_READY == hcec->RxState)
-  {
-    hcec->RxCpltCallback = HAL_CEC_RxCpltCallback; /* Legacy weak  CEC RxCpltCallback  */
-  }
-  else
-  {
-    /* Update the error code */
-    hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
-    /* Return error status */
-    status =  HAL_ERROR;
-  }
+    if (HAL_CEC_STATE_READY == hcec->RxState) {
+        hcec->RxCpltCallback = HAL_CEC_RxCpltCallback; /* Legacy weak  CEC RxCpltCallback  */
+    } else {
+        /* Update the error code */
+        hcec->ErrorCode |= HAL_CEC_ERROR_INVALID_CALLBACK;
+        /* Return error status */
+        status = HAL_ERROR;
+    }
 
-  /* Release Lock */
-  __HAL_UNLOCK(hcec);
-  return status;
+    /* Release Lock */
+    __HAL_UNLOCK(hcec);
+    return status;
 }
 #endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
 
@@ -654,56 +610,47 @@ HAL_StatusTypeDef HAL_CEC_UnRegisterRxCpltCallback(CEC_HandleTypeDef *hcec)
   *              Maximum TX size is 15 bytes (1 opcode and up to 14 operands).
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CEC_Transmit_IT(CEC_HandleTypeDef *hcec, uint8_t InitiatorAddress, uint8_t DestinationAddress,
-                                      const uint8_t *pData, uint32_t Size)
-{
-  /* if the peripheral isn't already busy and if there is no previous transmission
+HAL_StatusTypeDef HAL_CEC_Transmit_IT(CEC_HandleTypeDef* hcec, uint8_t InitiatorAddress, uint8_t DestinationAddress, const uint8_t* pData, uint32_t Size) {
+    /* if the peripheral isn't already busy and if there is no previous transmission
      already pending due to arbitration lost */
-  if (hcec->gState == HAL_CEC_STATE_READY)
-  {
-    if ((pData == NULL) && (Size > 0U))
-    {
-      return  HAL_ERROR;
-    }
+    if (hcec->gState == HAL_CEC_STATE_READY) {
+        if ((pData == NULL) && (Size > 0U)) {
+            return HAL_ERROR;
+        }
 
-    assert_param(IS_CEC_ADDRESS(DestinationAddress));
-    assert_param(IS_CEC_ADDRESS(InitiatorAddress));
-    assert_param(IS_CEC_MSGSIZE(Size));
+        assert_param(IS_CEC_ADDRESS(DestinationAddress));
+        assert_param(IS_CEC_ADDRESS(InitiatorAddress));
+        assert_param(IS_CEC_MSGSIZE(Size));
 
-    /* Process Locked */
-    __HAL_LOCK(hcec);
-    hcec->pTxBuffPtr = pData;
-    hcec->gState = HAL_CEC_STATE_BUSY_TX;
-    hcec->ErrorCode = HAL_CEC_ERROR_NONE;
+        /* Process Locked */
+        __HAL_LOCK(hcec);
+        hcec->pTxBuffPtr = pData;
+        hcec->gState     = HAL_CEC_STATE_BUSY_TX;
+        hcec->ErrorCode  = HAL_CEC_ERROR_NONE;
 
-    /* initialize the number of bytes to send,
+        /* initialize the number of bytes to send,
      * 0 means only one header is sent (ping operation) */
-    hcec->TxXferCount = Size;
+        hcec->TxXferCount = Size;
 
-    /* send header block */
-    hcec->Instance->TXD = (uint8_t)((uint32_t)InitiatorAddress << CEC_INITIATOR_LSB_POS) | DestinationAddress;
+        /* send header block */
+        hcec->Instance->TXD = (uint8_t)((uint32_t)InitiatorAddress << CEC_INITIATOR_LSB_POS) | DestinationAddress;
 
-    /* Process Unlocked */
-    __HAL_UNLOCK(hcec);
+        /* Process Unlocked */
+        __HAL_UNLOCK(hcec);
 
-    /* case no data to be sent, sender is only pinging the system */
-    if (Size != 0)
-    {
-      /* Set TX Start of Message (TXSOM) bit */
-      MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TSOM);
+        /* case no data to be sent, sender is only pinging the system */
+        if (Size != 0) {
+            /* Set TX Start of Message (TXSOM) bit */
+            MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TSOM);
+        } else {
+            /* Send a ping command */
+            MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TEOM | CEC_FLAG_TSOM);
+        }
+        return HAL_OK;
+
+    } else {
+        return HAL_BUSY;
     }
-    else
-    {
-      /* Send a ping command */
-      MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TEOM | CEC_FLAG_TSOM);
-    }
-    return HAL_OK;
-
-  }
-  else
-  {
-    return HAL_BUSY;
-  }
 }
 
 /**
@@ -711,9 +658,8 @@ HAL_StatusTypeDef HAL_CEC_Transmit_IT(CEC_HandleTypeDef *hcec, uint8_t Initiator
   * @param hcec CEC handle
   * @retval Frame size
   */
-uint32_t HAL_CEC_GetLastReceivedFrameSize(const CEC_HandleTypeDef *hcec)
-{
-  return hcec->RxXferSize;
+uint32_t HAL_CEC_GetLastReceivedFrameSize(const CEC_HandleTypeDef* hcec) {
+    return hcec->RxXferSize;
 }
 
 /**
@@ -723,9 +669,8 @@ uint32_t HAL_CEC_GetLastReceivedFrameSize(const CEC_HandleTypeDef *hcec)
   * @note  This function can be called only inside the HAL_CEC_RxCpltCallback()
   * @retval Frame size
   */
-void HAL_CEC_ChangeRxBuffer(CEC_HandleTypeDef *hcec, uint8_t *Rxbuffer)
-{
-  hcec->Init.RxBuffer = Rxbuffer;
+void HAL_CEC_ChangeRxBuffer(CEC_HandleTypeDef* hcec, uint8_t* Rxbuffer) {
+    hcec->Init.RxBuffer = Rxbuffer;
 }
 
 /**
@@ -733,61 +678,54 @@ void HAL_CEC_ChangeRxBuffer(CEC_HandleTypeDef *hcec, uint8_t *Rxbuffer)
   * @param hcec CEC handle
   * @retval None
   */
-void HAL_CEC_IRQHandler(CEC_HandleTypeDef *hcec)
-{
+void HAL_CEC_IRQHandler(CEC_HandleTypeDef* hcec) {
 
-  /* save interrupts register for further error or interrupts handling purposes */
-  uint32_t itflag;
-  itflag = hcec->Instance->CSR;
+    /* save interrupts register for further error or interrupts handling purposes */
+    uint32_t itflag;
+    itflag = hcec->Instance->CSR;
 
-  /* Save error status register for further error handling purposes */
-  hcec->ErrorCode = READ_BIT(hcec->Instance->ESR, CEC_ESR_ALL_ERROR);
+    /* Save error status register for further error handling purposes */
+    hcec->ErrorCode = READ_BIT(hcec->Instance->ESR, CEC_ESR_ALL_ERROR);
 
-  /* Transmit error */
-  if (HAL_IS_BIT_SET(itflag, CEC_FLAG_TERR))
-  {
-    /* Acknowledgement of the error */
-    __HAL_CEC_CLEAR_FLAG(hcec, CEC_FLAG_TERR);
+    /* Transmit error */
+    if (HAL_IS_BIT_SET(itflag, CEC_FLAG_TERR)) {
+        /* Acknowledgement of the error */
+        __HAL_CEC_CLEAR_FLAG(hcec, CEC_FLAG_TERR);
 
-    hcec->gState = HAL_CEC_STATE_READY;
-  }
-
-  /* Receive error */
-  if (HAL_IS_BIT_SET(itflag, CEC_FLAG_RERR))
-  {
-    /* Acknowledgement of the error */
-    __HAL_CEC_CLEAR_FLAG(hcec, CEC_FLAG_RERR);
-    hcec->Init.RxBuffer -= hcec->RxXferSize;
-    hcec->RxXferSize = 0U;
-    hcec->RxState = HAL_CEC_STATE_READY;
-  }
-
-  if ((hcec->ErrorCode & CEC_ESR_ALL_ERROR) != 0U)
-  {
-    /* Error  Call Back */
-#if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
-    hcec->ErrorCallback(hcec);
-#else
-    HAL_CEC_ErrorCallback(hcec);
-#endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
-  }
-
-  /* Transmit byte request or block transfer finished */
-  if (HAL_IS_BIT_SET(itflag, CEC_FLAG_TBTRF))
-  {
-    CEC_Transmit_IT(hcec);
-  }
-
-  /* Receive byte or block transfer finished */
-  if (HAL_IS_BIT_SET(itflag, CEC_FLAG_RBTF))
-  {
-    if (hcec->RxXferSize == 0U)
-    {
-      /* reception is starting */
-      hcec->RxState = HAL_CEC_STATE_BUSY_RX;
+        hcec->gState = HAL_CEC_STATE_READY;
     }
-    CEC_Receive_IT(hcec);
-  }
+
+    /* Receive error */
+    if (HAL_IS_BIT_SET(itflag, CEC_FLAG_RERR)) {
+        /* Acknowledgement of the error */
+        __HAL_CEC_CLEAR_FLAG(hcec, CEC_FLAG_RERR);
+        hcec->Init.RxBuffer -= hcec->RxXferSize;
+        hcec->RxXferSize = 0U;
+        hcec->RxState    = HAL_CEC_STATE_READY;
+    }
+
+    if ((hcec->ErrorCode & CEC_ESR_ALL_ERROR) != 0U) {
+        /* Error  Call Back */
+#if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
+        hcec->ErrorCallback(hcec);
+#else
+        HAL_CEC_ErrorCallback(hcec);
+#endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
+    }
+
+    /* Transmit byte request or block transfer finished */
+    if (HAL_IS_BIT_SET(itflag, CEC_FLAG_TBTRF)) {
+        CEC_Transmit_IT(hcec);
+    }
+
+    /* Receive byte or block transfer finished */
+    if (HAL_IS_BIT_SET(itflag, CEC_FLAG_RBTF)) {
+        if (hcec->RxXferSize == 0U) {
+            /* reception is starting */
+            hcec->RxState = HAL_CEC_STATE_BUSY_RX;
+        }
+        CEC_Receive_IT(hcec);
+    }
 }
 
 /**
@@ -795,11 +733,10 @@ void HAL_CEC_IRQHandler(CEC_HandleTypeDef *hcec)
   * @param hcec CEC handle
   * @retval None
   */
-__weak void HAL_CEC_TxCpltCallback(CEC_HandleTypeDef *hcec)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcec);
-  /* NOTE : This function should not be modified, when the callback is needed,
+__weak void HAL_CEC_TxCpltCallback(CEC_HandleTypeDef* hcec) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcec);
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CEC_TxCpltCallback can be implemented in the user file
    */
 }
@@ -810,12 +747,11 @@ __weak void HAL_CEC_TxCpltCallback(CEC_HandleTypeDef *hcec)
   * @param RxFrameSize Size of frame
   * @retval None
   */
-__weak void HAL_CEC_RxCpltCallback(CEC_HandleTypeDef *hcec, uint32_t RxFrameSize)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcec);
-  UNUSED(RxFrameSize);
-  /* NOTE : This function should not be modified, when the callback is needed,
+__weak void HAL_CEC_RxCpltCallback(CEC_HandleTypeDef* hcec, uint32_t RxFrameSize) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcec);
+    UNUSED(RxFrameSize);
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CEC_RxCpltCallback can be implemented in the user file
    */
 }
@@ -825,11 +761,10 @@ __weak void HAL_CEC_RxCpltCallback(CEC_HandleTypeDef *hcec, uint32_t RxFrameSize
   * @param hcec CEC handle
   * @retval None
   */
-__weak void HAL_CEC_ErrorCallback(CEC_HandleTypeDef *hcec)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hcec);
-  /* NOTE : This function should not be modified, when the callback is needed,
+__weak void HAL_CEC_ErrorCallback(CEC_HandleTypeDef* hcec) {
+    /* Prevent unused argument(s) compilation warning */
+    UNUSED(hcec);
+    /* NOTE : This function should not be modified, when the callback is needed,
             the HAL_CEC_ErrorCallback can be implemented in the user file
    */
 }
@@ -857,14 +792,13 @@ __weak void HAL_CEC_ErrorCallback(CEC_HandleTypeDef *hcec)
   *              the configuration information for the specified CEC module.
   * @retval HAL state
   */
-HAL_CEC_StateTypeDef HAL_CEC_GetState(const CEC_HandleTypeDef *hcec)
-{
-  uint32_t temp1;
-  uint32_t temp2;
-  temp1 = hcec->gState;
-  temp2 = hcec->RxState;
+HAL_CEC_StateTypeDef HAL_CEC_GetState(const CEC_HandleTypeDef* hcec) {
+    uint32_t temp1;
+    uint32_t temp2;
+    temp1 = hcec->gState;
+    temp2 = hcec->RxState;
 
-  return (HAL_CEC_StateTypeDef)(temp1 | temp2);
+    return (HAL_CEC_StateTypeDef)(temp1 | temp2);
 }
 
 /**
@@ -873,9 +807,8 @@ HAL_CEC_StateTypeDef HAL_CEC_GetState(const CEC_HandleTypeDef *hcec)
   *              the configuration information for the specified CEC.
   * @retval CEC Error Code
   */
-uint32_t HAL_CEC_GetError(const CEC_HandleTypeDef *hcec)
-{
-  return hcec->ErrorCode;
+uint32_t HAL_CEC_GetError(const CEC_HandleTypeDef* hcec) {
+    return hcec->ErrorCode;
 }
 
 /**
@@ -897,54 +830,44 @@ uint32_t HAL_CEC_GetError(const CEC_HandleTypeDef *hcec)
   *         interruptions have been enabled by HAL_CEC_Transmit_IT()
   * @retval HAL status
  */
-static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef *hcec)
-{
-  /* if the peripheral is already busy or if there is a previous transmission
+static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef* hcec) {
+    /* if the peripheral is already busy or if there is a previous transmission
      already pending due to arbitration loss */
-  if ((hcec->gState == HAL_CEC_STATE_BUSY_TX) || (__HAL_CEC_GET_TRANSMISSION_START_FLAG(hcec) != RESET))
-  {
-    /* if all data have been sent */
-    if (hcec->TxXferCount == 0U)
-    {
-      /* Acknowledge successful completion by writing 0x00 */
-      MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, 0x00U);
+    if ((hcec->gState == HAL_CEC_STATE_BUSY_TX) || (__HAL_CEC_GET_TRANSMISSION_START_FLAG(hcec) != RESET)) {
+        /* if all data have been sent */
+        if (hcec->TxXferCount == 0U) {
+            /* Acknowledge successful completion by writing 0x00 */
+            MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, 0x00U);
 
-      hcec->gState = HAL_CEC_STATE_READY;
+            hcec->gState = HAL_CEC_STATE_READY;
 #if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
-      hcec->TxCpltCallback(hcec);
+            hcec->TxCpltCallback(hcec);
 #else
-      HAL_CEC_TxCpltCallback(hcec);
+            HAL_CEC_TxCpltCallback(hcec);
 #endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
 
-      return HAL_OK;
+            return HAL_OK;
+        } else {
+            /* Reduce the number of bytes to transfer by one */
+            hcec->TxXferCount--;
+
+            /* Write data to TX buffer*/
+            hcec->Instance->TXD = (uint8_t)*hcec->pTxBuffPtr++;
+
+            /* If this is the last byte of the ongoing transmission */
+            if (hcec->TxXferCount == 0U) {
+                /* Acknowledge byte request and signal end of message */
+                MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TEOM);
+            } else {
+                /* Acknowledge byte request by writing 0x00 */
+                MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, 0x00U);
+            }
+
+            return HAL_OK;
+        }
+    } else {
+        return HAL_BUSY;
     }
-    else
-    {
-      /* Reduce the number of bytes to transfer by one */
-      hcec->TxXferCount--;
-
-      /* Write data to TX buffer*/
-      hcec->Instance->TXD = (uint8_t) * hcec->pTxBuffPtr++;
-
-      /* If this is the last byte of the ongoing transmission */
-      if (hcec->TxXferCount == 0U)
-      {
-        /* Acknowledge byte request and signal end of message */
-        MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, CEC_FLAG_TEOM);
-      }
-      else
-      {
-        /* Acknowledge byte request by writing 0x00 */
-        MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_TRANSMIT_MASK, 0x00U);
-      }
-
-      return HAL_OK;
-    }
-  }
-  else
-  {
-    return HAL_BUSY;
-  }
 }
 
 /**
@@ -954,43 +877,36 @@ static HAL_StatusTypeDef CEC_Transmit_IT(CEC_HandleTypeDef *hcec)
   *         interruptions have been enabled by HAL_CEC_Receive_IT()
   * @retval HAL status
   */
-static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef *hcec)
-{
-  static uint32_t temp;
+static HAL_StatusTypeDef CEC_Receive_IT(CEC_HandleTypeDef* hcec) {
+    static uint32_t temp;
 
-  if (hcec->RxState == HAL_CEC_STATE_BUSY_RX)
-  {
-    temp = hcec->Instance->CSR;
+    if (hcec->RxState == HAL_CEC_STATE_BUSY_RX) {
+        temp = hcec->Instance->CSR;
 
-    /* Store received data */
-    hcec->RxXferSize++;
-    *hcec->Init.RxBuffer++ = hcec->Instance->RXD;
+        /* Store received data */
+        hcec->RxXferSize++;
+        *hcec->Init.RxBuffer++ = hcec->Instance->RXD;
 
-    /* Acknowledge received byte by writing 0x00 */
-    MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_RECEIVE_MASK, 0x00U);
+        /* Acknowledge received byte by writing 0x00 */
+        MODIFY_REG(hcec->Instance->CSR, CEC_FLAG_RECEIVE_MASK, 0x00U);
 
-    /* If the End Of Message is reached */
-    if (HAL_IS_BIT_SET(temp, CEC_FLAG_REOM))
-    {
-      /* Interrupts are not disabled due to transmission still ongoing */
-      hcec->RxState = HAL_CEC_STATE_READY;
+        /* If the End Of Message is reached */
+        if (HAL_IS_BIT_SET(temp, CEC_FLAG_REOM)) {
+            /* Interrupts are not disabled due to transmission still ongoing */
+            hcec->RxState = HAL_CEC_STATE_READY;
 #if (USE_HAL_CEC_REGISTER_CALLBACKS == 1)
-      hcec->RxCpltCallback(hcec, hcec->RxXferSize);
+            hcec->RxCpltCallback(hcec, hcec->RxXferSize);
 #else
-      HAL_CEC_RxCpltCallback(hcec, hcec->RxXferSize);
+            HAL_CEC_RxCpltCallback(hcec, hcec->RxXferSize);
 #endif /* USE_HAL_CEC_REGISTER_CALLBACKS */
 
-      return HAL_OK;
+            return HAL_OK;
+        } else {
+            return HAL_BUSY;
+        }
+    } else {
+        return HAL_BUSY;
     }
-    else
-    {
-      return HAL_BUSY;
-    }
-  }
-  else
-  {
-    return HAL_BUSY;
-  }
 }
 
 /**

@@ -1,20 +1,19 @@
 #pragma once
 
-
 #include "etl/array.h"
 #include "etl/string.h"
 #include "etl/expected.h"
-
 
 namespace gsm {
 
     enum class status_t : uint8_t {
         OK,
         ERR_GENERIC,
+        ERR_TIMEOUT,
         ERR_SIM_NOT_FOUND,
         ERR_COULD_NOT_CONNECT
     };
-    
+
     /**
      * @brief Initializes the UART, DMA and GPIO peripherals, as well as
      *        polls the GSM module every 5s till it responds with an `OK`

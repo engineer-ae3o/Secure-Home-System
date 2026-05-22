@@ -30,16 +30,14 @@
 #include <string.h>
 #include "copyright.h"
 
-static void function_header(const char *name)
-{
+static void function_header(const char* name) {
     printf("\n\t.align\t1\n");
     printf("\t.globl\t%s\n", name);
     printf("\t.type\t%s, @function\n", name);
     printf("%s:\n", name);
 }
 
-static void function_footer(const char *name)
-{
+static void function_footer(const char* name) {
     printf("\tret\n");
     printf("\t.size\t%s, .-%s\n", name, name);
 }
@@ -47,40 +45,38 @@ static void function_footer(const char *name)
 /* List of all registers that we can work with */
 typedef struct
 {
-    const char *x0;
-    const char *x1;
-    const char *x2;
-    const char *x3;
-    const char *x4;
-    const char *t0;
-    const char *t1;
-    const char *t2;
-    const char *t3;
-    const char *t4;
-    const char *t5;
-    const char *t6;
-    const char *t7;
+    const char* x0;
+    const char* x1;
+    const char* x2;
+    const char* x3;
+    const char* x4;
+    const char* t0;
+    const char* t1;
+    const char* t2;
+    const char* t3;
+    const char* t4;
+    const char* t5;
+    const char* t6;
+    const char* t7;
 
 } reg_names;
 
 /* Generates a binary operator */
-static void binop(const char *name, const char *reg1, const char *reg2)
-{
-    if (!strcmp(name, "mv"))
+static void binop(const char* name, const char* reg1, const char* reg2) {
+    if (!strcmp(name, "mv")) {
         printf("\t%s\t%s, %s\n", name, reg1, reg2);
-    else
+    } else {
         printf("\t%s\t%s, %s, %s\n", name, reg1, reg1, reg2);
+    }
 }
 
 /* Generates a unary operator */
-static void unop(const char *name, const char *reg1, const char *reg2)
-{
+static void unop(const char* name, const char* reg1, const char* reg2) {
     printf("\t%s\t%s, %s\n", name, reg1, reg2);
 }
 
 /* Applies the S-box to five 64-bit words of the state */
-static void gen_sbox(const reg_names *regs)
-{
+static void gen_sbox(const reg_names* regs) {
     /* x0 ^= x4;   x4 ^= x3;   x2 ^= x1; */
     binop("xor", regs->x0, regs->x4);
     binop("xor", regs->x2, regs->x1);
@@ -119,11 +115,9 @@ static void gen_sbox(const reg_names *regs)
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(const reg_names *regs, int round)
-{
+static void gen_round(const reg_names* regs, int round) {
     /* Apply the round constant to x2, and also NOT x2 in the process */
-    printf("\txori\t%s, %s, %d\n", regs->x2, regs->x2,
-           ~((int)(((0x0F - round) << 4) | round)));
+    printf("\txori\t%s, %s, %d\n", regs->x2, regs->x2, ~((int)(((0x0F - round) << 4) | round)));
 
     /* Apply the S-box to the words of the state */
     gen_sbox(regs);
@@ -179,8 +173,7 @@ static void gen_round(const reg_names *regs, int round)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(void)
-{
+static void gen_permute(void) {
     /*
      * x0/zero is hard-wired to zero.
      *
@@ -192,9 +185,9 @@ static void gen_permute(void)
      * t0 can be used as an alternative link register.
      * s1-s11 are callee-saved.
      */
-    const char *first_round = "a1";
-    reg_names regs;
-    int round;
+    const char* first_round = "a1";
+    reg_names   regs;
+    int         round;
     regs.x0 = "a2";
     regs.x1 = "a3";
     regs.x2 = "a4";
@@ -210,8 +203,8 @@ static void gen_permute(void)
     regs.t7 = "a7";
 
     /* Load all words of the state into registers and invert x2 */
-    printf("\tld\t%s, (a0)\n",   regs.x0);
-    printf("\tld\t%s, 8(a0)\n",  regs.x1);
+    printf("\tld\t%s, (a0)\n", regs.x0);
+    printf("\tld\t%s, 8(a0)\n", regs.x1);
     printf("\tld\t%s, 16(a0)\n", regs.x2);
     printf("\tld\t%s, 24(a0)\n", regs.x3);
     printf("\tld\t%s, 32(a0)\n", regs.x4);
@@ -227,8 +220,9 @@ static void gen_permute(void)
     printf("\tli\t%s, 4\n", regs.t0);
     printf("\tbeq\t%s, %s, .L4\n", first_round, regs.t0);
     for (round = 11; round > 0; --round) {
-        if (round == 0 || round == 4 || round == 6)
+        if (round == 0 || round == 4 || round == 6) {
             continue;
+        }
         printf("\tli\t%s, %d\n", regs.t0, round);
         printf("\tbeq\t%s, %s, .L%d\n", first_round, regs.t0, round);
     }
@@ -243,16 +237,15 @@ static void gen_permute(void)
     /* Store the words back to the state and exit */
     printf(".L12:\n");
     printf("\tnot\t%s, %s\n", regs.x2, regs.x2);
-    printf("\tsd\t%s, (a0)\n",   regs.x0);
-    printf("\tsd\t%s, 8(a0)\n",  regs.x1);
+    printf("\tsd\t%s, (a0)\n", regs.x0);
+    printf("\tsd\t%s, 8(a0)\n", regs.x1);
     printf("\tsd\t%s, 16(a0)\n", regs.x2);
     printf("\tsd\t%s, 24(a0)\n", regs.x3);
     printf("\tsd\t%s, 32(a0)\n", regs.x4);
 }
 
 /* Output the function to free sensitive material in registers */
-static void gen_backend_free(void)
-{
+static void gen_backend_free(void) {
     /* Clear all the scratch registers that we used in ascon_permute() */
     printf("\tli\ta1, 0\n");
     printf("\tli\ta2, 0\n");
@@ -269,8 +262,7 @@ static void gen_backend_free(void)
     printf("\tli\tt6, 0\n");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 

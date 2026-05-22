@@ -36,41 +36,35 @@ SOFTWARE.
 #include "static_assert.h"
 #include "gcd.h"
 
-namespace etl
-{
-  //***************************************************************************
-  // Least Common Multiple.
-  // For unsigned types.
-  //***************************************************************************
-  template <typename T>
-  ETL_NODISCARD
-  ETL_CONSTEXPR14
-  typename etl::enable_if<etl::is_unsigned<T>::value, T>::type
-    lcm(T a, T b) ETL_NOEXCEPT
-  {
+namespace etl {
+//***************************************************************************
+// Least Common Multiple.
+// For unsigned types.
+//***************************************************************************
+template<typename T>
+ETL_NODISCARD
+    ETL_CONSTEXPR14
+    typename etl::enable_if<etl::is_unsigned<T>::value, T>::type
+    lcm(T a, T b) ETL_NOEXCEPT {
     ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
 
     // Early termination: if either number is zero, the LCM is zero.
-    if (a == 0 || b == 0)
-    {
-      return 0;
+    if (a == 0 || b == 0) {
+        return 0;
+    } else {
+        return a * (b / gcd(a, b));
     }
-    else
-    {
-      return a * (b / gcd(a, b));
-    }
-  }
+}
 
-  //***************************************************************************
-  // Least Common Multiple.
-  // For signed types.
-  //***************************************************************************
-  template <typename T>
-  ETL_NODISCARD
-  ETL_CONSTEXPR14
-  typename etl::enable_if<etl::is_signed<T>::value, T>::type
-    lcm(T a, T b) ETL_NOEXCEPT
-  {
+//***************************************************************************
+// Least Common Multiple.
+// For signed types.
+//***************************************************************************
+template<typename T>
+ETL_NODISCARD
+    ETL_CONSTEXPR14
+    typename etl::enable_if<etl::is_signed<T>::value, T>::type
+    lcm(T a, T b) ETL_NOEXCEPT {
     ETL_STATIC_ASSERT(etl::is_integral<T>::value, "Integral type required");
 
     typedef typename etl::make_unsigned<T>::type utype;
@@ -79,63 +73,57 @@ namespace etl
     utype ub = etl::absolute_unsigned(b);
 
     return static_cast<T>(lcm(ua, ub));
-  }
+}
 
 #if ETL_USING_CPP11
-  #if ETL_HAS_INITIALIZER_LIST
-  //***************************************************************************
-  // Least Common Multiple.
-  // Non-recursive, using an initializer_list.
-  // Top level variadic function.
-  //***************************************************************************
-  template<typename T, typename... TRest>
-  ETL_NODISCARD
-  ETL_CONSTEXPR14
-  T lcm(T first, TRest... rest) ETL_NOEXCEPT
-  {
+#if ETL_HAS_INITIALIZER_LIST
+//***************************************************************************
+// Least Common Multiple.
+// Non-recursive, using an initializer_list.
+// Top level variadic function.
+//***************************************************************************
+template<typename T, typename... TRest>
+ETL_NODISCARD
+    ETL_CONSTEXPR14
+        T
+        lcm(T first, TRest... rest) ETL_NOEXCEPT {
     T result = first;
 
-    for (T value : {rest...})
-    {
-      result = lcm(result, value);
+    for (T value : {rest...}) {
+        result = lcm(result, value);
 
-      if (result == 0)
-      {
-        // Early termination: if the LCM is zero, it will remain zero
-        // no matter what other numbers are processed.
-        return 0;
-      }
+        if (result == 0) {
+            // Early termination: if the LCM is zero, it will remain zero
+            // no matter what other numbers are processed.
+            return 0;
+        }
     }
 
     return result;
-  }
-  #else
-  //***************************************************************************
-  // Least Common Multiple.
-  // Recursive
-  // Top level variadic function.
-  //***************************************************************************
-  template<typename T, typename... TRest>
-  ETL_NODISCARD
-  ETL_CONSTEXPR14
-  T lcm(T a, T b, TRest... rest) ETL_NOEXCEPT
-  {
+}
+#else
+//***************************************************************************
+// Least Common Multiple.
+// Recursive
+// Top level variadic function.
+//***************************************************************************
+template<typename T, typename... TRest>
+ETL_NODISCARD
+    ETL_CONSTEXPR14
+        T
+        lcm(T a, T b, TRest... rest) ETL_NOEXCEPT {
     T lcm_ab = lcm(a, b);
 
-    if (lcm_ab == 0)
-    {
-      // Early termination: if the LCM is zero, it will remain zero
-      // no matter what other numbers are processed.
-      return 0;
+    if (lcm_ab == 0) {
+        // Early termination: if the LCM is zero, it will remain zero
+        // no matter what other numbers are processed.
+        return 0;
+    } else {
+        return lcm(lcm_ab, rest...);
     }
-    else
-    {
-      return lcm(lcm_ab, rest...);
-    }
-  }
-  #endif
-#endif
 }
+#endif
+#endif
+} // namespace etl
 
 #endif
-

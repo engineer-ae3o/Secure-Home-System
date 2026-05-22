@@ -44,7 +44,7 @@
 #error "Mixer is required if there is no known TRNG on the system"
 #endif
 
-int ascon_trng_get_bytes(unsigned char *out, size_t outlen) __attribute__((weak));
+int ascon_trng_get_bytes(unsigned char* out, size_t outlen) __attribute__((weak));
 
 /**
  * \brief Escape hatch that allows applications to provide their
@@ -57,8 +57,7 @@ int ascon_trng_get_bytes(unsigned char *out, size_t outlen) __attribute__((weak)
  * \return Non-zero if the application provided the bytes or zero
  * if the application does not know how to generate random bytes.
  */
-int ascon_trng_get_bytes(unsigned char *out, size_t outlen)
-{
+int ascon_trng_get_bytes(unsigned char* out, size_t outlen) {
     (void)out;
     (void)outlen;
     return 0;
@@ -82,34 +81,31 @@ static THREAD_LOCAL int volatile global_prng_initialized = 0;
 #if defined(HAVE_CLOCK_GETTIME) || defined(HAVE_GETTIMEOFDAY) || \
     defined(HAVE_TIME)
 
-static void ascon_trng_add_timespec
-    (ascon_state_t *state, unsigned offset, uint32_t sec, uint32_t partial_sec)
-{
+static void ascon_trng_add_timespec(ascon_state_t* state, unsigned offset, uint32_t sec, uint32_t partial_sec) {
     uint32_t x[2];
     x[0] = sec;
     x[1] = partial_sec;
-    ascon_add_bytes(state, (unsigned char *)x, offset, sizeof(x));
+    ascon_add_bytes(state, (unsigned char*)x, offset, sizeof(x));
     ascon_clean(x, sizeof(x));
 }
 
 #endif
 
 /* Add the current time to the PRNG state and then re-key the state */
-static void ascon_trng_add_time(ascon_state_t *state)
-{
+static void ascon_trng_add_time(ascon_state_t* state) {
 #if defined(ARDUINO)
     /* Add the current Arduino time as a seed to provide some extra jitter */
     {
         uint32_t x[2];
         x[0] = (uint32_t)millis();
         x[1] = (uint32_t)micros();
-        ascon_add_bytes(state, (const unsigned char *)x, 0, sizeof(x));
+        ascon_add_bytes(state, (const unsigned char*)x, 0, sizeof(x));
     }
 #elif defined(USE_HAL_DRIVER)
     /* Mix in the STM32 millisecond tick counter for some extra jitter */
     {
         uint32_t x = HAL_GetTick();
-        ascon_add_bytes(state, (const unsigned char *)&x, 0, sizeof(x));
+        ascon_add_bytes(state, (const unsigned char*)&x, 0, sizeof(x));
     }
 #elif defined(HAVE_CLOCK_GETTIME)
     /* Mix in the monotonic and real times in nanoseconds */
@@ -117,12 +113,10 @@ static void ascon_trng_add_time(ascon_state_t *state)
         struct timespec ts;
 #if defined(CLOCK_MONOTONIC)
         clock_gettime(CLOCK_MONOTONIC, &ts);
-        ascon_trng_add_timespec
-            (state, 0, (uint32_t)(ts.tv_sec), (uint32_t)(ts.tv_nsec));
+        ascon_trng_add_timespec(state, 0, (uint32_t)(ts.tv_sec), (uint32_t)(ts.tv_nsec));
 #endif
         clock_gettime(CLOCK_REALTIME, &ts);
-        ascon_trng_add_timespec
-            (state, 8, (uint32_t)(ts.tv_sec), (uint32_t)(ts.tv_nsec));
+        ascon_trng_add_timespec(state, 8, (uint32_t)(ts.tv_sec), (uint32_t)(ts.tv_nsec));
         ascon_clean(&ts, sizeof(ts));
     }
 #elif defined(HAVE_GETTIMEOFDAY)
@@ -130,8 +124,7 @@ static void ascon_trng_add_time(ascon_state_t *state)
     {
         struct timeval tv;
         gettimeofday(&tv, 0);
-        ascon_trng_add_timespec
-            (state, 0, (uint32_t)(tv.tv_sec), (uint32_t)(tv.tv_usec));
+        ascon_trng_add_timespec(state, 0, (uint32_t)(tv.tv_sec), (uint32_t)(tv.tv_usec));
         ascon_clean(&tv, sizeof(tv));
     }
 #elif defined(HAVE_TIME)
@@ -150,9 +143,7 @@ static void ascon_trng_add_time(ascon_state_t *state)
 }
 
 /* Squeeze data out of a PRNG */
-static void ascon_trng_squeeze
-    (ascon_state_t *state, unsigned char *out, size_t outlen)
-{
+static void ascon_trng_squeeze(ascon_state_t* state, unsigned char* out, size_t outlen) {
     while (outlen >= 8U) {
         ascon_extract_bytes(state, out, 0, 8);
         ascon_permute6(state);
@@ -166,8 +157,7 @@ static void ascon_trng_squeeze
 }
 
 /* Make sure that the global PRNG is initialized and seeded */
-static int ascon_trng_global_init(unsigned char seed[ASCON_SYSTEM_SEED_SIZE])
-{
+static int ascon_trng_global_init(unsigned char seed[ASCON_SYSTEM_SEED_SIZE]) {
     int ok = 0;
 
     /* Acquire access to the global PRNG object */
@@ -189,10 +179,9 @@ static int ascon_trng_global_init(unsigned char seed[ASCON_SYSTEM_SEED_SIZE])
     return ok;
 }
 
-int ascon_trng_generate(unsigned char *out, size_t outlen)
-{
+int ascon_trng_generate(unsigned char* out, size_t outlen) {
     unsigned char seed[ASCON_SYSTEM_SEED_SIZE];
-    int ok;
+    int           ok;
 
     /* Re-seed and squeeze some data out of the global PRNG */
     ok = ascon_trng_global_init(seed);

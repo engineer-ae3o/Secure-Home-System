@@ -45,21 +45,19 @@ static int num_shares = 2;
 /* List of all registers that we can work with */
 typedef struct
 {
-    reg_t *x0[MAX_SHARES];
-    reg_t *x1[MAX_SHARES];
-    reg_t *x2[MAX_SHARES];
-    reg_t *x3[MAX_SHARES];
-    reg_t *x4[MAX_SHARES];
-    reg_t *t0[MAX_SHARES];
-    reg_t *t1[MAX_SHARES];
+    reg_t* x0[MAX_SHARES];
+    reg_t* x1[MAX_SHARES];
+    reg_t* x2[MAX_SHARES];
+    reg_t* x3[MAX_SHARES];
+    reg_t* x4[MAX_SHARES];
+    reg_t* t0[MAX_SHARES];
+    reg_t* t1[MAX_SHARES];
     reg_t *t2, *t3, *t4;
 
 } reg_names;
 
 /* Toffoli gate implementation: x ^= (~y) & z */
-static void and_not_xor
-    (reg_names *regs, reg_t **x, reg_t **y, reg_t **z)
-{
+static void and_not_xor(reg_names* regs, reg_t** x, reg_t** y, reg_t** z) {
     if (num_shares == 2) {
         /* x_a ^= ((~y_a) & ascon_mask64_unrotate_share1_0(z_b)); */
         move(regs->t2, y[0]);
@@ -224,10 +222,9 @@ static void and_not_xor
 }
 
 /* Applies the S-box to five 64-bit words of the state */
-static void gen_sbox(reg_names *regs)
-{
-    reg_t *t0_end;
-    int share;
+static void gen_sbox(reg_names* regs) {
+    reg_t* t0_end;
+    int    share;
 
     /* Affine step at the start of the substitution layer */
     /* x0 ^= x4; x4 ^= x3; x2 ^= x1; t1 = x0; */
@@ -267,11 +264,11 @@ static void gen_sbox(reg_names *regs)
     }
 
     /* Toffoli gates in the middle of the subsitution layer */
-    and_not_xor(regs, regs->t0, regs->x0, regs->x1);    /* t0 ^= (~x0) & x1; */
-    and_not_xor(regs, regs->x0, regs->x1, regs->x2);    /* x0 ^= (~x1) & x2; */
-    and_not_xor(regs, regs->x1, regs->x2, regs->x3);    /* x1 ^= (~x2) & x3; */
-    and_not_xor(regs, regs->x2, regs->x3, regs->x4);    /* x2 ^= (~x3) & x4; */
-    and_not_xor(regs, regs->x3, regs->x4, regs->t1);    /* x3 ^= (~x4) & t1; */
+    and_not_xor(regs, regs->t0, regs->x0, regs->x1); /* t0 ^= (~x0) & x1; */
+    and_not_xor(regs, regs->x0, regs->x1, regs->x2); /* x0 ^= (~x1) & x2; */
+    and_not_xor(regs, regs->x1, regs->x2, regs->x3); /* x1 ^= (~x2) & x3; */
+    and_not_xor(regs, regs->x2, regs->x3, regs->x4); /* x2 ^= (~x3) & x4; */
+    and_not_xor(regs, regs->x3, regs->x4, regs->t1); /* x3 ^= (~x4) & t1; */
     release(regs->t2);
     release(regs->t3);
 
@@ -294,8 +291,7 @@ static void gen_sbox(reg_names *regs)
 }
 
 /* Generate code for one step of the linear layer */
-static void gen_linear(reg_names *regs, reg_t *x, int shift1, int shift2)
-{
+static void gen_linear(reg_names* regs, reg_t* x, int shift1, int shift2) {
     move(regs->t2, x);
     move(regs->t3, x);
     ror(regs->t2, shift1);
@@ -306,10 +302,7 @@ static void gen_linear(reg_names *regs, reg_t *x, int shift1, int shift2)
 
 /* Generate code for two steps of the linear layer to try to
  * schedule the instructions further apart */
-static void gen_linear_two
-    (reg_names *regs, reg_t *xa, int shift1a, int shift2a,
-     reg_t *xb, int shift1b, int shift2b)
-{
+static void gen_linear_two(reg_names* regs, reg_t* xa, int shift1a, int shift2a, reg_t* xb, int shift1b, int shift2b) {
     move(regs->t2, xa);
     move(regs->t1[0], xb);
     move(regs->t3, xa);
@@ -325,8 +318,7 @@ static void gen_linear_two
 }
 
 /* Generate the code for a single ASCON round */
-static void gen_round(reg_names *regs, const char *rc)
-{
+static void gen_round(reg_names* regs, const char* rc) {
     /* XOR the round constant with x2 */
     xor_direct(regs->x2[0], rc);
     reschedule(3); /* Move the rc XOR down a bit in the final code */
@@ -346,30 +338,30 @@ static void gen_round(reg_names *regs, const char *rc)
     acquire(regs->t1[1]);
     if (num_shares == 2) {
         gen_linear_two(regs, regs->x0[1], 19, 28, regs->x1[1], 61, 39);
-        gen_linear_two(regs, regs->x2[1],  1,  6, regs->x3[1], 10, 17);
-        gen_linear_two(regs, regs->x4[1],  7, 41, regs->x0[0], 19, 28);
-        gen_linear_two(regs, regs->x1[0], 61, 39, regs->x2[0],  1,  6);
-        gen_linear_two(regs, regs->x3[0], 10, 17, regs->x4[0],  7, 41);
+        gen_linear_two(regs, regs->x2[1], 1, 6, regs->x3[1], 10, 17);
+        gen_linear_two(regs, regs->x4[1], 7, 41, regs->x0[0], 19, 28);
+        gen_linear_two(regs, regs->x1[0], 61, 39, regs->x2[0], 1, 6);
+        gen_linear_two(regs, regs->x3[0], 10, 17, regs->x4[0], 7, 41);
     } else if (num_shares == 3) {
         gen_linear_two(regs, regs->x0[2], 19, 28, regs->x1[2], 61, 39);
-        gen_linear_two(regs, regs->x2[2],  1,  6, regs->x3[2], 10, 17);
-        gen_linear_two(regs, regs->x4[2],  7, 41, regs->x0[1], 19, 28);
-        gen_linear_two(regs, regs->x1[1], 61, 39, regs->x2[1],  1,  6);
-        gen_linear_two(regs, regs->x3[1], 10, 17, regs->x4[1],  7, 41);
+        gen_linear_two(regs, regs->x2[2], 1, 6, regs->x3[2], 10, 17);
+        gen_linear_two(regs, regs->x4[2], 7, 41, regs->x0[1], 19, 28);
+        gen_linear_two(regs, regs->x1[1], 61, 39, regs->x2[1], 1, 6);
+        gen_linear_two(regs, regs->x3[1], 10, 17, regs->x4[1], 7, 41);
         gen_linear_two(regs, regs->x0[0], 19, 28, regs->x1[0], 61, 39);
-        gen_linear_two(regs, regs->x2[0],  1,  6, regs->x3[0], 10, 17);
-        gen_linear    (regs, regs->x4[0],  7, 41);
+        gen_linear_two(regs, regs->x2[0], 1, 6, regs->x3[0], 10, 17);
+        gen_linear(regs, regs->x4[0], 7, 41);
     } else {
         gen_linear_two(regs, regs->x0[3], 19, 28, regs->x1[3], 61, 39);
-        gen_linear_two(regs, regs->x2[3],  1,  6, regs->x3[3], 10, 17);
-        gen_linear_two(regs, regs->x4[3],  7, 41, regs->x0[2], 19, 28);
-        gen_linear_two(regs, regs->x1[2], 61, 39, regs->x2[2],  1,  6);
-        gen_linear_two(regs, regs->x3[2], 10, 17, regs->x4[2],  7, 41);
+        gen_linear_two(regs, regs->x2[3], 1, 6, regs->x3[3], 10, 17);
+        gen_linear_two(regs, regs->x4[3], 7, 41, regs->x0[2], 19, 28);
+        gen_linear_two(regs, regs->x1[2], 61, 39, regs->x2[2], 1, 6);
+        gen_linear_two(regs, regs->x3[2], 10, 17, regs->x4[2], 7, 41);
         gen_linear_two(regs, regs->x0[1], 19, 28, regs->x1[1], 61, 39);
-        gen_linear_two(regs, regs->x2[1],  1,  6, regs->x3[1], 10, 17);
-        gen_linear_two(regs, regs->x4[1],  7, 41, regs->x0[0], 19, 28);
-        gen_linear_two(regs, regs->x1[0], 61, 39, regs->x2[0],  1,  6);
-        gen_linear_two(regs, regs->x3[0], 10, 17, regs->x4[0],  7, 41);
+        gen_linear_two(regs, regs->x2[1], 1, 6, regs->x3[1], 10, 17);
+        gen_linear_two(regs, regs->x4[1], 7, 41, regs->x0[0], 19, 28);
+        gen_linear_two(regs, regs->x1[0], 61, 39, regs->x2[0], 1, 6);
+        gen_linear_two(regs, regs->x3[0], 10, 17, regs->x4[0], 7, 41);
     }
     release(regs->t2);
     release(regs->t3);
@@ -378,8 +370,7 @@ static void gen_round(reg_names *regs, const char *rc)
 }
 
 /* Generate the body of the ASCON permutation function */
-static void gen_permute(int max_shares)
-{
+static void gen_permute(int max_shares) {
     /*
      * %rdi holds the pointer to the ASCON state on entry and exit.
      *
@@ -393,17 +384,29 @@ static void gen_permute(int max_shares)
      *
      * %rbx, %rbp, %r12, %r13, %r14, %r15 must be callee-saved.
      */
-    const char *first_round = REG_RSI;
-    const char *preserve = REG_RDX;
-    reg_names regs;
-    int share;
-    char *reg_list[] = {
+    const char* first_round = REG_RSI;
+    const char* preserve    = REG_RDX;
+    reg_names   regs;
+    int         share;
+    char*       reg_list[] = {
         /* RDI keeps the state pointer throughout the function because
          * we need the state to be able to spill to and reload from */
-        REG_RAX, REG_RCX, REG_R8, REG_R9, REG_R10, REG_R11, REG_R12,
-        REG_R13, REG_R14, REG_R15, REG_RBX, REG_RBP, REG_RSI, REG_RDX, NULL
-    };
-    char *reg_names[7][4] = {
+        REG_RAX,
+        REG_RCX,
+        REG_R8,
+        REG_R9,
+        REG_R10,
+        REG_R11,
+        REG_R12,
+        REG_R13,
+        REG_R14,
+        REG_R15,
+        REG_RBX,
+        REG_RBP,
+        REG_RSI,
+        REG_RDX,
+        NULL};
+    char* reg_names[7][4] = {
         {"x0_a", "x0_b", "x0_c", "x0_d"},
         {"x1_a", "x1_b", "x1_c", "x1_d"},
         {"x2_a", "x2_b", "x2_c", "x2_d"},
@@ -428,16 +431,11 @@ static void gen_permute(int max_shares)
 
     /* Allocate the state registers and temporaries */
     for (share = 0; share < num_shares; ++share) {
-        regs.x0[share] = alloc_state
-            (reg_names[0][share], 0 * max_shares * 8 + share * 8);
-        regs.x1[share] = alloc_state
-            (reg_names[1][share], 1 * max_shares * 8 + share * 8);
-        regs.x2[share] = alloc_state
-            (reg_names[2][share], 2 * max_shares * 8 + share * 8);
-        regs.x3[share] = alloc_state
-            (reg_names[3][share], 3 * max_shares * 8 + share * 8);
-        regs.x4[share] = alloc_state
-            (reg_names[4][share], 4 * max_shares * 8 + share * 8);
+        regs.x0[share] = alloc_state(reg_names[0][share], 0 * max_shares * 8 + share * 8);
+        regs.x1[share] = alloc_state(reg_names[1][share], 1 * max_shares * 8 + share * 8);
+        regs.x2[share] = alloc_state(reg_names[2][share], 2 * max_shares * 8 + share * 8);
+        regs.x3[share] = alloc_state(reg_names[3][share], 3 * max_shares * 8 + share * 8);
+        regs.x4[share] = alloc_state(reg_names[4][share], 4 * max_shares * 8 + share * 8);
         regs.t0[share] = alloc_temp(reg_names[5][share]);
         regs.t1[share] = alloc_temp(reg_names[6][share]);
     }
@@ -546,11 +544,10 @@ static void gen_permute(int max_shares)
     flush_pipeline();
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     char function_name[64];
-    int share_count;
-    int need_elif;
+    int  share_count;
+    int  need_elif;
 
     /* Get the number of shares from the command-line */
     if (argc < 2) {
@@ -587,8 +584,7 @@ int main(int argc, char *argv[])
             printf("#if ASCON_MASKED_MAX_SHARES >= %d\n", share_count);
             need_elif = 1;
         }
-        snprintf(function_name, sizeof(function_name),
-                 "ascon_x%d_permute", num_shares);
+        snprintf(function_name, sizeof(function_name), "ascon_x%d_permute", num_shares);
         function_header(function_name);
         gen_permute(share_count);
         function_footer(function_name);

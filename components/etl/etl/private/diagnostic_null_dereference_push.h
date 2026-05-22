@@ -34,11 +34,11 @@ SOFTWARE.
  */
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__llvm__)
-  #pragma GCC diagnostic push 
-  #pragma GCC diagnostic ignored "-Wnull-dereference"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
 #endif
 
 #if defined(__clang__) || defined(__llvm__)
-  #pragma clang diagnostic push 
-  #pragma clang diagnostic ignored "-Wnull-dereference"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnull-dereference"
 #endif

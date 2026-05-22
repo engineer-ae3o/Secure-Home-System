@@ -1,24 +1,22 @@
 #pragma once
 
-
 #include "etl/string.h"
 
-
 namespace lcd {
-    
-    constexpr inline uint8_t ROWS{2};
-    constexpr inline uint8_t COLUMNS{16};
 
-    /**
+constexpr inline uint8_t ROWS{2};
+constexpr inline uint8_t COLUMNS{16};
+
+/**
      * @brief Initializes the HD44780 display controller as
      *        well as the I2C and GPIO interfaces
      * 
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void init();
+void init();
 
-    /**
+/**
      * @brief Deinitializes the HD44780 display controller as
      *        well as the I2C interface. Sets the GPIOs to analog
      *        mode so as to reduce power consumption
@@ -26,9 +24,9 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void deinit();
+void deinit();
 
-    /**
+/**
      * @brief Prints the given ASCII character to the LCD screen
      * 
      * @param[in] c    Character to write to the LCD screen
@@ -38,9 +36,9 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void put_char(unsigned char c, uint8_t col, uint8_t line);
+void put_char(unsigned char c, uint8_t col, uint8_t line);
 
-    /**
+/**
      * @brief Prints the given ASCII text to the LCD screen
      * 
      * @param[in] str  String to write to the display. Truncates the
@@ -53,17 +51,17 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace = true);
+void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace = true);
 
-    /**
+/**
      * @brief Clears the screen.
      * 
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void clear_screen();
+void clear_screen();
 
-    /**
+/**
      * @brief Turns the LED backlight on or off
      * 
      * @param[in] on Default parameter of true which indicates
@@ -72,6 +70,6 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void backlight_on(bool on = true);
+void backlight_on(bool on = true);
 
 } // namespace lcd

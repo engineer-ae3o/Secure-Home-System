@@ -29,15 +29,15 @@ static uint8_t const ASCON80PQ_IV[8] =
 
 /* Absorb the key and nonce, and then convert the state from the
  * number of key shares into the number of data shares */
-static void ascon80pq_masked_aead_init
-    (ascon_masked_state_t *state,
+static void ascon80pq_masked_aead_init(ascon_masked_state_t* state,
 #if ASCON_MASKED_DATA_SHARES == 1
-    ascon_state_t *state_x1,
+                                       ascon_state_t* state_x1,
 #endif
-    ascon_trng_state_t *trng, ascon_masked_word_t *word,
-    uint64_t *preserve, const unsigned char *npub,
-    const ascon_masked_key_160_t *k)
-{
+                                       ascon_trng_state_t*           trng,
+                                       ascon_masked_word_t*          word,
+                                       uint64_t*                     preserve,
+                                       const unsigned char*          npub,
+                                       const ascon_masked_key_160_t* k) {
     /* Generate random words for use in permutation calls */
 #if ASCON_MASKED_KEY_SHARES == 2
     preserve[0] = ascon_trng_generate_64(trng);
@@ -80,14 +80,14 @@ static void ascon80pq_masked_aead_init
 }
 
 /* Finalize and generate the authentication tag in the state */
-static void ascon80pq_masked_aead_finalize
-    (ascon_masked_state_t *state,
+static void ascon80pq_masked_aead_finalize(ascon_masked_state_t* state,
 #if ASCON_MASKED_DATA_SHARES == 1
-    ascon_state_t *state_x1,
+                                           ascon_state_t* state_x1,
 #endif
-    ascon_trng_state_t *trng, uint64_t *preserve,
-    const ascon_masked_key_160_t *k, unsigned char *tag)
-{
+                                           ascon_trng_state_t*           trng,
+                                           uint64_t*                     preserve,
+                                           const ascon_masked_key_160_t* k,
+                                           unsigned char*                tag) {
     /* Refresh the randomness for the final permutation call */
 #if ASCON_MASKED_KEY_SHARES == 2
     preserve[0] = ascon_trng_generate_64(trng);
@@ -122,21 +122,15 @@ static void ascon80pq_masked_aead_finalize
     ascon_masked_key_store(tag + 8, &(state->M[4]));
 }
 
-void ascon80pq_masked_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_160_t *k)
-{
+void ascon80pq_masked_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_160_t* k) {
     ascon_masked_state_t state;
 #if ASCON_MASKED_DATA_SHARES == 1
     ascon_state_t state_x1;
     unsigned char partial;
 #endif
-    ascon_trng_state_t trng;
+    ascon_trng_state_t  trng;
     ascon_masked_word_t word;
-    uint64_t preserve[ASCON_MASKED_KEY_SHARES - 1];
+    uint64_t            preserve[ASCON_MASKED_KEY_SHARES - 1];
 
     /* Set the length of the returned ciphertext */
     *clen = mlen + ASCON80PQ_TAG_SIZE;
@@ -146,12 +140,12 @@ void ascon80pq_masked_aead_encrypt
 
 #if ASCON_MASKED_DATA_SHARES == 1
     /* Initialize the ASCON state */
-    ascon80pq_masked_aead_init
-        (&state, &state_x1, &trng, &word, preserve, npub, k);
+    ascon80pq_masked_aead_init(&state, &state_x1, &trng, &word, preserve, npub, k);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_8(&state_x1, ad, adlen, 6, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state_x1);
@@ -161,24 +155,21 @@ void ascon80pq_masked_aead_encrypt
     ascon_pad(&state_x1, partial);
 
     /* Convert the state back into key masked form and finalize */
-    ascon80pq_masked_aead_finalize
-        (&state, &state_x1, &trng, preserve, k, c + mlen);
+    ascon80pq_masked_aead_finalize(&state, &state_x1, &trng, preserve, k, c + mlen);
 #else
     /* Initialize the ASCON state */
     ascon80pq_masked_aead_init(&state, &trng, &word, preserve, npub, k);
 
     /* Absorb the associated data into the state */
     if (adlen > 0) {
-        ascon_masked_aead_absorb_8
-            (&state, ad, adlen, 6, &word, preserve, &trng);
+        ascon_masked_aead_absorb_8(&state, ad, adlen, 6, &word, preserve, &trng);
     }
 
     /* Separator between the associated data and the payload */
     ascon_masked_word_separator(&(state.M[4]));
 
     /* Encrypt the plaintext to create the ciphertext */
-    ascon_masked_aead_encrypt_8
-        (&state, c, m, mlen, 6, &word, preserve, &trng);
+    ascon_masked_aead_encrypt_8(&state, c, m, mlen, 6, &word, preserve, &trng);
 
     /* Convert the state back into key masked form and finalize */
     ascon80pq_masked_aead_finalize(&state, &trng, preserve, k, c + mlen);
@@ -194,27 +185,22 @@ void ascon80pq_masked_aead_encrypt
     ascon_trng_free(&trng);
 }
 
-int ascon80pq_masked_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const ascon_masked_key_160_t *k)
-{
+int ascon80pq_masked_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const ascon_masked_key_160_t* k) {
     ascon_masked_state_t state;
 #if ASCON_MASKED_DATA_SHARES == 1
     ascon_state_t state_x1;
     unsigned char partial;
 #endif
-    ascon_trng_state_t trng;
+    ascon_trng_state_t  trng;
     ascon_masked_word_t word;
-    uint64_t preserve[ASCON_MASKED_KEY_SHARES - 1];
-    unsigned char tag[ASCON80PQ_TAG_SIZE];
-    int result;
+    uint64_t            preserve[ASCON_MASKED_KEY_SHARES - 1];
+    unsigned char       tag[ASCON80PQ_TAG_SIZE];
+    int                 result;
 
     /* Set the length of the returned plaintext */
-    if (clen < ASCON80PQ_TAG_SIZE)
+    if (clen < ASCON80PQ_TAG_SIZE) {
         return -1;
+    }
     *mlen = clen - ASCON80PQ_TAG_SIZE;
 
     /* Initialize the random number generator */
@@ -222,12 +208,12 @@ int ascon80pq_masked_aead_decrypt
 
 #if ASCON_MASKED_DATA_SHARES == 1
     /* Initialize the ASCON state */
-    ascon80pq_masked_aead_init
-        (&state, &state_x1, &trng, &word, preserve, npub, k);
+    ascon80pq_masked_aead_init(&state, &state_x1, &trng, &word, preserve, npub, k);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_8(&state_x1, ad, adlen, 6, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state_x1);
@@ -244,16 +230,14 @@ int ascon80pq_masked_aead_decrypt
 
     /* Absorb the associated data into the state */
     if (adlen > 0) {
-        ascon_masked_aead_absorb_8
-            (&state, ad, adlen, 6, &word, preserve, &trng);
+        ascon_masked_aead_absorb_8(&state, ad, adlen, 6, &word, preserve, &trng);
     }
 
     /* Separator between the associated data and the payload */
     ascon_masked_word_separator(&(state.M[4]));
 
     /* Decrypt the ciphertext to create the plaintext */
-    ascon_masked_aead_decrypt_8
-        (&state, m, c, *mlen, 6, &word, preserve, &trng);
+    ascon_masked_aead_decrypt_8(&state, m, c, *mlen, 6, &word, preserve, &trng);
 
     /* Convert the state back into key masked form and finalize */
     ascon80pq_masked_aead_finalize(&state, &trng, preserve, k, tag);

@@ -12,4 +12,3 @@ void ror() {
     volatile uint32_t c = __ROR(a, b);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

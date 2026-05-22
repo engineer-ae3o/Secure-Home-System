@@ -10,4 +10,3 @@ void rev() {
     volatile uint32_t c = __REV(a);
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }
-

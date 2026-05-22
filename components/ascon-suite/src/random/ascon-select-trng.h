@@ -30,9 +30,9 @@
 #define ASCON_TRNG_WINDOWS 1
 #define ASCON_TRNG_MIXER 1
 
-#elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) || \
-      defined(__FreeBSD__) || defined(__unix__) || defined(__ANDROID__) || \
-      defined(__OpenBSD__)
+#elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) ||   \
+    defined(__FreeBSD__) || defined(__unix__) || defined(__ANDROID__) || \
+    defined(__OpenBSD__)
 
 /* Unix-like system with access to a /dev/urandom or /dev/random device */
 #define ASCON_TRNG_DEV_RANDOM 1

@@ -30,13 +30,7 @@
 static uint8_t const ASCON128a_IV[8] =
     {0x80, 0x80, 0x0c, 0x08, 0x00, 0x00, 0x00, 0x00};
 
-void ascon128a_aead_encrypt
-    (unsigned char *c, size_t *clen,
-     const unsigned char *m, size_t mlen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k)
-{
+void ascon128a_aead_encrypt(unsigned char* c, size_t* clen, const unsigned char* m, size_t mlen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
     ascon_state_t state;
     unsigned char partial;
 
@@ -52,8 +46,9 @@ void ascon128a_aead_encrypt
     ascon_absorb_16(&state, k, 24);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_16(&state, ad, adlen, 4, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state);
@@ -70,21 +65,16 @@ void ascon128a_aead_encrypt
     ascon_free(&state);
 }
 
-int ascon128a_aead_decrypt
-    (unsigned char *m, size_t *mlen,
-     const unsigned char *c, size_t clen,
-     const unsigned char *ad, size_t adlen,
-     const unsigned char *npub,
-     const unsigned char *k)
-{
+int ascon128a_aead_decrypt(unsigned char* m, size_t* mlen, const unsigned char* c, size_t clen, const unsigned char* ad, size_t adlen, const unsigned char* npub, const unsigned char* k) {
     ascon_state_t state;
     unsigned char tag[ASCON128_TAG_SIZE];
     unsigned char partial;
-    int result;
+    int           result;
 
     /* Set the length of the returned plaintext */
-    if (clen < ASCON128_TAG_SIZE)
+    if (clen < ASCON128_TAG_SIZE) {
         return -1;
+    }
     *mlen = clen - ASCON128_TAG_SIZE;
 
     /* Initialize the ASCON state */
@@ -96,8 +86,9 @@ int ascon128a_aead_decrypt
     ascon_absorb_16(&state, k, 24);
 
     /* Absorb the associated data into the state */
-    if (adlen > 0)
+    if (adlen > 0) {
         ascon_aead_absorb_16(&state, ad, adlen, 4, 1);
+    }
 
     /* Separator between the associated data and the payload */
     ascon_separator(&state);

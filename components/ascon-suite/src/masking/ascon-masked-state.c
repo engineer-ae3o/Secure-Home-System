@@ -26,36 +26,31 @@
 #include <ascon/utility.h>
 #include <string.h>
 
-void ascon_masked_state_init(ascon_masked_state_t *state)
-{
+void ascon_masked_state_init(ascon_masked_state_t* state) {
     memset(state, 0, sizeof(ascon_masked_state_t));
 }
 
-void ascon_masked_state_free(ascon_masked_state_t *state)
-{
-    if (state)
+void ascon_masked_state_free(ascon_masked_state_t* state) {
+    if (state) {
         ascon_clean(state, sizeof(ascon_masked_state_t));
-}
-
-void ascon_x2_randomize(ascon_masked_state_t *state, ascon_trng_state_t *trng)
-{
-    int index;
-    for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x2_randomize
-            (&(state->M[index]), &(state->M[index]), trng);
     }
 }
 
-void ascon_x2_copy_from_x1
-    (ascon_masked_state_t *dest, const ascon_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x2_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng) {
+    int index;
+    for (index = 0; index < 5; ++index) {
+        ascon_masked_word_x2_randomize(&(state->M[index]), &(state->M[index]), trng);
+    }
+}
+
+void ascon_x2_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng) {
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x2_load(&(dest->M[index]), src->B + index * 8, trng);
+    }
 #else
-    int index;
+    int           index;
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
         ascon_squeeze_8(src, word, index * 8);
@@ -65,13 +60,13 @@ void ascon_x2_copy_from_x1
 #endif
 }
 
-void ascon_x2_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
-{
+void ascon_x2_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src) {
     int index;
     ascon_init(dest);
 #if defined(ASCON_BACKEND_DIRECT_XOR)
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x2_store(dest->B + index * 8, &(src->M[index]));
+    }
 #else
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
@@ -82,64 +77,52 @@ void ascon_x2_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
 #endif
 }
 
-void ascon_x2_copy_from_x2
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x2_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
     for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x2_randomize
-            (&(dest->M[index]), &(src->M[index]), trng);
+        ascon_masked_word_x2_randomize(&(dest->M[index]), &(src->M[index]), trng);
     }
 }
 
 #if ASCON_MASKED_MAX_SHARES >= 3
 
-void ascon_x2_copy_from_x3
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x2_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x2_from_x3(&(dest->M[index]), &(src->M[index]), trng);
+    }
 }
 
 #endif /* ASCON_MASKED_MAX_SHARES >= 3 */
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_x2_copy_from_x4
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x2_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x2_from_x4(&(dest->M[index]), &(src->M[index]), trng);
+    }
 }
 
 #endif /* ASCON_MASKED_MAX_SHARES >= 4 */
 
 #if ASCON_MASKED_MAX_SHARES >= 3
 
-void ascon_x3_randomize(ascon_masked_state_t *state, ascon_trng_state_t *trng)
-{
+void ascon_x3_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng) {
     int index;
     for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x3_randomize
-            (&(state->M[index]), &(state->M[index]), trng);
+        ascon_masked_word_x3_randomize(&(state->M[index]), &(state->M[index]), trng);
     }
 }
 
-void ascon_x3_copy_from_x1
-    (ascon_masked_state_t *dest, const ascon_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x3_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng) {
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x3_load(&(dest->M[index]), src->B + index * 8, trng);
+    }
 #else
-    int index;
+    int           index;
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
         ascon_squeeze_8(src, word, index * 8);
@@ -149,13 +132,13 @@ void ascon_x3_copy_from_x1
 #endif
 }
 
-void ascon_x3_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
-{
+void ascon_x3_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src) {
     int index;
     ascon_init(dest);
 #if defined(ASCON_BACKEND_DIRECT_XOR)
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x3_store(dest->B + index * 8, &(src->M[index]));
+    }
 #else
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
@@ -166,35 +149,27 @@ void ascon_x3_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
 #endif
 }
 
-void ascon_x3_copy_from_x2
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
-    int index;
-    for (index = 0; index < 5; ++index)
-        ascon_masked_word_x3_from_x2(&(dest->M[index]), &(src->M[index]), trng);
-}
-
-void ascon_x3_copy_from_x3
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x3_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
     for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x3_randomize
-            (&(dest->M[index]), &(src->M[index]), trng);
+        ascon_masked_word_x3_from_x2(&(dest->M[index]), &(src->M[index]), trng);
+    }
+}
+
+void ascon_x3_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
+    int index;
+    for (index = 0; index < 5; ++index) {
+        ascon_masked_word_x3_randomize(&(dest->M[index]), &(src->M[index]), trng);
     }
 }
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_x3_copy_from_x4
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x3_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x3_from_x4(&(dest->M[index]), &(src->M[index]), trng);
+    }
 }
 
 #endif /* ASCON_MASKED_MAX_SHARES >= 4 */
@@ -203,25 +178,21 @@ void ascon_x3_copy_from_x4
 
 #if ASCON_MASKED_MAX_SHARES >= 4
 
-void ascon_x4_randomize(ascon_masked_state_t *state, ascon_trng_state_t *trng)
-{
+void ascon_x4_randomize(ascon_masked_state_t* state, ascon_trng_state_t* trng) {
     int index;
     for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x4_randomize
-            (&(state->M[index]), &(state->M[index]), trng);
+        ascon_masked_word_x4_randomize(&(state->M[index]), &(state->M[index]), trng);
     }
 }
 
-void ascon_x4_copy_from_x1
-    (ascon_masked_state_t *dest, const ascon_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x4_copy_from_x1(ascon_masked_state_t* dest, const ascon_state_t* src, ascon_trng_state_t* trng) {
 #if defined(ASCON_BACKEND_DIRECT_XOR)
     int index;
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x4_load(&(dest->M[index]), src->B + index * 8, trng);
+    }
 #else
-    int index;
+    int           index;
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
         ascon_squeeze_8(src, word, index * 8);
@@ -231,13 +202,13 @@ void ascon_x4_copy_from_x1
 #endif
 }
 
-void ascon_x4_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
-{
+void ascon_x4_copy_to_x1(ascon_state_t* dest, const ascon_masked_state_t* src) {
     int index;
     ascon_init(dest);
 #if defined(ASCON_BACKEND_DIRECT_XOR)
-    for (index = 0; index < 5; ++index)
+    for (index = 0; index < 5; ++index) {
         ascon_masked_word_x4_store(dest->B + index * 8, &(src->M[index]));
+    }
 #else
     unsigned char word[8];
     for (index = 0; index < 5; ++index) {
@@ -248,32 +219,24 @@ void ascon_x4_copy_to_x1(ascon_state_t *dest, const ascon_masked_state_t *src)
 #endif
 }
 
-void ascon_x4_copy_from_x2
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
-    int index;
-    for (index = 0; index < 5; ++index)
-        ascon_masked_word_x4_from_x2(&(dest->M[index]), &(src->M[index]), trng);
-}
-
-void ascon_x4_copy_from_x3
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
-    int index;
-    for (index = 0; index < 5; ++index)
-        ascon_masked_word_x4_from_x3(&(dest->M[index]), &(src->M[index]), trng);
-}
-
-void ascon_x4_copy_from_x4
-    (ascon_masked_state_t *dest, const ascon_masked_state_t *src,
-     ascon_trng_state_t *trng)
-{
+void ascon_x4_copy_from_x2(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
     int index;
     for (index = 0; index < 5; ++index) {
-        ascon_masked_word_x4_randomize
-            (&(dest->M[index]), &(src->M[index]), trng);
+        ascon_masked_word_x4_from_x2(&(dest->M[index]), &(src->M[index]), trng);
+    }
+}
+
+void ascon_x4_copy_from_x3(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
+    int index;
+    for (index = 0; index < 5; ++index) {
+        ascon_masked_word_x4_from_x3(&(dest->M[index]), &(src->M[index]), trng);
+    }
+}
+
+void ascon_x4_copy_from_x4(ascon_masked_state_t* dest, const ascon_masked_state_t* src, ascon_trng_state_t* trng) {
+    int index;
+    for (index = 0; index < 5; ++index) {
+        ascon_masked_word_x4_randomize(&(dest->M[index]), &(src->M[index]), trng);
     }
 }
 

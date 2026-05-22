@@ -33,9 +33,7 @@
 //"Optimizing Ascon on RISC-V" of Lars Jellema
 //see https://github.com/Lucus16/ascon-riscv/
 
-static void ascon_substitute
-    (Code &code, int offset, const Reg &x2, const Reg &x4)
-{
+static void ascon_substitute(Code& code, int offset, const Reg& x2, const Reg& x4) {
     // Allocate and load the registers for x0, x1, and x3.
     // The x2 and x4 values have already been loaded by the calling function.
     Reg x0 = code.allocateReg(1);
@@ -90,25 +88,24 @@ static void ascon_substitute
     code.releaseReg(t2);
 }
 
-static void ascon_diffuse
-    (Code &code, const Reg &x, int word, int shift1, int shift2)
-{
+static void ascon_diffuse(Code& code, const Reg& x, int word, int shift1, int shift2) {
     // Compute "x ^= (x >>> shift1) ^ (x >>> shift2)".
     Reg t = code.allocateReg(8);
-    if (word != 0)
+    if (word != 0) {
         code.ldz(x.reversed(), ASCON_WORD(word));
+    }
     code.move(t, x);
     code.ror(t, shift1);
     code.logxor(t, x);
     code.ror(x, shift2);
     code.logxor(x, t);
-    if (word != 2 && word != 4)
+    if (word != 2 && word != 4) {
         code.stz(x.reversed(), ASCON_WORD(word));
+    }
     code.releaseReg(t);
 }
 
-void gen_ascon_permutation(Code &code)
-{
+void gen_ascon_permutation(Code& code) {
     // Set up the function prologue with 0 bytes of local variable storage.
     // Z points to the permutation state on input and output.
     Reg round = code.prologue_permutation_with_count("ascon_permute", 0);
@@ -137,8 +134,9 @@ void gen_ascon_permutation(Code &code)
     code.logxor(x2, round);
 
     // Perform the substitution layer byte by byte.
-    for (int index = 0; index < 8; ++index)
+    for (int index = 0; index < 8; ++index) {
         ascon_substitute(code, index, Reg(x2, index, 1), Reg(x4, index, 1));
+    }
 
     // Perform the linear diffusion layer on each of the state words.
     // We spilled "x4" out to the state during the substitution layer,
@@ -146,9 +144,9 @@ void gen_ascon_permutation(Code &code)
     // row last so that it is ready in registers for the next round.
     ascon_diffuse(code, x2, 0, 19, 28);
     ascon_diffuse(code, x4, 1, 61, 39);
-    ascon_diffuse(code, x2, 2,  1,  6);
+    ascon_diffuse(code, x2, 2, 1, 6);
     ascon_diffuse(code, x4, 3, 10, 17);
-    ascon_diffuse(code, x4, 4,  7, 41);
+    ascon_diffuse(code, x4, 4, 7, 41);
 
     // Bottom of the round loop.  Adjust the round constant and
     // check to see if we have reached the final round.
@@ -160,8 +158,7 @@ void gen_ascon_permutation(Code &code)
     code.stz(x4.reversed(), ASCON_WORD(4));
 }
 
-void gen_ascon_cleanup(Code &code)
-{
+void gen_ascon_cleanup(Code& code) {
     // Set up the function prologue with 0 bytes of local variable storage.
     // Z points to the permutation state on input and output.
     code.prologue_permutation("ascon_backend_free", 0);
@@ -174,7 +171,7 @@ void gen_ascon_cleanup(Code &code)
     // callee-saved registers were already destroyed by ascon_permute()
     // when it popped the stack frame.
     code.setFlag(Code::TempR0);
-    Reg r0 = code.explicitReg(TEMP_REG, 1);
+    Reg r0      = code.explicitReg(TEMP_REG, 1);
     Reg r18to23 = code.explicitReg(18, 24 - 18);
     Reg r26to27 = code.explicitReg(26, 28 - 26);
     code.move(r18to23, 0);
@@ -182,31 +179,15 @@ void gen_ascon_cleanup(Code &code)
     code.move(r0, 0);
 }
 
-bool test_ascon_permutation(Code &code)
-{
+bool test_ascon_permutation(Code& code) {
     static unsigned char const input[40] = {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27
-    };
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27};
     static unsigned char const output_12[40] = {
-        0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43,
-        0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c, 0x17, 0x64,
-        0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74,
-        0x96, 0xb1, 0x71, 0x75, 0xb4, 0xcb, 0x68, 0x63,
-        0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5
-    };
+        0x06, 0x05, 0x87, 0xe2, 0xd4, 0x89, 0xdd, 0x43, 0x1c, 0xc2, 0xb1, 0x7b, 0x0e, 0x3c, 0x17, 0x64, 0x95, 0x73, 0x42, 0x53, 0x18, 0x44, 0xa6, 0x74, 0x96, 0xb1, 0x71, 0x75, 0xb4, 0xcb, 0x68, 0x63, 0x29, 0xb5, 0x12, 0xd6, 0x27, 0xd9, 0x06, 0xe5};
     static unsigned char const output_8[40] = {
-        0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed,
-        0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf, 0xca, 0xd7,
-        0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0,
-        0x89, 0x2a, 0x02, 0x15, 0x1f, 0x95, 0x94, 0x6e,
-        0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7
-    };
+        0x83, 0x0d, 0x26, 0x0d, 0x33, 0x5f, 0x3b, 0xed, 0xda, 0x0b, 0xba, 0x91, 0x7b, 0xcf, 0xca, 0xd7, 0xdd, 0x0d, 0x88, 0xe7, 0xdc, 0xb5, 0xec, 0xd0, 0x89, 0x2a, 0x02, 0x15, 0x1f, 0x95, 0x94, 0x6e, 0x3a, 0x69, 0xcb, 0x3c, 0xf9, 0x82, 0xf6, 0xf7};
     unsigned char state[40];
-    int ok;
+    int           ok;
     memcpy(state, input, 40);
     code.exec_permutation(state, 40, 0);
     ok = !memcmp(output_12, state, 40);

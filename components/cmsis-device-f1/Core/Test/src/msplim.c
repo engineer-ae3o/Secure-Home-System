@@ -30,7 +30,7 @@ void set_msplim_ns() {
     // CHECK-LABEL: <set_msplim_ns>:
 #if __ARM_FEATURE_CMSE == 3
     // CHECK-S: msr msplim_ns, {{r[0-9]+}}
-     __TZ_set_MSPLIM_NS(0x0815u);
+    __TZ_set_MSPLIM_NS(0x0815u);
 #endif
     // CHECK: {{(bx lr)|(pop {.*pc})}}
 }

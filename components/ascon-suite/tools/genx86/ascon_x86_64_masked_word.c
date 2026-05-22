@@ -51,32 +51,27 @@ static char function_name[128];
 static const char family[] = "ascon";
 
 /* Load a masked word */
-static void masked_word_load(int num_shares, int type)
-{
+static void masked_word_load(int num_shares, int type) {
     util_frame_t frame;
-    int posn;
-    int label, label2;
-    reg_t *temp;
+    int          posn;
+    int          label, label2;
+    reg_t*       temp;
 
     /* Function header */
     if (type == LOAD_ZERO) {
-        snprintf(function_name, sizeof(function_name),
-                 "%s_masked_word_x%d_zero", family, num_shares);
+        snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_zero", family, num_shares);
         function_header(function_name);
         util_function_setup(&frame, 1, 0, (num_shares - 1) * 8);
     } else if (type == LOAD_WORD64) {
-        snprintf(function_name, sizeof(function_name),
-                 "%s_masked_word_x%d_load", family, num_shares);
+        snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_load", family, num_shares);
         function_header(function_name);
         util_function_setup(&frame, 2, 0, (num_shares - 1) * 8);
     } else if (type == LOAD_WORD32) {
-        snprintf(function_name, sizeof(function_name),
-                 "%s_masked_word_x%d_load_32", family, num_shares);
+        snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_load_32", family, num_shares);
         function_header(function_name);
         util_function_setup(&frame, 3, 0, (num_shares - 1) * 8);
     } else {
-        snprintf(function_name, sizeof(function_name),
-                 "%s_masked_word_x%d_load_partial", family, num_shares);
+        snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_load_partial", family, num_shares);
         function_header(function_name);
         util_function_setup(&frame, 3, 0, (num_shares - 1) * 8);
     }
@@ -85,7 +80,7 @@ static void masked_word_load(int num_shares, int type)
     if (num_shares == 2 && type == LOAD_ZERO) {
         store(frame.random[0], frame.state_reg, 0);
     } else {
-        reg_t *first_word = alloc_state("a", 0);
+        reg_t* first_word = alloc_state("a", 0);
         live_noload(first_word);
         if (type == LOAD_ZERO) {
             move(first_word, frame.random[0]);
@@ -99,7 +94,7 @@ static void masked_word_load(int num_shares, int type)
             unop(IN_REVBYTES, frame.random[0]);
         } else if (type == LOAD_WORD32) {
             /* Load the plaintext word in two 32-bit halves */
-            reg_t *temp = alloc_temp("low");
+            reg_t* temp = alloc_temp("low");
             acquire(temp);
             load_smaller(first_word, frame.arg[1]->real_reg, 0, 4);
             binop(IN_XOR, first_word, frame.random[0]);
@@ -112,14 +107,13 @@ static void masked_word_load(int num_shares, int type)
             release(temp);
         } else {
             /* Load a partial word one byte at a time */
-            reg_t *temp = alloc_temp("fragment");
+            reg_t* temp = alloc_temp("fragment");
             acquire(temp);
             move(first_word, frame.random[0]);
-            label = branch(BR_ALWAYS, -1);
+            label  = branch(BR_ALWAYS, -1);
             label2 = set_label(-1);
             add_imm(frame.arg[2], -1);
-            load_smaller_plus_reg
-                (temp, frame.arg[1]->real_reg, frame.arg[2]->real_reg, 1);
+            load_smaller_plus_reg(temp, frame.arg[1]->real_reg, frame.arg[2]->real_reg, 1);
             binop(IN_XOR, first_word, temp);
             ror(first_word, 8);
             ror(frame.random[0], 8);
@@ -171,15 +165,13 @@ static void masked_word_load(int num_shares, int type)
 }
 
 /* Unmask and store a masked word */
-static void masked_word_store(int num_shares)
-{
+static void masked_word_store(int num_shares) {
     util_frame_t frame;
-    reg_t *word[MAX_SHARES];
-    int posn;
+    reg_t*       word[MAX_SHARES];
+    int          posn;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_store", family, num_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_store", family, num_shares);
     function_header(function_name);
     util_function_setup(&frame, 2, 1, 0);
 
@@ -206,16 +198,14 @@ static void masked_word_store(int num_shares)
 }
 
 /* Unmask and store a partial masked word */
-static void masked_word_store_partial(int num_shares)
-{
+static void masked_word_store_partial(int num_shares) {
     util_frame_t frame;
-    reg_t *word[MAX_SHARES];
-    int posn;
-    int label, label2;
+    reg_t*       word[MAX_SHARES];
+    int          posn;
+    int          label, label2;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_store_partial", family, num_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_store_partial", family, num_shares);
     function_header(function_name);
     util_function_setup(&frame, 3, 2, 0);
 
@@ -235,7 +225,7 @@ static void masked_word_store_partial(int num_shares)
     }
 
     /* Extract one byte at a time and store */
-    label = branch(BR_ALWAYS, -1);
+    label  = branch(BR_ALWAYS, -1);
     label2 = set_label(-1);
     ror(word[0], 64 - 8);
     store_smaller(word[0], frame.arg[0]->real_reg, 0, 1);
@@ -250,15 +240,13 @@ static void masked_word_store_partial(int num_shares)
 }
 
 /* Randomize a masked word */
-static void masked_word_randomize(int num_shares)
-{
+static void masked_word_randomize(int num_shares) {
     util_frame_t frame;
-    reg_t *word;
-    int posn;
+    reg_t*       word;
+    int          posn;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_randomize", family, num_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_randomize", family, num_shares);
     function_header(function_name);
     util_function_setup(&frame, 2, 1, (num_shares - 1) * 8);
 
@@ -285,15 +273,13 @@ static void masked_word_randomize(int num_shares)
 }
 
 /* XOR two masked words */
-static void masked_word_xor(int num_shares)
-{
+static void masked_word_xor(int num_shares) {
     util_frame_t frame;
-    reg_t *word[MAX_SHARES];
-    int posn;
+    reg_t*       word[MAX_SHARES];
+    int          posn;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_xor", family, num_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_xor", family, num_shares);
     function_header(function_name);
     util_function_setup(&frame, 2, 1, 0);
 
@@ -313,19 +299,17 @@ static void masked_word_xor(int num_shares)
 }
 
 /* Replace part of a masked word */
-static void masked_word_replace(int num_shares)
-{
+static void masked_word_replace(int num_shares) {
     util_frame_t frame;
-    reg_t *shift;
-    reg_t *mask1;
-    reg_t *mask2;
-    reg_t *temp1;
-    reg_t *temp2;
-    int posn;
+    reg_t*       shift;
+    reg_t*       mask1;
+    reg_t*       mask2;
+    reg_t*       temp1;
+    reg_t*       temp2;
+    int          posn;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_replace", family, num_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_replace", family, num_shares);
     function_header(function_name);
     util_function_setup(&frame, 3, 0, 0);
 
@@ -366,72 +350,45 @@ static void masked_word_replace(int num_shares)
 }
 
 /* Conversion rule tables */
-#define SRC_0       1
-#define SRC_1       2
-#define SRC_2       3
-#define SRC_3       4
-#define RANDOM_0    5
-#define RANDOM_1    6
-#define RANDOM_2    7
-#define ROT_1       8
-#define ROT_2       9
-#define ROT_3       10
-#define UNROT_1     11
-#define UNROT_2     12
-#define UNROT_3     13
+#define SRC_0 1
+#define SRC_1 2
+#define SRC_2 3
+#define SRC_3 4
+#define RANDOM_0 5
+#define RANDOM_1 6
+#define RANDOM_2 7
+#define ROT_1 8
+#define ROT_2 9
+#define ROT_3 10
+#define UNROT_1 11
+#define UNROT_2 12
+#define UNROT_3 13
 static int const convert_x2_from_x3[] = {
-    SRC_0, RANDOM_0, 0,
-    SRC_1, ROT_1, RANDOM_0, UNROT_1, SRC_2, 0,
-    0
-};
+    SRC_0, RANDOM_0, 0, SRC_1, ROT_1, RANDOM_0, UNROT_1, SRC_2, 0, 0};
 static int const convert_x2_from_x4[] = {
-    SRC_0, RANDOM_0, UNROT_2, SRC_2, 0,
-    SRC_1, ROT_1, RANDOM_0, UNROT_2, SRC_3, 0,
-    0
-};
+    SRC_0, RANDOM_0, UNROT_2, SRC_2, 0, SRC_1, ROT_1, RANDOM_0, UNROT_2, SRC_3, 0, 0};
 static int const convert_x3_from_x2[] = {
-    SRC_0, RANDOM_0, RANDOM_1, 0,
-    SRC_1, ROT_1, RANDOM_0, 0,
-    ROT_2, RANDOM_1, 0,
-    0
-};
+    SRC_0, RANDOM_0, RANDOM_1, 0, SRC_1, ROT_1, RANDOM_0, 0, ROT_2, RANDOM_1, 0, 0};
 static int const convert_x3_from_x4[] = {
-    SRC_0, RANDOM_0, RANDOM_1, UNROT_3, SRC_3, 0,
-    SRC_1, ROT_1, RANDOM_0, 0,
-    SRC_2, ROT_2, RANDOM_1, 0,
-    0
-};
+    SRC_0, RANDOM_0, RANDOM_1, UNROT_3, SRC_3, 0, SRC_1, ROT_1, RANDOM_0, 0, SRC_2, ROT_2, RANDOM_1, 0, 0};
 static int const convert_x4_from_x2[] = {
-    SRC_0, RANDOM_0, RANDOM_1, RANDOM_2, 0,
-    SRC_1, ROT_1, RANDOM_0, 0,
-    ROT_2, RANDOM_1, 0,
-    ROT_3, RANDOM_2, 0,
-    0
-};
+    SRC_0, RANDOM_0, RANDOM_1, RANDOM_2, 0, SRC_1, ROT_1, RANDOM_0, 0, ROT_2, RANDOM_1, 0, ROT_3, RANDOM_2, 0, 0};
 static int const convert_x4_from_x3[] = {
-    SRC_0, RANDOM_0, RANDOM_1, RANDOM_2, 0,
-    SRC_1, ROT_1, RANDOM_0, 0,
-    SRC_2, ROT_2, RANDOM_1, 0,
-    ROT_3, RANDOM_2, 0,
-    0
-};
+    SRC_0, RANDOM_0, RANDOM_1, RANDOM_2, 0, SRC_1, ROT_1, RANDOM_0, 0, SRC_2, ROT_2, RANDOM_1, 0, ROT_3, RANDOM_2, 0, 0};
 
 /* Convert from one number of shares to another */
-static void masked_word_convert
-    (int to_shares, int from_shares, const int *rules)
-{
+static void masked_word_convert(int to_shares, int from_shares, const int* rules) {
     util_frame_t frame;
-    reg_t *temp1;
-    reg_t *temp2;
-    int share;
-    int rotation;
-    int rule;
-    int loaded;
-    int offset;
+    reg_t*       temp1;
+    reg_t*       temp2;
+    int          share;
+    int          rotation;
+    int          rule;
+    int          loaded;
+    int          offset;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_x%d_from_x%d", family, to_shares, from_shares);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_x%d_from_x%d", family, to_shares, from_shares);
     function_header(function_name);
     util_function_setup(&frame, 2, 0, (to_shares - 1) * 8);
 
@@ -443,58 +400,74 @@ static void masked_word_convert
     share = 0;
     while (*rules) {
         rotation = 0;
-        loaded = 0;
+        loaded   = 0;
         while ((rule = *rules++) != 0) {
             switch (rule) {
-            case SRC_0:
-            case SRC_1:
-            case SRC_2:
-            case SRC_3:
-                offset = (rule - SRC_0) * 8;
-                if (loaded) {
-                    if (rotation == 0) {
-                        load_and_xor(temp1, frame.arg[1]->real_reg, offset);
+                case SRC_0:
+                case SRC_1:
+                case SRC_2:
+                case SRC_3:
+                    offset = (rule - SRC_0) * 8;
+                    if (loaded) {
+                        if (rotation == 0) {
+                            load_and_xor(temp1, frame.arg[1]->real_reg, offset);
+                        } else {
+                            load(temp2, frame.arg[1]->real_reg, offset);
+                            if (rotation != 0) {
+                                ror(temp2, rotation);
+                            }
+                            binop(IN_XOR, temp1, temp2);
+                        }
                     } else {
-                        load(temp2, frame.arg[1]->real_reg, offset);
-                        if (rotation != 0)
-                            ror(temp2, rotation);
-                        binop(IN_XOR, temp1, temp2);
+                        load(temp1, frame.arg[1]->real_reg, offset);
+                        if (rotation != 0) {
+                            ror(temp1, rotation);
+                        }
+                        loaded = 1;
                     }
-                } else {
-                    load(temp1, frame.arg[1]->real_reg, offset);
-                    if (rotation != 0)
-                        ror(temp1, rotation);
-                    loaded = 1;
-                }
-                rotation = 0;
-                break;
+                    rotation = 0;
+                    break;
 
-            case RANDOM_0:
-            case RANDOM_1:
-            case RANDOM_2:
-                if (loaded) {
-                    if (rotation == 0) {
-                        binop(IN_XOR, temp1, frame.random[rule - RANDOM_0]);
+                case RANDOM_0:
+                case RANDOM_1:
+                case RANDOM_2:
+                    if (loaded) {
+                        if (rotation == 0) {
+                            binop(IN_XOR, temp1, frame.random[rule - RANDOM_0]);
+                        } else {
+                            move(temp2, frame.random[rule - RANDOM_0]);
+                            if (rotation != 0) {
+                                ror(temp2, rotation);
+                            }
+                            binop(IN_XOR, temp1, temp2);
+                        }
                     } else {
-                        move(temp2, frame.random[rule - RANDOM_0]);
-                        if (rotation != 0)
-                            ror(temp2, rotation);
-                        binop(IN_XOR, temp1, temp2);
+                        move(temp1, frame.random[rule - RANDOM_0]);
+                        if (rotation != 0) {
+                            ror(temp1, rotation);
+                        }
+                        loaded = 1;
                     }
-                } else {
-                    move(temp1, frame.random[rule - RANDOM_0]);
-                    if (rotation != 0)
-                        ror(temp1, rotation);
-                    loaded = 1;
-                }
-                break;
+                    break;
 
-            case ROT_1:     rotation = ROT(1); break;
-            case ROT_2:     rotation = ROT(2); break;
-            case ROT_3:     rotation = ROT(3); break;
-            case UNROT_1:   rotation = UNROT(1); break;
-            case UNROT_2:   rotation = UNROT(2); break;
-            case UNROT_3:   rotation = UNROT(3); break;
+                case ROT_1:
+                    rotation = ROT(1);
+                    break;
+                case ROT_2:
+                    rotation = ROT(2);
+                    break;
+                case ROT_3:
+                    rotation = ROT(3);
+                    break;
+                case UNROT_1:
+                    rotation = UNROT(1);
+                    break;
+                case UNROT_2:
+                    rotation = UNROT(2);
+                    break;
+                case UNROT_3:
+                    rotation = UNROT(3);
+                    break;
             }
         }
         store(temp1, frame.arg[0]->real_reg, share * 8);
@@ -526,21 +499,19 @@ static void masked_word_convert
 }
 
 /* Pad a masked word */
-static void masked_word_pad(void)
-{
+static void masked_word_pad(void) {
     util_frame_t frame;
-    reg_t *temp;
-    reg_t *shift;
+    reg_t*       temp;
+    reg_t*       shift;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_pad", family);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_pad", family);
     function_header(function_name);
     util_function_setup(&frame, 2, 0, 0);
 
     /* Create the padding value and XOR it in */
     shift = alloc_named_register(REG_RCX); /* Shift count must be in CL */
-    temp = alloc_temp("padding");
+    temp  = alloc_temp("padding");
     acquire(temp);
     move(shift, frame.arg[1]);
     shl(shift, 3);
@@ -554,14 +525,12 @@ static void masked_word_pad(void)
 }
 
 /* Put a separator value into a masked word */
-static void masked_word_separator(void)
-{
+static void masked_word_separator(void) {
     util_frame_t frame;
-    reg_t *temp;
+    reg_t*       temp;
 
     /* Function header */
-    snprintf(function_name, sizeof(function_name),
-             "%s_masked_word_separator", family);
+    snprintf(function_name, sizeof(function_name), "%s_masked_word_separator", family);
     function_header(function_name);
     util_function_setup(&frame, 1, 0, 0);
 
@@ -576,18 +545,15 @@ static void masked_word_separator(void)
     function_footer(function_name);
 }
 
-static void if_shares(int num_shares)
-{
+static void if_shares(int num_shares) {
     printf("#if ASCON_MASKED_MAX_SHARES >= %d\n", num_shares);
 }
 
-static void endif_shares(void)
-{
+static void endif_shares(void) {
     printf("#endif\n");
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     /* Output the file header */
     printf("#include \"ascon-masked-backend.h\"\n");
     printf("#if defined(ASCON_MASKED_WORD_BACKEND_X86_64)\n");

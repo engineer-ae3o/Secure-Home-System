@@ -29,11 +29,10 @@
 
 #if defined(ASCON_BACKEND_C64) || defined(ASCON_BACKEND_C64_DIRECT_XOR)
 
-#define ROUND_CONSTANT(round)   \
-        (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
+#define ROUND_CONSTANT(round) \
+    (~(uint64_t)(((0x0F - (round)) << 4) | (round)))
 
-void ascon_permute(ascon_state_t *state, uint8_t first_round)
-{
+void ascon_permute(ascon_state_t* state, uint8_t first_round) {
     static const uint64_t RC[12] = {
         ROUND_CONSTANT(0),
         ROUND_CONSTANT(1),
@@ -46,8 +45,7 @@ void ascon_permute(ascon_state_t *state, uint8_t first_round)
         ROUND_CONSTANT(8),
         ROUND_CONSTANT(9),
         ROUND_CONSTANT(10),
-        ROUND_CONSTANT(11)
-    };
+        ROUND_CONSTANT(11)};
     uint64_t t0, t1, t2, t3, t4;
 #if defined(ASCON_BACKEND_C64_DIRECT_XOR)
     uint64_t x0 = be_load_word64(state->B);
@@ -73,26 +71,42 @@ void ascon_permute(ascon_state_t *state, uint8_t first_round)
          * The final "x2 = ~x2" term will be implicitly performed
          * by the inverted round constant for the next round.
          */
-        x0 ^= x4;   x4 ^= x3;   x2 ^= x1;
-        t0 = ~x0;   t1 = ~x1;   t2 = ~x2;   t3 = ~x3;   t4 = ~x4;
-        t0 &= x1;   t1 &= x2;   t2 &= x3;   t3 &= x4;   t4 &= x0;
-        x0 ^= t1;   x1 ^= t2;   x2 ^= t3;   x3 ^= t4;   x4 ^= t0;
-        x1 ^= x0;   x0 ^= x4;   x3 ^= x2;   /* x2 = ~x2; */
+        x0 ^= x4;
+        x4 ^= x3;
+        x2 ^= x1;
+        t0 = ~x0;
+        t1 = ~x1;
+        t2 = ~x2;
+        t3 = ~x3;
+        t4 = ~x4;
+        t0 &= x1;
+        t1 &= x2;
+        t2 &= x3;
+        t3 &= x4;
+        t4 &= x0;
+        x0 ^= t1;
+        x1 ^= t2;
+        x2 ^= t3;
+        x3 ^= t4;
+        x4 ^= t0;
+        x1 ^= x0;
+        x0 ^= x4;
+        x3 ^= x2; /* x2 = ~x2; */
 
         /* Linear diffusion layer */
         x0 ^= rightRotate19_64(x0) ^ rightRotate28_64(x0);
         x1 ^= rightRotate61_64(x1) ^ rightRotate39_64(x1);
-        x2 ^= rightRotate1_64(x2)  ^ rightRotate6_64(x2);
+        x2 ^= rightRotate1_64(x2) ^ rightRotate6_64(x2);
         x3 ^= rightRotate10_64(x3) ^ rightRotate17_64(x3);
-        x4 ^= rightRotate7_64(x4)  ^ rightRotate41_64(x4);
+        x4 ^= rightRotate7_64(x4) ^ rightRotate41_64(x4);
 
         /* Move onto the next round */
         ++first_round;
     }
     x2 = ~x2;
 #if defined(ASCON_BACKEND_C64_DIRECT_XOR)
-    be_store_word64(state->B,      x0);
-    be_store_word64(state->B +  8, x1);
+    be_store_word64(state->B, x0);
+    be_store_word64(state->B + 8, x1);
     be_store_word64(state->B + 16, x2);
     be_store_word64(state->B + 24, x3);
     be_store_word64(state->B + 32, x4);

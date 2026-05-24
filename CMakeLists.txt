@@ -114,20 +114,17 @@ if (CPPCHECK)
     add_custom_target(cppcheck
         COMMAND ${CPPCHECK} --enable=all
                             --inconclusive
-                            --output-file=analysis.txt
+                            --output-file=${CMAKE_SOURCE_DIR}/analysis.txt
                             --std=gnu++23
                             --project=${CMAKE_BINARY_DIR}/compile_commands.json
                             --suppress=missingIncludeSystem
                             --inline-suppr
+                            --file-filter=${CMAKE_SOURCE_DIR}/main/*
+                            --file-filter=${CMAKE_SOURCE_DIR}/components/drivers/*
+                            -D__GNUC__=14
+                            -D__GNUC_MINOR__=3
+                            -D__ARM_ARCH_7M__=1
         COMMENT "Running static analysis"
-    )
-endif()
-
-find_program(CLANG-FORMAT clang-format)
-if (CLANG-FORMAT)
-    add_custom_target(format-all
-        COMMAND ${CLANG-FORMAT} -i --style=file **/*.{c,cpp,h,hpp}
-        COMMENT "Formatting code base"
     )
 endif()
 

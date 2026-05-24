@@ -9,8 +9,8 @@ namespace gsm {
     enum class status_t : uint8_t {
         OK,
         ERR_GENERIC,
-        ERR_TIMEOUT,
         ERR_SIM_NOT_FOUND,
+        ERR_MODULE_NOT_ALIVE,
         ERR_COULD_NOT_CONNECT,
     };
 
@@ -24,7 +24,7 @@ namespace gsm {
      * @return `OK`: The GSM module found the SIM card and has connected to
      *                a network tower.
      *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_TIMEOUT`: On a timeout.
+     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
      *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      *         `ERR_COULD_NOT_CONNECT`: The GSM module could not connnect to a
      *                                   network tower.
@@ -48,7 +48,7 @@ namespace gsm {
      * 
      * @return `OK`: The SMS was sent successfully.
      *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_TIMEOUT`: On a timeout.
+     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
      *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
      *                                    network tower.
@@ -63,8 +63,7 @@ namespace gsm {
      * 
      * @return `OK`: The GSM module sees and can read the SIM card and still has
      *                a stable connection to the network tower.
-     *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_TIMEOUT`: On a timeout.
+     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
      *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
      *                                   network tower.
@@ -79,7 +78,7 @@ namespace gsm {
      * 
      * @return The IMSI on sucess. On error, returns any of the following:
      *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_TIMEOUT`: On a timeout.
+     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
      *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      * 
      * @note The digits are stored as ASCII, not numeric digits.

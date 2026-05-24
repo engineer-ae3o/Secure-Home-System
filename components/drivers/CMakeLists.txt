@@ -45,7 +45,7 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Wstrict-aliasing=2
                                        -fno-threadsafe-statics)
 
-target_compile_definitions(drivers PUBLIC STM32F103xB PRINTF_ALIAS_STANDARD_FUNCTION_NAMES_HARD=1)
+target_compile_definitions(drivers PUBLIC STM32F103xB)
 
 target_include_directories(drivers PUBLIC inc/
                                           ../freertos/portable/GCC/ARM_CM3/

@@ -187,9 +187,9 @@ void print(const etl::string_view& str, uint8_t line) {
             // Crash system for now
             utils::assert_check(false);
             break;
-        case gsm::status_t::ERR_TIMEOUT:
-            print("Timeout waiting", 0);
-            print("for a connection", 1);
+        case gsm::status_t::ERR_MODULE_NOT_ALIVE:
+            print("GSM module", 0);
+            print("not found", 1);
             // Crash system for now
             utils::assert_check(false);
             break;
@@ -210,10 +210,11 @@ void print(const etl::string_view& str, uint8_t line) {
     }
 
     print("SIM's IMSI: ", 0);
-    print(etl::string_view(imsi->data(), imsi->size()), 1);
+    print(etl::string_view(imsi.value().data(), imsi->size()), 1);
 
     // Do nothing for now
     while (true) {
+        __WFI();
     }
 }
 

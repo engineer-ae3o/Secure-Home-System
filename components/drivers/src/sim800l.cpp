@@ -20,10 +20,15 @@ namespace gsm {
     static DMA_HandleTypeDef  s_hdma_rx{};
     static TaskHandle_t       s_calling_task_handle{};
 
-    static bool                  s_is_initialized{};
-    static etl::atomic<uint16_t> s_rx_size{};
+    static bool s_is_initialized{};
 
-    [[maybe_unused]] static constexpr uint32_t POLLING_DELAY_MS{5000};
+    // This is needed because we are receiving UART data, we don't
+    // know the length of the data we will get. The UART idle line
+    // ISR puts the actual length of the data received here.
+    static volatile uint32_t s_rx_idle_line_size{};
+
+    static constexpr uint32_t RETRIES{6};
+    static constexpr uint32_t DELAY_BETWEEN_RETRIES_MS{5000};
 
     enum class cmd_t : uint8_t {
         // Initialization
@@ -45,14 +50,14 @@ namespace gsm {
     };
 
     // `etl::string_view` doesn't have the right constructor
-    // to take in a `const char*` on the fly unless alength is specified
+    // to take in a `const char*` on the fly unless a length is specified
     struct cmd_entry_t {
         std::string_view tx;
         std::string_view rx_expected;
     };
 
     // AT commands LUT
-    [[maybe_unused]] static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
+    static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
         [std::to_underlying(cmd_t::AT)]           = {"AT\r\n", "OK"},
         [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r\n", "OK"},
         [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r\n", "OK"},
@@ -64,8 +69,8 @@ namespace gsm {
     }};
 
     // Forward declarations
-    [[nodiscard]] static inline status_t send_cmd(cmd_t cmd);
-    [[nodiscard]] static inline status_t send_init_seq();
+    [[nodiscard]] static inline status_t send_cmd_and_compare_result(cmd_t cmd);
+    [[nodiscard]] static inline status_t send_init_sequence();
 
     // Public API
     status_t init() {
@@ -142,11 +147,8 @@ namespace gsm {
         HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 15);
         HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 15, 15);
 
-        // Capture calling task
-        s_calling_task_handle = xTaskGetCurrentTaskHandle();
-
         // Send init sequence to GSM mdodule and confirm everything is in order
-        auto ret = send_init_seq();
+        auto ret = send_init_sequence();
 
         if (ret == status_t::OK) {
             s_is_initialized = true;
@@ -187,6 +189,12 @@ namespace gsm {
     status_t send_sms(const etl::string_view& sms, const etl::string_view& number) {
         utils::assert_check(s_is_initialized);
 
+        // Confirm the module is still responding before doing anything
+        auto ret = send_cmd_and_compare_result(cmd_t::AT);
+        if (ret != status_t::OK) {
+            return status_t::ERR_MODULE_NOT_ALIVE;
+        }
+
         (void)sms;
         (void)number;
 
@@ -196,92 +204,130 @@ namespace gsm {
     status_t get_sim_status() {
         utils::assert_check(s_is_initialized);
 
+        // Confirm the module is still responding before doing anything
+        auto ret = send_cmd_and_compare_result(cmd_t::AT);
+        if (ret != status_t::OK) {
+            return status_t::ERR_MODULE_NOT_ALIVE;
+        }
+
+        // Check if the SIM card is present
+        ret = send_cmd_and_compare_result(cmd_t::CHECK_SIM);
+        if (ret != status_t::OK) {
+            return status_t::ERR_SIM_NOT_FOUND;
+        }
+
+        // Check signal strength
+        // No need to poll here. This is simply a status check
+        ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
+        if (ret != status_t::OK) {
+            return status_t::ERR_COULD_NOT_CONNECT;
+        }
+
         return status_t::OK;
     }
 
     etl::expected<etl::array<char, 16>, status_t> get_imsi() {
         utils::assert_check(s_is_initialized);
 
-        etl::array<char, 16> imsi{};
+        // Confirm the module is still responding before doing anything
+        auto ret = send_cmd_and_compare_result(cmd_t::AT);
+        if (ret != status_t::OK) {
+            return etl::unexpected(status_t::ERR_MODULE_NOT_ALIVE);
+        }
 
-        return imsi;
+        return {};
     }
 
     // Helpers
-    static inline status_t send_cmd(cmd_t cmd) {
+    static inline status_t send_cmd_and_compare_result(cmd_t cmd) {
 
         status_t ret{status_t::OK};
+
+        // Capture calling task since the ISRs send a notification to it
+        s_calling_task_handle = xTaskGetCurrentTaskHandle();
 
         // Send command
         const auto& data = AT_CMD_LUT[std::to_underlying(cmd)];
         utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size()) == HAL_OK);
 
+        // Block till the task notification is received from the ISR
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        // Receive the response from the SIM800L
+        etl::array<char, 32> rx_buf{};
+        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.size()) == HAL_OK);
+
         // Block till notification received from ISR
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        // Wait for response from the SIM800L
-        etl::string<32> rx_actual{};
-        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_actual.data()), rx_actual.max_size()) ==
-                            HAL_OK);
-
-        // Block till notification received from ISR
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // Construct a `std::string_view` from the data received. The UART
+        // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
+        auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
 
         // Check the response
-        if (std::string_view{rx_actual.data(), s_rx_size} != data.rx_expected) {
+        if (!rx_actual.contains(data.rx_expected)) {
             ret = status_t::ERR_GENERIC;
         }
 
-        // Clear the RX dma size variable
-        s_rx_size = {};
+        // Clear the RX dma size variable and calling task handle
+        s_rx_idle_line_size   = {};
+        s_calling_task_handle = nullptr;
 
         return ret;
     }
 
-    static inline status_t send_init_seq() {
+    static inline status_t send_init_sequence() {
         // Confirm the module is responding
-        auto ret = send_cmd(cmd_t::AT);
+        auto ret = send_cmd_and_compare_result(cmd_t::AT);
         if (ret != status_t::OK) {
-            return ret;
+            return status_t::ERR_MODULE_NOT_ALIVE;
         }
 
         // Echo mode off
-        ret = send_cmd(cmd_t::ECHO_OFF);
+        ret = send_cmd_and_compare_result(cmd_t::ECHO_OFF);
         if (ret != status_t::OK) {
             return ret;
         }
 
         // Text mode on
-        ret = send_cmd(cmd_t::TEXT_MODE);
+        ret = send_cmd_and_compare_result(cmd_t::TEXT_MODE);
         if (ret != status_t::OK) {
             return ret;
         }
 
-        // Set network provider's SMSC
-        ret = send_cmd(cmd_t::SET_SMSC);
+        // Set network provider's SMSC: GLO's in this case
+        ret = send_cmd_and_compare_result(cmd_t::SET_SMSC);
         if (ret != status_t::OK) {
             return ret;
         }
 
         // Check if the SIM card is present
-        ret = send_cmd(cmd_t::CHECK_SIM);
+        ret = send_cmd_and_compare_result(cmd_t::CHECK_SIM);
         if (ret != status_t::OK) {
             return status_t::ERR_SIM_NOT_FOUND;
         }
 
         // Check if the SIM card is registered
-        ret = send_cmd(cmd_t::CHECK_REG);
+        // If it's not, treat as it though it was not present
+        ret = send_cmd_and_compare_result(cmd_t::CHECK_REG);
         if (ret != status_t::OK) {
             return status_t::ERR_SIM_NOT_FOUND;
         }
 
         // Check signal strength
-        ret = send_cmd(cmd_t::CHECK_SIGNAL);
-        if (ret != status_t::OK) {
-            return status_t::ERR_COULD_NOT_CONNECT;
+        for (uint32_t i{0}; i < RETRIES; i++) {
+            ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
+            if (ret == status_t::OK) {
+                return status_t::OK;
+            }
+
+            // We poll here since network connection failure is a recoverable error from
+            // the module, so we can poll it until we get a stable network connection
+            vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_RETRIES_MS));
         }
 
-        return status_t::OK;
+        // If we get here, we were unable to establish a connection
+        return status_t::ERR_COULD_NOT_CONNECT;
     }
 
 } // namespace gsm
@@ -300,7 +346,7 @@ extern "C" {
     void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size) {
         if (huart->Instance == gsm::s_huart.Instance) {
             // Save the length that was received
-            gsm::s_rx_size = Size;
+            gsm::s_rx_idle_line_size = Size;
             BaseType_t higher_priority_task_woken{};
             vTaskNotifyGiveFromISR(gsm::s_calling_task_handle, &higher_priority_task_woken);
             portYIELD_FROM_ISR(higher_priority_task_woken);

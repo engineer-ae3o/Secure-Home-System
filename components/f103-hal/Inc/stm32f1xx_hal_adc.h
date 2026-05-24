@@ -192,7 +192,7 @@ extern "C" {
         void (*LevelOutOfWindowCallback)(struct __ADC_HandleTypeDef* hadc); /*!< ADC analog watchdog 1 callback */
         void (*ErrorCallback)(struct __ADC_HandleTypeDef* hadc);            /*!< ADC error callback */
         void (*InjectedConvCpltCallback)(struct __ADC_HandleTypeDef* hadc);
-            /*!< ADC group injected conversion complete callback */  /*!< ADC end of sampling callback */
+        /*!< ADC group injected conversion complete callback */      /*!< ADC end of sampling callback */
         void (*MspInitCallback)(struct __ADC_HandleTypeDef* hadc);   /*!< ADC Msp Init callback */
         void (*MspDeInitCallback)(struct __ADC_HandleTypeDef* hadc); /*!< ADC Msp DeInit callback */
 #endif                                                               /* USE_HAL_ADC_REGISTER_CALLBACKS */

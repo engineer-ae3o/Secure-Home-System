@@ -1,3 +1,5 @@
+#include "ascon/random.h"
+
 #include <cstdint>
 
 extern "C" {

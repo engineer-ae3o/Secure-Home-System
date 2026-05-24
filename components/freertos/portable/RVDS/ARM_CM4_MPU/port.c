@@ -676,9 +676,9 @@ __asm void vPortSVCHandler(void) {
 
             ldr          r1,
         [ r0, #24 ] ldrb r2, [ r1, # - 2 ] cmp r2, #NUM_SYSTEM_CALLS blt syscall_enter cmp r2,
-        #portSVC_SYSTEM_CALL_EXIT beq syscall_exit b vSVCHandler_C
+#portSVC_SYSTEM_CALL_EXIT beq syscall_exit b vSVCHandler_C
 
-            syscall_enter mov r1,
+        syscall_enter mov r1,
         lr b vSystemCallEnter
 
             syscall_exit mov r1,
@@ -1084,7 +1084,7 @@ __asm void xPortPendSVHandler(void) {
 
             add r0,
         r0,
-        #0x20 /* Move r0 to location where s0 is saved. */
+# 0x20 /* Move r0 to location where s0 is saved. */
         tst lr,
 # 0x10 ittt eq
         vstmiaeq r1 !,
@@ -1095,7 +1095,7 @@ __asm void xPortPendSVHandler(void) {
         {s0 - s16} /* Store hardware saved FP context. */
     sub r0,
         r0,
-        #0x20 /* Set r0 back to the location of hardware saved context. */
+# 0x20 /* Set r0 back to the location of hardware saved context. */
 
         stmia r1 !,
         {r3 - r11, lr} /* Store CONTROL register, r4-r11 and LR. */
@@ -1126,7 +1126,7 @@ __asm void xPortPendSVHandler(void) {
         [r3] /* r2 = pxCurrentTCB. */
         add r2,
         r2,
-        #4 /* r2 = Second item in the TCB which is xMPUSettings. */
+# 4 /* r2 = Second item in the TCB which is xMPUSettings. */
 
         dmb /* Complete outstanding transfers before disabling MPU. */
             ldr r0,
@@ -1247,9 +1247,8 @@ __asm void vPortEnableVFP(void) {
 
         orr r1,
           r1,
-          #(0xf << 20) /* Enable CP10 and CP11 coprocessors, then save back. */
-        str       r1,
-          [r0] bx r14 nop
+#(0xf << 20) /* Enable CP10 and CP11 coprocessors, then save back. */
+          str r1, [r0] bx r14 nop
     /* *INDENT-ON* */
 }
 

@@ -470,7 +470,7 @@ __asm void xPortPendSVHandler(void) {
 
         stmdb        sp !,
         {r0, r3} mov r0, #configMAX_SYSCALL_INTERRUPT_PRIORITY cpsid i msr basepri, r0 dsb isb cpsie i bl vTaskSwitchContext mov r0,
-        #0 msr basepri, r0 ldmia sp !,
+# 0 msr basepri, r0 ldmia sp !,
         {r0, r3}
 
     /* The first item in pxCurrentTCB is the task top of stack. */

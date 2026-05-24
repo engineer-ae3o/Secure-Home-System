@@ -1,38 +1,39 @@
 #pragma once
 
 #include "etl/array.h"
-#include "etl/string.h"
 #include "etl/expected.h"
+#include "etl/string_view.h"
 
 namespace gsm {
 
-    enum class status_t : uint8_t {
-        OK,
-        ERR_GENERIC,
-        ERR_SIM_NOT_FOUND,
-        ERR_MODULE_NOT_ALIVE,
-        ERR_COULD_NOT_CONNECT,
+    enum class error_t : uint8_t {
+        NONE,
+        FAIL,
+        SIM_NOT_FOUND,
+        SIM_NOT_REGISTERED,
+        MODULE_NOT_ALIVE,
+        BAD_NETWORK_CONN,
     };
 
     /**
-     * @brief Initializes the UART, DMA and GPIO peripherals, as well as
-     *        polls the GSM module every 5s till it responds with an `OK`
-     *        message. It times out after 30s and returns the timeout.
-     *        Otherwise, it returns the state of GSM module, the SIM card
-     *        or network registration status on an error.
+     * @brief It initializes the GPIO, UART and GPIO peripherals as needed for
+     *        communication with the SIM800L. It then performs a bunch of status
+     *        checks on the GSM module and the SIM card to ensure they are suitable
+     *        to use for operation. It polls the module every 5s till a good network
+     *        connnection has been established with a network provider.
      * 
-     * @return `OK`: The GSM module found the SIM card and has connected to
-     *                a network tower.
-     *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
-     *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
-     *         `ERR_COULD_NOT_CONNECT`: The GSM module could not connnect to a
-     *                                   network tower.
+     * @return `NONE`: The GSM module found the SIM card, has connected to a network
+     *                 provider and has a good connection with it.
+     *         `FAIL`: Generic error from the GSM module.
+     *         `MODULE_NOT_ALIVE`: GSM module not responding.
+     *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
+     *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
+     *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
      * 
      * @note It blocks the calling task for up to 30s on the worst case path
-     *       while waiting for the `OK` status message from the GSM module.
+     *       while waiting for the `NONE` status message from the GSM module.
      */
-    [[nodiscard]] status_t init();
+    [[nodiscard]] error_t init();
 
     /**
      * @brief Deinitializes the UART and DMA peripherals, as well as
@@ -41,34 +42,34 @@ namespace gsm {
     void deinit();
 
     /**
-     * @brief Sends an SMS to the given phone number.
-     * 
-     * @param[in] sms    SMS to be sent.
-     * @param[in] number Phone number to send the SMS to.
-     * 
-     * @return `OK`: The SMS was sent successfully.
-     *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
-     *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
-     *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
-     *                                    network tower.
-     */
-    [[nodiscard]] status_t send_sms(const etl::string_view& sms, const etl::string_view& number);
-
-    /**
      * @brief Checks if the SIM card is still present in the GSM module and can
      *        be read; and if there's still a connection between the module and
      *        the network tower. It returns immediately after checking all the
      *        available statuses.
      * 
-     * @return `OK`: The GSM module sees and can read the SIM card and still has
-     *                a stable connection to the network tower.
-     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
-     *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
-     *         `ERR_COULD_NOT_CONNECT`: The GSM module lost connection to the
-     *                                   network tower.
+     * @return `NONE`: The GSM module sees and can read the SIM card and still has
+     *                 a stable connection to the network tower.
+     *         `MODULE_NOT_ALIVE`: GSM module not responding.
+     *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
+     *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
+     *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
      */
-    [[nodiscard]] status_t get_sim_status();
+    [[nodiscard]] error_t get_sim_status();
+
+    /**
+     * @brief Sends an SMS to the given phone number.
+     * 
+     * @param[in] sms    SMS to be sent.
+     * @param[in] number Phone number to send the SMS to.
+     * 
+     * @return `NONE`: The SMS was sent successfully.
+     *         `FAIL`: Generic failure from the GSM module.
+     *         `MODULE_NOT_ALIVE`: GSM module not responding.
+     *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
+     *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
+     *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
+     */
+    [[nodiscard]] error_t send_sms(const etl::string_view& sms, const etl::string_view& number);
 
     /**
      * @brief Reads the IMSI (International Mobile Subscriber Identity) of the
@@ -76,13 +77,14 @@ namespace gsm {
      *        digit UID used by mobile network providers for identifying and
      *        authenticating SIM cards and subscribers.
      * 
-     * @return The IMSI on sucess. On error, returns any of the following:
-     *         `ERR_GENERIC`: Generic error from the GSM module.
-     *         `ERR_MODULE_NOT_ALIVE`: GSM module not responding.
-     *         `ERR_SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
+     * @return The IMSI as an `etl::array<char>` on sucess. On error,
+     *         it returns any of the following:
+     *         `FAIL`: IMSI could not be read, or was read with errors.
+     *         `MODULE_NOT_ALIVE`: GSM module not responding.
+     *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      * 
      * @note The digits are stored as ASCII, not numeric digits.
      */
-    [[nodiscard]] etl::expected<etl::array<char, 16>, status_t> get_imsi();
+    [[nodiscard]] etl::expected<etl::array<char, 16>, error_t> get_imsi();
 
 } // namespace gsm

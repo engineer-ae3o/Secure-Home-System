@@ -169,31 +169,37 @@ void print(const etl::string_view& str, uint8_t line) {
 
     auto ret = gsm::init();
     switch (ret) {
-        case gsm::status_t::ERR_GENERIC:
+        case gsm::error_t::FAIL:
             print("An unknown", 0);
             print("error occured", 1);
             // Crash system for now
             utils::assert_check(false);
             break;
-        case gsm::status_t::ERR_SIM_NOT_FOUND:
+        case gsm::error_t::SIM_NOT_REGISTERED:
+            print("SIM registration", 0);
+            print("failed", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::error_t::SIM_NOT_FOUND:
             print("SIM card", 0);
             print("not found", 1);
             // Crash system for now
             utils::assert_check(false);
             break;
-        case gsm::status_t::ERR_COULD_NOT_CONNECT:
-            print("Failed to", 0);
-            print("connect to tower", 1);
+        case gsm::error_t::BAD_NETWORK_CONN:
+            print("Failed to get a", 0);
+            print("good connection", 1);
             // Crash system for now
             utils::assert_check(false);
             break;
-        case gsm::status_t::ERR_MODULE_NOT_ALIVE:
+        case gsm::error_t::MODULE_NOT_ALIVE:
             print("GSM module", 0);
             print("not found", 1);
             // Crash system for now
             utils::assert_check(false);
             break;
-        case gsm::status_t::OK:
+        case gsm::error_t::NONE:
             print("SIM card found", 0);
             print("Reading IMSI", 1);
             break;
@@ -210,7 +216,7 @@ void print(const etl::string_view& str, uint8_t line) {
     }
 
     print("SIM's IMSI: ", 0);
-    print(etl::string_view(imsi.value().data(), imsi->size()), 1);
+    print(etl::string_view(imsi->data(), imsi->size()), 1);
 
     // Do nothing for now
     while (true) {

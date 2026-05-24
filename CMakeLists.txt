@@ -119,11 +119,12 @@ if (CPPCHECK)
                             --project=${CMAKE_BINARY_DIR}/compile_commands.json
                             --suppress=missingIncludeSystem
                             --inline-suppr
-                            --file-filter=${CMAKE_SOURCE_DIR}/main/*
-                            --file-filter=${CMAKE_SOURCE_DIR}/components/drivers/*
+                            --file-filter=main/*.cpp
+                            --file-filter=components/drivers/src/*.cpp
+                            --file-filter=components/drivers/inc/*.hpp
                             -D__GNUC__=14
                             -D__GNUC_MINOR__=3
-                            -D__ARM_ARCH_7M__=1
+                            -D__ARM_ARCH_PROFILE='M'
         COMMENT "Running static analysis"
     )
 endif()

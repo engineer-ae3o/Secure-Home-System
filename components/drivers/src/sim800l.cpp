@@ -280,7 +280,7 @@ namespace gsm {
         }
 
         // Extract IMSI: Since the responses always start with `'\r\n'`, we
-        // can skip the first two chararters and copy the next 15 characters
+        // skip the first two chararters and copy the next 15 characters
         etl::array<char, 16> imsi{};
         memcpy(imsi.data(), (rx_buf.data() + 2), 15);
 
@@ -344,7 +344,25 @@ namespace gsm {
             }
             // The `CHECK_REG` command receives a command that also requires parsing
             else if (cmd == cmd_t::CHECK_REG) {
-                auto pos = rx_actual.find("+CREG: ");
+                // Find position of thre first number that appears after `','`
+                auto pos = rx_actual.find(',');
+                if (pos == std::string_view::npos) {
+                    ret = error_t::FAIL;
+                    return;
+                }
+
+                // Create a string view of the everything after the `',`
+                auto stat_str = rx_actual.substr(pos + 1);
+
+                // Get the network stat
+                auto stat = std::strtoul(stat_str.data(), nullptr, 10);
+
+                // The stat is what tells us the state of the SIM card's network registration.
+                // A stat of 1 means homing and 5 means roaming. Nothing else is good.
+                if (!(stat == 1) && !(stat == 5)) {
+                    ret = error_t::FAIL;
+                    return;
+                }
             }
             // If the sent command wasn't `CHECK_SIGNAL` or `CHECK_REG`, that
             // means the command does not needing parsing and the actual result
@@ -358,6 +376,8 @@ namespace gsm {
                 }
             }
         }();
+
+        // Don't blame me. AT commands are a mess.
 
         // Clear the RX dma size variable and calling task handle
         s_rx_idle_line_size   = {};

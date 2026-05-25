@@ -143,9 +143,9 @@ namespace gsm {
         HAL_NVIC_EnableIRQ(USART1_IRQn);
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
         HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-        HAL_NVIC_SetPriority(USART1_IRQn, 15, 15);
-        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 15);
-        HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 15, 15);
+        HAL_NVIC_SetPriority(USART1_IRQn, 15, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 15, 0);
 
         // Send init sequence to GSM mdodule and confirm everything is in order
         auto ret = send_init_sequence();
@@ -218,13 +218,15 @@ namespace gsm {
         return error_t::NONE;
     }
 
-    error_t send_sms(const etl::string_view& sms, const etl::string_view& number) {
+    error_t send_sms(const etl::string_view& sms, const etl::string_view& number, bool check_sim_status) {
         utils::assert_check(s_is_initialized);
 
-        // Check the SIM card's status before sending the SMS
-        auto ret = get_sim_status();
-        if (ret != error_t::NONE) {
-            return ret;
+        if (check_sim_status) {
+            // Check the SIM card's status before sending the SMS
+            auto ret = get_sim_status();
+            if (ret != error_t::NONE) {
+                return ret;
+            }
         }
 
         (void)sms;
@@ -271,6 +273,9 @@ namespace gsm {
         // digit IMSI, another carriage and newline, yet another carriage and newline
         // a "OK" and a final carriage and newline, giving us 25 characters total.
         if (s_rx_idle_line_size < 25) {
+            // Clear state before returning
+            s_rx_idle_line_size   = {};
+            s_calling_task_handle = nullptr;
             return etl::unexpected(error_t::FAIL);
         }
 
@@ -312,11 +317,47 @@ namespace gsm {
         // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
         auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
 
-        // Check if the AT command we are expecting can
-        // be found in the actual data we received back
-        if (!rx_actual.contains(data.rx_expected)) {
-            ret = error_t::FAIL;
-        }
+        // Interpret the data that was received based on the type of AT command
+        // that was transferred because some require parsing and others do not.
+        [&]() {
+            // The `CHECK_SIGNAL` command receives a command that requires parsing
+            if (cmd == cmd_t::CHECK_SIGNAL) {
+                // Get index to the beginning of the first instance of `"+CSQ: "`
+                auto pos = rx_actual.find("+CSQ: ");
+                if (pos == std::string_view::npos) {
+                    ret = error_t::FAIL;
+                    return;
+                }
+
+                // strlen of `"+CSQ: "` is 6. Create a string view of everything after it.
+                auto rssi_str = rx_actual.substr(pos + 6);
+
+                // Get the RSSI. It is the first number after `"+CSQ: "`
+                auto rssi = std::strtoul(rssi_str.data(), nullptr, 10);
+
+                // If RSSI is 99, the module couldn't detect a signal or
+                // if RSSI is less than 5, the signal is too weak to use.
+                if (rssi == 99 || rssi < 5) {
+                    ret = error_t::FAIL;
+                    return;
+                }
+            }
+            // The `CHECK_REG` command receives a command that also requires parsing
+            else if (cmd == cmd_t::CHECK_REG) {
+                auto pos = rx_actual.find("+CREG: ");
+            }
+            // If the sent command wasn't `CHECK_SIGNAL` or `CHECK_REG`, that
+            // means the command does not needing parsing and the actual result
+            // can be checked to see if it contains the expected result.
+            else {
+                // Check if the AT command we are expecting for the transmitted AT command can be
+                // found in the actual data we received back. If it's not, then an error occured.
+                if (!rx_actual.contains(data.rx_expected)) {
+                    ret = error_t::FAIL;
+                    return;
+                }
+            }
+        }();
 
         // Clear the RX dma size variable and calling task handle
         s_rx_idle_line_size   = {};

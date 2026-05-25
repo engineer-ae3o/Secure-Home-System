@@ -59,8 +59,10 @@ namespace gsm {
     /**
      * @brief Sends an SMS to the given phone number.
      * 
-     * @param[in] sms    SMS to be sent.
-     * @param[in] number Phone number to send the SMS to.
+     * @param[in] sms              SMS to be sent.
+     * @param[in] number           Phone number to send the SMS to.
+     * @param[in] check_sim_status Determines whether the function checks the SIM's
+     *                             card's status before attempting to send the SMS.
      * 
      * @return `NONE`: The SMS was sent successfully.
      *         `FAIL`: Generic failure from the GSM module.
@@ -69,7 +71,7 @@ namespace gsm {
      *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
      *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
      */
-    [[nodiscard]] error_t send_sms(const etl::string_view& sms, const etl::string_view& number);
+    [[nodiscard]] error_t send_sms(const etl::string_view& sms, const etl::string_view& number, bool check_sim_status = true);
 
     /**
      * @brief Reads the IMSI (International Mobile Subscriber Identity) of the

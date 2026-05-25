@@ -6,8 +6,9 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 
-#include "etl/atomic.h"
+#include "etl/utility.h"
 #include "etl/string.h"
 
 #include <string_view>
@@ -20,14 +21,17 @@ namespace gsm {
     static DMA_HandleTypeDef  s_hdma_tx{};
     static DMA_HandleTypeDef  s_hdma_rx{};
     static TaskHandle_t       s_calling_task_handle{};
+    static SemaphoreHandle_t  s_task_mutex{};
+    static StaticSemaphore_t  s_task_mutex_buffer{};
 
     static bool s_is_initialized{};
 
     // This is needed because we are receiving UART data, we don't
     // know the length of the data we will get. The UART idle line
     // ISR puts the actual length of the data received here.
-    static volatile etl::atomic<uint16_t> s_rx_idle_line_size{};
-    static constexpr uint32_t             UART_IDLE_LINE_BUF_BYTE{32};
+    static volatile uint16_t s_rx_idle_line_size{};
+
+    static constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{32};
 
     static constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
     static constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
@@ -36,6 +40,43 @@ namespace gsm {
     static constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
 
     static constexpr uint32_t TIMEOUT_MS{2000};
+
+    // RAII helper for cleaning up stale used state
+    struct cleanup_t {
+        cleanup_t() = default;
+
+        ~cleanup_t() {
+            s_rx_idle_line_size   = {};
+            s_calling_task_handle = {};
+        }
+
+        cleanup_t(const cleanup_t&)            = delete;
+        cleanup_t& operator=(const cleanup_t&) = delete;
+        cleanup_t(cleanup_t&&)                 = delete;
+        cleanup_t& operator=(cleanup_t&&)      = delete;
+    };
+
+    // RAII helper for taking and freeing the mutex
+    struct mutex_t {
+    public:
+        mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTake(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
+            mutex_taken = m_mutex_taken;
+        }
+
+        ~mutex_t() {
+            if (m_mutex_taken) {
+                xSemaphoreGive(s_task_mutex);
+            }
+        }
+
+        mutex_t(const mutex_t&)            = delete;
+        mutex_t& operator=(const mutex_t&) = delete;
+        mutex_t(mutex_t&&)                 = delete;
+        mutex_t& operator=(mutex_t&&)      = delete;
+
+    private:
+        bool m_mutex_taken{};
+    };
 
     enum class cmd_t : uint8_t {
         // Initialization
@@ -158,6 +199,9 @@ namespace gsm {
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
         HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
+        // Create the mutex
+        s_task_mutex = xSemaphoreCreateMutexStatic(&s_task_mutex_buffer);
+
         // Send init sequence to GSM module and confirm everything is in order
         auto ret = send_init_sequence();
 
@@ -183,7 +227,10 @@ namespace gsm {
         s_huart               = {};
         s_hdma_tx             = {};
         s_hdma_rx             = {};
-        s_calling_task_handle = nullptr;
+        s_rx_idle_line_size   = {};
+        s_task_mutex          = {};
+        s_task_mutex_buffer   = {};
+        s_calling_task_handle = {};
 
         // Disable the corresponding NVIC UART, DMA tx and rx irqs
         NVIC_DisableIRQ(USART1_IRQn);
@@ -203,6 +250,14 @@ namespace gsm {
     }
 
     error_t get_sim_status() {
+        // RAII handling for mutex acquisition and releasing
+        bool                     mutex_taken{};
+        [[maybe_unused]] mutex_t mutex(mutex_taken);
+
+        if (!mutex_taken) {
+            return error_t::MUTEX_TIMEOUT;
+        }
+
         utils::assert_check(s_is_initialized);
 
         // Confirm the module is still responding before doing anything
@@ -234,9 +289,20 @@ namespace gsm {
     }
 
     error_t send_sms(const etl::string_view& sms, const etl::string_view& number, bool check_sim_status) {
+        // RAII handling for mutex acquisition and releasing
+        bool                     mutex_taken{};
+        [[maybe_unused]] mutex_t mutex(mutex_taken);
+
+        if (!mutex_taken) {
+            return error_t::MUTEX_TIMEOUT;
+        }
+
         utils::assert_check(s_is_initialized);
         utils::assert_check(sms.size() <= MAX_SMS_LEN);
         utils::assert_check(number.size() <= MAX_PHONE_NUMBER_LEN);
+
+        // Will clear the rx idle line and calling task handle variables
+        [[maybe_unused]] cleanup_t auto_cleanup;
 
         if (check_sim_status) {
             // Check the SIM card's status before sending the SMS
@@ -275,9 +341,6 @@ namespace gsm {
         // Block till the task notification is received from the ISR
         // If no notification is received within the timeout, return an error.
         if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
-            // Clear the RX dma size variable and calling task handle
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return error_t::FAIL;
         }
 
@@ -286,11 +349,11 @@ namespace gsm {
 
         // Check if the expected response can be found in the actual response
         if (!rx_number_actual_ret_val.contains('>')) {
-            // Clear the RX dma size variable and calling task handle
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return error_t::FAIL;
         }
+
+        // Clear the RX dma size variable
+        s_rx_idle_line_size = {};
 
         // If we get here, the SIM800L has given us clearance to send the SMS
         // So we send the SMS followed by `0x1A (CTRL + Z)`.
@@ -311,9 +374,6 @@ namespace gsm {
         // If no notification is received within the timeout, return
         // an error. Reception in this case can take a long time.
         if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS * 5)) == 0) {
-            // Clear the RX dma size variable and calling task handle
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return error_t::FAIL;
         }
 
@@ -322,15 +382,22 @@ namespace gsm {
 
         // Parse output to see if there was an error
 
-        // Clear the RX dma size variable and calling task handle
-        s_rx_idle_line_size   = {};
-        s_calling_task_handle = nullptr;
-
         return error_t::NONE;
     }
 
     etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
+        // RAII handling for mutex acquisition and releasing
+        bool                     mutex_taken{};
+        [[maybe_unused]] mutex_t mutex(mutex_taken);
+
+        if (!mutex_taken) {
+            return etl::unexpected(error_t::MUTEX_TIMEOUT);
+        }
+
         utils::assert_check(s_is_initialized);
+
+        // Will clear the rx idle line and calling task handle variables
+        [[maybe_unused]] cleanup_t auto_cleanup;
 
         // Confirm the module is still responding before doing anything
         auto ret = send_cmd_and_compare_result(cmd_t::AT);
@@ -362,20 +429,14 @@ namespace gsm {
         // Block till the task notification is received from the ISR
         // If no notification is received within the timeout, return an error.
         if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
-            // Clear the RX dma size variable and calling task handle
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return etl::unexpected(error_t::FAIL);
         }
 
-        // Make sure `s_rx_idle_line_size` has enough data before copying any data
+        // Makes sure `s_rx_idle_line_size` has enough data before copying any data
         // NOTE: The module is supposed to send a carriage return, a newline, the 15
         // digit IMSI, another carriage and newline, yet another carriage and newline
         // a "OK" and a final carriage and newline, giving us 25 characters total.
         if (s_rx_idle_line_size < 25) {
-            // Clear state before returning
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return etl::unexpected(error_t::FAIL);
         }
 
@@ -384,15 +445,14 @@ namespace gsm {
         etl::array<char, IMSI_BUF_SIZE> imsi{};
         memcpy(imsi.data(), (rx_buf.data() + 2), 15);
 
-        // Clear the RX dma size variable and calling task handle
-        s_rx_idle_line_size   = {};
-        s_calling_task_handle = nullptr;
-
         return imsi;
     }
 
     // Helpers
     static inline error_t send_cmd_and_compare_result(cmd_t cmd) {
+
+        // Will clear the rx idle line and calling task handle variables
+        [[maybe_unused]] cleanup_t auto_cleanup;
 
         error_t ret{error_t::NONE};
 
@@ -413,9 +473,6 @@ namespace gsm {
         // Block till the task notification is received from the ISR
         // If no notification is received within the timeout, return an error.
         if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
-            // Clear the RX dma size variable and calling task handle
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = nullptr;
             return error_t::FAIL;
         }
 
@@ -439,7 +496,7 @@ namespace gsm {
                 auto rssi_str = rx_actual.substr(pos + 6);
 
                 // Get the RSSI. It is the first number after `"+CSQ: "`
-                auto rssi = std::strtoul(rssi_str.data(), nullptr, 10);
+                auto rssi = std::strtoul(rssi_str.data(), {}, 10);
 
                 // If RSSI is 99, the module couldn't detect a signal or
                 // if RSSI is less than 5, the signal is too weak to use.
@@ -461,7 +518,7 @@ namespace gsm {
                 auto stat_str = rx_actual.substr(pos + 1);
 
                 // Get the network stat
-                auto stat = std::strtoul(stat_str.data(), nullptr, 10);
+                auto stat = std::strtoul(stat_str.data(), {}, 10);
 
                 // The stat is what tells us the state of the SIM card's network registration.
                 // A stat of 1 means homing and 5 means roaming. Nothing else is good.
@@ -485,14 +542,13 @@ namespace gsm {
 
         // Don't blame me. AT commands are a mess.
 
-        // Clear the RX dma size variable and calling task handle
-        s_rx_idle_line_size   = {};
-        s_calling_task_handle = nullptr;
-
         return ret;
     }
 
     static inline error_t send_init_sequence() {
+
+        // Will clear the rx idle line and calling task handle variables
+        [[maybe_unused]] cleanup_t auto_cleanup;
 
         error_t ret{error_t::NONE};
 
@@ -539,10 +595,6 @@ namespace gsm {
         } else {
             ret = error_t::MODULE_NOT_ALIVE;
         }
-
-        // Clear the RX dma size variable and calling task handle
-        s_rx_idle_line_size   = {};
-        s_calling_task_handle = nullptr;
 
         // Return immediately on an error
         if (ret != error_t::NONE) {
@@ -623,5 +675,4 @@ extern "C" {
     void DMA1_Channel5_IRQHandler() {
         HAL_DMA_IRQHandler(&gsm::s_hdma_rx);
     }
-
-} // namespace gsm
+}

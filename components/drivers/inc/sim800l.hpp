@@ -15,6 +15,8 @@ namespace gsm {
         BAD_NETWORK_CONN,
     };
 
+    constexpr inline uint32_t IMSI_BUF_SIZE{16};
+
     /**
      * @brief It initializes the GPIO, UART and GPIO peripherals as needed for
      *        communication with the SIM800L. It then performs a bunch of status
@@ -87,6 +89,6 @@ namespace gsm {
      * 
      * @note The digits are stored as ASCII, not numeric digits.
      */
-    [[nodiscard]] etl::expected<etl::array<char, 16>, error_t> get_imsi();
+    [[nodiscard]] etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi();
 
 } // namespace gsm

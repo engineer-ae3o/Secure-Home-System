@@ -25,15 +25,19 @@ namespace gsm {
     // This is needed because we are receiving UART data, we don't
     // know the length of the data we will get. The UART idle line
     // ISR puts the actual length of the data received here.
-    static volatile uint16_t s_rx_idle_line_size{};
+    static volatile uint16_t  s_rx_idle_line_size{};
+    static constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{32};
 
-    static constexpr uint32_t RETRIES{6};
-    static constexpr uint32_t DELAY_BETWEEN_RETRIES_MS{5000};
+    static constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
+    static constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
+
+    static constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT{10};
+    static constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
 
     enum class cmd_t : uint8_t {
         // Initialization
         AT,        // Module alive check
-        ECHO_OFF,  // Disable echo
+        ECHO_OFF,  // Disable echo mode
         TEXT_MODE, // SMS text mode
         SET_SMSC,  // GLO SMSC
 
@@ -44,6 +48,9 @@ namespace gsm {
 
         // IMSI
         GET_IMSI, // Get the SIM card's IMSI
+
+        // Cleanup
+        DEINIT, // Tell the SIM800L to deinitialize itself
 
         // Total
         COUNT // Used to get total number for array declaration
@@ -66,6 +73,7 @@ namespace gsm {
         [std::to_underlying(cmd_t::CHECK_REG)]    = {"AT+CREG?\r", "+CREG"},
         [std::to_underlying(cmd_t::CHECK_SIGNAL)] = {"AT+CSQ\r", "+CSQ"},
         [std::to_underlying(cmd_t::GET_IMSI)]     = {"AT+CIMI\r", "OK"},
+        [std::to_underlying(cmd_t::DEINIT)]       = {"AT+CPOWD=1\r", "NORMAL POWER DOWN"},
     }};
 
     // Forward declarations
@@ -101,7 +109,7 @@ namespace gsm {
         __HAL_RCC_USART1_CLK_ENABLE();
 
         s_huart.Instance          = config::GSM_UART_PORT;
-        s_huart.Init.BaudRate     = 9600U;
+        s_huart.Init.BaudRate     = 57600U;
         s_huart.Init.WordLength   = UART_WORDLENGTH_8B;
         s_huart.Init.StopBits     = UART_STOPBITS_1;
         s_huart.Init.Parity       = UART_PARITY_NONE;
@@ -140,12 +148,12 @@ namespace gsm {
         __HAL_LINKDMA(&s_huart, hdmarx, s_hdma_rx);
 
         // Enable the NVIC irqs and set priorities to lowest
-        HAL_NVIC_EnableIRQ(USART1_IRQn);
-        HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
-        HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
         HAL_NVIC_SetPriority(USART1_IRQn, 15, 0);
         HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 15, 0);
         HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 15, 0);
+        HAL_NVIC_EnableIRQ(USART1_IRQn);
+        HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+        HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
         // Send init sequence to GSM mdodule and confirm everything is in order
         auto ret = send_init_sequence();
@@ -159,6 +167,10 @@ namespace gsm {
 
     void deinit() {
         utils::assert_check(s_is_initialized);
+
+        // Tell the SIM800L to deinitialize itself
+        // We don't care if there's an error so we can ignore the return value
+        (void)send_cmd_and_compare_result(cmd_t::DEINIT);
 
         // Deinitialize the USART and DMA channels
         utils::assert_check(HAL_DMA_DeInit(&s_hdma_tx) == HAL_OK);
@@ -235,7 +247,7 @@ namespace gsm {
         return error_t::NONE;
     }
 
-    etl::expected<etl::array<char, 16>, error_t> get_imsi() {
+    etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
         utils::assert_check(s_is_initialized);
 
         // Confirm the module is still responding before doing anything
@@ -251,12 +263,12 @@ namespace gsm {
             return etl::unexpected(error_t::SIM_NOT_FOUND);
         }
 
-        // Capture calling task since the ISRs send a notification to it
+        // Capture calling task since the irq handler sends a notification to it
         s_calling_task_handle = xTaskGetCurrentTaskHandle();
 
         // We have to start reception on the UART RX line since the SIM800L
-        // may start its own transmission immediately after ours is done
-        etl::array<char, 32> rx_buf{};
+        // may start its own transmission immediately after ours is done.
+        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
         utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.size()) == HAL_OK);
 
         // Get IMSI AT command
@@ -281,7 +293,7 @@ namespace gsm {
 
         // Extract IMSI: Since the responses always start with `'\r\n'`, we
         // skip the first two chararters and copy the next 15 characters
-        etl::array<char, 16> imsi{};
+        etl::array<char, IMSI_BUF_SIZE> imsi{};
         memcpy(imsi.data(), (rx_buf.data() + 2), 15);
 
         // Clear the RX dma size variable and calling task handle
@@ -296,12 +308,12 @@ namespace gsm {
 
         error_t ret{error_t::NONE};
 
-        // Capture calling task since the ISRs send a notification to it
+        // Capture calling task since the irq handler sends a notification to it
         s_calling_task_handle = xTaskGetCurrentTaskHandle();
 
         // We have to start reception on the UART RX line since the SIM800L
-        // may start its own transmission immediately after ours is done
-        etl::array<char, 32> rx_buf{};
+        // may start its own transmission immediately after ours is done.
+        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
         utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.size()) == HAL_OK);
 
         // Get the corresponding AT command using the command as the index
@@ -387,8 +399,58 @@ namespace gsm {
     }
 
     static inline error_t send_init_sequence() {
-        // Confirm the module is responding
-        auto ret = send_cmd_and_compare_result(cmd_t::AT);
+
+        error_t ret{error_t::NONE};
+
+        // We cannot use `send_cmd_and_compare_result(...)` here
+        // since we need to send the `AT` command multiple times
+        // till we receive the `OK` string from the SIM800L. So we
+        // need to handle this special case manually.
+
+        // Capture calling task since the irq handler sends a notification to it
+        s_calling_task_handle = xTaskGetCurrentTaskHandle();
+
+        // We have to start reception on the UART RX line since the SIM800L
+        // may start its own transmission immediately after ours is done.
+        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.size()) == HAL_OK);
+
+        // Get the tx data from the LUT
+        const auto& data = AT_CMD_LUT[std::to_underlying(cmd_t::AT)];
+        uint8_t     count{NUM_OF_TIMES_TO_SEND_AT};
+        bool        module_responded{};
+
+        // Continuously transmit the `AT` commmand
+        while (static_cast<bool>(count--)) {
+            utils::assert_check(
+                HAL_UART_Transmit(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size(), HAL_MAX_DELAY) == HAL_OK);
+
+            // If a notification was received, that means the module has responded.
+            // Wait for some ms before attempting to transmit the `AT` command again
+            if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(DELAY_BETWEEN_TX_AT_CMDS_MS)) > 0) {
+                module_responded = true;
+                break;
+            }
+        }
+
+        if (module_responded) {
+            // Construct a `std::string_view` from the data received. The UART
+            // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
+            auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
+
+            // Check if the expected return was in the actual data received
+            if (!rx_actual.contains(data.rx_expected)) {
+                ret = error_t::MODULE_NOT_ALIVE;
+            }
+        } else {
+            ret = error_t::MODULE_NOT_ALIVE;
+        }
+
+        // Clear the RX dma size variable and calling task handle
+        s_rx_idle_line_size   = {};
+        s_calling_task_handle = nullptr;
+
+        // Return immediately on an error
         if (ret != error_t::NONE) {
             return error_t::MODULE_NOT_ALIVE;
         }
@@ -424,7 +486,7 @@ namespace gsm {
         }
 
         // Check signal strength
-        for (uint32_t i{0}; i < RETRIES; i++) {
+        for (uint32_t i{0}; i < NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK; i++) {
             ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
             if (ret == error_t::NONE) {
                 return error_t::NONE;
@@ -432,7 +494,7 @@ namespace gsm {
 
             // We poll here since network connection failure is a recoverable error from
             // the module, so we can poll it until we get a stable network connection
-            vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_RETRIES_MS));
+            vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS));
         }
 
         // If we get here, we were unable to establish a good connection
@@ -442,7 +504,6 @@ namespace gsm {
 } // namespace gsm
 
 extern "C" {
-
     // UART RX done callback
     void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size) {
         if (huart->Instance == gsm::s_huart.Instance) {

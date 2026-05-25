@@ -167,6 +167,9 @@ void print(const etl::string_view& str, uint8_t line) {
 [[noreturn]] static void gsm_task(void* arg) {
     UNUSED(arg);
 
+    // The SIM800L requires apporx. 3s after bootup before any command can be sent
+    vTaskDelay(pdMS_TO_TICKS(3000));
+
     auto ret = gsm::init();
     switch (ret) {
         case gsm::error_t::FAIL:

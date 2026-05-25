@@ -123,6 +123,8 @@ namespace gsm {
     // Forward declarations
     [[nodiscard]] static inline error_t send_cmd_and_compare_result(cmd_t cmd);
     [[nodiscard]] static inline error_t send_init_sequence();
+    [[nodiscard]] static inline etl::expected<etl::string_view, error_t>
+    transact(const etl::string_view& tx_cmd, etl::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
 
     // Public API
     error_t init() {
@@ -358,7 +360,7 @@ namespace gsm {
         // If we get here, the SIM800L has given us clearance to send the SMS
         // So we send the SMS followed by `0x1A (CTRL + Z)`.
         etl::string<MAX_SMS_LEN + 1> sms_command = {sms.data(), sms.size()};
-        sms_command.append("\x1A");
+        sms_command += '\x1A';
 
         // We have to start reception on the UART RX line since the SIM800L
         // may start its own transmission immediately after ours is done.
@@ -380,9 +382,9 @@ namespace gsm {
         // Construct a string view from the returned data and see if it matches what we expect
         auto rx_sms_actual_ret_val = std::string_view{rx_sms_buf.data(), s_rx_idle_line_size};
 
-        // Parse output to see if there was an error
-
-        return error_t::NONE;
+        // Parse output to see if there was an error.
+        // The returned string should contain "+CMGS:" on success
+        return rx_sms_actual_ret_val.contains("+CMGS:") ? error_t::NONE : error_t::SMS_SEND_FAIL;
     }
 
     etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
@@ -395,9 +397,6 @@ namespace gsm {
         }
 
         utils::assert_check(s_is_initialized);
-
-        // Will clear the rx idle line and calling task handle variables
-        [[maybe_unused]] cleanup_t auto_cleanup;
 
         // Confirm the module is still responding before doing anything
         auto ret = send_cmd_and_compare_result(cmd_t::AT);
@@ -412,38 +411,36 @@ namespace gsm {
             return etl::unexpected(error_t::SIM_NOT_FOUND);
         }
 
-        // Capture calling task since the irq handler sends a notification to it
-        s_calling_task_handle = xTaskGetCurrentTaskHandle();
-
-        // We have to start reception on the UART RX line since the SIM800L
-        // may start its own transmission immediately after ours is done.
-        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()) == HAL_OK);
-
-        // Get IMSI AT command
-        const auto& data = AT_CMD_LUT[std::to_underlying(cmd_t::GET_IMSI)];
-
-        // Transmit the AT command responsible for getting the IMSI
-        utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size()) == HAL_OK);
-
-        // Block till the task notification is received from the ISR
-        // If no notification is received within the timeout, return an error.
-        if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
-            return etl::unexpected(error_t::FAIL);
-        }
+        auto rx_str = transact();
 
         // Makes sure `s_rx_idle_line_size` has enough data before copying any data
         // NOTE: The module is supposed to send a carriage return, a newline, the 15
         // digit IMSI, another carriage and newline, yet another carriage and newline
         // a "OK" and a final carriage and newline, giving us 25 characters total.
-        if (s_rx_idle_line_size < 25) {
+        if (rx_str.size() < 25) {
             return etl::unexpected(error_t::FAIL);
         }
 
-        // Extract IMSI: Since the responses always start with `'\r\n'`, we
-        // skip the first two characters and copy the next 15 characters
+        // Extract IMSI: Since the responses have `'\r\n'`, we find the
+        // find the first occurrence of them and copy the next 15 characters.
         etl::array<char, IMSI_BUF_SIZE> imsi{};
-        memcpy(imsi.data(), (rx_buf.data() + 2), 15);
+        size_t                          pos{};
+
+        // Search for first occurrence
+        for (size_t i{}; i < s_rx_idle_line_size; i++) {
+            if (rx_str[i] == '\r' && rx_str[i + 1] == '\n') {
+                pos = i;
+                break;
+            }
+        }
+
+        // Return an error if `'\r\n'` wasnt found
+        if (pos == rx_str.size()) {
+            return etl::unexpected(error_t::FAIL);
+        }
+
+        // Copy the next 15 characters as our IMSI
+        memcpy(imsi.data(), (rx_str.data() + pos), 15);
 
         return imsi;
     }
@@ -645,6 +642,31 @@ namespace gsm {
 
         // If we get here, we were unable to establish a good connection
         return error_t::BAD_NETWORK_CONN;
+    }
+
+    static inline etl::expected<etl::string_view, error_t>
+    transact(const etl::string_view& tx_cmd, etl::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms) {
+
+        // Will clear the rx idle line and calling task handle variables
+        [[maybe_unused]] cleanup_t auto_cleanup{};
+
+        // Capture calling task since the irq handler sends a notification to it
+        s_calling_task_handle = xTaskGetCurrentTaskHandle();
+
+        // We have to start reception on the UART RX line since the SIM800L
+        // may start its own transmission immediately after ours is done.
+        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_cmd.data()), rx_cmd.max_size()) == HAL_OK);
+
+        // Transmit the AT command
+        utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_cmd.data()), tx_cmd.size()) == HAL_OK);
+
+        // Block till the task notification is received from the ISR
+        // If no notification is received within the timeout, return an error.
+        if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
+            return etl::unexpected(error_t::FAIL);
+        }
+
+        return etl::string_view{rx_cmd.data(), s_rx_idle_line_size};
     }
 
 } // namespace gsm

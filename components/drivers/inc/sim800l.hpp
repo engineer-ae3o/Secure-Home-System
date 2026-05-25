@@ -14,6 +14,7 @@ namespace gsm {
         MODULE_NOT_ALIVE,
         BAD_NETWORK_CONN,
         MUTEX_TIMEOUT,
+        SMS_SEND_FAIL,
     };
 
     constexpr inline uint32_t IMSI_BUF_SIZE{16};
@@ -80,6 +81,7 @@ namespace gsm {
      *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
      *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
      *         `MUTEX_TIMEOUT`: Timeout waiting for the mutex.
+     *         `SMS_SEND_FAIL`: Failed to send the SMS due to some specific error.
      */
     [[nodiscard]] error_t send_sms(const etl::string_view& sms, const etl::string_view& number, bool check_sim_status = true);
 

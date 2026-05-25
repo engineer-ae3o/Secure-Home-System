@@ -16,6 +16,8 @@ namespace gsm {
     };
 
     constexpr inline uint32_t IMSI_BUF_SIZE{16};
+    constexpr inline uint32_t MAX_PHONE_NUMBER_LEN{11};
+    constexpr inline uint32_t MAX_SMS_LEN{64};
 
     /**
      * @brief It initializes the GPIO, UART and DMA peripherals as needed for

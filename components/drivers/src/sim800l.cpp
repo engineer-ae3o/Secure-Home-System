@@ -34,6 +34,8 @@ namespace gsm {
     static constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT{10};
     static constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
 
+    static constexpr uint32_t TIMEOUT_MS{1000};
+
     enum class cmd_t : uint8_t {
         // Initialization
         AT,        // Module alive check
@@ -155,7 +157,7 @@ namespace gsm {
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
         HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
-        // Send init sequence to GSM mdodule and confirm everything is in order
+        // Send init sequence to GSM module and confirm everything is in order
         auto ret = send_init_sequence();
 
         if (ret == error_t::NONE) {
@@ -168,8 +170,8 @@ namespace gsm {
     void deinit() {
         utils::assert_check(s_is_initialized);
 
-        // Tell the SIM800L to deinitialize itself
-        // We don't care if there's an error so we can ignore the return value
+        // Tell the SIM800L to deinitialize itself.
+        // We don't care if there's an error so we can ignore the return value.
         (void)send_cmd_and_compare_result(cmd_t::DEINIT);
 
         // Deinitialize the USART and DMA channels
@@ -278,7 +280,13 @@ namespace gsm {
         utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size()) == HAL_OK);
 
         // Block till the task notification is received from the ISR
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // If no notification is received within the timeout, return an error.
+        if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
+            // Clear the RX dma size variable and calling task handle
+            s_rx_idle_line_size   = {};
+            s_calling_task_handle = nullptr;
+            return etl::unexpected(error_t::FAIL);
+        }
 
         // Make sure `s_rx_idle_line_size` has enough data before copying any data
         // NOTE: The module is supposed to send a carriage return, a newline, the 15
@@ -292,7 +300,7 @@ namespace gsm {
         }
 
         // Extract IMSI: Since the responses always start with `'\r\n'`, we
-        // skip the first two chararters and copy the next 15 characters
+        // skip the first two characters and copy the next 15 characters
         etl::array<char, IMSI_BUF_SIZE> imsi{};
         memcpy(imsi.data(), (rx_buf.data() + 2), 15);
 
@@ -323,7 +331,13 @@ namespace gsm {
         utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size()) == HAL_OK);
 
         // Block till the task notification is received from the ISR
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // If no notification is received within the timeout, return an error.
+        if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(TIMEOUT_MS)) == 0) {
+            // Clear the RX dma size variable and calling task handle
+            s_rx_idle_line_size   = {};
+            s_calling_task_handle = nullptr;
+            return error_t::FAIL;
+        }
 
         // Construct a `std::string_view` from the data received. The UART
         // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
@@ -356,14 +370,14 @@ namespace gsm {
             }
             // The `CHECK_REG` command receives a command that also requires parsing
             else if (cmd == cmd_t::CHECK_REG) {
-                // Find position of thre first number that appears after `','`
+                // Find position of first three numbers that appears after `','`
                 auto pos = rx_actual.find(',');
                 if (pos == std::string_view::npos) {
                     ret = error_t::FAIL;
                     return;
                 }
 
-                // Create a string view of the everything after the `',`
+                // Create a string view of the remaining characters that appear after the `',`
                 auto stat_str = rx_actual.substr(pos + 1);
 
                 // Get the network stat
@@ -377,11 +391,11 @@ namespace gsm {
                 }
             }
             // If the sent command wasn't `CHECK_SIGNAL` or `CHECK_REG`, that
-            // means the command does not needing parsing and the actual result
+            // means the command does not need parsing and the actual result
             // can be checked to see if it contains the expected result.
             else {
                 // Check if the AT command we are expecting for the transmitted AT command can be
-                // found in the actual data we received back. If it's not, then an error occured.
+                // found in the actual data we received back. If it's not, then an error occurred.
                 if (!rx_actual.contains(data.rx_expected)) {
                     ret = error_t::FAIL;
                     return;
@@ -420,7 +434,7 @@ namespace gsm {
         uint8_t     count{NUM_OF_TIMES_TO_SEND_AT};
         bool        module_responded{};
 
-        // Continuously transmit the `AT` commmand
+        // Continuously transmit the `AT` command
         while (static_cast<bool>(count--)) {
             utils::assert_check(
                 HAL_UART_Transmit(&s_huart, reinterpret_cast<const uint8_t*>(data.tx.data()), data.tx.size(), HAL_MAX_DELAY) == HAL_OK);

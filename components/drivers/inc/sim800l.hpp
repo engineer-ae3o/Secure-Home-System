@@ -18,7 +18,7 @@ namespace gsm {
     constexpr inline uint32_t IMSI_BUF_SIZE{16};
 
     /**
-     * @brief It initializes the GPIO, UART and GPIO peripherals as needed for
+     * @brief It initializes the GPIO, UART and DMA peripherals as needed for
      *        communication with the SIM800L. It then performs a bunch of status
      *        checks on the GSM module and the SIM card to ensure they are suitable
      *        to use for operation. It polls the module every 5s till a good network
@@ -32,8 +32,9 @@ namespace gsm {
      *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
      *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
      * 
-     * @note It blocks the calling task for up to 30s on the worst case path
-     *       while waiting for the `NONE` status message from the GSM module.
+     * @note It blocks the calling task for up to (30 + 2.5)s on the worst case path
+     *       while waiting for the first `"OK"` from the module and waiting for a good
+     *       and useable network connection.
      */
     [[nodiscard]] error_t init();
 

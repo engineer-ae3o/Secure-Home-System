@@ -12,7 +12,7 @@
 
 #include "etl/array.h"
 
-// Global because the ISR neeed to be able to see them
+// Global because the ISR need to be able to see them
 static pad::keypad_t<config::QUEUE_SIZE> keypad{};
 static nc::switch_t<nc::type_t::REED>    reed{};
 static nc::switch_t<nc::type_t::LIMIT>   tamper{};
@@ -80,14 +80,14 @@ void print(const etl::string_view& str, uint8_t line) {
     const auto&   event_queue = keypad.get_event_queue();
     unsigned char key{};
 
-    // Enable the NVIC interrupts
-    NVIC_EnableIRQ(EXTI3_IRQn);
-    NVIC_EnableIRQ(EXTI4_IRQn);
-    NVIC_EnableIRQ(EXTI9_5_IRQn);
+    // Enable the NVIC interrupts and set priority
+    HAL_NVIC_SetPriority(EXTI3_IRQn, 15, 0);
+    HAL_NVIC_SetPriority(EXTI4_IRQn, 15, 0);
+    HAL_NVIC_SetPriority(EXTI9_5_IRQn, 15, 0);
 
-    NVIC_SetPriority(EXTI3_IRQn, 15);
-    NVIC_SetPriority(EXTI4_IRQn, 15);
-    NVIC_SetPriority(EXTI9_5_IRQn, 15);
+    HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
     while (true) {
         xQueueReceive(event_queue, &key, portMAX_DELAY);
@@ -219,7 +219,7 @@ void print(const etl::string_view& str, uint8_t line) {
     }
 
     print("SIM's IMSI: ", 0);
-    print(etl::string_view(imsi->data(), imsi->size()), 1);
+    print(etl::string_view(imsi->data(), imsi->size() - 1), 1);
 
     // Do nothing for now
     while (true) {

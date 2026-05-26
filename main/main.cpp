@@ -206,6 +206,18 @@ void print(const etl::string_view& str, uint8_t line) {
             print("SIM card found", 0);
             print("Reading IMSI", 1);
             break;
+        case gsm::error_t::SMS_SEND_FAIL:
+            print("Failed to", 0);
+            print("send the SMS", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
+        case gsm::error_t::MUTEX_TIMEOUT:
+            print("Internal error", 0);
+            print("due to timeout", 1);
+            // Crash system for now
+            utils::assert_check(false);
+            break;
         default:
             break;
     }

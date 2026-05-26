@@ -83,7 +83,7 @@ namespace gsm {
      *         `MUTEX_TIMEOUT`: Timeout waiting for the mutex.
      *         `SMS_SEND_FAIL`: Failed to send the SMS due to some specific error.
      */
-    [[nodiscard]] error_t send_sms(const etl::string_view& sms, const etl::string_view& number, bool check_sim_status = true);
+    [[nodiscard]] error_t send_sms(const std::string_view& sms, const std::string_view& number, bool check_sim_status = true);
 
     /**
      * @brief Reads the IMSI (International Mobile Subscriber Identity) of the

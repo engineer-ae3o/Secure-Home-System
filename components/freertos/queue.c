@@ -2628,7 +2628,7 @@ void vQueueUnregisterQueue(QueueHandle_t xQueue) {
     configASSERT(xQueue);
 
     /* See if the handle of the queue being unregistered in actually in the
-         * registry. */
+     * registry. */
     for (ux = (UBaseType_t)0U; ux < (UBaseType_t)configQUEUE_REGISTRY_SIZE; ux++) {
         if (xQueueRegistry[ux].xHandle == xQueue) {
             /* Set the name to NULL to show that this slot if free again. */

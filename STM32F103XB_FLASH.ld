@@ -40,8 +40,9 @@ _Min_Stack_Size = 0x400;     /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-    FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 128K
-    RAM (rw)   : ORIGIN = 0x20000000, LENGTH = 20K
+    FLASH (rx)         : ORIGIN = 0x08000000, LENGTH = 96K
+    LFS_PARTITION (rw) : ORIGIN = 0x08018000, LENGTH = 32K
+    RAM (rw)           : ORIGIN = 0x20000000, LENGTH = 20K
 }
 
 /* Define output sections */
@@ -164,6 +165,10 @@ SECTIONS
         libm.a ( * )
         libgcc.a ( * )
     }
+
+    /* Get address of start and end of LittleFS partition */
+    lfs_start = ORIGIN(LFS_PARTITION);
+    lfs_end = ORIGIN(LFS_PARTITION) + LENGTH(LFS_PARTITION);
 
     .ARM.attributes 0 : { *(.ARM.attributes) }
 }

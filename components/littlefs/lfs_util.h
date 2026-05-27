@@ -38,6 +38,26 @@
 #include LFS_STRINGIZE(LFS_DEFINES)
 #endif
 
+#if !defined(LFS_NO_DEBUG)
+#define LFS_NO_DEBUG
+#endif
+
+#if !defined(LFS_NO_ERROR)
+#define LFS_NO_ERROR
+#endif
+
+#if !defined(LFS_NO_WARN)
+#define LFS_NO_WARN
+#endif
+
+#if !defined(LFS_NO_MALLOC)
+#define LFS_NO_MALLOC
+#endif
+
+#if defined(LFS_READONLY)
+#undef LFS_READONLY
+#endif
+
 // System includes
 #include <stdint.h>
 #include <stdbool.h>

@@ -5,6 +5,7 @@
 #include "keypad.hpp"
 #include "switch.hpp"
 #include "config.hpp"
+#include "flash.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -42,6 +43,8 @@ void print(const etl::string_view& str, uint8_t line) {
         .Speed = GPIO_SPEED_LOW,
     };
     HAL_GPIO_Init(GPIOC, &init);
+
+    file::init();
 
     while (true) {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);

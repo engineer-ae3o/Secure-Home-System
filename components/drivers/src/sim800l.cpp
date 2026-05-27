@@ -60,13 +60,13 @@ namespace gsm {
     // RAII helper for taking and freeing the mutex
     struct mutex_t {
     public:
-        mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTake(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
+        mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
             mutex_taken = m_mutex_taken;
         }
 
         ~mutex_t() {
             if (m_mutex_taken) {
-                xSemaphoreGive(s_task_mutex);
+                xSemaphoreGiveRecursive(s_task_mutex);
             }
         }
 
@@ -202,24 +202,23 @@ namespace gsm {
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
         HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
-        // Create the mutex
-        s_task_mutex = xSemaphoreCreateMutexStatic(&s_task_mutex_buffer);
-
         // Send init sequence to GSM module and confirm everything is in order
         auto ret = send_init_sequence();
-
-        if (ret == error_t::NONE) {
-            s_is_initialized = true;
+        if (ret != error_t::NONE) {
+            return ret;
         }
 
-        return ret;
+        // Create the mutex as recursive
+        s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
+
+        return error_t::NONE;
     }
 
     void deinit() {
         utils::assert_check(s_is_initialized);
 
-        // Tell the SIM800L to deinitialize itself.
-        // We don't care if there's an error so we can ignore the return value.
+        // Tell the SIM800L to deinitialize itself. We don't care
+        // if there's an error so we can ignore the return value.
         (void)send_cmd_and_compare_result(cmd_t::DEINIT, DEINIT_TIMEOUT_MS);
 
         // Deinitialize the USART and DMA channels
@@ -343,8 +342,8 @@ namespace gsm {
             return error_t::FAIL;
         }
 
-        // If we get here, the SIM800L has given us clearance to send the SMS
-        // So we send the SMS followed by `0x1A (CTRL + Z)`.
+        // If we get here, the SIM800L has given us clearance to send
+        // the SMS. So we send the SMS suffixed with `0x1A (CTRL + Z)`.
         etl::string<MAX_SMS_LEN + 1> sms_command{sms.data(), sms.size()};
         sms_command += '\x1A';
 
@@ -410,7 +409,7 @@ namespace gsm {
         }
 
         // Copy the next 15 characters as our IMSI
-        memcpy(imsi.data(), (rx_str->data() + pos), 15);
+        memcpy(imsi.data(), (rx_str->data() + pos + 2), 15);
 
         return imsi;
     }

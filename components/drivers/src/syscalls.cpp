@@ -1,15 +1,22 @@
 #include "stm32f1xx_hal.h"
+
 #include "config.hpp"
 #include "utils.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "etl/atomic.h"
+#include <atomic>
+#include <cstdint>
+
+#include <cerrno>
+#include <cstddef>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 extern "C" {
 
-    // These are extern declared in the headers. Need to be defined here.
+    // These are extern declared in the HAL headers. Need to be defined here.
     uint32_t      SystemCoreClock{};    // System Clock Frequency (Core Clock)
     const uint8_t AHBPrescTable[16U]{}; // AHB prescalers table values
     const uint8_t APBPrescTable[8U]{};  // APB prescalers table values
@@ -55,7 +62,7 @@ extern "C" {
     }
 
     // Cortex-M Fault Handlers
-    __attribute__((naked)) void HardFault_Handler() {
+    [[noreturn]] __attribute__((naked)) void HardFault_Handler() {
         __asm volatile("tst lr, #4\n"
                        "ite eq\n"
                        "mrseq r0, msp\n"
@@ -63,7 +70,7 @@ extern "C" {
                        "b hard_fault_dump\n");
     }
 
-    __attribute__((naked)) void BusFault_Handler() {
+    [[noreturn]] __attribute__((naked)) void BusFault_Handler() {
         __asm volatile("tst lr, #4\n"
                        "ite eq\n"
                        "mrseq r0, msp\n"
@@ -71,7 +78,7 @@ extern "C" {
                        "b bus_fault_dump\n");
     }
 
-    __attribute__((naked)) void UsageFault_Handler() {
+    [[noreturn]] __attribute__((naked)) void UsageFault_Handler() {
         __asm volatile("tst lr, #4\n"
                        "ite eq\n"
                        "mrseq r0, msp\n"
@@ -144,7 +151,7 @@ extern "C" {
 
     // Setup TIM2 to be used by the HAL since
     // FreeRTOS already consumes SysTick
-    static volatile etl::atomic<uint32_t> s_hal_tick{};
+    static volatile std::atomic<uint32_t> s_hal_tick{};
 
     HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
         // Enable TIM2 clock

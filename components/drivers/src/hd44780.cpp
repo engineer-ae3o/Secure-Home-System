@@ -7,8 +7,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "etl/string.h"
-#include "etl/array.h"
+#include <array>
+#include <string_view>
 
 namespace lcd {
 
@@ -17,7 +17,7 @@ namespace lcd {
     static bool              s_is_initialized{};
 
     // Offsets for calculating offset position
-    static constexpr etl::array<uint8_t, ROWS> OFFSETS = {
+    static constexpr std::array<uint8_t, ROWS> OFFSETS = {
         0x00U,
         0x40U,
         // Uncomment if ROWS == 4
@@ -130,7 +130,7 @@ namespace lcd {
         send_data(c);
     }
 
-    void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace) {
+    void println(const std::string_view& str, uint8_t line, bool pad_to_whitespace) {
         utils::assert_check(s_is_initialized);
         utils::assert_check(line < ROWS);
         utils::assert_check(str.length() <= COLUMNS);

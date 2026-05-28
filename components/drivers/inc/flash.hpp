@@ -1,6 +1,7 @@
 #pragma once
 
-#include "etl/span.h"
+#include <span>
+#include <cstdint>
 
 namespace file {
 
@@ -11,14 +12,34 @@ namespace file {
         COUNT,
     };
 
+    /**
+     *
+     */
     void init();
 
+    /**
+     *
+     */
     void deinit();
 
+    /**
+     *
+     */
     uint32_t get_count_value();
 
-    void write(name_t file, const etl::span<uint8_t>& data);
+    /**
+     *
+     */
+    void write(name_t file, const std::span<uint8_t>& data);
 
-    void read(name_t file, etl::span<uint8_t>& data);
+    /**
+     *
+     */
+    void read(name_t file, std::span<uint8_t>& data);
+
+    /**
+     *
+     */
+    void sync(name_t file);
 
 } // namespace file

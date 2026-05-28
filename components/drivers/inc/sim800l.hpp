@@ -1,8 +1,9 @@
 #pragma once
 
-#include "etl/array.h"
-#include "etl/expected.h"
-#include "etl/string_view.h"
+#include <array>
+#include <cstdint>
+#include <expected>
+#include <string_view>
 
 namespace gsm {
 
@@ -17,9 +18,9 @@ namespace gsm {
         SMS_SEND_FAIL,
     };
 
-    constexpr inline uint32_t IMSI_BUF_SIZE{16};
-    constexpr inline uint32_t MAX_PHONE_NUMBER_LEN{11};
-    constexpr inline uint32_t MAX_SMS_LEN{64};
+    constexpr inline uint8_t MAX_SMS_LEN{64};
+    constexpr inline uint8_t IMSI_BUF_SIZE{16};
+    constexpr inline uint8_t MAX_PHONE_NUMBER_LEN{11};
 
     /**
      * @brief It initializes the GPIO, UART and DMA peripherals as needed for
@@ -91,7 +92,7 @@ namespace gsm {
      *        digit UID used by mobile network providers for identifying and
      *        authenticating SIM cards and subscribers.
      * 
-     * @return The IMSI as an `etl::array<char>` on sucess. On error,
+     * @return The IMSI as an `std::array<char>` on sucess. On error,
      *         it returns any of the following:
      *         `FAIL`: IMSI could not be read, or was read with errors.
      *         `MODULE_NOT_ALIVE`: GSM module not responding.
@@ -100,6 +101,6 @@ namespace gsm {
      * 
      * @note The digits are stored as ASCII, not numeric digits.
      */
-    [[nodiscard]] etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi();
+    [[nodiscard]] std::expected<std::array<char, IMSI_BUF_SIZE>, error_t> get_imsi();
 
 } // namespace gsm

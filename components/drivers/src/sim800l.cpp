@@ -8,11 +8,10 @@
 #include "task.h"
 #include "semphr.h"
 
-#include "etl/utility.h"
-#include "etl/string.h"
-
-#include <string_view>
 #include <cstring>
+#include <string_view>
+
+#include "etl/string.h" // Needed for `etl::string`
 
 namespace gsm {
 
@@ -101,15 +100,13 @@ namespace gsm {
         COUNT // Used to get total number for array declaration
     };
 
-    // `std::string_view` doesn't have the right constructor
-    // to take in a `const char*` on the fly unless a length is specified
     struct cmd_entry_t {
         std::string_view tx;
         std::string_view rx_expected;
     };
 
     // AT commands LUT
-    static constexpr etl::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
+    static constexpr std::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
         [std::to_underlying(cmd_t::AT)]           = {"AT\r", "OK"},
         [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r", "OK"},
         [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r", "OK"},
@@ -122,8 +119,8 @@ namespace gsm {
     }};
 
     // Forward declarations
-    [[nodiscard]] static inline etl::expected<std::string_view, error_t>
-    transact(const std::string_view& tx_cmd, etl::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
+    [[nodiscard]] static inline std::expected<std::string_view, error_t>
+    transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
     [[nodiscard]] static inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms = TIMEOUT_MS);
     [[nodiscard]] static inline error_t send_init_sequence();
 
@@ -330,7 +327,7 @@ namespace gsm {
         number_command.append(num_end.data());
 
         // The resulting string view gets stored here
-        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_num_buf{};
+        std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_num_buf{};
         auto                                      rx_num_str = transact({number_command.data(), number_command.size()}, rx_num_buf);
 
         if (!rx_num_str) {
@@ -348,7 +345,7 @@ namespace gsm {
         sms_command += '\x1A';
 
         // The resulting string view gets stored here
-        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_sms_buf{};
+        std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_sms_buf{};
         auto                                      rx_sms_str = transact({sms_command.data(), sms_command.size()}, rx_sms_buf);
 
         if (!rx_sms_str) {
@@ -359,13 +356,13 @@ namespace gsm {
         return rx_sms_str->contains("+CMGS:") ? error_t::NONE : error_t::SMS_SEND_FAIL;
     }
 
-    etl::expected<etl::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
+    std::expected<std::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
         // RAII handling for mutex acquisition and releasing
         bool                     mutex_taken{};
         [[maybe_unused]] mutex_t mutex(mutex_taken);
 
         if (!mutex_taken) {
-            return etl::unexpected(error_t::MUTEX_TIMEOUT);
+            return std::unexpected(error_t::MUTEX_TIMEOUT);
         }
 
         utils::assert_check(s_is_initialized);
@@ -373,22 +370,22 @@ namespace gsm {
         // Confirm the module is still responding before doing anything
         auto ret = send_cmd_and_compare_result(cmd_t::AT);
         if (ret != error_t::NONE) {
-            return etl::unexpected(error_t::MODULE_NOT_ALIVE);
+            return std::unexpected(error_t::MODULE_NOT_ALIVE);
         }
 
         // We only need to check if the SIM card is available
         // since the IMSI is a static property of the SIM card
         ret = send_cmd_and_compare_result(cmd_t::CHECK_SIM);
         if (ret != error_t::NONE) {
-            return etl::unexpected(error_t::SIM_NOT_FOUND);
+            return std::unexpected(error_t::SIM_NOT_FOUND);
         }
 
         // The resulting string view gets stored here
-        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+        std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
         auto                                      rx_str = transact(AT_CMD_LUT[std::to_underlying(cmd_t::GET_IMSI)].tx, rx_buf);
 
         if (!rx_str) {
-            return etl::unexpected(error_t::FAIL);
+            return std::unexpected(error_t::FAIL);
         }
 
         // Makes sure `s_rx_idle_line_size` has enough data before copying any data
@@ -396,16 +393,16 @@ namespace gsm {
         // digit IMSI, another carriage and newline, yet another carriage and newline
         // a "OK" and a final carriage and newline, giving us 25 characters total.
         if (rx_str->size() < 25) {
-            return etl::unexpected(error_t::FAIL);
+            return std::unexpected(error_t::FAIL);
         }
 
         // Extract IMSI: Since the responses have `'\r\n'`, we find the
         // find the first occurrence of them and copy the next 15 characters.
-        etl::array<char, IMSI_BUF_SIZE> imsi{};
+        std::array<char, IMSI_BUF_SIZE> imsi{};
 
         auto pos = rx_str->find("\r\n");
         if (pos == std::string_view::npos) {
-            return etl::unexpected(error_t::FAIL);
+            return std::unexpected(error_t::FAIL);
         }
 
         // Copy the next 15 characters as our IMSI
@@ -415,8 +412,8 @@ namespace gsm {
     }
 
     // Helpers
-    static inline etl::expected<std::string_view, error_t>
-    transact(const std::string_view& tx_cmd, etl::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms) {
+    static inline std::expected<std::string_view, error_t>
+    transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms) {
 
         // Will clear the rx idle line and calling task handle variables
         [[maybe_unused]] cleanup_t auto_cleanup{};
@@ -434,7 +431,7 @@ namespace gsm {
         // Block till the task notification is received from the ISR
         // If no notification is received within the timeout, return an error.
         if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
-            return etl::unexpected(error_t::FAIL);
+            return std::unexpected(error_t::FAIL);
         }
 
         return std::string_view{rx_cmd.data(), s_rx_idle_line_size};
@@ -448,7 +445,7 @@ namespace gsm {
         const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd)];
 
         // The resulting string view gets stored here
-        etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+        std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
         auto                                      rx_str = transact(tx_str, rx_buf, timeout_ms);
 
         if (!rx_str) {
@@ -540,7 +537,7 @@ namespace gsm {
 
             // We have to start reception on the UART RX line since the SIM800L
             // may start its own transmission immediately after ours is done.
-            etl::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+            std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
             utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()) ==
                                 HAL_OK);
 

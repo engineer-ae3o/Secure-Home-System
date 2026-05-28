@@ -1,6 +1,7 @@
 #pragma once
 
-#include "etl/string.h"
+#include <cstdint>
+#include <string_view>
 
 namespace lcd {
 
@@ -51,7 +52,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void println(const etl::string_view& str, uint8_t line, bool pad_to_whitespace = true);
+    void println(const std::string_view& str, uint8_t line, bool pad_to_whitespace = true);
 
     /**
      * @brief Clears the screen.

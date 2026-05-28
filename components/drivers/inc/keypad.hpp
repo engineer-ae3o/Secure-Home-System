@@ -8,7 +8,7 @@
 #include "timers.h"
 #include "queue.h"
 
-#include "etl/array.h"
+#include <array>
 
 namespace pad {
 
@@ -27,8 +27,8 @@ namespace pad {
     struct config_t {
         GPIO_TypeDef*                 row_port{};
         GPIO_TypeDef*                 col_port{};
-        etl::array<uint16_t, ROWS>    row_pins{};
-        etl::array<uint16_t, COLUMNS> col_pins{};
+        std::array<uint16_t, ROWS>    row_pins{};
+        std::array<uint16_t, COLUMNS> col_pins{};
     };
 
     template<uint8_t queue_length>
@@ -45,7 +45,7 @@ namespace pad {
 
         QueueHandle_t                                            m_event_queue{};
         StaticQueue_t                                            m_queue_structure{};
-        etl::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
+        std::array<uint8_t, (queue_length * sizeof(KEYS[0][0]))> m_queue_buffer{};
 
     public:
         keypad_t() = default;

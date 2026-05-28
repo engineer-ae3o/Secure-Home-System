@@ -7,6 +7,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <utility>
+
 namespace nc {
 
     enum class type_t : uint8_t {

@@ -11,7 +11,7 @@
 #include "task.h"
 #include "semphr.h"
 
-#include "etl/array.h"
+#include <array>
 
 // Global because the ISR need to be able to see them
 static pad::keypad_t<config::QUEUE_SIZE> keypad{};
@@ -23,7 +23,7 @@ static SemaphoreHandle_t lcd_mutex{};
 static StaticSemaphore_t lcd_mutex_buffer{};
 
 // Thread safe LCD helper
-void print(const etl::string_view& str, uint8_t line) {
+void print(const std::string_view& str, uint8_t line) {
     xSemaphoreTake(lcd_mutex, portMAX_DELAY);
     lcd::println(str, line);
     vTaskDelay(pdMS_TO_TICKS(4000));
@@ -147,7 +147,7 @@ void print(const etl::string_view& str, uint8_t line) {
     lcd::backlight_on();
 
     // Text to be displayed
-    constexpr etl::array<etl::array<etl::string_view, 2>, 5> lcd_text = {{
+    constexpr std::array<std::array<std::string_view, 2>, 5> lcd_text = {{
         {"I", "hate"},
         {"my", "life."},
         {"This", "is"},
@@ -234,7 +234,7 @@ void print(const etl::string_view& str, uint8_t line) {
     }
 
     print("SIM's IMSI: ", 0);
-    print(etl::string_view(imsi->data(), imsi->size() - 1), 1);
+    print(std::string_view(imsi->data(), imsi->size() - 1), 1);
 
     // Do nothing for now
     while (true) {
@@ -243,19 +243,19 @@ void print(const etl::string_view& str, uint8_t line) {
 }
 
 // Tasks TCBs and Stacks
-static etl::array<StackType_t, 512> led_task_stack{};
+static std::array<StackType_t, 512> led_task_stack{};
 static StaticTask_t                 led_task_tcb{};
 
-static etl::array<StackType_t, 512> lcd_task_stack{};
+static std::array<StackType_t, 128> lcd_task_stack{};
 static StaticTask_t                 lcd_task_tcb{};
 
-static etl::array<StackType_t, 512> gsm_task_stack{};
+static std::array<StackType_t, 128> gsm_task_stack{};
 static StaticTask_t                 gsm_task_tcb{};
 
-static etl::array<StackType_t, 512> keypad_task_stack{};
+static std::array<StackType_t, 128> keypad_task_stack{};
 static StaticTask_t                 keypad_task_tcb{};
 
-static etl::array<StackType_t, 512> switch_task_stack{};
+static std::array<StackType_t, 128> switch_task_stack{};
 static StaticTask_t                 switch_task_tcb{};
 
 extern "C" {
@@ -266,10 +266,10 @@ extern "C" {
         lcd_mutex = xSemaphoreCreateMutexStatic(&lcd_mutex_buffer);
 
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(512), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-        xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
-        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
-        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
-        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
+        xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(128), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
+        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(128), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
+        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(128), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
+        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(128), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
 
         vTaskStartScheduler();
 

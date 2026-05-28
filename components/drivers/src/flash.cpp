@@ -1,7 +1,9 @@
-#include "lfs.h"
+#include "stm32f1xx_hal.h"
 
 #include "flash.hpp"
 #include "utils.hpp"
+
+#include "lfs.h"
 
 #include <utility>
 #include <string_view>
@@ -9,30 +11,28 @@
 extern "C" {
     // Defined in linker script
     extern uint32_t lfs_start;
-    extern uint32_t lfs_end;
 }
 
 namespace file {
 
-    [[maybe_unused]] static constexpr auto LFS_PART_START = &lfs_start;
-    [[maybe_unused]] static constexpr auto LFS_PART_END   = &lfs_end;
+    static const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
 
     // Flash programming and read sizes
-    static constexpr uint8_t READ_SIZE_BYTES{8};
-    static constexpr uint8_t PROG_SIZE_BYTES{2};
+    static constexpr uint32_t READ_SIZE_BYTES{1};
+    static constexpr uint32_t PROG_SIZE_BYTES{2};
 
     // Flash block details
-    static constexpr uint8_t  BLOCK_COUNT{32};
-    static constexpr uint16_t BLOCK_SIZE_BYTES{1024};
+    static constexpr uint32_t BLOCK_COUNT{32};
+    static constexpr uint32_t BLOCK_SIZE_BYTES{1024};
     static constexpr uint32_t BLOCK_CYCLES{10'000};
 
-    // Cache and lookahead sizes
-    static constexpr uint8_t LOOKAHEAD_SIZE_BYTES{BLOCK_COUNT / 8};
-    static constexpr uint8_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
-
     // File name and max file number limit
-    static constexpr uint8_t MAX_NAME_LEN{8};
-    static constexpr uint8_t MAX_FILE_SIZE_BYTES{128};
+    static constexpr uint32_t MAX_NAME_LEN{8};
+    static constexpr uint32_t MAX_FILE_SIZE_BYTES{8192};
+
+    // Cache and lookahead sizes
+    static constexpr uint32_t LOOKAHEAD_SIZE_BYTES{BLOCK_COUNT / 8};
+    static constexpr uint32_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
 
     // LittleFS buffers
     static std::array<uint8_t, CACHE_SIZE_BYTES>     s_read_buffer{};
@@ -96,36 +96,77 @@ namespace file {
     // Is part of what is used to seed the RNG
     static uint32_t s_boot_cycle_counter{};
 
+    // Helper
+    static inline uint32_t page_idx_to_phy_addr(uint32_t idx) {
+        return LFS_PARTITION_START + (idx * BLOCK_SIZE_BYTES);
+    }
+
     void init() {
         // Configuration data for the file system
         static constexpr lfs_config s_lfsconfig = {
             // Not needed
             .context = nullptr,
 
-            // File read and write ops
+            // File read, prog and erase ops
             .read =
                 [](const lfs_config* config, lfs_block_t block, lfs_off_t off, void* buffer, lfs_size_t size) {
                     (void)config;
-                    (void)block;
-                    (void)off;
-                    (void)buffer;
-                    (void)size;
+                    // Get physical block address and offset into the block
+                    const auto* phy_addr = reinterpret_cast<const void*>(page_idx_to_phy_addr(block) + off);
+                    memcpy(buffer, phy_addr, size);
                     return 0;
                 },
             .prog =
                 [](const lfs_config* config, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size) {
+                    // Make sure data to write to flash is the same as PROG_SIZE_BYTES
+                    utils::assert_check(size == PROG_SIZE_BYTES);
+
                     (void)config;
-                    (void)block;
-                    (void)off;
-                    (void)buffer;
-                    (void)size;
-                    return 0;
+                    // Must unlock the flash controller's control register before writing to the flash
+                    HAL_FLASH_Unlock();
+
+                    // Get physical block address and offset into the block
+                    auto phy_addr = page_idx_to_phy_addr(block) + off;
+
+                    // Get data to be written
+                    int      rc{};
+                    uint16_t data{};
+                    memcpy(&data, buffer, PROG_SIZE_BYTES);
+
+                    auto ret = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, phy_addr, data);
+                    if (ret != HAL_OK) {
+                        __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
+                        rc = LFS_ERR_CORRUPT;
+                    }
+
+                    // Lock the flash controller's control register to prevent accidental writes to the flash
+                    HAL_FLASH_Lock();
+                    return rc;
                 },
             .erase =
                 [](const lfs_config* config, lfs_block_t block) {
                     (void)config;
-                    (void)block;
-                    return 0;
+                    // Must unlock the flash controller's control register before writing to the flash
+                    HAL_FLASH_Unlock();
+
+                    FLASH_EraseInitTypeDef erase = {
+                        .TypeErase   = FLASH_TYPEERASE_PAGES,
+                        .Banks       = FLASH_BANK_1,
+                        .PageAddress = page_idx_to_phy_addr(block), // Get physical block address
+                        .NbPages     = 1,
+                    };
+                    uint32_t page_error{};
+                    int      rc{};
+
+                    auto ret = HAL_FLASHEx_Erase(&erase, &page_error);
+                    if (ret != HAL_OK || page_error != 0xFFFFFFFFU) {
+                        __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
+                        rc = LFS_ERR_CORRUPT;
+                    }
+
+                    // Lock the flash controller's control register to prevent accidental writes to the flash
+                    HAL_FLASH_Lock();
+                    return rc;
                 },
             .sync =
                 [](const lfs_config* config) {

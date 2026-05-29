@@ -5,9 +5,9 @@
   * @brief     STM32F103xB Devices vector table for Atollic toolchain.
   *            This module performs:
   *                - Set the initial SP
-  *                - Set the initial PC == Reset_Handler,
+  *                - Set the initial PC == reset_handler,
   *                - Set the vector table entries with the exceptions ISR address
-  *                - Configure the clock system   
+  *                - Configure the clock system
   *                - Branches to main in the C library (which eventually
   *                  calls main()).
   *            After Reset the Cortex-M3 processor is in Thread mode,
@@ -25,27 +25,27 @@
   ******************************************************************************
   */
 
-    .syntax unified
-    .cpu cortex-m3
-    .fpu softvfp
-    .thumb
+.syntax unified
+.cpu cortex-m3
+.fpu softvfp
+.thumb
 
-.global g_pfnVectors
-.global Default_Handler
+.global vector_table
+.global default_handler
 
 /* start address for the initialization values of the .data section.
 defined in linker script */
-.word _sidata
+    .word _sidata
 /* start address for the .data section. defined in linker script */
-.word _sdata
+    .word _sdata
 /* end address for the .data section. defined in linker script */
-.word _edata
+    .word _edata
 /* start address for the .bss section. defined in linker script */
-.word _sbss
+    .word _sbss
 /* end address for the .bss section. defined in linker script */
-.word _ebss
+    .word _ebss
 
-.equ  BootRAM, 0xF108F85F
+    .equ BootRAM, 0xF108F85F
 /**
  * @brief  This is the code that gets called when the processor first
  *          starts execution following a reset event. Only the absolutely
@@ -55,41 +55,41 @@ defined in linker script */
  * @retval : None
 */
 
-    .section .text.Reset_Handler
-    .weak Reset_Handler
-    .type Reset_Handler, %function
+.section .text.reset_handler
+.weak reset_handler
+.type reset_handler, %function
 
-Reset_Handler:
+reset_handler:
     /* Copy the data segment initializers from flash to SRAM */
     ldr r0, =_sdata
     ldr r1, =_edata
     ldr r2, =_sidata
     movs r3, #0
-    b LoopCopyDataInit
+    b loop_copy_data_init
 
-CopyDataInit:
+copy_data_init:
     ldr r4, [r2, r3]
     str r4, [r0, r3]
     adds r3, r3, #4
 
-LoopCopyDataInit:
+loop_copy_data_init:
     adds r4, r0, r3
     cmp r4, r1
-    bcc CopyDataInit
-    
+    bcc copy_data_init
+
     /* Zero fill the bss segment. */
     ldr r2, =_sbss
     ldr r4, =_ebss
     movs r3, #0
-    b LoopFillZerobss
-    
-FillZerobss:
-    str  r3, [r2]
+    b loop_fill_zero_bss
+
+fill_zero_bss:
+    str r3, [r2]
     adds r2, r2, #4
 
-LoopFillZerobss:
+loop_fill_zero_bss:
     cmp r2, r4
-    bcc FillZerobss
+    bcc fill_zero_bss
 
     /* Call the system init function to enable the clock */
     bl system_init
@@ -102,7 +102,7 @@ LoopFillZerobss:
 
     /* Loop indefinitely if main returns */
     b .
-.size Reset_Handler, .-Reset_Handler
+.size reset_handler, .-reset_handler
 
 /**
  * @brief  This is the code that gets called when the processor receives an
@@ -112,10 +112,10 @@ LoopFillZerobss:
  * @param  None
  * @retval : None
 */
-    .section .text.Default_Handler, "ax", %progbits
-Default_Handler:
+.section .text.default_handler, "ax", %progbits
+default_handler:
     b .
-.size Default_Handler, .-Default_Handler
+.size default_handler, .-default_handler
 
 /******************************************************************************
 *
@@ -124,13 +124,13 @@ Default_Handler:
 * 0x0000.0000.
 *
 ******************************************************************************/
-    .section .isr_vector, "a", %progbits
-    .type g_pfnVectors, %object
-    .size g_pfnVectors, .-g_pfnVectors
+.section .isr_vector, "a", %progbits
+.type vector_table, %object
+.size vector_table, .-vector_table
 
-g_pfnVectors:
+vector_table:
     .word _estack
-    .word Reset_Handler
+    .word reset_handler
     .word NMI_Handler
     .word HardFault_Handler
     .word MemManage_Handler
@@ -200,163 +200,163 @@ g_pfnVectors:
 
 /*******************************************************************************
 *
-* Provide weak aliases for each Exception handler to the Default_Handler.
+* Provide weak aliases for each Exception handler to the default_handler.
 * As they are weak aliases, any function with the same name will override
 * this definition.
 *
 *******************************************************************************/
-    .weak NMI_Handler
-    .thumb_set NMI_Handler,Default_Handler
+.weak NMI_Handler
+.thumb_set NMI_Handler, default_handler
 
-    .weak HardFault_Handler
-    .thumb_set HardFault_Handler,Default_Handler
+.weak HardFault_Handler
+.thumb_set HardFault_Handler, default_handler
 
-    .weak MemManage_Handler
-    .thumb_set MemManage_Handler,Default_Handler
+.weak MemManage_Handler
+.thumb_set MemManage_Handler, default_handler
 
-    .weak BusFault_Handler
-    .thumb_set BusFault_Handler,Default_Handler
+.weak BusFault_Handler
+.thumb_set BusFault_Handler, default_handler
 
-    .weak UsageFault_Handler
-    .thumb_set UsageFault_Handler,Default_Handler
+.weak UsageFault_Handler
+.thumb_set UsageFault_Handler, default_handler
 
-    .weak SVC_Handler
-    .thumb_set SVC_Handler,Default_Handler
+.weak SVC_Handler
+.thumb_set SVC_Handler, default_handler
 
-    .weak DebugMon_Handler
-    .thumb_set DebugMon_Handler,Default_Handler
+.weak DebugMon_Handler
+.thumb_set DebugMon_Handler, default_handler
 
-    .weak PendSV_Handler
-    .thumb_set PendSV_Handler,Default_Handler
+.weak PendSV_Handler
+.thumb_set PendSV_Handler, default_handler
 
-    .weak SysTick_Handler
-    .thumb_set SysTick_Handler,Default_Handler
+.weak SysTick_Handler
+.thumb_set SysTick_Handler, default_handler
 
-    .weak WWDG_IRQHandler
-    .thumb_set WWDG_IRQHandler,Default_Handler
+.weak WWDG_IRQHandler
+.thumb_set WWDG_IRQHandler, default_handler
 
-    .weak PVD_IRQHandler
-    .thumb_set PVD_IRQHandler,Default_Handler
+.weak PVD_IRQHandler
+.thumb_set PVD_IRQHandler, default_handler
 
-    .weak TAMPER_IRQHandler
-    .thumb_set TAMPER_IRQHandler,Default_Handler
+.weak TAMPER_IRQHandler
+.thumb_set TAMPER_IRQHandler, default_handler
 
-    .weak RTC_IRQHandler
-    .thumb_set RTC_IRQHandler,Default_Handler
+.weak RTC_IRQHandler
+.thumb_set RTC_IRQHandler, default_handler
 
-    .weak FLASH_IRQHandler
-    .thumb_set FLASH_IRQHandler,Default_Handler
+.weak FLASH_IRQHandler
+.thumb_set FLASH_IRQHandler, default_handler
 
-    .weak RCC_IRQHandler
-    .thumb_set RCC_IRQHandler,Default_Handler
+.weak RCC_IRQHandler
+.thumb_set RCC_IRQHandler, default_handler
 
-    .weak EXTI0_IRQHandler
-    .thumb_set EXTI0_IRQHandler,Default_Handler
+.weak EXTI0_IRQHandler
+.thumb_set EXTI0_IRQHandler, default_handler
 
-    .weak EXTI1_IRQHandler
-    .thumb_set EXTI1_IRQHandler,Default_Handler
+.weak EXTI1_IRQHandler
+.thumb_set EXTI1_IRQHandler, default_handler
 
-    .weak EXTI2_IRQHandler
-    .thumb_set EXTI2_IRQHandler,Default_Handler
+.weak EXTI2_IRQHandler
+.thumb_set EXTI2_IRQHandler, default_handler
 
-    .weak EXTI3_IRQHandler
-    .thumb_set EXTI3_IRQHandler,Default_Handler
+.weak EXTI3_IRQHandler
+.thumb_set EXTI3_IRQHandler, default_handler
 
-    .weak EXTI4_IRQHandler
-    .thumb_set EXTI4_IRQHandler,Default_Handler
+.weak EXTI4_IRQHandler
+.thumb_set EXTI4_IRQHandler, default_handler
 
-    .weak DMA1_Channel1_IRQHandler
-    .thumb_set DMA1_Channel1_IRQHandler,Default_Handler
+.weak DMA1_Channel1_IRQHandler
+.thumb_set DMA1_Channel1_IRQHandler, default_handler
 
-    .weak DMA1_Channel2_IRQHandler
-    .thumb_set DMA1_Channel2_IRQHandler,Default_Handler
+.weak DMA1_Channel2_IRQHandler
+.thumb_set DMA1_Channel2_IRQHandler, default_handler
 
-    .weak DMA1_Channel3_IRQHandler
-    .thumb_set DMA1_Channel3_IRQHandler,Default_Handler
+.weak DMA1_Channel3_IRQHandler
+.thumb_set DMA1_Channel3_IRQHandler, default_handler
 
-    .weak DMA1_Channel4_IRQHandler
-    .thumb_set DMA1_Channel4_IRQHandler,Default_Handler
+.weak DMA1_Channel4_IRQHandler
+.thumb_set DMA1_Channel4_IRQHandler, default_handler
 
-    .weak DMA1_Channel5_IRQHandler
-    .thumb_set DMA1_Channel5_IRQHandler,Default_Handler
+.weak DMA1_Channel5_IRQHandler
+.thumb_set DMA1_Channel5_IRQHandler, default_handler
 
-    .weak DMA1_Channel6_IRQHandler
-    .thumb_set DMA1_Channel6_IRQHandler,Default_Handler
+.weak DMA1_Channel6_IRQHandler
+.thumb_set DMA1_Channel6_IRQHandler, default_handler
 
-    .weak DMA1_Channel7_IRQHandler
-    .thumb_set DMA1_Channel7_IRQHandler,Default_Handler
+.weak DMA1_Channel7_IRQHandler
+.thumb_set DMA1_Channel7_IRQHandler, default_handler
 
-    .weak ADC1_2_IRQHandler
-    .thumb_set ADC1_2_IRQHandler,Default_Handler
+.weak ADC1_2_IRQHandler
+.thumb_set ADC1_2_IRQHandler, default_handler
 
-    .weak USB_HP_CAN1_TX_IRQHandler
-    .thumb_set USB_HP_CAN1_TX_IRQHandler,Default_Handler
+.weak USB_HP_CAN1_TX_IRQHandler
+.thumb_set USB_HP_CAN1_TX_IRQHandler, default_handler
 
-    .weak USB_LP_CAN1_RX0_IRQHandler
-    .thumb_set USB_LP_CAN1_RX0_IRQHandler,Default_Handler
+.weak USB_LP_CAN1_RX0_IRQHandler
+.thumb_set USB_LP_CAN1_RX0_IRQHandler, default_handler
 
-    .weak CAN1_RX1_IRQHandler
-    .thumb_set CAN1_RX1_IRQHandler,Default_Handler
+.weak CAN1_RX1_IRQHandler
+.thumb_set CAN1_RX1_IRQHandler, default_handler
 
-    .weak CAN1_SCE_IRQHandler
-    .thumb_set CAN1_SCE_IRQHandler,Default_Handler
+.weak CAN1_SCE_IRQHandler
+.thumb_set CAN1_SCE_IRQHandler, default_handler
 
-    .weak EXTI9_5_IRQHandler
-    .thumb_set EXTI9_5_IRQHandler,Default_Handler
+.weak EXTI9_5_IRQHandler
+.thumb_set EXTI9_5_IRQHandler, default_handler
 
-    .weak TIM1_BRK_IRQHandler
-    .thumb_set TIM1_BRK_IRQHandler,Default_Handler
+.weak TIM1_BRK_IRQHandler
+.thumb_set TIM1_BRK_IRQHandler, default_handler
 
-    .weak TIM1_UP_IRQHandler
-    .thumb_set TIM1_UP_IRQHandler,Default_Handler
+.weak TIM1_UP_IRQHandler
+.thumb_set TIM1_UP_IRQHandler, default_handler
 
-    .weak TIM1_TRG_COM_IRQHandler
-    .thumb_set TIM1_TRG_COM_IRQHandler,Default_Handler
+.weak TIM1_TRG_COM_IRQHandler
+.thumb_set TIM1_TRG_COM_IRQHandler, default_handler
 
-    .weak TIM1_CC_IRQHandler
-    .thumb_set TIM1_CC_IRQHandler,Default_Handler
+.weak TIM1_CC_IRQHandler
+.thumb_set TIM1_CC_IRQHandler, default_handler
 
-    .weak TIM2_IRQHandler
-    .thumb_set TIM2_IRQHandler,Default_Handler
+.weak TIM2_IRQHandler
+.thumb_set TIM2_IRQHandler, default_handler
 
-    .weak TIM3_IRQHandler
-    .thumb_set TIM3_IRQHandler,Default_Handler
+.weak TIM3_IRQHandler
+.thumb_set TIM3_IRQHandler, default_handler
 
-    .weak TIM4_IRQHandler
-    .thumb_set TIM4_IRQHandler,Default_Handler
+.weak TIM4_IRQHandler
+.thumb_set TIM4_IRQHandler, default_handler
 
-    .weak I2C1_EV_IRQHandler
-    .thumb_set I2C1_EV_IRQHandler,Default_Handler
+.weak I2C1_EV_IRQHandler
+.thumb_set I2C1_EV_IRQHandler, default_handler
 
-    .weak I2C1_ER_IRQHandler
-    .thumb_set I2C1_ER_IRQHandler,Default_Handler
+.weak I2C1_ER_IRQHandler
+.thumb_set I2C1_ER_IRQHandler, default_handler
 
-    .weak I2C2_EV_IRQHandler
-    .thumb_set I2C2_EV_IRQHandler,Default_Handler
+.weak I2C2_EV_IRQHandler
+.thumb_set I2C2_EV_IRQHandler, default_handler
 
-    .weak I2C2_ER_IRQHandler
-    .thumb_set I2C2_ER_IRQHandler,Default_Handler
+.weak I2C2_ER_IRQHandler
+.thumb_set I2C2_ER_IRQHandler, default_handler
 
-    .weak SPI1_IRQHandler
-    .thumb_set SPI1_IRQHandler,Default_Handler
+.weak SPI1_IRQHandler
+.thumb_set SPI1_IRQHandler, default_handler
 
-    .weak SPI2_IRQHandler
-    .thumb_set SPI2_IRQHandler,Default_Handler
+.weak SPI2_IRQHandler
+.thumb_set SPI2_IRQHandler, default_handler
 
-    .weak USART1_IRQHandler
-    .thumb_set USART1_IRQHandler,Default_Handler
+.weak USART1_IRQHandler
+.thumb_set USART1_IRQHandler, default_handler
 
-    .weak USART2_IRQHandler
-    .thumb_set USART2_IRQHandler,Default_Handler
+.weak USART2_IRQHandler
+.thumb_set USART2_IRQHandler, default_handler
 
-    .weak USART3_IRQHandler
-    .thumb_set USART3_IRQHandler,Default_Handler
+.weak USART3_IRQHandler
+.thumb_set USART3_IRQHandler, default_handler
 
-    .weak EXTI15_10_IRQHandler
-    .thumb_set EXTI15_10_IRQHandler,Default_Handler
+.weak EXTI15_10_IRQHandler
+.thumb_set EXTI15_10_IRQHandler, default_handler
 
-    .weak RTC_Alarm_IRQHandler
-    .thumb_set RTC_Alarm_IRQHandler,Default_Handler
+.weak RTC_Alarm_IRQHandler
+.thumb_set RTC_Alarm_IRQHandler, default_handler
 
-    .weak USBWakeUp_IRQHandler
-    .thumb_set USBWakeUp_IRQHandler,Default_Handler
+.weak USBWakeUp_IRQHandler
+.thumb_set USBWakeUp_IRQHandler, default_handler

@@ -18,7 +18,7 @@ namespace file {
     static const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
 
     // Flash programming and read sizes
-    static constexpr uint32_t READ_SIZE_BYTES{1};
+    static constexpr uint32_t MIN_READ_SIZE_BYTES{1};
     static constexpr uint32_t PROG_SIZE_BYTES{2};
 
     // Flash block details
@@ -28,10 +28,10 @@ namespace file {
 
     // File name and max file number limit
     static constexpr uint32_t MAX_NAME_LEN{8};
-    static constexpr uint32_t MAX_FILE_SIZE_BYTES{8192};
+    static constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
 
     // Cache and lookahead sizes
-    static constexpr uint32_t LOOKAHEAD_SIZE_BYTES{BLOCK_COUNT / 8};
+    static constexpr uint32_t LOOKAHEAD_SIZE_BYTES{8};
     static constexpr uint32_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
 
     // LittleFS buffers
@@ -101,9 +101,10 @@ namespace file {
         return LFS_PARTITION_START + (idx * BLOCK_SIZE_BYTES);
     }
 
+    // Public API
     void init() {
         // Configuration data for the file system
-        static constexpr lfs_config s_lfsconfig = {
+        static const lfs_config s_lfs_config = {
             // Not needed
             .context = nullptr,
 
@@ -118,25 +119,29 @@ namespace file {
                 },
             .prog =
                 [](const lfs_config* config, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size) {
-                    // Make sure data to write to flash is the same as PROG_SIZE_BYTES
-                    utils::assert_check(size == PROG_SIZE_BYTES);
+                    // Make sure data to write to flash is the a multiple of PROG_SIZE_BYTES
+                    utils::assert_check((size % PROG_SIZE_BYTES) == 0);
 
                     (void)config;
                     // Must unlock the flash controller's control register before writing to the flash
                     HAL_FLASH_Unlock();
 
+                    // Cast `buffer` to pointer to `uint16_t` since we'll be moving data in that size
+                    const auto* buf = static_cast<const uint16_t*>(buffer);
+
                     // Get physical block address and offset into the block
                     auto phy_addr = page_idx_to_phy_addr(block) + off;
 
-                    // Get data to be written
-                    int      rc{};
-                    uint16_t data{};
-                    memcpy(&data, buffer, PROG_SIZE_BYTES);
+                    const size_t element_count = size / PROG_SIZE_BYTES;
+                    int          rc{};
 
-                    auto ret = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, phy_addr, data);
-                    if (ret != HAL_OK) {
-                        __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
-                        rc = LFS_ERR_CORRUPT;
+                    for (size_t i{}; i < element_count; i++, phy_addr += PROG_SIZE_BYTES) {
+                        auto ret = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, phy_addr, buf[i]);
+                        if (ret != HAL_OK) {
+                            __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
+                            rc = LFS_ERR_CORRUPT;
+                            break;
+                        }
                     }
 
                     // Lock the flash controller's control register to prevent accidental writes to the flash
@@ -175,7 +180,7 @@ namespace file {
                 },
 
             // Read and programming sizes
-            .read_size = READ_SIZE_BYTES,
+            .read_size = MIN_READ_SIZE_BYTES,
             .prog_size = PROG_SIZE_BYTES,
 
             // Flash block details
@@ -202,11 +207,11 @@ namespace file {
         };
 
         // Setup filesystem
-        auto ret = lfs_mount(&s_lfs_handle, &s_lfsconfig);
+        auto ret = lfs_mount(&s_lfs_handle, &s_lfs_config);
         if (ret < 0) {
             // This error should happen only once, at first boot
-            lfs_format(&s_lfs_handle, &s_lfsconfig);
-            lfs_mount(&s_lfs_handle, &s_lfsconfig);
+            lfs_format(&s_lfs_handle, &s_lfs_config);
+            lfs_mount(&s_lfs_handle, &s_lfs_config);
         }
 
         // Open counter file. Create it if it doesn't yet exist

@@ -44,16 +44,17 @@ void print(const std::string_view& str, uint8_t line) {
     };
     HAL_GPIO_Init(GPIOC, &init);
 
-    //file::init();
+    file::init();
 
     while (true) {
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-        vTaskDelay(pdMS_TO_TICKS(500));
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
+/**
 [[noreturn]] static void keypad_task(void* arg) {
     UNUSED(arg);
 
@@ -142,28 +143,29 @@ void print(const std::string_view& str, uint8_t line) {
 [[noreturn]] static void lcd_task(void* arg) {
     UNUSED(arg);
 
-    lcd::init();
-    lcd::clear_screen();
-    lcd::backlight_on();
-
-    // Text to be displayed
-    constexpr std::array<std::array<std::string_view, 2>, 5> lcd_text = {{
-        {"I", "hate"},
-        {"my", "life."},
-        {"This", "is"},
-        {"so", "so"},
-        {"damn", "boring"},
-    }};
+    // lcd::init();
+    // lcd::clear_screen();
+    // lcd::backlight_on();
+    //
+    // // Text to be displayed
+    // constexpr std::array<std::array<std::string_view, 2>, 5> lcd_text = {{
+    //     {"I", "hate"},
+    //     {"my", "life."},
+    //     {"This", "is"},
+    //     {"so", "so"},
+    //     {"damn", "boring"},
+    // }};
 
     while (true) {
-        for (const auto& line : lcd_text) {
-            // Print text. Bet you didn't know that before
-            print(line[0], 0);
-            print(line[1], 1);
-
-            // Block 2.5s. Helpful? Share and drop a comment (hehe) if it did
-            vTaskDelay(pdMS_TO_TICKS(2500));
-        }
+        // for (const auto& line : lcd_text) {
+        //     // Print text. Bet you didn't know that before
+        //     print(line[0], 0);
+        //     print(line[1], 1);
+        //
+        //     // Block 2.5s. Helpful? Share and drop a comment (hehe) if it did
+        //     vTaskDelay(pdMS_TO_TICKS(2500));
+        // }
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
@@ -173,90 +175,91 @@ void print(const std::string_view& str, uint8_t line) {
     // The SIM800L requires apporx. 3s after bootup before any command can be sent
     vTaskDelay(pdMS_TO_TICKS(3000));
 
-    auto ret = gsm::init();
-    switch (ret) {
-        case gsm::error_t::FAIL:
-            print("An unknown", 0);
-            print("error occured", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::SIM_NOT_REGISTERED:
-            print("SIM registration", 0);
-            print("failed", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::SIM_NOT_FOUND:
-            print("SIM card", 0);
-            print("not found", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::BAD_NETWORK_CONN:
-            print("Failed to get a", 0);
-            print("good connection", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::MODULE_NOT_ALIVE:
-            print("GSM module", 0);
-            print("not found", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::NONE:
-            print("SIM card found", 0);
-            print("Reading IMSI", 1);
-            break;
-        case gsm::error_t::SMS_SEND_FAIL:
-            print("Failed to", 0);
-            print("send the SMS", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        case gsm::error_t::MUTEX_TIMEOUT:
-            print("Internal error", 0);
-            print("due to timeout", 1);
-            // Crash system for now
-            utils::assert_check(false);
-            break;
-        default:
-            break;
-    }
-
-    const auto& imsi = gsm::get_imsi();
-    if (!imsi) {
-        print("Failed to read", 0);
-        print("the SIM's IMSI", 1);
-        // Crash system for now
-        utils::assert_check(false);
-    }
-
-    print("SIM's IMSI: ", 0);
-    print(std::string_view(imsi->data(), imsi->size() - 1), 1);
+    //auto ret = gsm::init();
+    ////switch (ret) {
+    //  case gsm::error_t::FAIL:
+    //      print("An unknown", 0);
+    //      print("error occured", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::SIM_NOT_REGISTERED:
+    //      print("SIM registration", 0);
+    //      print("failed", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::SIM_NOT_FOUND:
+    //      print("SIM card", 0);
+    //      print("not found", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::BAD_NETWORK_CONN:
+    //      print("Failed to get a", 0);
+    //      print("good connection", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::MODULE_NOT_ALIVE:
+    //      print("GSM module", 0);
+    //      print("not found", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::NONE:
+    //      print("SIM card found", 0);
+    //      print("Reading IMSI", 1);
+    //      break;
+    //  case gsm::error_t::SMS_SEND_FAIL:
+    //      print("Failed to", 0);
+    //      print("send the SMS", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  case gsm::error_t::MUTEX_TIMEOUT:
+    //      print("Internal error", 0);
+    //      print("due to timeout", 1);
+    //      // Crash system for now
+    //      utils::assert_check(false);
+    //      break;
+    //  default:
+    //      break;
+    //}
+    //
+    //const auto& imsi = gsm::get_imsi();
+    //if (!imsi) {
+    //    print("Failed to read", 0);
+    //    print("the SIM's IMSI", 1);
+    //    // Crash system for now
+    //    utils::assert_check(false);
+    //}
+    //
+    //print("SIM's IMSI: ", 0);
+    //print(std::string_view(imsi->data(), imsi->size() - 1), 1);
 
     // Do nothing for now
     while (true) {
-        __WFI();
+        vTaskDelay(pdMS_TO_TICKS(5000000));
     }
 }
+*/
 
 // Tasks TCBs and Stacks
 static std::array<StackType_t, 1024> led_task_stack{};
 static StaticTask_t                  led_task_tcb{};
 
-static std::array<StackType_t, 512> lcd_task_stack{};
-static StaticTask_t                 lcd_task_tcb{};
-
-static std::array<StackType_t, 512> gsm_task_stack{};
-static StaticTask_t                 gsm_task_tcb{};
-
-static std::array<StackType_t, 512> keypad_task_stack{};
-static StaticTask_t                 keypad_task_tcb{};
-
-static std::array<StackType_t, 512> switch_task_stack{};
-static StaticTask_t                 switch_task_tcb{};
+//static std::array<StackType_t, 512> lcd_task_stack{};
+//static StaticTask_t                 lcd_task_tcb{};
+//
+//static std::array<StackType_t, 512> gsm_task_stack{};
+//static StaticTask_t                 gsm_task_tcb{};
+//
+//static std::array<StackType_t, 512> keypad_task_stack{};
+//static StaticTask_t                 keypad_task_tcb{};
+//
+//static std::array<StackType_t, 512> switch_task_stack{};
+//static StaticTask_t                 switch_task_tcb{};
 
 extern "C" {
 
@@ -266,10 +269,10 @@ extern "C" {
         lcd_mutex = xSemaphoreCreateMutexStatic(&lcd_mutex_buffer);
 
         xTaskCreateStatic(led_task, "Led Task", config::bytes_to_words(1024), nullptr, 2, led_task_stack.data(), &led_task_tcb);
-        xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
-        xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
-        xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
-        xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
+        // xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
+        // xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
+        // xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);
+        // xTaskCreateStatic(switch_task, "Switch Task", config::bytes_to_words(512), nullptr, 4, switch_task_stack.data(), &switch_task_tcb);
 
         vTaskStartScheduler();
 

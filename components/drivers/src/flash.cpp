@@ -98,7 +98,7 @@ namespace file {
         uint32_t s_boot_cycle_counter{};
 
         // Helper
-        inline uint32_t page_idx_to_phy_addr(uint32_t idx) {
+        uint32_t page_idx_to_phy_addr(uint32_t idx) {
             return LFS_PARTITION_START + (idx * BLOCK_SIZE_BYTES);
         }
     } // namespace
@@ -293,11 +293,11 @@ namespace file {
         }
     }
 
-    uint32_t get_count_value() {
+    uint32_t get_boot_cycle_count() {
         return s_boot_cycle_counter;
     }
 
-    void write(name_t file, const std::span<uint8_t>& data) {
+    void write(name_t file, std::span<const uint8_t> data) {
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             utils::assert_check(false);
@@ -307,7 +307,7 @@ namespace file {
         (void)data;
     }
 
-    void read(name_t file, std::span<uint8_t>& data) {
+    void read(name_t file, std::span<uint8_t> data) {
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             utils::assert_check(false);

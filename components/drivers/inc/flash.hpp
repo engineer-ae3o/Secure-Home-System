@@ -18,6 +18,7 @@ namespace file {
     constexpr uint32_t MAX_NAME_LEN{8};
     constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
 
+    // File identifiers for the different files being used
     enum class name_t : uint8_t {
         COUNTER,
         PASSWORD,

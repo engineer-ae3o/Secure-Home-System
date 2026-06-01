@@ -195,7 +195,7 @@ extern "C" {
  * \param storage The non-volatile storage region to use to load the seed.
  * The seed is loaded from offset zero within the region.
  *
- * \param Zero if the seed was loaded, or -1 if non-volatile storage failed.
+ * \return Zero if the seed was loaded, or -1 if non-volatile storage failed.
  *
  * The seed value in non-volatile storage is ASCON_RANDOM_SAVED_SEED_SIZE
  * bytes in size.  If no seed was previously saved, then whatever rubbish

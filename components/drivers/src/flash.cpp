@@ -18,19 +18,6 @@ namespace file {
     namespace {
         const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
 
-        // Flash programming and read sizes
-        constexpr uint32_t MIN_READ_SIZE_BYTES{1};
-        constexpr uint32_t PROG_SIZE_BYTES{2};
-
-        // Flash block details
-        constexpr uint32_t BLOCK_COUNT{32};
-        constexpr uint32_t BLOCK_SIZE_BYTES{1024};
-        constexpr uint32_t BLOCK_CYCLES{10'000};
-
-        // File name and max file number limit
-        constexpr uint32_t MAX_NAME_LEN{8};
-        constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
-
         // Cache and lookahead sizes
         constexpr uint32_t LOOKAHEAD_SIZE_BYTES{8};
         constexpr uint32_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
@@ -87,6 +74,17 @@ namespace file {
                     .file_config =
                         {
                             .buffer     = s_file_cache[std::to_underlying(name_t::PNUMBERS)].data(),
+                            .attrs      = nullptr,
+                            .attr_count = 0,
+                        },
+                },
+            [std::to_underlying(name_t::ASCON_SEED)] =
+                {
+                    .file      = {},
+                    .file_path = "sgscjhw",
+                    .file_config =
+                        {
+                            .buffer     = s_file_cache[std::to_underlying(name_t::ASCON_SEED)].data(),
                             .attrs      = nullptr,
                             .attr_count = 0,
                         },
@@ -273,6 +271,15 @@ namespace file {
         if (ret < 0) {
             utils::assert_check(false);
         }
+        // Ascon seed file
+        ret = lfs_file_opencfg(&s_lfs_handle,
+                               &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file,
+                               s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file_path.data(),
+                               (LFS_O_CREAT | LFS_O_RDWR),
+                               &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file_config);
+        if (ret < 0) {
+            utils::assert_check(false);
+        }
     }
 
     void deinit() {
@@ -283,6 +290,11 @@ namespace file {
         }
 
         ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PNUMBERS)].file);
+        if (ret < 0) {
+            utils::assert_check(false);
+        }
+
+        ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file);
         if (ret < 0) {
             utils::assert_check(false);
         }

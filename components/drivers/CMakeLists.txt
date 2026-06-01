@@ -6,6 +6,7 @@ add_library(drivers STATIC
     src/flash.cpp
     src/secure_system.cpp
     src/syscalls.cpp
+    src/random.cpp
 )
 
 set_target_properties(drivers PROPERTIES

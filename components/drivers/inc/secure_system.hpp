@@ -8,6 +8,4 @@ namespace ss {
 
     void deinit();
 
-    int get_random_number();
-
 } // namespace ss

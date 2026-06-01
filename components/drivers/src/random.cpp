@@ -50,20 +50,56 @@ namespace rnd {
                 },
         };
 
-        // ADC and DMA handles
+        // ADC, DMA, and RTC handles
         ADC_HandleTypeDef s_adc_handle{};
         DMA_HandleTypeDef s_dma_handle{};
+        RTC_HandleTypeDef s_rtc_handle{};
+
+        // Measured jitter between the TIM2 peripheral and the RTC running on the LSI.
+        volatile uint32_t s_tim2_rtc_jitter{};
 
         // Six internal channels + the internal temperature sensor
-        constexpr uint8_t ADC_NUM_CHANNELS = 7;
+        constexpr uint8_t ADC_NUM_CHANNELS{7};
 
         // DMA buffer. Half word sized load and stores are atomic on CM3, so we can safely read
         // from this buffer without worrying about concurrency issues with the DMA controller.
         std::array<uint16_t, ADC_NUM_CHANNELS> s_adc_buf{};
 
-        // This function gets timing jitter between TIM2 runnimg on the main PLL and the LSI and ADC
-        // samples on some floating pins and mixes them together to be used as our entropy source.
-        uint8_t get_entropy_mixture();
+        // Helpers
+        uint8_t get_uint8_from_uint32(uint32_t value) {
+            // Fold all four bytes of the input value into a single byte by XORing them together.
+            // This is a simple way to extract some entropy from a 32-bit value, and it helps to
+            // ensure that changes in any of the bytes will affect the output.
+            return static_cast<uint8_t>((value & 0xFF) ^ ((value >> 8) & 0xFF) ^ ((value >> 16) & 0xFF) ^ ((value >> 24) & 0xFF));
+        }
+
+        // This function gets the boot cycle counter, timing jitter between TIM2 runnimg on the main PLL and the RTC
+        // running on the LSI and ADC samples on seven channels and mixes them together to be used as our entropy source.
+        uint8_t get_entropy_mixture() {
+            // We use a simple XOR-based mixture function to mix the different sources of entropy together.
+            // This is not a cryptographically secure way to mix entropy, but it is sufficient for our
+            // purposes since we are feeding the output into a CSPRNG that will further mix the entropy and
+            // produce high-quality random numbers. The entropy variable has static duration so that it retains
+            // its value across multiple calls to this function, instead of being re-initialized to zero on each
+            // call, which allows us to accumulate entropy over time.
+            static uint8_t entropy{};
+
+            // The HAL tick source has already been configured to use TIM2
+            // as its clock source. Mix in the entropy from TIM2 and the RTC.
+            entropy ^= get_uint8_from_uint32(s_tim2_rtc_jitter);
+
+            // LSBs from ADC floating pins
+            for (const auto sample : s_adc_buf) {
+                entropy ^= get_uint8_from_uint32(sample);
+            }
+
+            // Mix in the boot cycle count, which tracks the number of boot cycles since first boot of the device.
+            // The boot cycle count is more so used as a way to ensure that the entropy mixture changes across
+            // reboots, since the other sources of entropy could be potentially similar on each boot.
+            entropy ^= get_uint8_from_uint32(file::get_boot_cycle_count());
+
+            return entropy;
+        }
 
     } // namespace
 
@@ -148,12 +184,39 @@ namespace rnd {
         // Start ADC conversion
         utils::assert_check(HAL_ADC_Start_DMA(&s_adc_handle, reinterpret_cast<uint32_t*>(s_adc_buf.data()), ADC_NUM_CHANNELS) == HAL_OK);
 
+        // Configure the RTC peripheral to use the LSI as its clock source, which is a low frequency
+        // internal oscillator that has a lot of jitter, making it a good source of entropy for the RNG.
+        __HAL_RCC_PWR_CLK_ENABLE();
+        __HAL_RCC_BKP_CLK_ENABLE();
+
+        // Required to write to the backup domain
+        HAL_PWR_EnableBkUpAccess();
+
+        __HAL_RCC_LSI_ENABLE();
+        while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET) {
+        }
+
+        __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI);
+        __HAL_RCC_RTC_ENABLE();
+
+        s_rtc_handle.Instance          = RTC;
+        s_rtc_handle.Init.AsynchPrediv = 39; // 40kHz / (39  + 1) = ~1kHz
+        s_rtc_handle.Init.OutPut       = RTC_OUTPUTSOURCE_NONE;
+        utils::assert_check(HAL_RTC_Init(&s_rtc_handle) == HAL_OK);
+
+        utils::assert_check(HAL_RTCEx_SetSecond_IT(&s_rtc_handle) == HAL_OK);
+
+        HAL_NVIC_SetPriority(RTC_IRQn, 5, 0);
+        HAL_NVIC_EnableIRQ(RTC_IRQn);
+
         // FInally, initialize the ASCON random state and load the seed from flash storage
         utils::assert_check(ascon_random_init(&s_rng_state) != 0);
         utils::assert_check(ascon_random_load_seed(&s_rng_state, &s_ascon_storage) == 0);
     }
 
     void deinit() {
+        utils::assert_check(HAL_RTC_DeInit(&s_rtc_handle) == HAL_OK);
+        utils::assert_check(HAL_ADC_DeInit(&s_adc_handle) == HAL_OK);
         ascon_random_free(&s_rng_state);
     }
 
@@ -174,12 +237,7 @@ namespace rnd {
         utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) == 0);
     }
 
-    namespace {
-        uint8_t get_entropy_mixture() {
-            // TODO: Implement mixing of ADC samples on floating pins and jitter between the LSI and TIM2
-            return 0;
-        }
-    } // namespace
+    namespace {} // namespace
 
 } // namespace rnd
 
@@ -187,8 +245,16 @@ extern "C" {
     // Used by ASCON's TRNG implementation to get random bytes
     int ascon_trng_get_bytes(unsigned char* out, size_t outlen) {
         for (size_t i{0}; i < outlen; i++) {
-            out[i] = static_cast<unsigned char>(rnd::get_entropy_mixture() & 0xFFU);
+            out[i] = rnd::get_entropy_mixture();
         }
         return static_cast<int>(outlen);
     }
+
+    void RTC_IRQHandler() {
+        static volatile uint32_t rtc_tick{};
+        rtc_tick++;
+        // Get jitter
+        rnd::s_tim2_rtc_jitter = HAL_GetTick() - rtc_tick;
+    }
+
 } // extern "C"

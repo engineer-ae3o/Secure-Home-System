@@ -15,114 +15,116 @@
 
 namespace gsm {
 
-    // Global state. It is what it is
-    static UART_HandleTypeDef s_huart{};
-    static DMA_HandleTypeDef  s_hdma_tx{};
-    static DMA_HandleTypeDef  s_hdma_rx{};
-    static TaskHandle_t       s_calling_task_handle{};
-    static SemaphoreHandle_t  s_task_mutex{};
-    static StaticSemaphore_t  s_task_mutex_buffer{};
+    namespace {
+        // Global state. It is what it is
+        UART_HandleTypeDef s_huart{};
+        DMA_HandleTypeDef  s_hdma_tx{};
+        DMA_HandleTypeDef  s_hdma_rx{};
+        TaskHandle_t       s_calling_task_handle{};
+        SemaphoreHandle_t  s_task_mutex{};
+        StaticSemaphore_t  s_task_mutex_buffer{};
 
-    static bool s_is_initialized{};
+        bool s_is_initialized{};
 
-    // This is needed because we are receiving UART data, we don't
-    // know the length of the data we will get. The UART idle line
-    // ISR puts the actual length of the data received here.
-    static volatile uint16_t s_rx_idle_line_size{};
+        // This is needed because we are receiving UART data, we don't
+        // know the length of the data we will get. The UART idle line
+        // ISR puts the actual length of the data received here.
+        volatile uint16_t s_rx_idle_line_size{};
 
-    static constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{32};
+        constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{32};
 
-    static constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
-    static constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
+        constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
+        constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
 
-    static constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT{10};
-    static constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
+        constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT{10};
+        constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
 
-    static constexpr uint32_t TIMEOUT_MS{50};
-    static constexpr uint32_t DEINIT_TIMEOUT_MS{5000};
+        constexpr uint32_t TIMEOUT_MS{50};
+        constexpr uint32_t DEINIT_TIMEOUT_MS{5000};
 
-    // RAII helper for cleaning up stale used state
-    struct cleanup_t {
-        cleanup_t() = default;
+        // RAII helper for cleaning up stale used state
+        struct cleanup_t {
+            cleanup_t() = default;
 
-        ~cleanup_t() {
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = {};
-        }
-
-        cleanup_t(const cleanup_t&)            = delete;
-        cleanup_t& operator=(const cleanup_t&) = delete;
-        cleanup_t(cleanup_t&&)                 = delete;
-        cleanup_t& operator=(cleanup_t&&)      = delete;
-    };
-
-    // RAII helper for taking and freeing the mutex
-    struct mutex_t {
-    public:
-        mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
-            mutex_taken = m_mutex_taken;
-        }
-
-        ~mutex_t() {
-            if (m_mutex_taken) {
-                xSemaphoreGiveRecursive(s_task_mutex);
+            ~cleanup_t() {
+                s_rx_idle_line_size   = {};
+                s_calling_task_handle = {};
             }
-        }
 
-        mutex_t(const mutex_t&)            = delete;
-        mutex_t& operator=(const mutex_t&) = delete;
-        mutex_t(mutex_t&&)                 = delete;
-        mutex_t& operator=(mutex_t&&)      = delete;
+            cleanup_t(const cleanup_t&)            = delete;
+            cleanup_t& operator=(const cleanup_t&) = delete;
+            cleanup_t(cleanup_t&&)                 = delete;
+            cleanup_t& operator=(cleanup_t&&)      = delete;
+        };
 
-    private:
-        bool m_mutex_taken{};
-    };
+        // RAII helper for taking and freeing the mutex
+        struct mutex_t {
+        public:
+            mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
+                mutex_taken = m_mutex_taken;
+            }
 
-    enum class cmd_t : uint8_t {
-        // Initialization
-        AT,        // Module alive check
-        ECHO_OFF,  // Disable echo mode
-        TEXT_MODE, // SMS text mode
-        SET_SMSC,  // GLO SMSC
+            ~mutex_t() {
+                if (m_mutex_taken) {
+                    xSemaphoreGiveRecursive(s_task_mutex);
+                }
+            }
 
-        // Status checks
-        CHECK_SIM,    // Check if SIM card is present and ready
-        CHECK_REG,    // Network registration
-        CHECK_SIGNAL, // Check signal strength
+            mutex_t(const mutex_t&)            = delete;
+            mutex_t& operator=(const mutex_t&) = delete;
+            mutex_t(mutex_t&&)                 = delete;
+            mutex_t& operator=(mutex_t&&)      = delete;
 
-        // IMSI
-        GET_IMSI, // Get the SIM card's IMSI
+        private:
+            bool m_mutex_taken{};
+        };
 
-        // Cleanup
-        DEINIT, // Tell the SIM800L to deinitialize itself
+        enum class cmd_t : uint8_t {
+            // Initialization
+            AT,        // Module alive check
+            ECHO_OFF,  // Disable echo mode
+            TEXT_MODE, // SMS text mode
+            SET_SMSC,  // GLO SMSC
 
-        // Total
-        COUNT // Used to get total number for array declaration
-    };
+            // Status checks
+            CHECK_SIM,    // Check if SIM card is present and ready
+            CHECK_REG,    // Network registration
+            CHECK_SIGNAL, // Check signal strength
 
-    struct cmd_entry_t {
-        std::string_view tx;
-        std::string_view rx_expected;
-    };
+            // IMSI
+            GET_IMSI, // Get the SIM card's IMSI
 
-    // AT commands LUT
-    static constexpr std::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
-        [std::to_underlying(cmd_t::AT)]           = {"AT\r", "OK"},
-        [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r", "OK"},
-        [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r", "OK"},
-        [std::to_underlying(cmd_t::SET_SMSC)]     = {"AT+CSCA=\"+2348050020020\"\r", "OK"},
-        [std::to_underlying(cmd_t::CHECK_SIM)]    = {"AT+CPIN?\r", "+CPIN: READY"},
-        [std::to_underlying(cmd_t::CHECK_REG)]    = {"AT+CREG?\r", "+CREG"},
-        [std::to_underlying(cmd_t::CHECK_SIGNAL)] = {"AT+CSQ\r", "+CSQ"},
-        [std::to_underlying(cmd_t::GET_IMSI)]     = {"AT+CIMI\r", "OK"},
-        [std::to_underlying(cmd_t::DEINIT)]       = {"AT+CPOWD=1\r", "NORMAL POWER DOWN"},
-    }};
+            // Cleanup
+            DEINIT, // Tell the SIM800L to deinitialize itself
 
-    // Forward declarations
-    [[nodiscard]] static inline std::expected<std::string_view, error_t>
-    transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
-    [[nodiscard]] static inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms = TIMEOUT_MS);
-    [[nodiscard]] static inline error_t send_init_sequence();
+            // Total
+            COUNT // Used to get total number for array declaration
+        };
+
+        struct cmd_entry_t {
+            std::string_view tx;
+            std::string_view rx_expected;
+        };
+
+        // AT commands LUT
+        constexpr std::array<cmd_entry_t, std::to_underlying(cmd_t::COUNT)> AT_CMD_LUT = {{
+            [std::to_underlying(cmd_t::AT)]           = {"AT\r", "OK"},
+            [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r", "OK"},
+            [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r", "OK"},
+            [std::to_underlying(cmd_t::SET_SMSC)]     = {"AT+CSCA=\"+2348050020020\"\r", "OK"},
+            [std::to_underlying(cmd_t::CHECK_SIM)]    = {"AT+CPIN?\r", "+CPIN: READY"},
+            [std::to_underlying(cmd_t::CHECK_REG)]    = {"AT+CREG?\r", "+CREG"},
+            [std::to_underlying(cmd_t::CHECK_SIGNAL)] = {"AT+CSQ\r", "+CSQ"},
+            [std::to_underlying(cmd_t::GET_IMSI)]     = {"AT+CIMI\r", "OK"},
+            [std::to_underlying(cmd_t::DEINIT)]       = {"AT+CPOWD=1\r", "NORMAL POWER DOWN"},
+        }};
+
+        // Forward declarations
+        [[nodiscard]] inline std::expected<std::string_view, error_t>
+        transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
+        [[nodiscard]] inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms = TIMEOUT_MS);
+        [[nodiscard]] inline error_t send_init_sequence();
+    } // namespace
 
     // Public API
     error_t init() {
@@ -207,6 +209,8 @@ namespace gsm {
 
         // Create the mutex as recursive
         s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
+
+        s_is_initialized = true;
 
         return error_t::NONE;
     }
@@ -411,219 +415,222 @@ namespace gsm {
         return imsi;
     }
 
-    // Helpers
-    static inline std::expected<std::string_view, error_t>
-    transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms) {
+    namespace {
+        // Helpers
+        inline std::expected<std::string_view, error_t>
+        transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms) {
 
-        // Will clear the rx idle line and calling task handle variables
-        [[maybe_unused]] cleanup_t auto_cleanup{};
-
-        // Capture calling task since the irq handler sends a notification to it
-        s_calling_task_handle = xTaskGetCurrentTaskHandle();
-
-        // We have to start reception on the UART RX line since the SIM800L
-        // may start its own transmission immediately after ours is done.
-        utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_cmd.data()), rx_cmd.max_size()) == HAL_OK);
-
-        // Transmit the AT command
-        utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_cmd.data()), tx_cmd.size()) == HAL_OK);
-
-        // Block till the task notification is received from the ISR
-        // If no notification is received within the timeout, return an error.
-        if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
-            return std::unexpected(error_t::FAIL);
-        }
-
-        return std::string_view{rx_cmd.data(), s_rx_idle_line_size};
-    }
-
-    static inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms) {
-
-        error_t ret{error_t::NONE};
-
-        // Get AT command and the expected response from the LUT
-        const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd)];
-
-        // The resulting string view gets stored here
-        std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-        auto                                      rx_str = transact(tx_str, rx_buf, timeout_ms);
-
-        if (!rx_str) {
-            return error_t::FAIL;
-        }
-
-        // Interpret the data that was received based on the type of AT command
-        // that was transferred because some require parsing and others do not.
-        [&]() {
-            // The `CHECK_SIGNAL` command receives a command that requires parsing
-            if (cmd == cmd_t::CHECK_SIGNAL) {
-                // Get index to the beginning of the first instance of `"+CSQ: "`
-                auto pos = rx_str->find("+CSQ: ");
-                if (pos == std::string_view::npos) {
-                    ret = error_t::FAIL;
-                    return;
-                }
-
-                // strlen of `"+CSQ: "` is 6. Create a sub string view of everything after it.
-                auto rssi_str = rx_str->substr(pos + 6);
-
-                // Get the RSSI. It is the first number after `"+CSQ: "`
-                auto rssi = std::strtoul(rssi_str.data(), {}, 10);
-
-                // If RSSI is 99, the module couldn't detect a signal or
-                // if RSSI is less than 5, the signal is too weak to use.
-                if (rssi == 99 || rssi < 5) {
-                    ret = error_t::FAIL;
-                    return;
-                }
-            }
-            // The `CHECK_REG` command receives a command that also requires parsing
-            else if (cmd == cmd_t::CHECK_REG) {
-                // Find position of first three numbers that appears after `','`
-                auto pos = rx_str->find(',');
-                if (pos == std::string_view::npos) {
-                    ret = error_t::FAIL;
-                    return;
-                }
-
-                // Create a string view of the remaining characters that appear after the `',`
-                auto stat_str = rx_str->substr(pos + 1);
-
-                // Get the network stat
-                auto stat = std::strtoul(stat_str.data(), {}, 10);
-
-                // The stat is what tells us the state of the SIM card's network registration.
-                // A stat of 1 means homing and 5 means roaming. Nothing else is good.
-                if (!(stat == 1) && !(stat == 5)) {
-                    ret = error_t::FAIL;
-                    return;
-                }
-            }
-            // If the sent command wasn't `CHECK_SIGNAL` or `CHECK_REG`, that
-            // means the command does not need parsing and the actual result
-            // can be checked to see if it contains the expected result.
-            else {
-                // Check if the AT command we are expecting for the transmitted AT command can be
-                // found in the actual data we received back. If it's not, then an error occurred.
-                if (!rx_str->contains(rx_expected)) {
-                    ret = error_t::FAIL;
-                    return;
-                }
-            }
-        }();
-
-        // Don't blame me. AT commands are a mess.
-
-        return ret;
-    }
-
-    static inline error_t send_init_sequence() {
-
-        error_t ret{error_t::NONE};
-
-        // We cannot use `send_cmd_and_compare_result(...)` here
-        // since we need to send the `AT` command multiple times
-        // until we receive the `OK` string from the SIM800L. So
-        // we need to handle this special case manually. We also
-        // limit its scope so as not to impact the transmission
-        // of other AT commands.
-
-        {
             // Will clear the rx idle line and calling task handle variables
-            [[maybe_unused]] cleanup_t auto_cleanup;
+            [[maybe_unused]] cleanup_t auto_cleanup{};
 
             // Capture calling task since the irq handler sends a notification to it
             s_calling_task_handle = xTaskGetCurrentTaskHandle();
 
             // We have to start reception on the UART RX line since the SIM800L
             // may start its own transmission immediately after ours is done.
-            std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-            utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()) ==
+            utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_cmd.data()), rx_cmd.max_size()) ==
                                 HAL_OK);
 
-            // Get the tx data from the LUT
-            const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd_t::AT)];
-            uint8_t count{NUM_OF_TIMES_TO_SEND_AT};
-            bool    module_responded{};
+            // Transmit the AT command
+            utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_cmd.data()), tx_cmd.size()) == HAL_OK);
 
-            // Continuously transmit the `AT` command
-            while (static_cast<bool>(count--)) {
-                utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_str.data()), tx_str.size()) ==
+            // Block till the task notification is received from the ISR
+            // If no notification is received within the timeout, return an error.
+            if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
+                return std::unexpected(error_t::FAIL);
+            }
+
+            return std::string_view{rx_cmd.data(), s_rx_idle_line_size};
+        }
+
+        inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms) {
+
+            error_t ret{error_t::NONE};
+
+            // Get AT command and the expected response from the LUT
+            const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd)];
+
+            // The resulting string view gets stored here
+            std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+            auto                                      rx_str = transact(tx_str, rx_buf, timeout_ms);
+
+            if (!rx_str) {
+                return error_t::FAIL;
+            }
+
+            // Interpret the data that was received based on the type of AT command
+            // that was transferred because some require parsing and others do not.
+            [&]() {
+                // The `CHECK_SIGNAL` command receives a command that requires parsing
+                if (cmd == cmd_t::CHECK_SIGNAL) {
+                    // Get index to the beginning of the first instance of `"+CSQ: "`
+                    auto pos = rx_str->find("+CSQ: ");
+                    if (pos == std::string_view::npos) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
+
+                    // strlen of `"+CSQ: "` is 6. Create a sub string view of everything after it.
+                    auto rssi_str = rx_str->substr(pos + 6);
+
+                    // Get the RSSI. It is the first number after `"+CSQ: "`
+                    auto rssi = std::strtoul(rssi_str.data(), {}, 10);
+
+                    // If RSSI is 99, the module couldn't detect a signal or
+                    // if RSSI is less than 5, the signal is too weak to use.
+                    if (rssi == 99 || rssi < 5) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
+                }
+                // The `CHECK_REG` command receives a command that also requires parsing
+                else if (cmd == cmd_t::CHECK_REG) {
+                    // Find position of first three numbers that appears after `','`
+                    auto pos = rx_str->find(',');
+                    if (pos == std::string_view::npos) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
+
+                    // Create a string view of the remaining characters that appear after the `',`
+                    auto stat_str = rx_str->substr(pos + 1);
+
+                    // Get the network stat
+                    auto stat = std::strtoul(stat_str.data(), {}, 10);
+
+                    // The stat is what tells us the state of the SIM card's network registration.
+                    // A stat of 1 means homing and 5 means roaming. Nothing else is good.
+                    if (!(stat == 1) && !(stat == 5)) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
+                }
+                // If the sent command wasn't `CHECK_SIGNAL` or `CHECK_REG`, that
+                // means the command does not need parsing and the actual result
+                // can be checked to see if it contains the expected result.
+                else {
+                    // Check if the AT command we are expecting for the transmitted AT command can be
+                    // found in the actual data we received back. If it's not, then an error occurred.
+                    if (!rx_str->contains(rx_expected)) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
+                }
+            }();
+
+            // Don't blame me. AT commands are a mess.
+
+            return ret;
+        }
+
+        inline error_t send_init_sequence() {
+
+            error_t ret{error_t::NONE};
+
+            // We cannot use `send_cmd_and_compare_result(...)` here
+            // since we need to send the `AT` command multiple times
+            // until we receive the `OK` string from the SIM800L. So
+            // we need to handle this special case manually. We also
+            // limit its scope so as not to impact the transmission
+            // of other AT commands.
+
+            {
+                // Will clear the rx idle line and calling task handle variables
+                [[maybe_unused]] cleanup_t auto_cleanup;
+
+                // Capture calling task since the irq handler sends a notification to it
+                s_calling_task_handle = xTaskGetCurrentTaskHandle();
+
+                // We have to start reception on the UART RX line since the SIM800L
+                // may start its own transmission immediately after ours is done.
+                std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
+                utils::assert_check(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()) ==
                                     HAL_OK);
 
-                // The UART idle line irq handler sends a notification on completion, implying the module has responded.
-                // We block for some ms while waiting for the notification before sending the 'AT' command again.
-                if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(DELAY_BETWEEN_TX_AT_CMDS_MS)) > 0) {
-                    module_responded = true;
-                    break;
+                // Get the tx data from the LUT
+                const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd_t::AT)];
+                uint8_t count{NUM_OF_TIMES_TO_SEND_AT};
+                bool    module_responded{};
+
+                // Continuously transmit the `AT` command
+                while (static_cast<bool>(count--)) {
+                    utils::assert_check(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_str.data()), tx_str.size()) ==
+                                        HAL_OK);
+
+                    // The UART idle line irq handler sends a notification on completion, implying the module has responded.
+                    // We block for some ms while waiting for the notification before sending the 'AT' command again.
+                    if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(DELAY_BETWEEN_TX_AT_CMDS_MS)) > 0) {
+                        module_responded = true;
+                        break;
+                    }
                 }
-            }
 
-            if (module_responded) {
-                // Construct a `std::string_view` from the data received. The UART
-                // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
-                auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
+                if (module_responded) {
+                    // Construct a `std::string_view` from the data received. The UART
+                    // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
+                    auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
 
-                // Check if the expected response was in the actual data received
-                if (!rx_actual.contains(rx_expected)) {
+                    // Check if the expected response was in the actual data received
+                    if (!rx_actual.contains(rx_expected)) {
+                        ret = error_t::MODULE_NOT_ALIVE;
+                    }
+                    // Report an error since the SIM800L didn't respond
+                } else {
                     ret = error_t::MODULE_NOT_ALIVE;
                 }
-                // Report an error since the SIM800L didn't respond
-            } else {
-                ret = error_t::MODULE_NOT_ALIVE;
-            }
-        }
-
-        // Return immediately on an error
-        if (ret != error_t::NONE) {
-            return error_t::MODULE_NOT_ALIVE;
-        }
-
-        // Echo mode off
-        ret = send_cmd_and_compare_result(cmd_t::ECHO_OFF);
-        if (ret != error_t::NONE) {
-            return error_t::FAIL;
-        }
-
-        // Text mode on
-        ret = send_cmd_and_compare_result(cmd_t::TEXT_MODE);
-        if (ret != error_t::NONE) {
-            return error_t::FAIL;
-        }
-
-        // Set network provider's SMSC: GLO's in this case
-        ret = send_cmd_and_compare_result(cmd_t::SET_SMSC);
-        if (ret != error_t::NONE) {
-            return error_t::FAIL;
-        }
-
-        // Check if the SIM card is present
-        ret = send_cmd_and_compare_result(cmd_t::CHECK_SIM);
-        if (ret != error_t::NONE) {
-            return error_t::SIM_NOT_FOUND;
-        }
-
-        // Check if the SIM card is registered to a network service
-        ret = send_cmd_and_compare_result(cmd_t::CHECK_REG);
-        if (ret != error_t::NONE) {
-            return error_t::SIM_NOT_REGISTERED;
-        }
-
-        // Check signal strength
-        for (uint32_t i{0}; i < NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK; i++) {
-            ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
-            if (ret == error_t::NONE) {
-                return error_t::NONE;
             }
 
-            // We poll here since network connection failure is a recoverable error from
-            // the module, so we can poll it until we get a stable network connection
-            vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS));
-        }
+            // Return immediately on an error
+            if (ret != error_t::NONE) {
+                return error_t::MODULE_NOT_ALIVE;
+            }
 
-        // If we get here, we were unable to establish a good connection
-        return error_t::BAD_NETWORK_CONN;
-    }
+            // Echo mode off
+            ret = send_cmd_and_compare_result(cmd_t::ECHO_OFF);
+            if (ret != error_t::NONE) {
+                return error_t::FAIL;
+            }
+
+            // Text mode on
+            ret = send_cmd_and_compare_result(cmd_t::TEXT_MODE);
+            if (ret != error_t::NONE) {
+                return error_t::FAIL;
+            }
+
+            // Set network provider's SMSC: GLO's in this case
+            ret = send_cmd_and_compare_result(cmd_t::SET_SMSC);
+            if (ret != error_t::NONE) {
+                return error_t::FAIL;
+            }
+
+            // Check if the SIM card is present
+            ret = send_cmd_and_compare_result(cmd_t::CHECK_SIM);
+            if (ret != error_t::NONE) {
+                return error_t::SIM_NOT_FOUND;
+            }
+
+            // Check if the SIM card is registered to a network service
+            ret = send_cmd_and_compare_result(cmd_t::CHECK_REG);
+            if (ret != error_t::NONE) {
+                return error_t::SIM_NOT_REGISTERED;
+            }
+
+            // Check signal strength
+            for (uint32_t i{0}; i < NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK; i++) {
+                ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
+                if (ret == error_t::NONE) {
+                    return error_t::NONE;
+                }
+
+                // We poll here since network connection failure is a recoverable error from
+                // the module, so we can poll it until we get a stable network connection
+                vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS));
+            }
+
+            // If we get here, we were unable to establish a good connection
+            return error_t::BAD_NETWORK_CONN;
+        }
+    } // namespace
 
 } // namespace gsm
 

@@ -12,26 +12,28 @@
 
 namespace lcd {
 
-    // Global state. Yes. I hate ST's HALs too
-    static I2C_HandleTypeDef s_handle{};
-    static bool              s_is_initialized{};
+    namespace {
+        // Global state. Yes. I hate ST's HALs too
+        I2C_HandleTypeDef s_handle{};
+        bool              s_is_initialized{};
 
-    // Offsets for calculating offset position
-    static constexpr std::array<uint8_t, ROWS> OFFSETS = {
-        0x00U,
-        0x40U,
-        // Uncomment if ROWS == 4
-        // 0x14U, 0x54U
-    };
+        // Offsets for calculating offset position
+        constexpr std::array<uint8_t, ROWS> OFFSETS = {
+            0x00U,
+            0x40U,
+            // Uncomment if ROWS == 4
+            // 0x14U, 0x54U
+        };
 
-    // I2C address of the backpack on the HD44780 controller
-    static constexpr uint8_t ADDRESS{0x27U};
+        // I2C address of the backpack on the HD44780 controller
+        constexpr uint8_t ADDRESS{0x27U};
 
-    // Forward declarations
-    static inline void send_nibble(uint8_t nibble, uint8_t rs);
-    static inline void send_byte(uint8_t byte, uint8_t rs);
-    static inline void send_cmd(uint8_t cmd);
-    static inline void send_data(uint8_t data);
+        // Forward declarations
+        inline void send_nibble(uint8_t nibble, uint8_t rs);
+        inline void send_byte(uint8_t byte, uint8_t rs);
+        inline void send_cmd(uint8_t cmd);
+        inline void send_data(uint8_t data);
+    } // namespace
 
     // Public API
     void init() {
@@ -162,37 +164,39 @@ namespace lcd {
         HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, (on ? GPIO_PIN_SET : GPIO_PIN_RESET));
     }
 
-    // Helpers
-    static inline void send_nibble(uint8_t nibble, uint8_t rs) {
-        // BL is Backlight. En is Enable
-        // RW is read-write. RS selects data or cmds
-        // `(D7 D6 D5 D4)`   `(BL)` `(EN & RW are 0)`  `(RS)`
-        uint8_t data = static_cast<uint8_t>(nibble << 4) | (1 << 3) | (rs & 0b1U);
-        // Fuck me sideways. ST requires you to shift the address to the left by 1 place
-        // For some f***ing reason, it can't be done internally. Not like it's const or some shit
-        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
+    namespace {
+        // Helpers
+        inline void send_nibble(uint8_t nibble, uint8_t rs) {
+            // BL is Backlight. En is Enable
+            // RW is read-write. RS selects data or cmds
+            // `(D7 D6 D5 D4)`   `(BL)` `(EN & RW are 0)`  `(RS)`
+            uint8_t data = static_cast<uint8_t>(nibble << 4) | (1 << 3) | (rs & 0b1U);
+            // Fuck me sideways. ST requires you to shift the address to the left by 1 place
+            // For some f***ing reason, it can't be done internally. Not like it's const or some shit
+            HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
 
-        // Pulse the EN bit
-        data |= static_cast<uint8_t>(1U << 2); // EN high
-        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
+            // Pulse the EN bit
+            data |= static_cast<uint8_t>(1U << 2); // EN high
+            HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
 
-        data &= static_cast<uint8_t>(~(1U << 2)); // EN low
-        HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
-    }
+            data &= static_cast<uint8_t>(~(1U << 2)); // EN low
+            HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, HAL_MAX_DELAY);
+        }
 
-    static inline void send_byte(uint8_t byte, uint8_t rs) {
-        send_nibble((byte >> 4), rs);   // High nibble first
-        send_nibble((byte & 0xFU), rs); // Low nibble next
-    }
+        inline void send_byte(uint8_t byte, uint8_t rs) {
+            send_nibble((byte >> 4), rs);   // High nibble first
+            send_nibble((byte & 0xFU), rs); // Low nibble next
+        }
 
-    static inline void send_cmd(uint8_t cmd) {
-        // RS = 0 for commands
-        send_byte(cmd, 0);
-    }
+        inline void send_cmd(uint8_t cmd) {
+            // RS = 0 for commands
+            send_byte(cmd, 0);
+        }
 
-    static inline void send_data(uint8_t data) {
-        // RS = 1 for data
-        send_byte(data, 1);
-    }
+        inline void send_data(uint8_t data) {
+            // RS = 1 for data
+            send_byte(data, 1);
+        }
+    } // namespace
 
 } // namespace lcd

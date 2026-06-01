@@ -2,17 +2,16 @@ cmake_minimum_required(VERSION 4.1)
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
-
-set(CMAKE_C_COMPILER   C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe)
-set(CMAKE_CXX_COMPILER C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-g++.exe)
-set(CMAKE_ASM_COMPILER C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe)
-set(CMAKE_AR           C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-ar.exe)
-set(CMAKE_OBJCOPY      C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-objcopy.exe)
-set(CMAKE_OBJDUMP      C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-objdump.exe)
-set(CMAKE_SIZE         C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-size.exe)
-set(CMAKE_GDB          C:/Users/user/arm-gnu-toolchain/bin/arm-none-eabi-gdb.exe)
-
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+set(CMAKE_C_COMPILER   arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_AR           arm-none-eabi-ar)
+set(CMAKE_OBJCOPY      arm-none-eabi-objcopy)
+set(CMAKE_OBJDUMP      arm-none-eabi-objdump)
+set(CMAKE_SIZE         arm-none-eabi-size)
+set(CMAKE_GDB          arm-none-eabi-gdb)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -108,6 +107,8 @@ add_custom_target(build
 )
 
 find_program(CPPCHECK cppcheck)
+find_program(OPENOCD openocd)
+
 if (CPPCHECK)
     add_custom_target(cppcheck
         COMMAND ${CPPCHECK} --enable=all
@@ -120,30 +121,26 @@ if (CPPCHECK)
                             --file-filter=main/*.cpp
                             --file-filter=components/drivers/src/*.cpp
                             --file-filter=components/drivers/inc/*.hpp
-                            -D__GNUC__=14
-                            -D__GNUC_MINOR__=3
+                            -D__GNUC__=15
+                            -D__GNUC_MINOR__=2
                             -D__ARM_ARCH_PROFILE='M'
         COMMENT "Running static analysis"
     )
 endif()
 
-# Flash via openocd
-add_custom_target(flash
-    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"
-    COMMENT "Flashing device"
-)
+if (OPENOCD)
+    # Flash via openocd
+    add_custom_target(flash
+        COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"
+        COMMENT "Flashing device"
+    )
 
-# Start serial monitor
-add_custom_target(monitor
-    COMMAND 
-    MESSAGE "Loading serial monitor"
-)
-
-# Start an OpenOCD server
-add_custom_target(openocd
-    COMMAND openocd -f ${CMAKE_SOURCE_DIR}/openocd.cfg
-    COMMENT "Starting OpenOCD server"
-)
+    # Start an OpenOCD server
+    add_custom_target(openocd
+        COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg
+        COMMENT "Starting OpenOCD server"
+    )
+endif()
 
 # Launch GDB
 add_custom_target(gdb

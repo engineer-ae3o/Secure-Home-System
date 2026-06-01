@@ -15,95 +15,98 @@ extern "C" {
 
 namespace file {
 
-    static const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
+    namespace {
+        const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
 
-    // Flash programming and read sizes
-    static constexpr uint32_t MIN_READ_SIZE_BYTES{1};
-    static constexpr uint32_t PROG_SIZE_BYTES{2};
+        // Flash programming and read sizes
+        constexpr uint32_t MIN_READ_SIZE_BYTES{1};
+        constexpr uint32_t PROG_SIZE_BYTES{2};
 
-    // Flash block details
-    static constexpr uint32_t BLOCK_COUNT{32};
-    static constexpr uint32_t BLOCK_SIZE_BYTES{1024};
-    static constexpr uint32_t BLOCK_CYCLES{10'000};
+        // Flash block details
+        constexpr uint32_t BLOCK_COUNT{32};
+        constexpr uint32_t BLOCK_SIZE_BYTES{1024};
+        constexpr uint32_t BLOCK_CYCLES{10'000};
 
-    // File name and max file number limit
-    static constexpr uint32_t MAX_NAME_LEN{8};
-    static constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
+        // File name and max file number limit
+        constexpr uint32_t MAX_NAME_LEN{8};
+        constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
 
-    // Cache and lookahead sizes
-    static constexpr uint32_t LOOKAHEAD_SIZE_BYTES{8};
-    static constexpr uint32_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
+        // Cache and lookahead sizes
+        constexpr uint32_t LOOKAHEAD_SIZE_BYTES{8};
+        constexpr uint32_t CACHE_SIZE_BYTES{BLOCK_SIZE_BYTES / 8};
 
-    // LittleFS buffers
-    static std::array<uint8_t, CACHE_SIZE_BYTES>     s_read_buffer{};
-    static std::array<uint8_t, CACHE_SIZE_BYTES>     s_prog_buffer{};
-    static std::array<uint8_t, LOOKAHEAD_SIZE_BYTES> s_lookahead_buffer{};
+        // LittleFS buffers
+        std::array<uint8_t, CACHE_SIZE_BYTES>     s_read_buffer{};
+        std::array<uint8_t, CACHE_SIZE_BYTES>     s_prog_buffer{};
+        std::array<uint8_t, LOOKAHEAD_SIZE_BYTES> s_lookahead_buffer{};
 
-    // LittleFS handle
-    static lfs_t s_lfs_handle{};
+        // LittleFS handle
+        lfs_t s_lfs_handle{};
 
-    // File data
-    struct file_t {
-        lfs_file_t       file{};
-        std::string_view file_path;
-        lfs_file_config  file_config{};
-    };
+        // File data
+        struct file_t {
+            lfs_file_t       file{};
+            std::string_view file_path;
+            lfs_file_config  file_config{};
+        };
 
-    // File caches
-    static std::array<std::array<uint8_t, CACHE_SIZE_BYTES>, std::to_underlying(name_t::COUNT)> s_file_cache{};
+        // File caches
+        std::array<std::array<uint8_t, CACHE_SIZE_BYTES>, std::to_underlying(name_t::COUNT)> s_file_cache{};
 
-    // Lookup table for the files being used
-    static std::array<file_t, std::to_underlying(name_t::COUNT)> s_file_lut = {{
-        // Add a little bit of obfuscation to the file names since they get stored directly in
-        // flash. Besides, they will be accessed with their more readable enum counterparts.
-        // Doesn't do a whole lot in the grand scheme of things, but still, doesn't hurt.
-        [std::to_underlying(name_t::COUNTER)] =
-            {
-                .file      = {},
-                .file_path = "fchdvqv",
-                .file_config =
-                    {
-                        .buffer     = s_file_cache[std::to_underlying(name_t::COUNTER)].data(),
-                        .attrs      = nullptr,
-                        .attr_count = 0,
-                    },
-            },
-        [std::to_underlying(name_t::PASSWORD)] =
-            {
-                .file      = {},
-                .file_path = "yacnywo",
-                .file_config =
-                    {
-                        .buffer     = s_file_cache[std::to_underlying(name_t::PASSWORD)].data(),
-                        .attrs      = nullptr,
-                        .attr_count = 0,
-                    },
-            },
-        [std::to_underlying(name_t::PNUMBERS)] =
-            {
-                .file      = {},
-                .file_path = "cqwogto",
-                .file_config =
-                    {
-                        .buffer     = s_file_cache[std::to_underlying(name_t::PNUMBERS)].data(),
-                        .attrs      = nullptr,
-                        .attr_count = 0,
-                    },
-            },
-    }};
+        // Lookup table for the files being used
+        std::array<file_t, std::to_underlying(name_t::COUNT)> s_file_lut = {{
+            // Add a little bit of obfuscation to the file names since they get stored directly in
+            // flash. Besides, they will be accessed with their more readable enum counterparts.
+            // Doesn't do a whole lot in the grand scheme of things, but still, doesn't hurt.
+            [std::to_underlying(name_t::COUNTER)] =
+                {
+                    .file      = {},
+                    .file_path = "fchdvqv",
+                    .file_config =
+                        {
+                            .buffer     = s_file_cache[std::to_underlying(name_t::COUNTER)].data(),
+                            .attrs      = nullptr,
+                            .attr_count = 0,
+                        },
+                },
+            [std::to_underlying(name_t::PASSWORD)] =
+                {
+                    .file      = {},
+                    .file_path = "yacnywo",
+                    .file_config =
+                        {
+                            .buffer     = s_file_cache[std::to_underlying(name_t::PASSWORD)].data(),
+                            .attrs      = nullptr,
+                            .attr_count = 0,
+                        },
+                },
+            [std::to_underlying(name_t::PNUMBERS)] =
+                {
+                    .file      = {},
+                    .file_path = "cqwogto",
+                    .file_config =
+                        {
+                            .buffer     = s_file_cache[std::to_underlying(name_t::PNUMBERS)].data(),
+                            .attrs      = nullptr,
+                            .attr_count = 0,
+                        },
+                },
+        }};
 
-    // Counter in flash counting number of boot cycles
-    // Is part of what is used to seed the RNG
-    static uint32_t s_boot_cycle_counter{};
+        // Counter in flash counting number of boot cycles
+        // Is part of what is used to seed the RNG
+        uint32_t s_boot_cycle_counter{};
 
-    // Helper
-    static inline uint32_t page_idx_to_phy_addr(uint32_t idx) {
-        return LFS_PARTITION_START + (idx * BLOCK_SIZE_BYTES);
-    }
+        // Helper
+        inline uint32_t page_idx_to_phy_addr(uint32_t idx) {
+            return LFS_PARTITION_START + (idx * BLOCK_SIZE_BYTES);
+        }
+    } // namespace
 
     // Public API
     void init() {
         // Configuration data for the file system
+        // Has to have static duration since LittleFS needs to be able to access it at all times
         static const lfs_config s_lfs_config = {
             // Not needed
             .context = nullptr,

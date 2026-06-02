@@ -65,7 +65,7 @@ namespace rand {
         // from this buffer without worrying about concurrency issues with the DMA controller.
         std::array<uint16_t, ADC_NUM_CHANNELS> s_adc_buf{};
 
-        // Store the boot cycle count
+        // Stores the boot cycle count
         uint32_t s_boot_cycle_count{};
 
         // Helpers
@@ -201,21 +201,24 @@ namespace rand {
 
         // Configure the RTC peripheral to use the LSI as its clock source, which is a low frequency
         // internal oscillator that has a lot of jitter, making it a good source of entropy for the RNG.
+        __HAL_RCC_LSI_ENABLE();
+        while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET) {
+        }
+
+        // Enable clocks for the power and backup units
         __HAL_RCC_PWR_CLK_ENABLE();
         __HAL_RCC_BKP_CLK_ENABLE();
 
         // Required to write to the backup domain
         HAL_PWR_EnableBkUpAccess();
 
-        __HAL_RCC_LSI_ENABLE();
-        while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET) {
-        }
-
+        // Set the LSI as clock source for the RTC and then enable the RTC peripheral
         __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI);
         __HAL_RCC_RTC_ENABLE();
 
+        // Configure the RTC for periodic 1ms interrupts
         s_rtc_handle.Instance          = RTC;
-        s_rtc_handle.Init.AsynchPrediv = 39; // 40kHz / (39  + 1) = ~1kHz
+        s_rtc_handle.Init.AsynchPrediv = 39; // 40kHz / (39  + 1) = 1kHz
         s_rtc_handle.Init.OutPut       = RTC_OUTPUTSOURCE_NONE;
         utils::assert_check(HAL_RTC_Init(&s_rtc_handle) == HAL_OK);
 

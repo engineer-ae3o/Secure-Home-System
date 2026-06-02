@@ -315,8 +315,8 @@ namespace file {
             utils::assert_check(false);
         }
 
-        (void)file;
-        (void)data;
+        utils::assert_check(lfs_file_write(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size()) ==
+                            static_cast<int>(data.size()));
     }
 
     void read(name_t file, std::span<uint8_t> data) {
@@ -325,8 +325,8 @@ namespace file {
             utils::assert_check(false);
         }
 
-        (void)file;
-        (void)data;
+        utils::assert_check(lfs_file_read(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size()) ==
+                            static_cast<int>(data.size()));
     }
 
     void sync(name_t file) {

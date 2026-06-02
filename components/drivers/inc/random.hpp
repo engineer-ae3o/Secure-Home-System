@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-namespace rnd {
+namespace rand {
 
     /**
      * @brief Initializes the random number generator subsystem.
@@ -28,4 +28,4 @@ namespace rnd {
      */
     void update_rng_state();
 
-} // namespace rnd
+} // namespace rand

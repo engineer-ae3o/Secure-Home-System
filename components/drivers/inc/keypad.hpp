@@ -17,12 +17,12 @@ namespace pad {
     constexpr inline uint8_t ROWS{4};
     constexpr inline uint8_t COLUMNS{4};
 
-    constexpr inline unsigned char KEYS[ROWS][COLUMNS] = {
+    constexpr inline std::array<std::array<char, COLUMNS>, ROWS> KEYS = {{
         {'1', '2', '3', 'A'},
         {'4', '5', '6', 'B'},
         {'7', '8', '9', 'C'},
         {'*', '0', '#', 'D'},
-    };
+    }};
 
     struct config_t {
         GPIO_TypeDef*                 row_port{};
@@ -222,7 +222,7 @@ namespace pad {
             uint8_t column{};
             bool    found{};
 
-            [&]() {
+            [&] {
                 // Get row on which the press was detected
                 for (uint8_t i = 0; i < ROWS; i++) {
                     // Set a row pin low and read all its column pins to determine if any of

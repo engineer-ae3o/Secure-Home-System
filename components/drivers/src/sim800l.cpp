@@ -32,7 +32,7 @@ namespace gsm {
         // ISR puts the actual length of the data received here.
         volatile uint16_t s_rx_idle_line_size{};
 
-        constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{32};
+        constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{64};
 
         constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
         constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
@@ -129,6 +129,7 @@ namespace gsm {
         transact(const std::string_view& tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS);
         [[nodiscard]] inline error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms = TIMEOUT_MS);
         [[nodiscard]] inline error_t send_init_sequence();
+
     } // namespace
 
     // Public API
@@ -656,6 +657,9 @@ extern "C" {
     // UART RX done callback
     void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size) {
         if (huart->Instance == gsm::s_huart.Instance) {
+            if (gsm::s_calling_task_handle == nullptr) {
+                return;
+            }
             // Save the length that was received
             gsm::s_rx_idle_line_size = Size;
             BaseType_t higher_priority_task_woken{};

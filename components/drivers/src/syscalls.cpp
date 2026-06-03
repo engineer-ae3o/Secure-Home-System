@@ -6,6 +6,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include <atomic>
 #include <cstdint>
 
 #include <cerrno>
@@ -150,7 +151,7 @@ extern "C" {
 
     // Setup TIM2 to be used by the HAL since
     // FreeRTOS already consumes SysTick
-    static volatile uint32_t s_hal_tick{};
+    static std::atomic<uint32_t> s_hal_tick{};
 
     HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
         // Enable TIM2 clock

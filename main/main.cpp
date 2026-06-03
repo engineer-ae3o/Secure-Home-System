@@ -2,6 +2,7 @@
 
 #include "hd44780.hpp"
 #include "sim800l.hpp"
+#include "random.hpp"
 #include "keypad.hpp"
 #include "switch.hpp"
 #include "config.hpp"
@@ -47,12 +48,20 @@ namespace {
         HAL_GPIO_Init(GPIOC, &init);
 
         file::init();
+        rnd::init();
+
+        [[maybe_unused]] const auto boot_count = file::get_boot_cycle_count();
 
         while (true) {
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelay(pdMS_TO_TICKS(500));
             HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-            vTaskDelay(pdMS_TO_TICKS(1000));
+            vTaskDelay(pdMS_TO_TICKS(500));
+
+            std::array<uint8_t, 32> random{};
+            rnd::get_random_numbers(random);
+
+            (void)random;
         }
     }
 

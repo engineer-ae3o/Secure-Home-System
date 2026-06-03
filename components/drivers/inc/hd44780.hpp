@@ -42,8 +42,7 @@ namespace lcd {
     /**
      * @brief Prints the given ASCII text to the LCD screen
      * 
-     * @param[in] str  String to write to the display. Truncates the
-     *                 string output if greater than `COLUMNS - 1`
+     * @param[in] str  String to write to the display.
      * @param[in] line Line number. Can be from 0 to `ROWS - 1`
      * @param[in] pad_to_whitespace Determines whether or not the pad the
      *                              remaining columns not filled with text

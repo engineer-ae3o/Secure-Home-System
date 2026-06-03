@@ -13,7 +13,7 @@
 
 #include <array>
 
-namespace rand {
+namespace rnd {
 
     namespace {
         // The Random Number Generator being used. Only one instance is needed.
@@ -113,7 +113,7 @@ namespace rand {
             return static_cast<uint8_t>(t2);
         }
 
-        // This function gets the boot cycle counter, timing jitter between TIM2 runnimg on the main PLL and the RTC
+        // This function gets the boot cycle counter, timing jitter between TIM2 running on the main PLL and the RTC
         // running on the LSI and ADC samples on seven channels and mixes them together to be used as our entropy source.
         uint8_t get_entropy_mixture() {
             [[maybe_unused]] mutex_t mutex;
@@ -341,13 +341,13 @@ namespace rand {
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());
     }
 
-} // namespace rand
+} // namespace rnd
 
 extern "C" {
     // Used by ASCON's TRNG implementation to get random bytes
     int ascon_trng_get_bytes(unsigned char* out, size_t outlen) {
         for (size_t i{0}; i < outlen; i++) {
-            out[i] = rand::get_entropy_mixture();
+            out[i] = rnd::get_entropy_mixture();
         }
         return static_cast<int>(outlen);
     }
@@ -359,11 +359,11 @@ extern "C" {
         // the HAL tick. Since the RTC is running on a separate clock source (the LSI)
         // that is inacurrate, this ISR gets called at a fairly random point while TIM2
         // is running due to the difference in their clock accuracies.
-        rand::s_tim2_rtc_jitter = TIM2->CNT;
+        rnd::s_tim2_rtc_jitter = TIM2->CNT;
     }
 
     void RTC_IRQHandler() {
-        HAL_RTCEx_RTCIRQHandler(&rand::s_rtc_handle);
+        HAL_RTCEx_RTCIRQHandler(&rnd::s_rtc_handle);
     }
 
 } // extern "C"

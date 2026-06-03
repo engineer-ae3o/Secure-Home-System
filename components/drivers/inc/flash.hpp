@@ -12,7 +12,7 @@ namespace file {
     // Flash block details
     constexpr uint32_t BLOCK_COUNT{32};
     constexpr uint32_t BLOCK_SIZE_BYTES{1024};
-    constexpr uint32_t BLOCK_CYCLES{10'000};
+    constexpr uint32_t BLOCK_CYCLES{5'000};
 
     // File name and max file number limit
     constexpr uint32_t MAX_NAME_LEN{8};
@@ -58,7 +58,7 @@ namespace file {
      * @brief Writes raw binary data from the provided span buffer into the specified file.
      * 
      * @param[in] file Target file identifier where the data will be written.
-     * @param[in] data Buffer conataining data to be written to the file. The size of the span
+     * @param[in] data Buffer containing data to be written to the file. The size of the span
      *                 determines how many bytes will be written in a single operation.
      * 
      * @note This function always starts writing at offset zero of the file, and will

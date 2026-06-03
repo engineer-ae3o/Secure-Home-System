@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-namespace rand {
+namespace rnd {
 
     /**
      * @brief Initializes the random number generator subsystem.
@@ -22,4 +22,4 @@ namespace rand {
      */
     void get_random_numbers(std::span<uint8_t> buffer);
 
-} // namespace rand
+} // namespace rnd

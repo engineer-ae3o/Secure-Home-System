@@ -65,8 +65,8 @@ namespace nc {
             HAL_GPIO_Init(m_config.port, &pin_init);
 
             // Enable interrupt and set priority to lowest
-            HAL_NVIC_EnableIRQ(m_config.irq_type);
             HAL_NVIC_SetPriority(m_config.irq_type, 15, 0);
+            HAL_NVIC_EnableIRQ(m_config.irq_type);
 
             m_is_initialized = true;
         }

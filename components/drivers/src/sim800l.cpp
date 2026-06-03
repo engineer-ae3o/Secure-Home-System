@@ -9,6 +9,7 @@
 #include "semphr.h"
 
 #include <cstring>
+#include <charconv>
 #include <string_view>
 
 #include "etl/string.h" // Needed for `etl::string`
@@ -60,14 +61,18 @@ namespace gsm {
         // RAII helper for taking and freeing the mutex
         struct mutex_t {
         public:
-            mutex_t(bool& mutex_taken) : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(TIMEOUT_MS)) == pdTRUE) {
-                mutex_taken = m_mutex_taken;
+            mutex_t(uint32_t timeout_ms = TIMEOUT_MS)
+                : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(timeout_ms)) == pdTRUE) {
             }
 
             ~mutex_t() {
                 if (m_mutex_taken) {
                     xSemaphoreGiveRecursive(s_task_mutex);
                 }
+            }
+
+            operator bool() const {
+                return m_mutex_taken;
             }
 
             mutex_t(const mutex_t&)            = delete;
@@ -216,51 +221,55 @@ namespace gsm {
     }
 
     void deinit() {
-        utils::assert_check(s_is_initialized);
+        {
+            // Take the mutex to make sure no other thread is using the SIM800L while we are
+            // deinitializing it. We have to wait for all other tasks to finish use of the mutex
+            [[maybe_unused]] mutex_t mutex(portMAX_DELAY);
 
-        // Tell the SIM800L to deinitialize itself. We don't care
-        // if there's an error so we can ignore the return value.
-        (void)send_cmd_and_compare_result(cmd_t::DEINIT, DEINIT_TIMEOUT_MS);
+            utils::assert_check(s_is_initialized);
 
-        // Deinitialize the USART and DMA channels
-        utils::assert_check(HAL_DMA_DeInit(&s_hdma_tx) == HAL_OK);
-        utils::assert_check(HAL_DMA_DeInit(&s_hdma_rx) == HAL_OK);
-        utils::assert_check(HAL_UART_DeInit(&s_huart) == HAL_OK);
+            // Tell the SIM800L to deinitialize itself. We don't care
+            // if there's an error so we can ignore the return value.
+            (void)send_cmd_and_compare_result(cmd_t::DEINIT, DEINIT_TIMEOUT_MS);
 
-        // Unregister queue from queue registry if it was put there
+            // Deinitialize the USART and DMA channels
+            utils::assert_check(HAL_DMA_DeInit(&s_hdma_tx) == HAL_OK);
+            utils::assert_check(HAL_DMA_DeInit(&s_hdma_rx) == HAL_OK);
+            utils::assert_check(HAL_UART_DeInit(&s_huart) == HAL_OK);
+
+            s_huart               = {};
+            s_hdma_tx             = {};
+            s_hdma_rx             = {};
+            s_rx_idle_line_size   = {};
+            s_calling_task_handle = {};
+
+            // Disable the corresponding NVIC UART, DMA tx and rx irqs
+            HAL_NVIC_DisableIRQ(USART1_IRQn);
+            HAL_NVIC_DisableIRQ(DMA1_Channel4_IRQn);
+            HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
+
+            // Set TX and RX pins as analog
+            GPIO_InitTypeDef gpio_deinit = {
+                .Pin   = static_cast<uint32_t>(config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
+                .Mode  = GPIO_MODE_ANALOG,
+                .Pull  = GPIO_NOPULL,
+                .Speed = GPIO_SPEED_FREQ_LOW,
+            };
+            HAL_GPIO_Init(config::GSM_GPIO_TX.port, &gpio_deinit);
+        }
+
+        // Unregister queue from queue registry if it was put there during creation by FreeRTOS
         vSemaphoreDelete(s_task_mutex);
-
-        s_huart               = {};
-        s_hdma_tx             = {};
-        s_hdma_rx             = {};
-        s_rx_idle_line_size   = {};
-        s_task_mutex          = {};
-        s_task_mutex_buffer   = {};
-        s_calling_task_handle = {};
-
-        // Disable the corresponding NVIC UART, DMA tx and rx irqs
-        NVIC_DisableIRQ(USART1_IRQn);
-        NVIC_DisableIRQ(DMA1_Channel4_IRQn);
-        NVIC_DisableIRQ(DMA1_Channel5_IRQn);
-
-        // Set TX and RX pins as analog
-        GPIO_InitTypeDef gpio_deinit = {
-            .Pin   = static_cast<uint32_t>(config::GSM_GPIO_TX.pin | config::GSM_GPIO_RX.pin),
-            .Mode  = GPIO_MODE_ANALOG,
-            .Pull  = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_LOW,
-        };
-        HAL_GPIO_Init(config::GSM_GPIO_TX.port, &gpio_deinit);
+        s_task_mutex        = {};
+        s_task_mutex_buffer = {};
 
         s_is_initialized = false;
     }
 
     error_t get_sim_status() {
         // RAII handling for mutex acquisition and releasing
-        bool                     mutex_taken{};
-        [[maybe_unused]] mutex_t mutex(mutex_taken);
-
-        if (!mutex_taken) {
+        [[maybe_unused]] mutex_t mutex;
+        if (!mutex) {
             return error_t::MUTEX_TIMEOUT;
         }
 
@@ -296,10 +305,8 @@ namespace gsm {
 
     error_t send_sms(const std::string_view& sms, const std::string_view& number, bool check_sim_status) {
         // RAII handling for mutex acquisition and releasing
-        bool                     mutex_taken{};
-        [[maybe_unused]] mutex_t mutex(mutex_taken);
-
-        if (!mutex_taken) {
+        [[maybe_unused]] mutex_t mutex;
+        if (!mutex) {
             return error_t::MUTEX_TIMEOUT;
         }
 
@@ -362,10 +369,8 @@ namespace gsm {
 
     std::expected<std::array<char, IMSI_BUF_SIZE>, error_t> get_imsi() {
         // RAII handling for mutex acquisition and releasing
-        bool                     mutex_taken{};
-        [[maybe_unused]] mutex_t mutex(mutex_taken);
-
-        if (!mutex_taken) {
+        [[maybe_unused]] mutex_t mutex;
+        if (!mutex) {
             return std::unexpected(error_t::MUTEX_TIMEOUT);
         }
 
@@ -405,7 +410,10 @@ namespace gsm {
         std::array<char, IMSI_BUF_SIZE> imsi{};
 
         auto pos = rx_str->find("\r\n");
-        if (pos == std::string_view::npos) {
+
+        // Make sure that the response has enough data elements to account for the length
+        // of the expected data and the index we found the "\r\n" at.
+        if (pos == std::string_view::npos || rx_str->size() < (pos + 25)) {
             return std::unexpected(error_t::FAIL);
         }
 
@@ -460,7 +468,7 @@ namespace gsm {
 
             // Interpret the data that was received based on the type of AT command
             // that was transferred because some require parsing and others do not.
-            [&]() {
+            [&] {
                 // The `CHECK_SIGNAL` command receives a command that requires parsing
                 if (cmd == cmd_t::CHECK_SIGNAL) {
                     // Get index to the beginning of the first instance of `"+CSQ: "`
@@ -474,7 +482,12 @@ namespace gsm {
                     auto rssi_str = rx_str->substr(pos + 6);
 
                     // Get the RSSI. It is the first number after `"+CSQ: "`
-                    auto rssi = std::strtoul(rssi_str.data(), {}, 10);
+                    size_t rssi{};
+                    auto [ptr, err] = std::from_chars(rssi_str.data(), rssi_str.data() + rssi_str.size(), rssi);
+                    if (err != std::errc{}) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
 
                     // If RSSI is 99, the module couldn't detect a signal or
                     // if RSSI is less than 5, the signal is too weak to use.
@@ -496,7 +509,12 @@ namespace gsm {
                     auto stat_str = rx_str->substr(pos + 1);
 
                     // Get the network stat
-                    auto stat = std::strtoul(stat_str.data(), {}, 10);
+                    size_t stat{};
+                    auto [ptr, err] = std::from_chars(stat_str.data(), stat_str.data() + stat_str.size(), stat);
+                    if (err != std::errc{}) {
+                        ret = error_t::FAIL;
+                        return;
+                    }
 
                     // The stat is what tells us the state of the SIM card's network registration.
                     // A stat of 1 means homing and 5 means roaming. Nothing else is good.

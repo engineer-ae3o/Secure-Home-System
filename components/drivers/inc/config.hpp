@@ -62,9 +62,4 @@ namespace config {
     // FreeRTOS params
     constexpr inline uint8_t QUEUE_SIZE = 5;
 
-    // Needed for conversion since FreeRTOS uses words
-    consteval size_t bytes_to_words(size_t bytes) {
-        return bytes / 4;
-    }
-
 } // namespace config

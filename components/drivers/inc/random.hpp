@@ -22,10 +22,4 @@ namespace rand {
      */
     void get_random_numbers(std::span<uint8_t> buffer);
 
-    /**
-     * @brief Updates the state of the random number generator. Should be called
-     *        periodically to ensure that the generator has fresh entropy.
-     */
-    void update_rng_state();
-
 } // namespace rand

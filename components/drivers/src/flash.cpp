@@ -5,6 +5,9 @@
 
 #include "lfs.h"
 
+#include "FreeRTOS.h"
+#include "semphr.h"
+
 #include <utility>
 #include <string_view>
 
@@ -17,6 +20,31 @@ namespace file {
 
     namespace {
         const uint32_t LFS_PARTITION_START = reinterpret_cast<uint32_t>(&lfs_start);
+
+        // Synchronization across multi threaded access to the flash storage.
+        SemaphoreHandle_t s_task_mutex{};
+        StaticSemaphore_t s_task_mutex_buffer{};
+
+        // RAII helper for taking and freeing the mutex
+        struct mutex_t {
+        public:
+            // Block forever till mutex is taken. This is because the flash storage is critical
+            // for the system's operation, and if a task is waiting to access it, it's likely
+            // that it needs to access it to make progress. So we might as well block indefinitely
+            // until we can take the mutex.
+            mutex_t() {
+                xSemaphoreTake(s_task_mutex, portMAX_DELAY);
+            }
+
+            ~mutex_t() {
+                xSemaphoreGive(s_task_mutex);
+            }
+
+            mutex_t(const mutex_t&)            = delete;
+            mutex_t& operator=(const mutex_t&) = delete;
+            mutex_t(mutex_t&&)                 = delete;
+            mutex_t& operator=(mutex_t&&)      = delete;
+        };
 
         // Cache and lookahead sizes
         constexpr uint32_t LOOKAHEAD_SIZE_BYTES{8};
@@ -211,8 +239,8 @@ namespace file {
         auto ret = lfs_mount(&s_lfs_handle, &s_lfs_config);
         if (ret < 0) {
             // This error should happen only once, at first boot
-            lfs_format(&s_lfs_handle, &s_lfs_config);
-            lfs_mount(&s_lfs_handle, &s_lfs_config);
+            utils::assert_check(lfs_format(&s_lfs_handle, &s_lfs_config) > 0);
+            utils::assert_check(lfs_mount(&s_lfs_handle, &s_lfs_config) > 0);
         }
 
         // Open counter file. Create it if it doesn't yet exist
@@ -221,36 +249,31 @@ namespace file {
                                s_file_lut[std::to_underlying(name_t::COUNTER)].file_path.data(),
                                (LFS_O_CREAT | LFS_O_RDWR),
                                &s_file_lut[std::to_underlying(name_t::COUNTER)].file_config);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
 
         // Read counter from file
         ret = lfs_file_read(
             &s_lfs_handle, &s_file_lut[std::to_underlying(name_t::COUNTER)].file, &s_boot_cycle_counter, sizeof(s_boot_cycle_counter));
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
 
         // Rewind file pointer back to starting position
         ret = lfs_file_rewind(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::COUNTER)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
 
         // Increment counter and write back to flash
-        s_boot_cycle_counter++;
+        // If the boot cycle counter is not zero, then we know that this
+        // is not the first boot, so we can safely increment the counter.
+        if (s_boot_cycle_counter != 0) {
+            s_boot_cycle_counter++;
+        }
+
         ret = lfs_file_write(
             &s_lfs_handle, &s_file_lut[std::to_underlying(name_t::COUNTER)].file, &s_boot_cycle_counter, sizeof(s_boot_cycle_counter));
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
 
         // Close the counter file
         ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::COUNTER)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
 
         // Open password and phone number files. Create if it doesn't yet exist
         // Pnumbers file
@@ -259,50 +282,52 @@ namespace file {
                                s_file_lut[std::to_underlying(name_t::PNUMBERS)].file_path.data(),
                                (LFS_O_CREAT | LFS_O_RDWR),
                                &s_file_lut[std::to_underlying(name_t::PNUMBERS)].file_config);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
+
         // Password file
         ret = lfs_file_opencfg(&s_lfs_handle,
                                &s_file_lut[std::to_underlying(name_t::PASSWORD)].file,
                                s_file_lut[std::to_underlying(name_t::PASSWORD)].file_path.data(),
                                (LFS_O_CREAT | LFS_O_RDWR),
                                &s_file_lut[std::to_underlying(name_t::PASSWORD)].file_config);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
+
         // Ascon seed file
         ret = lfs_file_opencfg(&s_lfs_handle,
                                &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file,
                                s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file_path.data(),
                                (LFS_O_CREAT | LFS_O_RDWR),
                                &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file_config);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
+
+        // Create the mutex
+        s_task_mutex = xSemaphoreCreateMutexStatic(&s_task_mutex_buffer);
     }
 
     void deinit() {
-        // Close both files before unmounting file system
-        auto ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PASSWORD)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
+        {
+            // Take the mutex to make sure no other thread is using the SIM800L while we are
+            // deinitializing it. We have to wait for all other tasks to finish use of the mutex
+            [[maybe_unused]] mutex_t mutex;
+
+            // Close both files before unmounting file system
+            auto ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PASSWORD)].file);
+            utils::assert_check(ret > 0);
+
+            ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PNUMBERS)].file);
+            utils::assert_check(ret > 0);
+
+            ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file);
+            utils::assert_check(ret > 0);
+
+            ret = lfs_unmount(&s_lfs_handle);
+            utils::assert_check(ret > 0);
         }
 
-        ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PNUMBERS)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
-
-        ret = lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::ASCON_SEED)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
-
-        ret = lfs_unmount(&s_lfs_handle);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        // Unregister queue from queue registry if it was put there during creation by FreeRTOS
+        vSemaphoreDelete(s_task_mutex);
+        s_task_mutex        = {};
+        s_task_mutex_buffer = {};
     }
 
     uint32_t get_boot_cycle_count() {
@@ -310,35 +335,48 @@ namespace file {
     }
 
     void write(name_t file, std::span<const uint8_t> data) {
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
+
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             utils::assert_check(false);
         }
 
-        utils::assert_check(lfs_file_write(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size()) ==
-                            static_cast<int>(data.size()));
+        auto ret = lfs_file_rewind(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file);
+        utils::assert_check(ret > 0);
+
+        ret = lfs_file_write(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size());
+        utils::assert_check(ret == static_cast<int>(data.size()));
     }
 
     void read(name_t file, std::span<uint8_t> data) {
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
+
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             utils::assert_check(false);
         }
 
-        utils::assert_check(lfs_file_read(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size()) ==
-                            static_cast<int>(data.size()));
+        auto ret = lfs_file_rewind(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file);
+        utils::assert_check(ret > 0);
+
+        ret = lfs_file_read(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, data.data(), data.size());
+        utils::assert_check(ret == static_cast<int>(data.size()));
     }
 
     void sync(name_t file) {
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
+
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             utils::assert_check(false);
         }
 
         auto ret = lfs_file_sync(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file);
-        if (ret < 0) {
-            utils::assert_check(false);
-        }
+        utils::assert_check(ret > 0);
     }
 
 } // namespace file

@@ -161,6 +161,7 @@ namespace lcd {
     }
 
     void backlight_on(bool on) {
+        utils::assert_check(s_is_initialized);
         HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, (on ? GPIO_PIN_SET : GPIO_PIN_RESET));
     }
 

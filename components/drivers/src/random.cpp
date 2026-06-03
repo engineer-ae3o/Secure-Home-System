@@ -5,6 +5,10 @@
 #include "flash.hpp"
 #include "utils.hpp"
 
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+
 #include "ascon/random.h"
 
 #include <array>
@@ -68,6 +72,36 @@ namespace rand {
         // Stores the boot cycle count
         uint32_t s_boot_cycle_count{};
 
+        // Tasks TCBs and Stacks
+        constexpr uint32_t                                ENTROPY_TASK_STACK_BYTES{512};
+        TaskHandle_t                                      entropy_task_handle{};
+        std::array<StackType_t, ENTROPY_TASK_STACK_BYTES> entropy_task_stack{};
+        StaticTask_t                                      entropy_task_tcb{};
+
+        // Synchronization across multi threaded access to the rand API
+        SemaphoreHandle_t s_task_mutex{};
+        StaticSemaphore_t s_task_mutex_buffer{};
+
+        // RAII helper for taking and freeing the mutex
+        struct mutex_t {
+        public:
+            // We block forever because because access to the rand API is critical
+            // to the operation of the system, so we can afford to block indefinitely
+            // till we take the mutex.
+            mutex_t() {
+                xSemaphoreTakeRecursive(s_task_mutex, portMAX_DELAY);
+            }
+
+            ~mutex_t() {
+                xSemaphoreGiveRecursive(s_task_mutex);
+            }
+
+            mutex_t(const mutex_t&)            = delete;
+            mutex_t& operator=(const mutex_t&) = delete;
+            mutex_t(mutex_t&&)                 = delete;
+            mutex_t& operator=(mutex_t&&)      = delete;
+        };
+
         // Helpers
         uint8_t xor_bytes_in_word(uint32_t value) {
             // Fold all four bytes of the input value into a single byte by XORing them together.
@@ -82,6 +116,8 @@ namespace rand {
         // This function gets the boot cycle counter, timing jitter between TIM2 runnimg on the main PLL and the RTC
         // running on the LSI and ADC samples on seven channels and mixes them together to be used as our entropy source.
         uint8_t get_entropy_mixture() {
+            [[maybe_unused]] mutex_t mutex;
+
             // We use a simple XOR-based mixture function to mix the different sources of entropy together.
             // This is not a cryptographically secure way to mix entropy, but it is sufficient for our
             // purposes since we are feeding the output into a CSPRNG that will further mix the entropy and
@@ -116,10 +152,40 @@ namespace rand {
             return entropy;
         }
 
+        [[noreturn]] void entropy_task(void* arg) {
+            (void)arg;
+
+            while (true) {
+                // Get entropy to feed the RNG
+                std::array<uint8_t, 32> entropy{};
+
+                for (auto& data : entropy) {
+                    data = get_entropy_mixture();
+                    // Wait some time between calls to the get entropy function to allow
+                    // the ADC readings on the channels to change, even a little bit.
+                    vTaskDelay(pdMS_TO_TICKS(30));
+                }
+
+                {
+                    [[maybe_unused]] mutex_t mutex;
+
+                    // Feed the entropy into ASCON and save the current seed to flash
+                    ascon_random_feed(&s_rng_state, entropy.data(), entropy.size());
+                    utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) == 0);
+                }
+
+                // We gather entropy to update the ASCON seed every 60s
+                vTaskDelay(pdMS_TO_TICKS(60'000));
+            }
+        }
+
     } // namespace
 
     // Public API
     void init() {
+        // Create the mutex. No need to take it. This function is called from a task.
+        s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
+
         // Configure the GPIO pins to be used for ADC sampling
         __HAL_RCC_GPIOA_CLK_ENABLE();
         __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -193,8 +259,7 @@ namespace rand {
         reg_group_scan.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
         utils::assert_check(HAL_ADC_ConfigChannel(&s_adc_handle, &reg_group_scan) == HAL_OK);
 
-        // Apply calibration
-        utils::assert_check(HAL_ADCEx_Calibration_Start(&s_adc_handle) == HAL_OK);
+        // No point in calibrating the ADC. We don't care since we need as much noise as we can get
 
         // Start ADC conversion
         utils::assert_check(HAL_ADC_Start_DMA(&s_adc_handle, reinterpret_cast<uint32_t*>(s_adc_buf.data()), ADC_NUM_CHANNELS) == HAL_OK);
@@ -216,9 +281,9 @@ namespace rand {
         __HAL_RCC_RTC_CONFIG(RCC_RTCCLKSOURCE_LSI);
         __HAL_RCC_RTC_ENABLE();
 
-        // Configure the RTC for periodic 1ms interrupts
+        // Configure the RTC
         s_rtc_handle.Instance          = RTC;
-        s_rtc_handle.Init.AsynchPrediv = 39; // 40kHz / (39  + 1) = 1kHz
+        s_rtc_handle.Init.AsynchPrediv = 39; // RTC clock frequency of 40kHz / (39  + 1) = 1kHz
         s_rtc_handle.Init.OutPut       = RTC_OUTPUTSOURCE_NONE;
         utils::assert_check(HAL_RTC_Init(&s_rtc_handle) == HAL_OK);
 
@@ -227,12 +292,31 @@ namespace rand {
         HAL_NVIC_SetPriority(RTC_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(RTC_IRQn);
 
+        // Get the boot cycle count
+        s_boot_cycle_count = file::get_boot_cycle_count();
+
+        if (s_boot_cycle_count == 0) {
+            // If this is the first boot, we block for 1.5s to ensure the RTC interrupt fires at
+            // least once so it gives us the jitter we need when we call `ascon_random_init(...)`
+            // and `ascon_random_load_seed(...)` since those call `ascon_trng_get_bytes(...)` which
+            // calls `get_entropy_mixture(...)` which relies on the RTC-TIM2 jitter.
+            vTaskDelay(pdMS_TO_TICKS(1500));
+        }
+
         // FInally, initialize the ASCON random state and load the seed from flash storage
+        // ASCON's random API uses inconsistent error codes. Can't be helped.
         utils::assert_check(ascon_random_init(&s_rng_state) != 0);
         utils::assert_check(ascon_random_load_seed(&s_rng_state, &s_ascon_storage) == 0);
 
-        // Get the boot cycle count
-        s_boot_cycle_count = file::get_boot_cycle_count();
+        // Create FreeRTOS task to periodically gather entropy
+        // It has a very low priority since its a background task
+        entropy_task_handle = xTaskCreateStatic(entropy_task,
+                                                "Entropy Task",
+                                                utils::bytes_to_words(ENTROPY_TASK_STACK_BYTES),
+                                                {},
+                                                1,
+                                                entropy_task_stack.data(),
+                                                &entropy_task_tcb);
     }
 
     void deinit() {
@@ -240,24 +324,21 @@ namespace rand {
         utils::assert_check(HAL_DMA_DeInit(&s_dma_handle) == HAL_OK);
         utils::assert_check(HAL_ADC_DeInit(&s_adc_handle) == HAL_OK);
         utils::assert_check(HAL_RTC_DeInit(&s_rtc_handle) == HAL_OK);
-        ascon_random_free(&s_rng_state);
+
+        // Delete the task before deletion of the mutex
+        vTaskDelete(entropy_task_handle);
+
+        {
+            [[maybe_unused]] mutex_t mutex;
+            ascon_random_free(&s_rng_state);
+        }
+
+        vSemaphoreDelete(s_task_mutex);
     }
 
     void get_random_numbers(std::span<uint8_t> buffer) {
+        [[maybe_unused]] mutex_t mutex;
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());
-    }
-
-    void update_rng_state() {
-        // Get entropy to feed the RNG
-        std::array<uint8_t, 32> entropy{};
-
-        for (auto& data : entropy) {
-            data = get_entropy_mixture();
-        }
-        ascon_random_feed(&s_rng_state, entropy.data(), entropy.size());
-
-        // Save the current seed to flash
-        utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) == 0);
     }
 
 } // namespace rand

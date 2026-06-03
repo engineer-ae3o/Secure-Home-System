@@ -4,6 +4,8 @@
 
 namespace ss {
 
+    constexpr inline uint32_t MAX_PNUMBERS{5};
+
     /**
      * Initialize the secure system.
      */

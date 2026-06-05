@@ -37,23 +37,15 @@ namespace nc {
          * @note The irq handler still has to be called in the corresponding
          *       EXTI interrupt handler for the used pins
          */
-        void init(const config_t& config) {
-            utils::assert_check(!m_is_initialized);
+        utils::error_t init(const config_t& config) {
+            if (m_is_initialized) {
+                return utils::error_t::ERR_INVALID_STATE;
+            }
 
             m_config = config;
 
             // Configure the clock
-            if (m_config.port == GPIOA) {
-                __HAL_RCC_GPIOA_CLK_ENABLE();
-            } else if (m_config.port == GPIOB) {
-                __HAL_RCC_GPIOB_CLK_ENABLE();
-            } else if (m_config.port == GPIOC) {
-                __HAL_RCC_GPIOC_CLK_ENABLE();
-            } else if (m_config.port == GPIOD) {
-                __HAL_RCC_GPIOD_CLK_ENABLE();
-            } else {
-                utils::assert_check(false);
-            }
+            TRY(utils::gpio_enable_clk(m_config.port));
 
             // Set pin as input with interrupt on the rising edge
             GPIO_InitTypeDef pin_init = {
@@ -69,14 +61,18 @@ namespace nc {
             HAL_NVIC_EnableIRQ(m_config.irq_type);
 
             m_is_initialized = true;
+
+            return utils::error_t::NONE;
         }
 
         /**
          * @brief Deinitializes the pin and sets as analog to reduce power
          *        consumption on the pin. Also disables the corresponding NVIC irq
          */
-        void deinit() {
-            utils::assert_check(m_is_initialized);
+        utils::error_t deinit() {
+            if (!m_is_initialized) {
+                return utils::error_t::ERR_INVALID_STATE;
+            }
 
             // Set pin as analog to reduce power draw
             GPIO_InitTypeDef pin_deinit = {
@@ -91,6 +87,8 @@ namespace nc {
 
             m_config         = {};
             m_is_initialized = false;
+
+            return utils::error_t::NONE;
         }
 
         /**

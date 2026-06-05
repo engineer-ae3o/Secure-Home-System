@@ -5,6 +5,8 @@
 
 #include "tests.hpp"
 #include "test_file.hpp"
+#include "test_switch.hpp"
+#include "test_keypad.hpp"
 #include "test_hd44780.hpp"
 
 extern "C" {
@@ -18,17 +20,21 @@ extern "C" {
     }
 }
 
-void tests(void* arg) {
-    UNUSED(arg);
+namespace tests {
 
-    HAL_Init();
-    UNITY_BEGIN();
+    void tests(void* arg) {
+        UNUSED(arg);
 
-    file_test::all();
-    lcd_test::all();
+        UNITY_BEGIN();
 
-    UNITY_END();
-    HAL_DeInit();
+        file_test::all();
+        lcd_test::all();
+        switch_test::all();
+        keypad_test::all();
 
-    vTaskDelete(nullptr);
-}
+        UNITY_END();
+
+        vTaskDelete(nullptr);
+    }
+
+} // namespace tests

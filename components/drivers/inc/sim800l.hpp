@@ -1,22 +1,13 @@
 #pragma once
 
+#include "utils.hpp"
+
 #include <array>
 #include <cstdint>
 #include <expected>
 #include <string_view>
 
 namespace gsm {
-
-    enum class error_t : uint8_t {
-        NONE,
-        FAIL,
-        SIM_NOT_FOUND,
-        SIM_NOT_REGISTERED,
-        MODULE_NOT_ALIVE,
-        BAD_NETWORK_CONN,
-        MUTEX_TIMEOUT,
-        SMS_SEND_FAIL,
-    };
 
     constexpr inline uint8_t MAX_SMS_LEN{64};
     constexpr inline uint8_t IMSI_BUF_SIZE{16};
@@ -41,7 +32,7 @@ namespace gsm {
      *       while waiting for the first `"OK"` from the module and waiting for a good
      *       and useable network connection. This function is not thread safe.
      */
-    [[nodiscard]] error_t init();
+    utils::error_t init();
 
     /**
      * @brief Deinitializes the UART and DMA peripherals, as well as
@@ -49,7 +40,7 @@ namespace gsm {
      * 
      * @note This function is not thread safe.
      */
-    void deinit();
+    utils::error_t deinit();
 
     /**
      * @brief Checks if the SIM card is still present in the GSM module and can
@@ -63,9 +54,9 @@ namespace gsm {
      *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
      *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
-     *         `MUTEX_TIMEOUT`: Timeout waiting for the mutex.
+     *         `TIMEOUT`: Timeout waiting for the mutex.
      */
-    [[nodiscard]] error_t get_sim_status();
+    utils::error_t get_sim_status();
 
     /**
      * @brief Sends an SMS to the given phone number.
@@ -81,12 +72,10 @@ namespace gsm {
      *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
      *         `SIM_NOT_REGISTERED`: SIM card not registered to a network service.
      *         `BAD_NETWORK_CONN`: The SIM card has a poor network connection.
-     *         `MUTEX_TIMEOUT`: Timeout waiting for the mutex.
+     *         `TIMEOUT`: Timeout waiting for the mutex.
      *         `SMS_SEND_FAIL`: Failed to send the SMS due to some specific error.
      */
-    [[nodiscard]] error_t send_sms(const std::string_view& sms,
-                                   const std::string_view& number,
-                                   bool                    check_sim_status = true);
+    utils::error_t send_sms(std::string_view sms, std::string_view number, bool check_sim_status = true);
 
     /**
      * @brief Reads the IMSI (International Mobile Subscriber Identity) of the
@@ -99,10 +88,10 @@ namespace gsm {
      *         `FAIL`: IMSI could not be read, or was read with errors.
      *         `MODULE_NOT_ALIVE`: GSM module not responding.
      *         `SIM_NOT_FOUND`: The GSM module couldn't find the SIM card.
-     *         `MUTEX_TIMEOUT`: Timeout waiting for the mutex.
+     *         `TIMEOUT`: Timeout waiting for the mutex.
      * 
      * @note The digits are stored as ASCII, not numeric digits.
      */
-    [[nodiscard]] std::expected<std::array<char, IMSI_BUF_SIZE>, error_t> get_imsi();
+    [[nodiscard]] std::expected<std::array<char, IMSI_BUF_SIZE>, utils::error_t> get_imsi();
 
 } // namespace gsm

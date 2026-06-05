@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 4.1)
 
+if (BUILD_TESTS)
+
 add_library(tests STATIC
+    src/test_switch.cpp
+    src/test_keypad.cpp
     src/test_file.cpp
     src/test_hd44780.cpp
     src/tests.cpp
@@ -40,7 +44,8 @@ target_compile_options(tests PRIVATE -ffast-math
                                        -Wlogical-op
                                        -Wduplicated-cond
                                        -Wstrict-aliasing=2
-                                       -fno-threadsafe-statics)
+                                       -fno-threadsafe-statics
+)
 
 target_compile_definitions(tests PUBLIC STM32F103xB USE_HAL_DRIVER)
 
@@ -55,4 +60,7 @@ target_include_directories(tests PUBLIC inc/
                                           ../freertos/include/
                                           ../ascon-suite/src/
                                           ../littlefs/
-                                          ../etl/)
+                                          ../etl/
+)
+
+endif()

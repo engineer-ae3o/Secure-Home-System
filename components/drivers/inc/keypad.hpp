@@ -9,6 +9,7 @@
 #include "queue.h"
 
 #include <array>
+#include <expected>
 
 namespace pad {
 
@@ -71,8 +72,10 @@ namespace pad {
          * 
          * @note The interrupts still have to be enabled with NVIC
          */
-        void init(const config_t& config) {
-            utils::assert_check(!m_is_initialized);
+        utils::error_t init(const config_t& config) {
+            if (m_is_initialized) {
+                return utils::error_t::ERR_INVALID_STATE;
+            }
 
             m_config = config;
 
@@ -83,29 +86,8 @@ namespace pad {
                           m_config.row_pins[3]);
 
             // Configure the clocks
-            if (m_config.col_port == GPIOA) {
-                __HAL_RCC_GPIOA_CLK_ENABLE();
-            } else if (m_config.col_port == GPIOB) {
-                __HAL_RCC_GPIOB_CLK_ENABLE();
-            } else if (m_config.col_port == GPIOC) {
-                __HAL_RCC_GPIOC_CLK_ENABLE();
-            } else if (m_config.col_port == GPIOD) {
-                __HAL_RCC_GPIOD_CLK_ENABLE();
-            } else {
-                utils::assert_check(false);
-            }
-
-            if (m_config.row_port == GPIOA) {
-                __HAL_RCC_GPIOA_CLK_ENABLE();
-            } else if (m_config.row_port == GPIOB) {
-                __HAL_RCC_GPIOB_CLK_ENABLE();
-            } else if (m_config.row_port == GPIOC) {
-                __HAL_RCC_GPIOC_CLK_ENABLE();
-            } else if (m_config.row_port == GPIOD) {
-                __HAL_RCC_GPIOD_CLK_ENABLE();
-            } else {
-                utils::assert_check(false);
-            }
+            TRY(utils::gpio_enable_clk(m_config.col_port));
+            TRY(utils::gpio_enable_clk(m_config.row_port));
 
             // Set all columns as input pullups with interrupt on falling edge
             GPIO_InitTypeDef col_init = {
@@ -140,14 +122,18 @@ namespace pad {
                                                   &m_debounce_timer_structure);
 
             m_is_initialized = true;
+
+            return utils::error_t::NONE;
         }
 
         /**
          * @brief Deinitializes the gpio pins used and sets the pins to
          *        analog mode so as to reduce power consumption
          */
-        void deinit() {
-            utils::assert_check(m_is_initialized);
+        utils::error_t deinit() {
+            if (!m_is_initialized) {
+                return utils::error_t::ERR_INVALID_STATE;
+            }
 
             // Sets all pins as analog to reduce power draw
             GPIO_InitTypeDef col_init = {
@@ -170,9 +156,8 @@ namespace pad {
             m_row_pins = {};
             m_col_pins = {};
 
-            // Can't delete since stack allocated
-            // So, just zero the memory and mark as unused
             if (static_cast<bool>(m_event_queue)) {
+                vQueueDelete(m_event_queue);
                 m_queue_structure = {};
                 m_queue_buffer    = {};
                 m_event_queue     = nullptr;
@@ -180,11 +165,14 @@ namespace pad {
 
             if (static_cast<bool>(m_debounce_timer)) {
                 xTimerStop(m_debounce_timer, portMAX_DELAY);
+                xTimerDelete(m_debounce_timer, portMAX_DELAY);
                 m_debounce_timer_structure = {};
                 m_debounce_timer           = nullptr;
             }
 
             m_is_initialized = false;
+
+            return utils::error_t::NONE;
         }
 
         /**
@@ -193,8 +181,10 @@ namespace pad {
          * 
          * @return The event queue
          */
-        [[nodiscard]] QueueHandle_t get_event_queue() const {
-            utils::assert_check(m_is_initialized);
+        [[nodiscard]] std::expected<QueueHandle_t, utils::error_t> get_event_queue() const {
+            if (!m_is_initialized) {
+                return std::unexpected(utils::error_t::ERR_INVALID_STATE);
+            }
             return m_event_queue;
         };
 

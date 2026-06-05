@@ -1,3 +1,5 @@
+#pragma once
+
 namespace file_test {
 
     void init();

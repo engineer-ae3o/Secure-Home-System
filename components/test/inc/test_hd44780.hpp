@@ -1,3 +1,5 @@
+#pragma once
+
 namespace lcd_test {
 
     void init();

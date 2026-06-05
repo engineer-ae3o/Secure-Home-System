@@ -35,7 +35,7 @@ ENTRY(reset_handler)
 _estack = 0x20004FFF;    /* end of RAM */
 
 /* Generate a link error if stack doesn't fit into RAM */
-_Min_Stack_Size = 0x400;     /* required amount of stack */
+_min_stack_size = 0x400;     /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
@@ -153,7 +153,7 @@ SECTIONS
         . = ALIGN(8);
         PROVIDE ( end = . );
         PROVIDE ( _end = . );
-        . = . + _Min_Stack_Size;
+        . = . + _min_stack_size;
         . = ALIGN(8);
     } > RAM
 

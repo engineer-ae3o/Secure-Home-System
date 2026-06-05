@@ -30,14 +30,6 @@ namespace lcd {
         // I2C address of the backpack on the HD44780 controller
         constexpr uint8_t ADDRESS{0x27U};
 
-        // Helper macro to avoid verbose error checking
-#define TRY_FUNC(func)                                                                             \
-    do {                                                                                           \
-        if (auto ret_ = func; ret_ != utils::error_t::NONE) {                                      \
-            return ret_;                                                                           \
-        }                                                                                          \
-    } while (0)
-
         // Helpers
         utils::error_t send_nibble(uint8_t nibble, uint8_t rs) {
             // BL is Backlight. En is Enable
@@ -69,8 +61,8 @@ namespace lcd {
         }
 
         utils::error_t send_byte(uint8_t byte, uint8_t rs) {
-            TRY_FUNC(send_nibble((byte >> 4), rs)); // High nibble first
-            return send_nibble((byte & 0xFU), rs);  // Low nibble next
+            TRY(send_nibble((byte >> 4), rs));     // High nibble first
+            return send_nibble((byte & 0xFU), rs); // Low nibble next
         }
 
         utils::error_t send_cmd(uint8_t cmd) {
@@ -104,9 +96,7 @@ namespace lcd {
         s_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
         s_handle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
 
-        if (HAL_I2C_Init(&s_handle) != HAL_OK) {
-            return utils::error_t::ERR_HAL_FAILED_TO_INIT;
-        }
+        TRY_HAL(HAL_I2C_Init(&s_handle));
 
         // Initialize the I2C GPIO pins
         __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -132,32 +122,32 @@ namespace lcd {
 
         // Send the initialization sequence to the HD44780 controller
         // Bloody cheap displays and their stupid timings
-        TRY_FUNC(send_nibble(0x3U, 0U)); // Function set 1
+        TRY(send_nibble(0x3U, 0U)); // Function set 1
         vTaskDelay(pdMS_TO_TICKS(5));
 
-        TRY_FUNC(send_nibble(0x3U, 0U)); // Function set 2
+        TRY(send_nibble(0x3U, 0U)); // Function set 2
         vTaskDelay(pdMS_TO_TICKS(1));
 
-        TRY_FUNC(send_nibble(0x3U, 0U)); // Function set 3
+        TRY(send_nibble(0x3U, 0U)); // Function set 3
         vTaskDelay(pdMS_TO_TICKS(1));
 
-        TRY_FUNC(send_nibble(0x2U, 0U)); // 4 bit mode
+        TRY(send_nibble(0x2U, 0U)); // 4 bit mode
         vTaskDelay(pdMS_TO_TICKS(1));
 
         // Full function set
-        TRY_FUNC(send_cmd(0x28U)); // 4 bit, 2 lines, 5x8 dots
+        TRY(send_cmd(0x28U)); // 4 bit, 2 lines, 5x8 dots
         vTaskDelay(pdMS_TO_TICKS(2));
 
-        TRY_FUNC(send_cmd(0x08U)); // Display off
+        TRY(send_cmd(0x08U)); // Display off
         vTaskDelay(pdMS_TO_TICKS(2));
 
-        TRY_FUNC(send_cmd(0x01U)); // Display clear
+        TRY(send_cmd(0x01U)); // Display clear
         vTaskDelay(pdMS_TO_TICKS(2));
 
-        TRY_FUNC(send_cmd(0x06U)); // Entry mode
+        TRY(send_cmd(0x06U)); // Entry mode
         vTaskDelay(pdMS_TO_TICKS(2));
 
-        TRY_FUNC(send_cmd(0x0CU)); // Display on
+        TRY(send_cmd(0x0CU)); // Display on
         vTaskDelay(pdMS_TO_TICKS(2));
 
         s_is_initialized = true;
@@ -170,9 +160,7 @@ namespace lcd {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        if (HAL_I2C_DeInit(&s_handle) != HAL_OK) {
-            return utils::error_t::ERR_HAL_FAILED_TO_DEINIT;
-        }
+        TRY_HAL(HAL_I2C_DeInit(&s_handle));
         s_handle = {};
 
         // Set the pins to analog
@@ -201,8 +189,8 @@ namespace lcd {
 
         // Set cursor and send the character
         const uint8_t addr = OFFSETS[line] + col;
-        TRY_FUNC(send_cmd(0x80U | (addr & 0x7FU)));
-        TRY_FUNC(send_data(c));
+        TRY(send_cmd(0x80U | (addr & 0x7FU)));
+        TRY(send_data(c));
 
         return utils::error_t::NONE;
     }
@@ -218,17 +206,17 @@ namespace lcd {
 
         // Set cursor to the first column of the row
         const uint8_t addr = OFFSETS[line];
-        TRY_FUNC(send_cmd(0x80U | (addr & 0x7FU)));
+        TRY(send_cmd(0x80U | (addr & 0x7FU)));
 
         // Now send the string
         for (const auto& c : str) {
-            TRY_FUNC(send_data(c));
+            TRY(send_data(c));
         }
 
         if (pad_to_whitespace) {
             // Pad the remaining columns with whitespaces
             for (auto remaining{str.length()}; remaining < COLUMNS; remaining++) {
-                TRY_FUNC(send_data(' '));
+                TRY(send_data(' '));
             }
         }
 
@@ -240,7 +228,7 @@ namespace lcd {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        TRY_FUNC(send_cmd(0x01U)); // Display clear
+        TRY(send_cmd(0x01U)); // Display clear
         vTaskDelay(pdMS_TO_TICKS(2));
 
         return utils::error_t::NONE;

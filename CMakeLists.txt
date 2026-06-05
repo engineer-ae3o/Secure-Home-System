@@ -45,13 +45,20 @@ endif()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
+# Enable tests to be built
+set(BUILD_TESTS TRUE)
+
 # Process sub-modules
 add_subdirectory(components/drivers/)
 add_subdirectory(components/littlefs/)
 add_subdirectory(components/ascon-suite/)
 add_subdirectory(components/freertos/)
 add_subdirectory(components/f103-hal/)
-add_subdirectory(components/test/)
+
+if (BUILD_TESTS)
+    add_subdirectory(components/Unity/)
+    add_subdirectory(components/test/)
+endif()
 
 # Create executable
 add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
@@ -69,7 +76,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC components/test/inc/
                                           components/freertos/include/
                                           components/ascon-suite/src/
                                           components/littlefs/
-                                          components/etl/)
+                                          components/etl/
+)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
         -ffast-math
@@ -98,9 +106,14 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wlogical-op
         -Wduplicated-cond
         -Wstrict-aliasing=2
-        -fno-threadsafe-statics)
+        -fno-threadsafe-statics
+)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs unity tests)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
+
+if (BUILD_TESTS)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE unity tests)
+endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     C_STANDARD 23

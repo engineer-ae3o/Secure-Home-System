@@ -21,17 +21,13 @@ namespace rnd {
 
         // ASCON storage interface for saving and loading the seed from non-volatile storage
         constexpr ascon_storage_t s_ascon_storage = {
-            .page_size  = file::PROG_SIZE_BYTES,
-            .erase_size = file::BLOCK_SIZE_BYTES,
-            .address =
-                0, // Not used since our read/write functions ignore the offset and always operate at offset zero
+            .page_size      = file::PROG_SIZE_BYTES,
+            .erase_size     = file::BLOCK_SIZE_BYTES,
+            .address        = 0, // Not used since our read/write functions ignore the offset and always operate at offset zero
             .size           = file::BLOCK_SIZE_BYTES,
             .partial_writes = 0,
             .read =
-                [](const ascon_storage_t* storage,
-                   size_t                 offset,
-                   unsigned char*         data,
-                   size_t                 size) {
+                [](const ascon_storage_t* storage, size_t offset, unsigned char* data, size_t size) {
                     (void)storage;
                     (void)offset;
 
@@ -43,11 +39,7 @@ namespace rnd {
                     return static_cast<int>(size);
                 },
             .write =
-                [](const ascon_storage_t* storage,
-                   size_t                 offset,
-                   const unsigned char*   data,
-                   size_t                 size,
-                   int                    flags) {
+                [](const ascon_storage_t* storage, size_t offset, const unsigned char* data, size_t size, int flags) {
                     (void)storage;
                     (void)offset;
                     (void)flags;
@@ -68,7 +60,7 @@ namespace rnd {
         RTC_HandleTypeDef s_rtc_handle{};
 
         // Measured jitter between the TIM2 peripheral and the RTC running on the LSI.
-        volatile uint32_t s_tim2_rtc_jitter{};
+        volatile uint32_t s_rtc_jitter{};
 
         // Six internal channels + the internal temperature sensor
         constexpr uint8_t ADC_NUM_CHANNELS{7};
@@ -140,7 +132,7 @@ namespace rnd {
 
             // The HAL tick source has already been configured to use TIM2
             // as its clock source. Mix in the entropy from TIM2 and the RTC.
-            entropy ^= xor_bytes_in_word(s_tim2_rtc_jitter);
+            entropy ^= xor_bytes_in_word(s_rtc_jitter);
 
             // Pack the LSBs of all the ADC samples before use
             uint32_t packed_adc_samples{};
@@ -179,8 +171,7 @@ namespace rnd {
 
                     // Feed the entropy into ASCON and save the current seed to flash
                     ascon_random_feed(&s_rng_state, entropy.data(), entropy.size());
-                    utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) ==
-                                        0);
+                    utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) == 0);
                 }
 
                 // We gather entropy to update the ASCON seed every 60s
@@ -202,8 +193,8 @@ namespace rnd {
         __HAL_RCC_DMA1_CLK_ENABLE();
 
         GPIO_InitTypeDef pins_a = {
-            .Pin   = static_cast<uint32_t>(config::ADC_PINS[0].pin | config::ADC_PINS[1].pin |
-                                         config::ADC_PINS[2].pin | config::ADC_PINS[3].pin),
+            .Pin   = static_cast<uint32_t>(config::ADC_PINS[0].pin | config::ADC_PINS[1].pin | config::ADC_PINS[2].pin |
+                                         config::ADC_PINS[3].pin),
             .Mode  = GPIO_MODE_ANALOG,
             .Pull  = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
@@ -271,9 +262,7 @@ namespace rnd {
         // No point in calibrating the ADC. We don't care since we need as much noise as we can get
 
         // Start ADC conversion
-        utils::assert_check(HAL_ADC_Start_DMA(&s_adc_handle,
-                                              reinterpret_cast<uint32_t*>(s_adc_buf.data()),
-                                              ADC_NUM_CHANNELS) == HAL_OK);
+        utils::assert_check(HAL_ADC_Start_DMA(&s_adc_handle, reinterpret_cast<uint32_t*>(s_adc_buf.data()), ADC_NUM_CHANNELS) == HAL_OK);
 
         // Configure the RTC peripheral to use the LSI as its clock source, which is a low frequency
         // internal oscillator that has a lot of jitter, making it a good source of entropy for the RNG.
@@ -370,7 +359,7 @@ extern "C" {
         // the HAL tick. Since the RTC is running on a separate clock source (the LSI)
         // that is inacurrate, this ISR gets called at a fairly random point while TIM2
         // is running due to the difference in their clock accuracies.
-        rnd::s_tim2_rtc_jitter = TIM2->CNT;
+        rnd::s_rtc_jitter = TIM2->CNT;
     }
 
     void RTC_IRQHandler() {

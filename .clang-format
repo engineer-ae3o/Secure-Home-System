@@ -8,7 +8,7 @@ TabWidth: 4
 UseTab: Never
 IndentCaseLabels: true
 
-ColumnLimit: 100
+ColumnLimit: 140
 InsertBraces: true
 
 PointerAlignment: Left

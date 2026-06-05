@@ -1,0 +1,77 @@
+#pragma once
+
+#include "utils.hpp"
+
+#include <cstdint>
+#include <string_view>
+
+namespace lcd {
+
+    constexpr inline uint8_t ROWS{2};
+    constexpr inline uint8_t COLUMNS{16};
+
+    /**
+     * @brief Initializes the HD44780 display controller as
+     *        well as the I2C and GPIO interfaces
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t init();
+
+    /**
+     * @brief Deinitializes the HD44780 display controller as
+     *        well as the I2C interface. Sets the GPIOs to analog
+     *        mode so as to reduce power consumption
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t deinit();
+
+    /**
+     * @brief Prints the given ASCII character to the LCD screen
+     * 
+     * @param[in] c    Character to write to the LCD screen
+     * @param[in] col  Column number. Can be from 0 to `COLUMNS - 1`
+     * @param[in] line Line number. Can be from 0 to `ROWS - 1`
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t put_char(unsigned char c, uint8_t col, uint8_t line);
+
+    /**
+     * @brief Prints the given ASCII text to the LCD screen
+     * 
+     * @param[in] str  String to write to the display.
+     * @param[in] line Line number. Can be from 0 to `ROWS - 1`
+     * @param[in] pad_to_whitespace Determines whether or not the pad the
+     *                              remaining columns not filled with text
+     *                              with whitespaces
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t println(std::string_view str, uint8_t line, bool pad_to_whitespace = true);
+
+    /**
+     * @brief Clears the screen.
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t clear_screen();
+
+    /**
+     * @brief Turns the LED backlight on or off
+     * 
+     * @param[in] on Default parameter of true which indicates
+     *               whether or not to turn on the LED backlight
+     * 
+     * @note Asserts on internal failure, or when the function
+     *       is called wrongly. Is not thread safe.
+     */
+    utils::error_t backlight_on(bool on = true);
+
+} // namespace lcd

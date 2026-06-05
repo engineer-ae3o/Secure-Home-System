@@ -40,13 +40,13 @@ namespace utils {
         }
     }
 
-    //inline void assert_check(bool cond) {
-    //    if constexpr (config::ASSERTS_ENABLED) {
-    //        if (!cond) {
-    //            panic();
-    //      }
-    //  }
-    //}
+    inline void assert_check(bool cond) {
+        if constexpr (config::ASSERTS_ENABLED) {
+            if (!cond) {
+                panic();
+            }
+        }
+    }
 
     inline error_t gpio_enable_clk(GPIO_TypeDef* handle) {
         if (handle == GPIOA) {

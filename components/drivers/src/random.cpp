@@ -34,7 +34,10 @@ namespace rnd {
                     // We read the file at offset zero because `ascon_random_load_seed()` loads data at
                     // offset zero of the storage region, and the file size is exactly the same as the
                     // seed size, so we can be sure that the entire seed is read in one operation.
-                    file::read(file::name_t::ASCON_SEED, {data, size});
+                    auto ret = file::read(file::name_t::ASCON_SEED, {data, size});
+                    if (ret != utils::error_t::NONE) {
+                        return -1;
+                    }
 
                     return static_cast<int>(size);
                 },
@@ -47,12 +50,21 @@ namespace rnd {
                     // We write the file at offset zero because `ascon_random_save_seed()` saves data at
                     // offset zero of the storage region, and the file size is exactly the same as the
                     // seed size, so we can be sure that the entire seed is written in one operation.
-                    file::write(file::name_t::ASCON_SEED, {data, size});
-                    file::sync(file::name_t::ASCON_SEED);
+                    auto ret = file::write(file::name_t::ASCON_SEED, {data, size});
+                    if (ret != utils::error_t::NONE) {
+                        return -1;
+                    }
+
+                    ret = file::sync(file::name_t::ASCON_SEED);
+                    if (ret != utils::error_t::NONE) {
+                        return -1;
+                    }
 
                     return static_cast<int>(size);
                 },
         };
+
+        bool s_is_initialized{};
 
         // ADC, DMA, and RTC handles
         ADC_HandleTypeDef s_adc_handle{};
@@ -127,8 +139,8 @@ namespace rnd {
             static uint8_t entropy{};
 
             // Used as a means to ensure that the entropy mixture changes across calls to this function.
-            static uint32_t entropy_source_counter{};
-            entropy ^= xor_bytes_in_word(entropy_source_counter++);
+            static uint32_t call_counter{};
+            entropy ^= xor_bytes_in_word(call_counter++);
 
             // The HAL tick source has already been configured to use TIM2
             // as its clock source. Mix in the entropy from TIM2 and the RTC.
@@ -155,9 +167,13 @@ namespace rnd {
         [[noreturn]] void entropy_task(void* arg) {
             (void)arg;
 
+            // Get entropy to feed the RNG
+            std::array<uint8_t, 32> entropy{};
+
+            uint32_t          err_counter{};
+            constexpr uint8_t MAX_CONSECUTIVE_ERRORS{5};
+
             while (true) {
-                // Get entropy to feed the RNG
-                std::array<uint8_t, 32> entropy{};
 
                 for (auto& data : entropy) {
                     data = get_entropy_mixture();
@@ -171,7 +187,15 @@ namespace rnd {
 
                     // Feed the entropy into ASCON and save the current seed to flash
                     ascon_random_feed(&s_rng_state, entropy.data(), entropy.size());
-                    utils::assert_check(ascon_random_save_seed(&s_rng_state, &s_ascon_storage) == 0);
+                    auto ret = ascon_random_save_seed(&s_rng_state, &s_ascon_storage);
+
+                    if (ret != 0) {
+                        err_counter++;
+                        if (err_counter == MAX_CONSECUTIVE_ERRORS) {
+                            utils::panic();
+                        }
+                    }
+                    err_counter = 0;
                 }
 
                 // We gather entropy to update the ASCON seed every 60s
@@ -182,7 +206,11 @@ namespace rnd {
     } // namespace
 
     // Public API
-    void init() {
+    utils::error_t init() {
+        if (s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
         // Create the mutex. No need to take it. This function is called from a task.
         s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
 
@@ -220,7 +248,7 @@ namespace rnd {
         s_dma_handle.Init.Mode                = DMA_CIRCULAR;
         s_dma_handle.Init.Priority            = DMA_PRIORITY_LOW;
 
-        utils::assert_check(HAL_DMA_Init(&s_dma_handle) == HAL_OK);
+        TRY_HAL(HAL_DMA_Init(&s_dma_handle));
         __HAL_LINKDMA(&s_adc_handle, DMA_Handle, s_dma_handle);
 
         // Configure the ADC
@@ -231,7 +259,7 @@ namespace rnd {
         s_adc_handle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;
         s_adc_handle.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
         s_adc_handle.Init.NbrOfConversion       = ADC_NUM_CHANNELS;
-        utils::assert_check(HAL_ADC_Init(&s_adc_handle) == HAL_OK);
+        TRY_HAL(HAL_ADC_Init(&s_adc_handle));
 
         // External channels
         constexpr std::array<uint32_t, ADC_NUM_CHANNELS - 1> ext_channels = {
@@ -249,7 +277,7 @@ namespace rnd {
             reg_group_scan.Channel      = channel;
             reg_group_scan.Rank         = idx + 1;
             reg_group_scan.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
-            utils::assert_check(HAL_ADC_ConfigChannel(&s_adc_handle, &reg_group_scan) == HAL_OK);
+            TRY_HAL(HAL_ADC_ConfigChannel(&s_adc_handle, &reg_group_scan));
             idx++;
         }
 
@@ -257,12 +285,12 @@ namespace rnd {
         reg_group_scan.Channel      = ADC_CHANNEL_TEMPSENSOR;
         reg_group_scan.Rank         = ADC_NUM_CHANNELS;
         reg_group_scan.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
-        utils::assert_check(HAL_ADC_ConfigChannel(&s_adc_handle, &reg_group_scan) == HAL_OK);
+        TRY_HAL(HAL_ADC_ConfigChannel(&s_adc_handle, &reg_group_scan));
 
         // No point in calibrating the ADC. We don't care since we need as much noise as we can get
 
         // Start ADC conversion
-        utils::assert_check(HAL_ADC_Start_DMA(&s_adc_handle, reinterpret_cast<uint32_t*>(s_adc_buf.data()), ADC_NUM_CHANNELS) == HAL_OK);
+        TRY_HAL(HAL_ADC_Start_DMA(&s_adc_handle, reinterpret_cast<uint32_t*>(s_adc_buf.data()), ADC_NUM_CHANNELS));
 
         // Configure the RTC peripheral to use the LSI as its clock source, which is a low frequency
         // internal oscillator that has a lot of jitter, making it a good source of entropy for the RNG.
@@ -285,15 +313,20 @@ namespace rnd {
         s_rtc_handle.Instance          = RTC;
         s_rtc_handle.Init.AsynchPrediv = 39; // RTC clock frequency of 40kHz / (39  + 1) = 1kHz
         s_rtc_handle.Init.OutPut       = RTC_OUTPUTSOURCE_NONE;
-        utils::assert_check(HAL_RTC_Init(&s_rtc_handle) == HAL_OK);
+        TRY_HAL(HAL_RTC_Init(&s_rtc_handle));
 
-        utils::assert_check(HAL_RTCEx_SetSecond_IT(&s_rtc_handle) == HAL_OK);
+        TRY_HAL(HAL_RTCEx_SetSecond_IT(&s_rtc_handle));
 
         HAL_NVIC_SetPriority(RTC_IRQn, 5, 0);
         HAL_NVIC_EnableIRQ(RTC_IRQn);
 
         // Get the boot cycle count
-        s_boot_cycle_count = file::get_boot_cycle_count();
+        auto ret = file::get_boot_cycle_count();
+        if (!ret.has_value()) {
+            // Failure here means the File System has not yet been initialized
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+        s_boot_cycle_count = ret.value();
 
         if (s_boot_cycle_count == 0) {
             // If this is the first boot, we block for 1.5s to ensure the RTC interrupt fires at
@@ -305,8 +338,15 @@ namespace rnd {
 
         // FInally, initialize the ASCON random state and load the seed from flash storage
         // ASCON's random API uses inconsistent error codes. Can't be helped.
-        utils::assert_check(ascon_random_init(&s_rng_state) != 0);
-        utils::assert_check(ascon_random_load_seed(&s_rng_state, &s_ascon_storage) == 0);
+        auto rc = ascon_random_init(&s_rng_state);
+        if (rc == 0) {
+            return utils::error_t::ERR_FAIL;
+        }
+
+        rc = ascon_random_load_seed(&s_rng_state, &s_ascon_storage);
+        if (rc != 0) {
+            return utils::error_t::ERR_FAIL;
+        }
 
         // Create FreeRTOS task to periodically gather entropy
         // It has a very low priority since its a background task
@@ -317,28 +357,46 @@ namespace rnd {
                                                 1,
                                                 entropy_task_stack.data(),
                                                 &entropy_task_tcb);
+
+        s_is_initialized = true;
+
+        return utils::error_t::NONE;
     }
 
-    void deinit() {
-        utils::assert_check(HAL_ADC_Stop_DMA(&s_adc_handle) == HAL_OK);
-        utils::assert_check(HAL_DMA_DeInit(&s_dma_handle) == HAL_OK);
-        utils::assert_check(HAL_ADC_DeInit(&s_adc_handle) == HAL_OK);
-        utils::assert_check(HAL_RTC_DeInit(&s_rtc_handle) == HAL_OK);
-
-        // Delete the task before deletion of the mutex
-        vTaskDelete(entropy_task_handle);
-
+    utils::error_t deinit() {
         {
             [[maybe_unused]] mutex_t mutex;
+
+            if (!s_is_initialized) {
+                return utils::error_t::ERR_INVALID_STATE;
+            }
+
+            TRY_HAL(HAL_ADC_Stop_DMA(&s_adc_handle));
+            TRY_HAL(HAL_DMA_DeInit(&s_dma_handle));
+            TRY_HAL(HAL_ADC_DeInit(&s_adc_handle));
+            TRY_HAL(HAL_RTC_DeInit(&s_rtc_handle));
+
+            // Delete the task before deletion of the mutex
+            vTaskDelete(entropy_task_handle);
+
             ascon_random_free(&s_rng_state);
         }
 
         vSemaphoreDelete(s_task_mutex);
+        s_is_initialized = false;
+
+        return utils::error_t::NONE;
     }
 
-    void get_random_numbers(std::span<uint8_t> buffer) {
+    utils::error_t get_random_numbers(std::span<uint8_t> buffer) {
         [[maybe_unused]] mutex_t mutex;
+
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());
+
+        return utils::error_t::NONE;
     }
 
 } // namespace rnd

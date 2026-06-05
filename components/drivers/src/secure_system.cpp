@@ -5,7 +5,6 @@
 #include "random.hpp"
 #include "config.hpp"
 #include "file.hpp"
-#include "utils.hpp"
 
 #include <array>
 #include <cstdint>
@@ -43,12 +42,16 @@ namespace ss {
 
     } // namespace
 
-    void init() {
-        rnd::init();
+    utils::error_t init() {
+        TRY(rnd::init());
+
+        return utils::error_t::NONE;
     }
 
-    void deinit() {
-        rnd::deinit();
+    utils::error_t deinit() {
+        TRY(rnd::deinit());
+
+        return utils::error_t::NONE;
     }
 
     void add_pnumber() {

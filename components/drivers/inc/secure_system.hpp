@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils.hpp"
+
 #include <cstdint>
 
 namespace ss {
@@ -10,11 +12,11 @@ namespace ss {
     /**
      * Initialize the secure system.
      */
-    void init();
+    utils::error_t init();
 
     /**
      * Deinitialize the secure system.
      */
-    void deinit();
+    utils::error_t deinit();
 
 } // namespace ss

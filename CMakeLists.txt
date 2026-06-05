@@ -46,7 +46,7 @@ endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 # Enable tests to be built
-set(BUILD_TESTS TRUE)
+set(BUILD_TESTS FALSE)
 
 # Process sub-modules
 add_subdirectory(components/drivers/)

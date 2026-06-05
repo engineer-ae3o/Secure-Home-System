@@ -3,8 +3,8 @@ extern "C" {
 }
 
 #include "utils.hpp"
-#include "pad.hpp"
-#include "test_pad.hpp"
+#include "keypad.hpp"
+#include "test_keypad.hpp"
 
 #include "stm32f1xx_hal.h"
 #include "FreeRTOS.h"

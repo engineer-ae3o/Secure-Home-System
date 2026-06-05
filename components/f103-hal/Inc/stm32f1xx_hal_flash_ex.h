@@ -50,15 +50,18 @@ extern "C" {
   * @{
   */
 
-#define IS_FLASH_TYPEERASE(VALUE) (((VALUE) == FLASH_TYPEERASE_PAGES) || ((VALUE) == FLASH_TYPEERASE_MASSERASE))
+#define IS_FLASH_TYPEERASE(VALUE)                                                                  \
+    (((VALUE) == FLASH_TYPEERASE_PAGES) || ((VALUE) == FLASH_TYPEERASE_MASSERASE))
 
-#define IS_OPTIONBYTE(VALUE) (((VALUE) <= (OPTIONBYTE_WRP | OPTIONBYTE_RDP | OPTIONBYTE_USER | OPTIONBYTE_DATA)))
+#define IS_OPTIONBYTE(VALUE)                                                                       \
+    (((VALUE) <= (OPTIONBYTE_WRP | OPTIONBYTE_RDP | OPTIONBYTE_USER | OPTIONBYTE_DATA)))
 
 #define IS_WRPSTATE(VALUE) (((VALUE) == OB_WRPSTATE_DISABLE) || ((VALUE) == OB_WRPSTATE_ENABLE))
 
 #define IS_OB_RDP_LEVEL(LEVEL) (((LEVEL) == OB_RDP_LEVEL_0) || ((LEVEL) == OB_RDP_LEVEL_1))
 
-#define IS_OB_DATA_ADDRESS(ADDRESS) (((ADDRESS) == OB_DATA_ADDRESS_DATA0) || ((ADDRESS) == OB_DATA_ADDRESS_DATA1))
+#define IS_OB_DATA_ADDRESS(ADDRESS)                                                                \
+    (((ADDRESS) == OB_DATA_ADDRESS_DATA0) || ((ADDRESS) == OB_DATA_ADDRESS_DATA1))
 
 #define IS_OB_IWDG_SOURCE(SOURCE) (((SOURCE) == OB_IWDG_SW) || ((SOURCE) == OB_IWDG_HW))
 
@@ -72,100 +75,112 @@ extern "C" {
 
 /* Low Density */
 #if (defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6))
-#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                                                                \
-    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U) ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08007FFFU)                  \
-                                                         : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08003FFFU))
+#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                        \
+    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U)                                           \
+         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08007FFFU)                          \
+         : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08003FFFU))
 #endif /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
 
 /* Medium Density */
 #if (defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) || defined(STM32F103xB))
-#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                                                                \
-    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U)                                                                                   \
-         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0801FFFFU)                                                                  \
-         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x40U)                                                                            \
-                ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0800FFFFU)                                                           \
-                : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U) ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08007FFFU)    \
-                                                                       : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08003FFFU))))
+#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                        \
+    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U)                                           \
+         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0801FFFFU)                          \
+         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x40U)                                    \
+                ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0800FFFFU)                   \
+                : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U)                             \
+                       ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08007FFFU)            \
+                       : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x08003FFFU))))
 #endif /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB*/
 
 /* High Density */
 #if (defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE))
-#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                                                                \
-    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x200U)                                                                                  \
-         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0807FFFFU)                                                                  \
-         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x180U) ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0805FFFFU)          \
-                                                                 : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0803FFFFU)))
+#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                        \
+    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x200U)                                          \
+         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0807FFFFU)                          \
+         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x180U)                                   \
+                ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0805FFFFU)                   \
+                : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0803FFFFU)))
 #endif /* STM32F100xE || STM32F101xE || STM32F103xE */
 
 /* XL Density */
 #if defined(FLASH_BANK2_END)
-#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                                                                \
-    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x400U) ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x080FFFFFU)                 \
-                                                          : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x080BFFFFU))
+#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                        \
+    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x400U)                                          \
+         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x080FFFFFU)                          \
+         : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x080BFFFFU))
 #endif /* FLASH_BANK2_END */
 
 /* Connectivity Line */
 #if (defined(STM32F105xC) || defined(STM32F107xC))
-#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                                                                \
-    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x100U)                                                                                  \
-         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0803FFFFU)                                                                  \
-         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U) ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0801FFFFU)           \
-                                                                : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0800FFFFU)))
+#define IS_FLASH_NB_PAGES(ADDRESS, NBPAGES)                                                        \
+    (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x100U)                                          \
+         ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0803FFFFU)                          \
+         : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U)                                    \
+                ? ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0801FFFFU)                   \
+                : ((ADDRESS) + ((NBPAGES) * FLASH_PAGE_SIZE) - 1 <= 0x0800FFFFU)))
 #endif /* STM32F105xC || STM32F107xC */
 
 #define IS_OB_WRP(PAGE) (((PAGE) != 0x0000000U))
 
 #if defined(FLASH_BANK2_END)
-#define IS_FLASH_BANK(BANK) (((BANK) == FLASH_BANK_1) || ((BANK) == FLASH_BANK_2) || ((BANK) == FLASH_BANK_BOTH))
+#define IS_FLASH_BANK(BANK)                                                                        \
+    (((BANK) == FLASH_BANK_1) || ((BANK) == FLASH_BANK_2) || ((BANK) == FLASH_BANK_BOTH))
 #else
 #define IS_FLASH_BANK(BANK) (((BANK) == FLASH_BANK_1))
 #endif /* FLASH_BANK2_END */
 
 /* Low Density */
 #if (defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6))
-#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                                                                  \
-    (((ADDRESS) >= FLASH_BASE) &&                                                                                                          \
-     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U) ? ((ADDRESS) <= FLASH_BANK1_END) : ((ADDRESS) <= 0x08003FFFU)))
+#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                          \
+    (((ADDRESS) >= FLASH_BASE) &&                                                                  \
+     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U) ? ((ADDRESS) <= FLASH_BANK1_END)         \
+                                                          : ((ADDRESS) <= 0x08003FFFU)))
 
 #endif /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
 
 /* Medium Density */
 #if (defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) || defined(STM32F103xB))
-#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                                                                  \
-    (((ADDRESS) >= FLASH_BASE) &&                                                                                                          \
-     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U)                                                                                  \
-          ? ((ADDRESS) <= FLASH_BANK1_END)                                                                                                 \
-          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x40U)                                                                           \
-                 ? ((ADDRESS) <= 0x0800FFFF)                                                                                               \
-                 : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U) ? ((ADDRESS) <= 0x08007FFF) : ((ADDRESS) <= 0x08003FFFU)))))
+#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                          \
+    (((ADDRESS) >= FLASH_BASE) &&                                                                  \
+     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U)                                          \
+          ? ((ADDRESS) <= FLASH_BANK1_END)                                                         \
+          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x40U)                                   \
+                 ? ((ADDRESS) <= 0x0800FFFF)                                                       \
+                 : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x20U)                            \
+                        ? ((ADDRESS) <= 0x08007FFF)                                                \
+                        : ((ADDRESS) <= 0x08003FFFU)))))
 
 #endif /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB*/
 
 /* High Density */
 #if (defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE))
-#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                                                                  \
-    (((ADDRESS) >= FLASH_BASE) &&                                                                                                          \
-     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x200U)                                                                                 \
-          ? ((ADDRESS) <= FLASH_BANK1_END)                                                                                                 \
-          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x180U) ? ((ADDRESS) <= 0x0805FFFFU) : ((ADDRESS) <= 0x0803FFFFU))))
+#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                          \
+    (((ADDRESS) >= FLASH_BASE) &&                                                                  \
+     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x200U)                                         \
+          ? ((ADDRESS) <= FLASH_BANK1_END)                                                         \
+          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x180U) ? ((ADDRESS) <= 0x0805FFFFU)     \
+                                                                  : ((ADDRESS) <= 0x0803FFFFU))))
 
 #endif /* STM32F100xE || STM32F101xE || STM32F103xE */
 
 /* XL Density */
 #if defined(FLASH_BANK2_END)
-#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                                                                  \
-    (((ADDRESS) >= FLASH_BASE) &&                                                                                                          \
-     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x400U) ? ((ADDRESS) <= FLASH_BANK2_END) : ((ADDRESS) <= 0x080BFFFFU)))
+#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                          \
+    (((ADDRESS) >= FLASH_BASE) &&                                                                  \
+     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x400U) ? ((ADDRESS) <= FLASH_BANK2_END)        \
+                                                           : ((ADDRESS) <= 0x080BFFFFU)))
 
 #endif /* FLASH_BANK2_END */
 
 /* Connectivity Line */
 #if (defined(STM32F105xC) || defined(STM32F107xC))
-#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                                                                  \
-    (((ADDRESS) >= FLASH_BASE) &&                                                                                                          \
-     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x100U)                                                                                 \
-          ? ((ADDRESS) <= FLASH_BANK1_END)                                                                                                 \
-          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U) ? ((ADDRESS) <= 0x0801FFFFU) : ((ADDRESS) <= 0x0800FFFFU))))
+#define IS_FLASH_PROGRAM_ADDRESS(ADDRESS)                                                          \
+    (((ADDRESS) >= FLASH_BASE) &&                                                                  \
+     (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x100U)                                         \
+          ? ((ADDRESS) <= FLASH_BANK1_END)                                                         \
+          : (((*((uint16_t*)FLASH_SIZE_DATA_REGISTER)) == 0x80U) ? ((ADDRESS) <= 0x0801FFFFU)      \
+                                                                 : ((ADDRESS) <= 0x0800FFFFU))))
 
 #endif /* STM32F105xC || STM32F107xC */
 
@@ -188,7 +203,8 @@ extern "C" {
         uint32_t Banks; /*!< Select banks to erase when Mass erase is enabled.
                              This parameter must be a value of @ref FLASHEx_Banks */
 
-        uint32_t PageAddress; /*!< PageAdress: Initial FLASH page address to erase when mass erase is disabled
+        uint32_t
+            PageAddress; /*!< PageAdress: Initial FLASH page address to erase when mass erase is disabled
                              This parameter must be a number between Min_Data = 0x08000000 and Max_Data = FLASH_BANKx_END 
                              (x = 1 or 2 depending on devices)*/
 
@@ -251,14 +267,14 @@ extern "C" {
 /** @defgroup FLASHEx_Page_Size Page Size
   * @{
   */
-#if (defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6) || defined(STM32F100xB) || defined(STM32F101xB) ||               \
-     defined(STM32F102xB) || defined(STM32F103xB))
+#if (defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6) ||                       \
+     defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) || defined(STM32F103xB))
 #define FLASH_PAGE_SIZE 0x400U
 #endif /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
        /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
 
-#if (defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE) || defined(STM32F101xG) || defined(STM32F103xG) ||               \
-     defined(STM32F105xC) || defined(STM32F107xC))
+#if (defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE) ||                       \
+     defined(STM32F101xG) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC))
 #define FLASH_PAGE_SIZE 0x800U
 #endif /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
        /* STM32F101xG || STM32F103xG */
@@ -327,8 +343,8 @@ extern "C" {
   * @{
   */
 /* STM32 Low and Medium density devices */
-#if defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6) || defined(STM32F100xB) || defined(STM32F101xB) ||                \
-    defined(STM32F102xB) || defined(STM32F103xB)
+#if defined(STM32F101x6) || defined(STM32F102x6) || defined(STM32F103x6) ||                        \
+    defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) || defined(STM32F103xB)
 #define OB_WRP_PAGES0TO3 0x00000001U   /*!< Write protection of page 0 to 3 */
 #define OB_WRP_PAGES4TO7 0x00000002U   /*!< Write protection of page 4 to 7 */
 #define OB_WRP_PAGES8TO11 0x00000004U  /*!< Write protection of page 8 to 11 */
@@ -338,7 +354,7 @@ extern "C" {
 #define OB_WRP_PAGES24TO27 0x00000040U /*!< Write protection of page 24 to 27 */
 #define OB_WRP_PAGES28TO31 0x00000080U /*!< Write protection of page 28 to 31 */
 #endif                                 /* STM32F101x6 || STM32F102x6 || STM32F103x6 */
-                                       /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
+    /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
 
 /* STM32 Medium-density devices */
 #if defined(STM32F100xB) || defined(STM32F101xB) || defined(STM32F102xB) || defined(STM32F103xB)
@@ -366,11 +382,11 @@ extern "C" {
 #define OB_WRP_PAGES116TO119 0x20000000U /*!< Write protection of page 115 to 119 */
 #define OB_WRP_PAGES120TO123 0x40000000U /*!< Write protection of page 120 to 123 */
 #define OB_WRP_PAGES124TO127 0x80000000U /*!< Write protection of page 124 to 127 */
-#endif                                   /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
+#endif /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
 
 /* STM32 High-density, XL-density and Connectivity line devices */
-#if defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE) || defined(STM32F101xG) || defined(STM32F103xG) ||                \
-    defined(STM32F105xC) || defined(STM32F107xC)
+#if defined(STM32F100xE) || defined(STM32F101xE) || defined(STM32F103xE) ||                        \
+    defined(STM32F101xG) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
 #define OB_WRP_PAGES0TO1 0x00000001U    /*!< Write protection of page 0 TO 1 */
 #define OB_WRP_PAGES2TO3 0x00000002U    /*!< Write protection of page 2 TO 3 */
 #define OB_WRP_PAGES4TO5 0x00000004U    /*!< Write protection of page 4 TO 5 */
@@ -405,9 +421,9 @@ extern "C" {
 #define OB_WRP_PAGES62TO127 0x80000000U /*!< Write protection of page 62 TO 127 */
 #define OB_WRP_PAGES62TO255 0x80000000U /*!< Write protection of page 62 TO 255 */
 #define OB_WRP_PAGES62TO511 0x80000000U /*!< Write protection of page 62 TO 511 */
-#endif                                  /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
-                                        /* STM32F101xG || STM32F103xG */
-                                        /* STM32F105xC || STM32F107xC */
+#endif /* STM32F100xB || STM32F101xB || STM32F102xB || STM32F103xB */
+       /* STM32F101xG || STM32F103xG */
+       /* STM32F105xC || STM32F107xC */
 
 #define OB_WRP_ALLPAGES 0xFFFFFFFFU /*!< Write protection of all Pages */
 
@@ -531,10 +547,12 @@ extern "C" {
 #define FLASH_FLAG_WRPERR_BANK1 FLASH_SR_WRPRTERR /*!< FLASH Bank1 Write protected error flag  */
 #define FLASH_FLAG_EOP_BANK1 FLASH_SR_EOP         /*!< FLASH Bank1 End of Operation flag       */
 
-#define FLASH_FLAG_BSY_BANK2 (FLASH_SR2_BSY << 16U)         /*!< FLASH Bank2 Busy flag                   */
-#define FLASH_FLAG_PGERR_BANK2 (FLASH_SR2_PGERR << 16U)     /*!< FLASH Bank2 Programming error flag      */
-#define FLASH_FLAG_WRPERR_BANK2 (FLASH_SR2_WRPRTERR << 16U) /*!< FLASH Bank2 Write protected error flag  */
-#define FLASH_FLAG_EOP_BANK2 (FLASH_SR2_EOP << 16U)         /*!< FLASH Bank2 End of Operation flag       */
+#define FLASH_FLAG_BSY_BANK2 (FLASH_SR2_BSY << 16U) /*!< FLASH Bank2 Busy flag                   */
+#define FLASH_FLAG_PGERR_BANK2                                                                     \
+    (FLASH_SR2_PGERR << 16U) /*!< FLASH Bank2 Programming error flag      */
+#define FLASH_FLAG_WRPERR_BANK2                                                                    \
+    (FLASH_SR2_WRPRTERR << 16U)                     /*!< FLASH Bank2 Write protected error flag  */
+#define FLASH_FLAG_EOP_BANK2 (FLASH_SR2_EOP << 16U) /*!< FLASH Bank2 End of Operation flag       */
 
 #else
 
@@ -544,7 +562,8 @@ extern "C" {
 #define FLASH_FLAG_EOP FLASH_SR_EOP         /*!< FLASH End of Operation flag              */
 
 #endif
-#define FLASH_FLAG_OPTVERR ((OBR_REG_INDEX << 8U | FLASH_OBR_OPTERR)) /*!< Option Byte Error        */
+#define FLASH_FLAG_OPTVERR                                                                         \
+    ((OBR_REG_INDEX << 8U | FLASH_OBR_OPTERR)) /*!< Option Byte Error        */
 /**
   * @}
   */
@@ -560,8 +579,10 @@ extern "C" {
 #define FLASH_IT_EOP_BANK1 FLASH_CR_EOPIE /*!< End of FLASH Operation Interrupt source Bank1 */
 #define FLASH_IT_ERR_BANK1 FLASH_CR_ERRIE /*!< Error Interrupt source Bank1                  */
 
-#define FLASH_IT_EOP_BANK2 (FLASH_CR2_EOPIE << 16U) /*!< End of FLASH Operation Interrupt source Bank2 */
-#define FLASH_IT_ERR_BANK2 (FLASH_CR2_ERRIE << 16U) /*!< Error Interrupt source Bank2                  */
+#define FLASH_IT_EOP_BANK2                                                                         \
+    (FLASH_CR2_EOPIE << 16U) /*!< End of FLASH Operation Interrupt source Bank2 */
+#define FLASH_IT_ERR_BANK2                                                                         \
+    (FLASH_CR2_ERRIE << 16U) /*!< Error Interrupt source Bank2                  */
 
 #else
 
@@ -602,12 +623,12 @@ extern "C" {
   *     @arg @ref FLASH_IT_ERR_BANK2 Error Interrupt on bank2
   * @retval none
   */
-#define __HAL_FLASH_ENABLE_IT(__INTERRUPT__)                                                                                               \
-    do {                                                                                                                                   \
-        /* Enable Bank1 IT */                                                                                                              \
-        SET_BIT(FLASH->CR, ((__INTERRUPT__) & 0x0000FFFFU));                                                                               \
-        /* Enable Bank2 IT */                                                                                                              \
-        SET_BIT(FLASH->CR2, ((__INTERRUPT__) >> 16U));                                                                                     \
+#define __HAL_FLASH_ENABLE_IT(__INTERRUPT__)                                                       \
+    do {                                                                                           \
+        /* Enable Bank1 IT */                                                                      \
+        SET_BIT(FLASH->CR, ((__INTERRUPT__) & 0x0000FFFFU));                                       \
+        /* Enable Bank2 IT */                                                                      \
+        SET_BIT(FLASH->CR2, ((__INTERRUPT__) >> 16U));                                             \
     } while (0U)
 
 /**
@@ -620,12 +641,12 @@ extern "C" {
   *     @arg @ref FLASH_IT_ERR_BANK2 Error Interrupt on bank2
   * @retval none
   */
-#define __HAL_FLASH_DISABLE_IT(__INTERRUPT__)                                                                                              \
-    do {                                                                                                                                   \
-        /* Disable Bank1 IT */                                                                                                             \
-        CLEAR_BIT(FLASH->CR, ((__INTERRUPT__) & 0x0000FFFFU));                                                                             \
-        /* Disable Bank2 IT */                                                                                                             \
-        CLEAR_BIT(FLASH->CR2, ((__INTERRUPT__) >> 16U));                                                                                   \
+#define __HAL_FLASH_DISABLE_IT(__INTERRUPT__)                                                      \
+    do {                                                                                           \
+        /* Disable Bank1 IT */                                                                     \
+        CLEAR_BIT(FLASH->CR, ((__INTERRUPT__) & 0x0000FFFFU));                                     \
+        /* Disable Bank2 IT */                                                                     \
+        CLEAR_BIT(FLASH->CR2, ((__INTERRUPT__) >> 16U));                                           \
     } while (0U)
 
 /**
@@ -643,10 +664,11 @@ extern "C" {
   *            @arg @ref FLASH_FLAG_OPTVERR  Loaded OB and its complement do not match
   * @retval The new state of __FLAG__ (SET or RESET).
   */
-#define __HAL_FLASH_GET_FLAG(__FLAG__)                                                                                                     \
-    (((__FLAG__) == FLASH_FLAG_OPTVERR)                                                                                                    \
-         ? (FLASH->OBR & FLASH_OBR_OPTERR)                                                                                                 \
-         : ((((__FLAG__) & SR_FLAG_MASK) != RESET) ? (FLASH->SR & ((__FLAG__) & SR_FLAG_MASK)) : (FLASH->SR2 & ((__FLAG__) >> 16U))))
+#define __HAL_FLASH_GET_FLAG(__FLAG__)                                                             \
+    (((__FLAG__) == FLASH_FLAG_OPTVERR)                                                            \
+         ? (FLASH->OBR & FLASH_OBR_OPTERR)                                                         \
+         : ((((__FLAG__) & SR_FLAG_MASK) != RESET) ? (FLASH->SR & ((__FLAG__) & SR_FLAG_MASK))     \
+                                                   : (FLASH->SR2 & ((__FLAG__) >> 16U))))
 
 /**
   * @brief  Clear the specified FLASH flag.
@@ -663,21 +685,21 @@ extern "C" {
   *            @arg @ref FLASH_FLAG_OPTVERR  Loaded OB and its complement do not match
   * @retval none
   */
-#define __HAL_FLASH_CLEAR_FLAG(__FLAG__)                                                                                                   \
-    do {                                                                                                                                   \
-        /* Clear FLASH_FLAG_OPTVERR flag */                                                                                                \
-        if ((__FLAG__) == FLASH_FLAG_OPTVERR) {                                                                                            \
-            CLEAR_BIT(FLASH->OBR, FLASH_OBR_OPTERR);                                                                                       \
-        } else {                                                                                                                           \
-            /* Clear Flag in Bank1 */                                                                                                      \
-            if (((__FLAG__) & SR_FLAG_MASK) != RESET) {                                                                                    \
-                FLASH->SR = ((__FLAG__) & SR_FLAG_MASK);                                                                                   \
-            }                                                                                                                              \
-            /* Clear Flag in Bank2 */                                                                                                      \
-            if (((__FLAG__) >> 16U) != RESET) {                                                                                            \
-                FLASH->SR2 = ((__FLAG__) >> 16U);                                                                                          \
-            }                                                                                                                              \
-        }                                                                                                                                  \
+#define __HAL_FLASH_CLEAR_FLAG(__FLAG__)                                                           \
+    do {                                                                                           \
+        /* Clear FLASH_FLAG_OPTVERR flag */                                                        \
+        if ((__FLAG__) == FLASH_FLAG_OPTVERR) {                                                    \
+            CLEAR_BIT(FLASH->OBR, FLASH_OBR_OPTERR);                                               \
+        } else {                                                                                   \
+            /* Clear Flag in Bank1 */                                                              \
+            if (((__FLAG__) & SR_FLAG_MASK) != RESET) {                                            \
+                FLASH->SR = ((__FLAG__) & SR_FLAG_MASK);                                           \
+            }                                                                                      \
+            /* Clear Flag in Bank2 */                                                              \
+            if (((__FLAG__) >> 16U) != RESET) {                                                    \
+                FLASH->SR2 = ((__FLAG__) >> 16U);                                                  \
+            }                                                                                      \
+        }                                                                                          \
     } while (0U)
 #else
 /**
@@ -711,7 +733,9 @@ extern "C" {
   *            @arg @ref FLASH_FLAG_OPTVERR  Loaded OB and its complement do not match
   * @retval The new state of __FLAG__ (SET or RESET).
   */
-#define __HAL_FLASH_GET_FLAG(__FLAG__) (((__FLAG__) == FLASH_FLAG_OPTVERR) ? (FLASH->OBR & FLASH_OBR_OPTERR) : (FLASH->SR & (__FLAG__)))
+#define __HAL_FLASH_GET_FLAG(__FLAG__)                                                             \
+    (((__FLAG__) == FLASH_FLAG_OPTVERR) ? (FLASH->OBR & FLASH_OBR_OPTERR)                          \
+                                        : (FLASH->SR & (__FLAG__)))
 /**
   * @brief  Clear the specified FLASH flag.
   * @param  __FLAG__ specifies the FLASH flags to clear.
@@ -722,15 +746,15 @@ extern "C" {
   *            @arg @ref FLASH_FLAG_OPTVERR  Loaded OB and its complement do not match
   * @retval none
   */
-#define __HAL_FLASH_CLEAR_FLAG(__FLAG__)                                                                                                   \
-    do {                                                                                                                                   \
-        /* Clear FLASH_FLAG_OPTVERR flag */                                                                                                \
-        if ((__FLAG__) == FLASH_FLAG_OPTVERR) {                                                                                            \
-            CLEAR_BIT(FLASH->OBR, FLASH_OBR_OPTERR);                                                                                       \
-        } else {                                                                                                                           \
-            /* Clear Flag in Bank1 */                                                                                                      \
-            FLASH->SR = (__FLAG__);                                                                                                        \
-        }                                                                                                                                  \
+#define __HAL_FLASH_CLEAR_FLAG(__FLAG__)                                                           \
+    do {                                                                                           \
+        /* Clear FLASH_FLAG_OPTVERR flag */                                                        \
+        if ((__FLAG__) == FLASH_FLAG_OPTVERR) {                                                    \
+            CLEAR_BIT(FLASH->OBR, FLASH_OBR_OPTERR);                                               \
+        } else {                                                                                   \
+            /* Clear Flag in Bank1 */                                                              \
+            FLASH->SR = (__FLAG__);                                                                \
+        }                                                                                          \
     } while (0U)
 
 #endif

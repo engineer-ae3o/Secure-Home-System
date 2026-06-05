@@ -9,9 +9,12 @@ namespace utils {
 
         ERR_FAIL,
         ERR_TIMEOUT,
-
         ERR_INVALID_STATE,
         ERR_INVALID_ARG,
+        ERR_HAL_FAILED_TO_INIT,
+        ERR_HAL_FAILED_TO_DEINIT,
+
+        // GSM module driver errors
 
         // File IO errors
         FILE_FAILED_TO_SEEK,
@@ -32,13 +35,13 @@ namespace utils {
         }
     }
 
-    //inline void assert_check(bool cond) {
-    //    if constexpr (config::ASSERTS_ENABLED) {
-    //        if (!cond) {
-    //            panic();
-    //        }
-    //    }
-    //}
+    inline void assert_check(bool cond) {
+        if constexpr (config::ASSERTS_ENABLED) {
+            if (!cond) {
+                panic();
+            }
+        }
+    }
 
     // Needed for conversion since FreeRTOS uses words
     consteval size_t bytes_to_words(size_t bytes) {

@@ -1,6 +1,6 @@
 #include "stm32f1xx_hal.h"
 
-#include "flash.hpp"
+#include "file.hpp"
 #include "utils.hpp"
 
 #include "lfs.h"
@@ -180,7 +180,7 @@ namespace file {
                    const void*       buffer,
                    lfs_size_t        size) {
                     // Make sure data to write to flash is the a multiple of PROG_SIZE_BYTES
-                    if (!(size % PROG_SIZE_BYTES)) {
+                    if (size % PROG_SIZE_BYTES != 0) {
                         return static_cast<int>(LFS_ERR_INVAL);
                     }
 
@@ -200,7 +200,7 @@ namespace file {
                     for (size_t i{}; i < element_count; i++, phy_addr += PROG_SIZE_BYTES) {
                         auto ret = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, phy_addr, buf[i]);
                         if (ret != HAL_OK) {
-                            __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
+                            __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGERR);
                             rc = LFS_ERR_CORRUPT;
                             break;
                         }
@@ -227,7 +227,8 @@ namespace file {
 
                     auto ret = HAL_FLASHEx_Erase(&erase, &page_error);
                     if (ret != HAL_OK || page_error != 0xFFFFFFFFU) {
-                        __HAL_FLASH_CLEAR_FLAG(HAL_FLASH_ERROR_PROG | HAL_FLASH_ERROR_WRP);
+                        // Clear flash error flag
+                        __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGERR);
                         rc = LFS_ERR_CORRUPT;
                     }
 
@@ -290,11 +291,13 @@ namespace file {
                 utils::error_t::FILE_FAILED_TO_OPEN);
 
         // Read counter from file
-        TRY_LFS(lfs_file_read(&s_lfs_handle,
-                              &s_file_lut[std::to_underlying(name_t::COUNTER)].file,
-                              &s_boot_cycle_counter,
-                              sizeof(s_boot_cycle_counter)),
-                utils::error_t::FILE_FAILED_TO_READ);
+        ret = lfs_file_read(&s_lfs_handle,
+                            &s_file_lut[std::to_underlying(name_t::COUNTER)].file,
+                            &s_boot_cycle_counter,
+                            sizeof(s_boot_cycle_counter));
+        if (ret != sizeof(s_boot_cycle_counter)) {
+            return utils::error_t::FILE_FAILED_TO_READ;
+        }
 
         // Rewind file pointer back to starting position
         TRY_LFS(
@@ -308,11 +311,13 @@ namespace file {
             s_boot_cycle_counter++;
         }
 
-        TRY_LFS(lfs_file_write(&s_lfs_handle,
-                               &s_file_lut[std::to_underlying(name_t::COUNTER)].file,
-                               &s_boot_cycle_counter,
-                               sizeof(s_boot_cycle_counter)),
-                utils::error_t::FILE_FAILED_TO_WRITE);
+        ret = lfs_file_write(&s_lfs_handle,
+                             &s_file_lut[std::to_underlying(name_t::COUNTER)].file,
+                             &s_boot_cycle_counter,
+                             sizeof(s_boot_cycle_counter));
+        if (ret != sizeof(s_boot_cycle_counter)) {
+            return utils::error_t::FILE_FAILED_TO_READ;
+        }
 
         // Close the counter file
         TRY_LFS(

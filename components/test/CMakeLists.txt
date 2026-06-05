@@ -1,15 +1,10 @@
 cmake_minimum_required(VERSION 4.1)
 
-add_library(drivers STATIC
-    src/hd44780.cpp
-    src/sim800l.cpp
-    src/file.cpp
-    src/secure_system.cpp
-    src/syscalls.cpp
-    src/random.cpp
+add_library(tests STATIC
+    test_file.cpp
 )
 
-set_target_properties(drivers PROPERTIES
+set_target_properties(tests PROPERTIES
     C_STANDARD 23
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS ON
@@ -18,7 +13,7 @@ set_target_properties(drivers PROPERTIES
     CXX_EXTENSIONS ON
 )
 
-target_compile_options(drivers PRIVATE -ffast-math
+target_compile_options(tests PRIVATE -ffast-math
                                        -fno-math-errno
                                        -Wall
                                        -fdata-sections
@@ -45,9 +40,10 @@ target_compile_options(drivers PRIVATE -ffast-math
                                        -Wstrict-aliasing=2
                                        -fno-threadsafe-statics)
 
-target_compile_definitions(drivers PUBLIC STM32F103xB USE_HAL_DRIVER)
+target_compile_definitions(tests PUBLIC STM32F103xB USE_HAL_DRIVER)
 
-target_include_directories(drivers PUBLIC inc/
+target_include_directories(tests PUBLIC inc/
+                                          ../drivers/inc/
                                           ../freertos/portable/GCC/ARM_CM3/
                                           ../f103-hal/Inc/
                                           ../cmsis-device-f1/Core/Include/m-profile/

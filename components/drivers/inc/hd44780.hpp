@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils.hpp"
+
 #include <cstdint>
 #include <string_view>
 
@@ -15,7 +17,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void init();
+    utils::error_t init();
 
     /**
      * @brief Deinitializes the HD44780 display controller as
@@ -25,7 +27,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void deinit();
+    utils::error_t deinit();
 
     /**
      * @brief Prints the given ASCII character to the LCD screen
@@ -37,7 +39,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void put_char(unsigned char c, uint8_t col, uint8_t line);
+    utils::error_t put_char(unsigned char c, uint8_t col, uint8_t line);
 
     /**
      * @brief Prints the given ASCII text to the LCD screen
@@ -51,7 +53,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void println(const std::string_view& str, uint8_t line, bool pad_to_whitespace = true);
+    utils::error_t println(std::string_view str, uint8_t line, bool pad_to_whitespace = true);
 
     /**
      * @brief Clears the screen.
@@ -59,7 +61,7 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void clear_screen();
+    utils::error_t clear_screen();
 
     /**
      * @brief Turns the LED backlight on or off
@@ -70,6 +72,6 @@ namespace lcd {
      * @note Asserts on internal failure, or when the function
      *       is called wrongly. Is not thread safe.
      */
-    void backlight_on(bool on = true);
+    utils::error_t backlight_on(bool on = true);
 
 } // namespace lcd

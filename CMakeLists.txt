@@ -51,11 +51,12 @@ add_subdirectory(components/littlefs/)
 add_subdirectory(components/ascon-suite/)
 add_subdirectory(components/freertos/)
 add_subdirectory(components/f103-hal/)
+add_subdirectory(components/test/)
 
 # Create executable
 add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
 
-target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB)
+target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB USE_HAL_DRIVER)
 
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
         -ffast-math

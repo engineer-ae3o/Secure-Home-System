@@ -6,7 +6,7 @@
 #include "keypad.hpp"
 #include "switch.hpp"
 #include "config.hpp"
-#include "flash.hpp"
+#include "file.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -47,8 +47,11 @@ namespace {
         };
         HAL_GPIO_Init(GPIOC, &init);
 
-        file::init();
-        rnd::init();
+        auto ret = file::init();
+        if (ret != utils::error_t::NONE) {
+            while (true) {
+            }
+        }
 
         [[maybe_unused]] const auto boot_count = file::get_boot_cycle_count();
 
@@ -281,7 +284,13 @@ extern "C" {
 
         lcd_mutex = xSemaphoreCreateMutexStatic(&lcd_mutex_buffer);
 
-        xTaskCreateStatic(led_task, "Led Task", utils::bytes_to_words(1024), nullptr, 2, led_task_stack.data(), &led_task_tcb);
+        xTaskCreateStatic(led_task,
+                          "Led Task",
+                          utils::bytes_to_words(1024),
+                          nullptr,
+                          2,
+                          led_task_stack.data(),
+                          &led_task_tcb);
         // xTaskCreateStatic(lcd_task, "LCD Task", config::bytes_to_words(512), nullptr, 5, lcd_task_stack.data(), &lcd_task_tcb);
         // xTaskCreateStatic(gsm_task, "GSM Task", config::bytes_to_words(512), nullptr, 6, gsm_task_stack.data(), &gsm_task_tcb);
         // xTaskCreateStatic(keypad_task, "Keypad Task", config::bytes_to_words(512), nullptr, 3, keypad_task_stack.data(), &keypad_task_tcb);

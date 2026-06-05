@@ -4,7 +4,7 @@ file(GLOB HAL_SRCS "Src/*.c")
 
 add_library(f103-hal STATIC ${HAL_SRCS})
 
-target_compile_definitions(f103-hal PUBLIC STM32F103xB)
+target_compile_definitions(f103-hal PUBLIC STM32F103xB USE_HAL_DRIVER)
 
 target_include_directories(f103-hal PUBLIC Inc/)
 target_include_directories(f103-hal PUBLIC ../cmsis-device-f1/Core/Include/m-profile/)

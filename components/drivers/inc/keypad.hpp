@@ -77,8 +77,10 @@ namespace pad {
             m_config = config;
 
             // Do this now to avoid recomputing the OR'ed mask multiple times
-            m_col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] | m_config.col_pins[3]);
-            m_row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] | m_config.row_pins[3]);
+            m_col_pins = (m_config.col_pins[0] | m_config.col_pins[1] | m_config.col_pins[2] |
+                          m_config.col_pins[3]);
+            m_row_pins = (m_config.row_pins[0] | m_config.row_pins[1] | m_config.row_pins[2] |
+                          m_config.row_pins[3]);
 
             // Configure the clocks
             if (m_config.col_port == GPIOA) {
@@ -128,9 +130,14 @@ namespace pad {
             HAL_GPIO_WritePin(m_config.row_port, m_row_pins, GPIO_PIN_RESET);
 
             // Can't fail since stack allocated
-            m_event_queue    = xQueueCreateStatic(queue_length, sizeof(KEYS[0][0]), m_queue_buffer.data(), &m_queue_structure);
-            m_debounce_timer = xTimerCreateStatic(
-                "Debounce_timer", pdMS_TO_TICKS(DEBOUNCE_TIME_MS), pdFALSE, this, debounce_timer_cb, &m_debounce_timer_structure);
+            m_event_queue = xQueueCreateStatic(
+                queue_length, sizeof(KEYS[0][0]), m_queue_buffer.data(), &m_queue_structure);
+            m_debounce_timer = xTimerCreateStatic("Debounce_timer",
+                                                  pdMS_TO_TICKS(DEBOUNCE_TIME_MS),
+                                                  pdFALSE,
+                                                  this,
+                                                  debounce_timer_cb,
+                                                  &m_debounce_timer_structure);
 
             m_is_initialized = true;
         }
@@ -227,11 +234,13 @@ namespace pad {
                 for (uint8_t i = 0; i < ROWS; i++) {
                     // Set a row pin low and read all its column pins to determine if any of
                     // them is the key that was pressed, that is, the pin that would be low
-                    HAL_GPIO_WritePin(keypad->m_config.row_port, keypad->m_config.row_pins[i], GPIO_PIN_RESET);
+                    HAL_GPIO_WritePin(
+                        keypad->m_config.row_port, keypad->m_config.row_pins[i], GPIO_PIN_RESET);
 
                     // If any column is low, then itself and its corresponding row is the right one
                     for (uint8_t j = 0; j < COLUMNS; j++) {
-                        if (HAL_GPIO_ReadPin(keypad->m_config.col_port, keypad->m_config.col_pins[j]) == GPIO_PIN_RESET) {
+                        if (HAL_GPIO_ReadPin(keypad->m_config.col_port,
+                                             keypad->m_config.col_pins[j]) == GPIO_PIN_RESET) {
                             row    = i;
                             column = j;
                             found  = true;

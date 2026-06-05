@@ -58,6 +58,19 @@ add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB USE_HAL_DRIVER)
 
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC components/test/inc/
+                                          components/drivers/inc/
+                                          components/Unity/src/
+                                          components/freertos/portable/GCC/ARM_CM3/
+                                          components/f103-hal/Inc/
+                                          components/cmsis-device-f1/Core/Include/m-profile/
+                                          components/cmsis-device-f1/Core/Include/
+                                          components/cmsis-device-f1/Include/
+                                          components/freertos/include/
+                                          components/ascon-suite/src/
+                                          components/littlefs/
+                                          components/etl/)
+
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
         -ffast-math
         -fno-math-errno
@@ -87,7 +100,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wstrict-aliasing=2
         -fno-threadsafe-statics)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs unity tests)
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
     C_STANDARD 23

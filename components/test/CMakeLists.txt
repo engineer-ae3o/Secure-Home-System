@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(tests STATIC
-    test_file.cpp
+    src/test_file.cpp
+    src/test_hd44780.cpp
+    src/tests.cpp
 )
 
 set_target_properties(tests PROPERTIES
@@ -44,6 +46,7 @@ target_compile_definitions(tests PUBLIC STM32F103xB USE_HAL_DRIVER)
 
 target_include_directories(tests PUBLIC inc/
                                           ../drivers/inc/
+                                          ../Unity/src/
                                           ../freertos/portable/GCC/ARM_CM3/
                                           ../f103-hal/Inc/
                                           ../cmsis-device-f1/Core/Include/m-profile/

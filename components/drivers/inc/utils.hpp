@@ -5,6 +5,7 @@
 namespace utils {
 
     enum class [[nodiscard]] error_t : uint8_t {
+        // Success
         NONE,
 
         // Standard errors common to all modules

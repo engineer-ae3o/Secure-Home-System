@@ -8,9 +8,9 @@ namespace keypad_test {
 
     void get_event_queue();
 
-    void deinit();
+    void key_presses();
 
-    void keypad_logic();
+    void deinit();
 
     void all();
 

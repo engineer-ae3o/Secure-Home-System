@@ -8,16 +8,6 @@
 
 #include <array>
 
-namespace tests {
-    [[maybe_unused]] void tests(void* arg) {
-        UNUSED(arg);
-
-        while (true) {
-            __WFI();
-        }
-    }
-} // namespace tests
-
 extern "C" {
 
     [[noreturn]] int main() {

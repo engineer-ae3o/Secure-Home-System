@@ -89,7 +89,7 @@ namespace gsm {
             AT,        // Module alive check
             ECHO_OFF,  // Disable echo mode
             TEXT_MODE, // SMS text mode
-            SET_SMSC,  // GLO SMSC
+            SET_SMSC,  // SMSC for network provider
 
             // Status checks
             CHECK_SIM,    // Check if SIM card is present and ready
@@ -116,7 +116,7 @@ namespace gsm {
             [std::to_underlying(cmd_t::AT)]           = {"AT\r", "OK"},
             [std::to_underlying(cmd_t::ECHO_OFF)]     = {"ATE0\r", "OK"},
             [std::to_underlying(cmd_t::TEXT_MODE)]    = {"AT+CMGF=1\r", "OK"},
-            [std::to_underlying(cmd_t::SET_SMSC)]     = {"AT+CSCA=\"+2348050020020\"\r", "OK"},
+            [std::to_underlying(cmd_t::SET_SMSC)]     = {config::SIM_CARD_SMSC, "OK"},
             [std::to_underlying(cmd_t::CHECK_SIM)]    = {"AT+CPIN?\r", "+CPIN: READY"},
             [std::to_underlying(cmd_t::CHECK_REG)]    = {"AT+CREG?\r", "+CREG"},
             [std::to_underlying(cmd_t::CHECK_SIGNAL)] = {"AT+CSQ\r", "+CSQ"},
@@ -156,6 +156,7 @@ namespace gsm {
             // Block till the task notification is received from the ISR
             // If no notification is received within the timeout, return an error.
             if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
+                HAL_UART_Abort(&s_huart);
                 return std::unexpected(utils::error_t::ERR_FAIL);
             }
 
@@ -303,6 +304,7 @@ namespace gsm {
                     }
                     // Report an error since the SIM800L didn't respond
                 } else {
+                    HAL_UART_Abort(&s_huart);
                     ret = utils::error_t::GSM_MODULE_NOT_ALIVE;
                 }
 
@@ -447,6 +449,11 @@ namespace gsm {
             // if there's an error so we can ignore the return value.
             (void)send_cmd_and_compare_result(cmd_t::DEINIT, DEINIT_TIMEOUT_MS);
 
+            // Disable the corresponding NVIC UART, DMA tx and rx irqs
+            HAL_NVIC_DisableIRQ(USART1_IRQn);
+            HAL_NVIC_DisableIRQ(DMA1_Channel4_IRQn);
+            HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
+
             // Deinitialize the USART and DMA channels
             TRY_HAL(HAL_DMA_DeInit(&s_hdma_tx));
             TRY_HAL(HAL_DMA_DeInit(&s_hdma_rx));
@@ -457,11 +464,6 @@ namespace gsm {
             s_hdma_rx             = {};
             s_rx_idle_line_size   = {};
             s_calling_task_handle = {};
-
-            // Disable the corresponding NVIC UART, DMA tx and rx irqs
-            HAL_NVIC_DisableIRQ(USART1_IRQn);
-            HAL_NVIC_DisableIRQ(DMA1_Channel4_IRQn);
-            HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
             // Set TX and RX pins as analog
             GPIO_InitTypeDef gpio_deinit = {

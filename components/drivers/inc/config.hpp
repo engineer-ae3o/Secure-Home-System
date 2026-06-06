@@ -2,6 +2,8 @@
 
 #include "stm32f1xx_hal.h"
 
+#include <string_view>
+
 namespace config {
 
     // Toggle assertions
@@ -15,6 +17,7 @@ namespace config {
         uint16_t      pin{};
     };
 
+    // These can't be const since ST's HALs take the handles as non const pointers
     // ADC pins to be used for entropy gathering for random number generation
     inline gpio_pin_t ADC_PINS[] = {
         {.port = GPIOA, .pin = GPIO_PIN_3}, // ADC External Channel 3
@@ -60,6 +63,9 @@ namespace config {
     inline gpio_pin_t TAMPER_SWITCH = {.port = GPIOC, .pin = GPIO_PIN_15};
 
     // FreeRTOS params
-    constexpr inline uint8_t QUEUE_SIZE = 5;
+    constexpr inline uint8_t QUEUE_SIZE{10};
+
+    // SMSC for SIM Card being used. I am using GLO, so this is theirs
+    constexpr inline std::string_view SIM_CARD_SMSC = "AT+CSCA=\"+2348050020020\"\r";
 
 } // namespace config

@@ -85,10 +85,10 @@ namespace rnd {
         uint32_t s_boot_cycle_count{};
 
         // Tasks TCBs and Stacks
-        constexpr uint32_t                                ENTROPY_TASK_STACK_BYTES{512};
-        TaskHandle_t                                      entropy_task_handle{};
-        std::array<StackType_t, ENTROPY_TASK_STACK_BYTES> entropy_task_stack{};
-        StaticTask_t                                      entropy_task_tcb{};
+        constexpr uint32_t                                                       ENTROPY_TASK_STACK_BYTES{512};
+        TaskHandle_t                                                             entropy_task_handle{};
+        StaticTask_t                                                             entropy_task_tcb{};
+        std::array<StackType_t, utils::bytes_to_words(ENTROPY_TASK_STACK_BYTES)> entropy_task_stack{};
 
         // Synchronization across multi threaded access to the rand API
         SemaphoreHandle_t s_task_mutex{};
@@ -210,9 +210,6 @@ namespace rnd {
         if (s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
-
-        // Create the mutex. No need to take it. This function is called from a task.
-        s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
 
         // Configure the GPIO pins to be used for ADC sampling
         __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -358,6 +355,8 @@ namespace rnd {
                                                 entropy_task_stack.data(),
                                                 &entropy_task_tcb);
 
+        // Create the mutex
+        s_task_mutex     = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
         s_is_initialized = true;
 
         return utils::error_t::NONE;

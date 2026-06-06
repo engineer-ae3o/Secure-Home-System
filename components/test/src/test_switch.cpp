@@ -14,20 +14,6 @@ namespace switch_test {
 
     namespace {
 
-        const nc::config_t REED_CONFIG = {
-            .port                = GPIOA,
-            .pin                 = GPIO_PIN_0,
-            .irq_type            = EXTI0_IRQn,
-            .calling_task_handle = nullptr, // No task needed for init/deinit tests
-        };
-
-        const nc::config_t LIMIT_CONFIG = {
-            .port                = GPIOB,
-            .pin                 = GPIO_PIN_1,
-            .irq_type            = EXTI1_IRQn,
-            .calling_task_handle = nullptr,
-        };
-
         // Reed and limit switch instances
         nc::switch_t<nc::type_t::REED>  s_reed{};
         nc::switch_t<nc::type_t::LIMIT> s_limit{};
@@ -44,6 +30,21 @@ namespace switch_test {
     }
 
     void init() {
+
+        const nc::config_t REED_CONFIG = {
+            .port                = config::REED_SWITCH.port,
+            .pin                 = config::REED_SWITCH.pin,
+            .irq_type            = EXTI15_10_IRQn,
+            .calling_task_handle = xTaskGetCurrentTaskHandle(),
+        };
+
+        const nc::config_t LIMIT_CONFIG = {
+            .port                = config::TAMPER_SWITCH.port,
+            .pin                 = config::TAMPER_SWITCH.pin,
+            .irq_type            = EXTI15_10_IRQn,
+            .calling_task_handle = xTaskGetCurrentTaskHandle(),
+        };
+
         auto ret = s_reed.init(REED_CONFIG);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
@@ -73,14 +74,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    void irq_handler() {
-        // Reinitialize with a real task handle so the notification has somewhere to go
-        nc::config_t config        = REED_CONFIG;
-        config.calling_task_handle = xTaskGetCurrentTaskHandle();
-
-        auto ret = s_reed.init(config);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
+    void switch_broken() {
         // Fire the IRQ handler manually
         s_reed.irq_handler();
 
@@ -90,16 +84,16 @@ namespace switch_test {
         TEST_ASSERT_TRUE(notified == pdTRUE);
         TEST_ASSERT_TRUE(bits & std::to_underlying(nc::type_t::REED));
 
-        ret = s_reed.deinit();
+        auto ret = s_reed.deinit();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
     }
 
     void all() {
         RUN_TEST(uninit_guards);
         RUN_TEST(init);
+        RUN_TEST(switch_broken);
         RUN_TEST(deinit);
         RUN_TEST(uninit_guards);
-        RUN_TEST(irq_handler);
     }
 
 } // namespace switch_test

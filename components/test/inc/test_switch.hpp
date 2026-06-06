@@ -6,9 +6,9 @@ namespace switch_test {
 
     void init();
 
-    void deinit();
+    void switch_broken();
 
-    void switch_logic();
+    void deinit();
 
     void all();
 

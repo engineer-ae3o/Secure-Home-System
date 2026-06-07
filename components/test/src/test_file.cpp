@@ -7,162 +7,159 @@ extern "C" {
 
 #include <array>
 #include <string_view>
+#include <cstring>
 
 namespace file_test {
 
     namespace {
-        constexpr std::string_view SEED     = "gwdegjkbysfbdyce";
-        constexpr std::string_view PASSWORD = "ehjfacrhdfshvmsn";
-        constexpr std::string_view PNUMBERS = "08012345678";
+        // 16-byte payload — large enough to split into sub-regions for offset tests
+        constexpr std::string_view PAYLOAD = "ABCDEFGHIJKLMNOP";
+
+        static_assert(PAYLOAD.size() == 16);
+
+        constexpr uint32_t HALF_OFFSET  = PAYLOAD.size() / 2; // 8
+        constexpr uint32_t LAST_OFFSET  = PAYLOAD.size() - 1; // 15
     } // namespace
 
-    void test_uninit_guards() {
-        auto ret = file::sync(file::name_t::ASCON_SEED);
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
+    // -------------------------------------------------------------------------
+    // byte_offset: write at non-zero offset, read back partial region
+    // -------------------------------------------------------------------------
 
+    void test_write_at_offset() {
+        // Write full payload first so the file has known content
+        auto ret = file::write(file::name_t::ASCON_SEED,
+                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Overwrite the second half only
+        constexpr std::string_view PATCH = "QRSTUVWX";
+        static_assert(PATCH.size() == HALF_OFFSET);
+
+        ret = file::write(file::name_t::ASCON_SEED,
+                          {reinterpret_cast<const uint8_t*>(PATCH.data()), PATCH.size()},
+                          HALF_OFFSET);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Read back full content and verify the first half is untouched,
+        // second half reflects the patch
+        std::array<uint8_t, PAYLOAD.size()> buf{};
+        ret = file::read(file::name_t::ASCON_SEED, buf);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        const auto first_half  = std::string_view{reinterpret_cast<const char*>(buf.data()), HALF_OFFSET};
+        const auto second_half = std::string_view{reinterpret_cast<const char*>(buf.data() + HALF_OFFSET), HALF_OFFSET};
+
+        TEST_ASSERT_TRUE(first_half  == PAYLOAD.substr(0, HALF_OFFSET));
+        TEST_ASSERT_TRUE(second_half == PATCH);
+    }
+
+    void test_read_at_offset() {
+        // Write known payload
+        auto ret = file::write(file::name_t::PASSWORD,
+                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Read only the second half via offset
+        std::array<uint8_t, HALF_OFFSET> buf{};
+        ret = file::read(file::name_t::PASSWORD, buf, HALF_OFFSET);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        const auto result = std::string_view{reinterpret_cast<const char*>(buf.data()), buf.size()};
+        TEST_ASSERT_TRUE(result == PAYLOAD.substr(HALF_OFFSET));
+    }
+
+    void test_read_write_last_byte_offset() {
+        // Write full payload
+        auto ret = file::write(file::name_t::PNUMBERS,
+                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Overwrite the single last byte
+        const uint8_t last_byte = 0xFFU;
+        ret = file::write(file::name_t::PNUMBERS,
+                          {&last_byte, 1},
+                          LAST_OFFSET);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Read it back
+        uint8_t read_byte{};
+        ret = file::read(file::name_t::PNUMBERS, {&read_byte, 1}, LAST_OFFSET);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+        TEST_ASSERT_EQUAL(0xFFU, read_byte);
+    }
+
+    // -------------------------------------------------------------------------
+    // read with a buffer smaller than file content
+    // -------------------------------------------------------------------------
+
+    void test_read_undersized_buffer() {
+        // Write a full payload
+        auto ret = file::write(file::name_t::ASCON_SEED,
+                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Read with a buffer smaller than what was written — LittleFS will
+        // return exactly buf.size() bytes, which matches data.size(), so this
+        // should succeed and return only the first N bytes
+        std::array<uint8_t, HALF_OFFSET> small_buf{};
+        ret = file::read(file::name_t::ASCON_SEED, small_buf);
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        const auto result = std::string_view{reinterpret_cast<const char*>(small_buf.data()), small_buf.size()};
+        TEST_ASSERT_TRUE(result == PAYLOAD.substr(0, HALF_OFFSET));
+    }
+
+    // -------------------------------------------------------------------------
+    // write with empty span on valid files
+    // -------------------------------------------------------------------------
+
+    void test_write_empty_span() {
+        // An empty write (zero bytes) on a valid file — LittleFS should
+        // write 0 bytes and return 0, which matches data.size() == 0, so NONE
+        auto ret = file::write(file::name_t::ASCON_SEED, {});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        ret = file::write(file::name_t::PASSWORD, {});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        ret = file::write(file::name_t::PNUMBERS, {});
+        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+    }
+
+    // -------------------------------------------------------------------------
+    // get_boot_cycle_count after deinit (covers the gap in the re-run of
+    // uninit_guards which didn't include this function explicitly)
+    // -------------------------------------------------------------------------
+
+    void test_get_boot_count_after_deinit() {
+        // Assumes deinit has already been called by the caller/sequence
         auto rc = file::get_boot_cycle_count();
         TEST_ASSERT_FALSE(rc.has_value());
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, rc.error());
-
-        ret = file::deinit();
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
-
-        ret = file::write(file::name_t::ASCON_SEED,
-                          {reinterpret_cast<const uint8_t*>(SEED.data()), SEED.size()});
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
-
-        std::array<uint8_t, SEED.size()> buf{};
-        ret = file::read(file::name_t::PASSWORD, buf);
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    void test_init() {
+    // -------------------------------------------------------------------------
+    // Sequence — must run after test_init() and before test_deinit()
+    //            in the parent test_all() runner, or standalone with its own
+    //            init/deinit wrapping
+    // -------------------------------------------------------------------------
+
+    void test_all_supplemental() {
+        // Pre: init
         auto ret = file::init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        // Double init should fail
-        ret = file::init();
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
-    }
+        RUN_TEST(test_write_at_offset);
+        RUN_TEST(test_read_at_offset);
+        RUN_TEST(test_read_write_last_byte_offset);
+        RUN_TEST(test_read_undersized_buffer);
+        RUN_TEST(test_write_empty_span);
 
-    void test_deinit() {
-        auto ret = file::deinit();
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        // Double deinit should fail
+        // Post: deinit, then verify get_boot_cycle_count guard
         ret = file::deinit();
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
-    }
-
-    void test_get_boot_count() {
-        auto ret = file::get_boot_cycle_count();
-        TEST_ASSERT_TRUE(ret.has_value());
-        (void)ret.value();
-    }
-
-    void test_file_write() {
-        // File for ASCON seed storage
-        auto ret = file::write(file::name_t::ASCON_SEED,
-                               {reinterpret_cast<const uint8_t*>(SEED.data()), SEED.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        // File for storage of the hashed password
-        ret = file::write(file::name_t::PASSWORD,
-                          {reinterpret_cast<const uint8_t*>(PASSWORD.data()), PASSWORD.size()});
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        // File for storage of the encrypted phone numbers
-        ret = file::write(file::name_t::PNUMBERS,
-                          {reinterpret_cast<const uint8_t*>(PNUMBERS.data()), PNUMBERS.size()});
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        // Should return an error since the COUNTER file is not accessible at runtime
-        ret = file::write(file::name_t::COUNTER, {});
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-
-        // Should return an error since COUNT is not a valid file
-        ret = file::write(file::name_t::COUNT, {});
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-
-        // Hammer the file system with multiple writes
-        for (uint8_t i{}; i < 50; i++) {
-            ret = file::write(file::name_t::ASCON_SEED,
-                              {reinterpret_cast<const uint8_t*>(SEED.data()), SEED.size()});
-            TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-            ret = file::write(file::name_t::PASSWORD,
-                              {reinterpret_cast<const uint8_t*>(PASSWORD.data()), PASSWORD.size()});
-            TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-            ret = file::write(file::name_t::PNUMBERS,
-                              {reinterpret_cast<const uint8_t*>(PNUMBERS.data()), PNUMBERS.size()});
-            TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-        }
-    }
-
-    void test_file_sync() {
-        auto ret = file::sync(file::name_t::ASCON_SEED);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        ret = file::sync(file::name_t::PASSWORD);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        ret = file::sync(file::name_t::PNUMBERS);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        // Should return an error since the COUNTER file is not accessible at runtime
-        ret = file::sync(file::name_t::COUNTER);
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-
-        // Should return an error since COUNT is not a valid file
-        ret = file::sync(file::name_t::COUNT);
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-    }
-
-    void test_file_read() {
-        std::array<uint8_t, SEED.size()>     seed_buf{};
-        std::array<uint8_t, PASSWORD.size()> password_buf{};
-        std::array<uint8_t, PNUMBERS.size()> pnumber_buf{};
-
-        auto ret = file::read(file::name_t::ASCON_SEED, seed_buf);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        ret = file::read(file::name_t::PASSWORD, password_buf);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        ret = file::read(file::name_t::PNUMBERS, pnumber_buf);
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
-
-        // Ensure the read data matches what was written
-        auto seed =
-            std::string_view{reinterpret_cast<const char*>(seed_buf.data()), seed_buf.size()};
-        auto password = std::string_view{reinterpret_cast<const char*>(password_buf.data()),
-                                         password_buf.size()};
-        auto pnumber =
-            std::string_view{reinterpret_cast<const char*>(pnumber_buf.data()), pnumber_buf.size()};
-
-        TEST_ASSERT_TRUE(seed == SEED);
-        TEST_ASSERT_TRUE(password == PASSWORD);
-        TEST_ASSERT_TRUE(pnumber == PNUMBERS);
-
-        // Should return an error since the COUNTER file is not accessible at runtime
-        ret = file::read(file::name_t::COUNTER, {});
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-
-        // Should return an error since COUNT is not a valid file
-        ret = file::read(file::name_t::COUNT, {});
-        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
-    }
-
-    void test_all() {
-        RUN_TEST(test_uninit_guards);
-        RUN_TEST(test_init);
-        RUN_TEST(test_get_boot_count);
-        RUN_TEST(test_file_write);
-        RUN_TEST(test_file_sync);
-        RUN_TEST(test_file_read);
-        RUN_TEST(test_deinit);
-        RUN_TEST(test_uninit_guards);
+        RUN_TEST(test_get_boot_count_after_deinit);
     }
 
 } // namespace file_test

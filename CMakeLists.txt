@@ -54,6 +54,7 @@ add_subdirectory(components/littlefs/)
 add_subdirectory(components/ascon-suite/)
 add_subdirectory(components/freertos/)
 add_subdirectory(components/f103-hal/)
+add_subdirectory(components/RTT/)
 
 if (BUILD_TESTS)
     add_subdirectory(components/Unity/)
@@ -76,6 +77,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC components/test/inc/
                                           components/freertos/include/
                                           components/ascon-suite/src/
                                           components/littlefs/
+                                          components/RTT/RTT/
                                           components/etl/
 )
 
@@ -111,10 +113,10 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 
 if (BUILD_TESTS)
     # Order of dependencies being linked in matters
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers ascon_static f103-hal freertos littlefs unity)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers rtt ascon_static f103-hal freertos littlefs unity rtt)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC BUILD_TESTS=1)
 else ()
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers rtt ascon_static f103-hal freertos littlefs rtt)
 endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES

@@ -436,14 +436,14 @@ namespace gsm {
     }
 
     utils::error_t deinit() {
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
         {
             // Take the mutex to make sure no other thread is using the SIM800L while we are
             // deinitializing it. We have to wait for all other tasks to finish use of the mutex
             [[maybe_unused]] mutex_t mutex(portMAX_DELAY);
-
-            if (!s_is_initialized) {
-                return utils::error_t::ERR_INVALID_STATE;
-            }
 
             // Tell the SIM800L to deinitialize itself. We don't care
             // if there's an error so we can ignore the return value.
@@ -486,14 +486,14 @@ namespace gsm {
     }
 
     utils::error_t get_sim_status() {
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
         // RAII handling for mutex acquisition and releasing
         [[maybe_unused]] mutex_t mutex;
         if (!mutex) {
             return utils::error_t::ERR_TIMEOUT;
-        }
-
-        if (!s_is_initialized) {
-            return utils::error_t::ERR_INVALID_STATE;
         }
 
         // Confirm the module is still responding before doing anything
@@ -513,14 +513,18 @@ namespace gsm {
     }
 
     utils::error_t send_sms(std::string_view sms, std::string_view number, bool check_sim_status) {
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
+        if (sms.size() == 0 || sms.data() == nullptr || number.size() == 0 || number.data() == nullptr) {
+            return utils::error_t::ERR_INVALID_ARG;
+        }
+
         // RAII handling for mutex acquisition and releasing
         [[maybe_unused]] mutex_t mutex;
         if (!mutex) {
             return utils::error_t::ERR_TIMEOUT;
-        }
-
-        if (!s_is_initialized) {
-            return utils::error_t::ERR_INVALID_STATE;
         }
 
         if (sms.size() > MAX_SMS_LEN || number.size() > MAX_PHONE_NUMBER_LEN) {
@@ -578,14 +582,14 @@ namespace gsm {
     }
 
     std::expected<std::array<char, IMSI_BUF_SIZE>, utils::error_t> get_imsi() {
+        if (!s_is_initialized) {
+            return std::unexpected(utils::error_t::ERR_INVALID_STATE);
+        }
+
         // RAII handling for mutex acquisition and releasing
         [[maybe_unused]] mutex_t mutex;
         if (!mutex) {
             return std::unexpected(utils::error_t::ERR_TIMEOUT);
-        }
-
-        if (!s_is_initialized) {
-            return std::unexpected(utils::error_t::ERR_INVALID_STATE);
         }
 
         // Confirm the module is still responding before doing anything

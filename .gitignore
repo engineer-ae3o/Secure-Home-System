@@ -6,7 +6,7 @@ build/
 *.hex
 *.map
 *.lst
-.vscode/
+.vscode/settings.json
 .cache/
 .clangd
 CMakeFiles/

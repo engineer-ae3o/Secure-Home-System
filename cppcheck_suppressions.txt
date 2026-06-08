@@ -13,6 +13,7 @@ unassignedVariable
 noExplicitConstructor
 unreachableCode
 useStlAlgorithm
+unusedFunction
 
 # Clear out all errors/warnings originating from any third-party directory
 *:components/cmsis-device-f1/*

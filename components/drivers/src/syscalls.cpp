@@ -6,6 +6,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "SEGGER_RTT.h"
+
 #include <atomic>
 #include <cstdint>
 
@@ -216,6 +218,12 @@ extern "C" {
         }
     }
 
+    _ssize_t _write(int fd, const void* buf, size_t len) {
+        (void)fd;
+        SEGGER_RTT_Write(0, buf, len);
+        return static_cast<int>(len);
+    }
+
     int _kill(pid_t pid, int sig) {
         (void)pid;
         (void)sig;
@@ -225,19 +233,6 @@ extern "C" {
 
     pid_t _getpid() {
         return 1;
-    }
-
-    void put_char(char c) {
-        (void)c;
-    }
-
-    int _write(int fd, const void* buf, size_t count) {
-        (void)fd;
-        const auto* str = static_cast<const char*>(buf);
-        for (size_t i{}; i < count; i++) {
-            put_char(str[i]);
-        }
-        return 0;
     }
 
     caddr_t _sbrk(ptrdiff_t increment) {

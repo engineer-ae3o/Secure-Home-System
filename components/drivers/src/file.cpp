@@ -144,7 +144,6 @@ namespace file {
 
     // Public API
     utils::error_t init() {
-
         if (s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
@@ -335,14 +334,14 @@ namespace file {
     }
 
     utils::error_t deinit() {
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
         {
             // Take the mutex to make sure no other thread is using any of the files while we are
             // deinitializing it. We have to wait for all other tasks to finish use of the mutex
             [[maybe_unused]] mutex_t mutex;
-
-            if (!s_is_initialized) {
-                return utils::error_t::ERR_INVALID_STATE;
-            }
 
             // Close both files before unmounting file system
             TRY_LFS(lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PASSWORD)].file),
@@ -375,12 +374,16 @@ namespace file {
     }
 
     utils::error_t write(name_t file, std::span<const uint8_t> data, uint32_t byte_offset) {
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         if (!s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
+
+        if (data.size() == 0 || data.data() == nullptr) {
+            return utils::error_t::ERR_INVALID_ARG;
+        }
+
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
 
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
@@ -399,12 +402,16 @@ namespace file {
     }
 
     utils::error_t read(name_t file, std::span<uint8_t> data, uint32_t byte_offset) {
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         if (!s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
+
+        if (data.size() == 0 || data.data() == nullptr) {
+            return utils::error_t::ERR_INVALID_ARG;
+        }
+
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
 
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
@@ -423,12 +430,12 @@ namespace file {
     }
 
     utils::error_t sync(name_t file) {
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         if (!s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
+
+        // RAII handling for mutex acquisition and releasing
+        [[maybe_unused]] mutex_t mutex;
 
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {

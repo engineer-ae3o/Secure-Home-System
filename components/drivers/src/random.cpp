@@ -393,6 +393,10 @@ namespace rnd {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
+        if (buffer.size() == 0 || buffer.data() == nullptr) {
+            return utils::error_t::ERR_INVALID_ARG;
+        }
+
         [[maybe_unused]] mutex_t mutex;
 
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());

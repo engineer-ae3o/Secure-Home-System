@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/secure-home",
+            "name": "Debug with OpenOCD",
+            "gdbPath": "arm-none-eabi-gdb",
+            "serverpath": "openocd",
+            "request": "launch",
+            "type": "cortex-debug",
+            "device": "STM32F103C8",
+            "servertype": "openocd",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            },
+            "configFiles": [
+                "interface/stlink-v2.cfg",
+                "target/stm32f1x.cfg"
+            ],
+            "rtos": "FreeRTOS",
+            "searchDir": [],
+            "runToEntryPoint": "reset_handler",
+            "showDevDebugOutput": "parsed",
+            "svdFile": "${workspaceFolder}/.vscode/STM32F103xx.svd",
+            "rttConfig": {
+                "enabled": true,
+                "address": "auto",
+                "decoders": [
+                    {
+                        "label": "RTT Log",
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            }
+        },
+    ]
+}

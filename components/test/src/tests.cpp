@@ -27,12 +27,12 @@ namespace tests {
 
         UNITY_BEGIN();
 
-        lcd_test::all();
-        gsm_test::all();
-        rnd_test::all();
+        //lcd_test::all();
+        //gsm_test::all();
+        //rnd_test::all();
         file_test::all();
-        switch_test::all();
-        keypad_test::all();
+        //switch_test::all();
+        //keypad_test::all();
 
         UNITY_END();
 

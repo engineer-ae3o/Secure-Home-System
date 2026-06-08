@@ -327,10 +327,8 @@ typedef UNITY_DOUBLE_TYPE UNITY_DOUBLE;
  * Output Method: stdout (DEFAULT)
  *-------------------------------------------------------*/
 #ifndef UNITY_OUTPUT_CHAR
-/* Default to using putchar, which is defined in stdio.h */
-#include <stdio.h>
-extern void put_char(char c);
-#define UNITY_OUTPUT_CHAR(c) put_char(c)
+unsigned SEGGER_RTT_PutChar(unsigned BufferIndex, char c);
+#define UNITY_OUTPUT_CHAR(c) SEGGER_RTT_PutChar(0, c)
 #else
 /* If defined as something else, make sure we declare it here so it's ready for use */
 #ifdef UNITY_OUTPUT_CHAR_HEADER_DECLARATION

@@ -56,5 +56,6 @@ target_include_directories(drivers PUBLIC inc/
                                           ../cmsis-device-f1/Include/
                                           ../freertos/include/
                                           ../ascon-suite/src/
+                                          ../RTT/RTT/
                                           ../littlefs/
                                           ../etl/)

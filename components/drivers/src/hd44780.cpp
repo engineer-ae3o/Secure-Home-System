@@ -204,6 +204,10 @@ namespace lcd {
             return utils::error_t::ERR_INVALID_ARG;
         }
 
+        if (str.size() == 0 || str.data() == nullptr) {
+            return utils::error_t::ERR_INVALID_ARG;
+        }
+
         // Set cursor to the first column of the row
         const uint8_t addr = OFFSETS[line];
         TRY(send_cmd(0x80U | (addr & 0x7FU)));

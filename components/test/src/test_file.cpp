@@ -10,7 +10,7 @@
 namespace file_test {
 
     namespace {
-        // 16-byte payload — large enough to split into sub-regions for offset tests
+        // 16 byte data, large enough to split into sub-regions for offset tests
         constexpr std::string_view PAYLOAD = "ABCDEFGHIJKLMNOP";
 
         static_assert(PAYLOAD.size() == 16);
@@ -19,11 +19,7 @@ namespace file_test {
         constexpr uint32_t LAST_OFFSET = PAYLOAD.size() - 1; // 15
     } // namespace
 
-    // -------------------------------------------------------------------------
-    // byte_offset: write at non-zero offset, read back partial region
-    // -------------------------------------------------------------------------
-
-    void test_write_at_offset() {
+    void write_at_offset() {
         // Write full payload first so the file has known content
         auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
@@ -48,7 +44,7 @@ namespace file_test {
         TEST_ASSERT_TRUE(second_half == PATCH);
     }
 
-    void test_read_at_offset() {
+    void read_at_offset() {
         // Write known payload
         auto ret = file::write(file::name_t::PASSWORD, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
@@ -62,7 +58,7 @@ namespace file_test {
         TEST_ASSERT_TRUE(result == PAYLOAD.substr(HALF_OFFSET));
     }
 
-    void test_read_write_last_byte_offset() {
+    void read_write_last_byte_offset() {
         // Write full payload
         auto ret = file::write(file::name_t::PNUMBERS, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
@@ -79,11 +75,7 @@ namespace file_test {
         TEST_ASSERT_EQUAL(0xFFU, read_byte);
     }
 
-    // -------------------------------------------------------------------------
-    // read with a buffer smaller than file content
-    // -------------------------------------------------------------------------
-
-    void test_read_undersized_buffer() {
+    void read_undersized_buffer() {
         // Write a full payload
         auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
@@ -99,11 +91,7 @@ namespace file_test {
         TEST_ASSERT_TRUE(result == PAYLOAD.substr(0, HALF_OFFSET));
     }
 
-    // -------------------------------------------------------------------------
-    // write with empty span on valid files
-    // -------------------------------------------------------------------------
-
-    void test_write_empty_span() {
+    void write_empty_span() {
         // An empty write (zero bytes) on a valid file — LittleFS should
         // write 0 bytes and return 0, which matches data.size() == 0, so NONE
         auto ret = file::write(file::name_t::ASCON_SEED, {});
@@ -116,11 +104,6 @@ namespace file_test {
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
     }
 
-    // -------------------------------------------------------------------------
-    // get_boot_cycle_count after deinit (covers the gap in the re-run of
-    // uninit_guards which didn't include this function explicitly)
-    // -------------------------------------------------------------------------
-
     void test_get_boot_count_after_deinit() {
         // Assumes deinit has already been called by the caller/sequence
         auto rc = file::get_boot_cycle_count();
@@ -128,26 +111,28 @@ namespace file_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, rc.error());
     }
 
-    // -------------------------------------------------------------------------
-    // Sequence — must run after test_init() and before test_deinit()
-    //            in the parent test_all() runner, or standalone with its own
-    //            init/deinit wrapping
-    // -------------------------------------------------------------------------
-
     void all() {
-        // Pre: init
+        // Setup
         auto ret = file::init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        RUN_TEST(test_write_at_offset);
-        RUN_TEST(test_read_at_offset);
-        RUN_TEST(test_read_write_last_byte_offset);
-        RUN_TEST(test_read_undersized_buffer);
-        RUN_TEST(test_write_empty_span);
+        // Double init should fail
+        ret = file::init();
+        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
-        // Post: deinit, then verify get_boot_cycle_count guard
+        RUN_TEST(write_at_offset);
+        RUN_TEST(read_at_offset);
+        RUN_TEST(read_write_last_byte_offset);
+        RUN_TEST(read_undersized_buffer);
+        RUN_TEST(write_empty_span);
+
+        // Teardown
         ret = file::deinit();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+
+        // Double deinit should fail
+        ret = file::deinit();
+        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
         RUN_TEST(test_get_boot_count_after_deinit);
     }

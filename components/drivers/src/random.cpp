@@ -344,7 +344,7 @@ namespace rnd {
         }
 
         rc = ascon_random_load_seed(&s_rng_state, &s_ascon_storage);
-        if (rc != 0) {
+        if (rc < 0) {
             return utils::error_t::ERR_FAIL;
         }
 

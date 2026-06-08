@@ -57,11 +57,7 @@ namespace switch_test {
         }
     } // namespace
 
-    // -------------------------------------------------------------------------
-    // Uninit guards — both types must reject calls before init
-    // -------------------------------------------------------------------------
-
-    void test_uninit_guards() {
+    void uninit_guards() {
         auto ret = s_reed.deinit();
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
@@ -69,11 +65,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    // -------------------------------------------------------------------------
-    // Init
-    // -------------------------------------------------------------------------
-
-    void test_reed_init() {
+    void reed_init() {
         const nc::config_t cfg = {
             .port                = config::REED_SWITCH.port,
             .pin                 = config::REED_SWITCH.pin,
@@ -89,7 +81,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    void test_limit_init() {
+    void limit_init() {
         const nc::config_t cfg = {
             .port                = config::TAMPER_SWITCH.port,
             .pin                 = config::TAMPER_SWITCH.pin,
@@ -105,11 +97,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    // -------------------------------------------------------------------------
-    // IRQ simulation — reed switch
-    // -------------------------------------------------------------------------
-
-    void test_reed_irq_notifies_task() {
+    void reed_irq_notifies_task() {
         // Disable NVIC so real hardware doesn't interfere with our manual trigger
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 
@@ -120,7 +108,7 @@ namespace switch_test {
         s_reed.irq_handler();
 
         // Block waiting for the task notification. Use xTaskNotifyWait since
-        // irq_handler uses eSetBits — ulTaskNotifyTake would lose the value.
+        // irq_handler uses eSetBits; ulTaskNotifyTake would lose the value.
         uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
@@ -133,7 +121,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(std::to_underlying(nc::type_t::REED), notification_value);
     }
 
-    void test_reed_irq_multiple_triggers_accumulate_bits() {
+    void reed_irq_multiple_triggers_accumulate_bits() {
         // Fire irq_handler twice without consuming the notification between calls.
         // eSetBits ORs into the value, so the bit should remain set both times.
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
@@ -149,11 +137,11 @@ namespace switch_test {
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
-        // REED bit must be set — value should still be exactly REED since REED|REED == REED
+        // REED bit must be set; value should still be exactly REED since REED|REED == REED
         TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::REED), notification_value);
     }
 
-    void test_reed_no_spurious_notification_without_trigger() {
+    void reed_no_spurious_notification_without_trigger() {
         // Do NOT call irq_handler(). Waiting for a notification should time out.
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 
@@ -166,11 +154,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(0U, notification_value);
     }
 
-    // -------------------------------------------------------------------------
-    // IRQ simulation — limit (tamper) switch
-    // -------------------------------------------------------------------------
-
-    void test_limit_irq_notifies_task() {
+    void limit_irq_notifies_task() {
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 
         drive_pin(config::TAMPER_SWITCH.port, config::TAMPER_SWITCH.pin, GPIO_PIN_SET);
@@ -186,11 +170,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(std::to_underlying(nc::type_t::LIMIT), notification_value);
     }
 
-    // -------------------------------------------------------------------------
-    // Both switches can fire and their bits are distinct and non-overlapping
-    // -------------------------------------------------------------------------
-
-    void test_both_types_bits_are_distinct() {
+    void both_types_bits_are_distinct() {
         // REED and LIMIT must have different, non-overlapping type bits so a task
         // waiting on notifications can distinguish which switch triggered
         constexpr auto reed_bit  = std::to_underlying(nc::type_t::REED);
@@ -200,7 +180,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(0U, reed_bit & limit_bit);
     }
 
-    void test_both_switches_trigger_accumulates_both_bits() {
+    void both_switches_trigger_accumulates_both_bits() {
         // Fire both irq_handlers without consuming the notification.
         // The task's notification value should have both bits set.
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
@@ -223,11 +203,7 @@ namespace switch_test {
         TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::LIMIT), notification_value);
     }
 
-    // -------------------------------------------------------------------------
-    // Deinit
-    // -------------------------------------------------------------------------
-
-    void test_reed_deinit() {
+    void reed_deinit() {
         auto ret = s_reed.deinit();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
@@ -236,7 +212,7 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    void test_limit_deinit() {
+    void limit_deinit() {
         auto ret = s_limit.deinit();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
@@ -245,31 +221,26 @@ namespace switch_test {
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
     }
 
-    // -------------------------------------------------------------------------
-    // Runner
-    // -------------------------------------------------------------------------
-
     void all() {
-        RUN_TEST(test_uninit_guards);
+        RUN_TEST(uninit_guards);
 
-        RUN_TEST(test_reed_init);
-        RUN_TEST(test_limit_init);
+        RUN_TEST(reed_init);
+        RUN_TEST(limit_init);
 
-        RUN_TEST(test_both_types_bits_are_distinct);
+        RUN_TEST(both_types_bits_are_distinct);
 
-        RUN_TEST(test_reed_irq_notifies_task);
-        RUN_TEST(test_reed_irq_multiple_triggers_accumulate_bits);
-        RUN_TEST(test_reed_no_spurious_notification_without_trigger);
+        RUN_TEST(reed_irq_notifies_task);
+        RUN_TEST(reed_irq_multiple_triggers_accumulate_bits);
+        RUN_TEST(reed_no_spurious_notification_without_trigger);
 
-        RUN_TEST(test_limit_irq_notifies_task);
+        RUN_TEST(limit_irq_notifies_task);
 
-        RUN_TEST(test_both_switches_trigger_accumulates_both_bits);
+        RUN_TEST(both_switches_trigger_accumulates_both_bits);
 
-        RUN_TEST(test_reed_deinit);
-        RUN_TEST(test_limit_deinit);
+        RUN_TEST(reed_deinit);
+        RUN_TEST(limit_deinit);
 
-        // Post-deinit: uninit guards must fire again
-        RUN_TEST(test_uninit_guards);
+        RUN_TEST(uninit_guards);
     }
 
 } // namespace switch_test

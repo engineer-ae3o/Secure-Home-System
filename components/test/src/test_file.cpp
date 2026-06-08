@@ -80,7 +80,7 @@ namespace file_test {
         auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        // Read with a buffer smaller than what was written — LittleFS will
+        // Read with a buffer smaller than what was written; LittleFS will
         // return exactly buf.size() bytes, which matches data.size(), so this
         // should succeed and return only the first N bytes
         std::array<uint8_t, HALF_OFFSET> small_buf{};
@@ -92,19 +92,17 @@ namespace file_test {
     }
 
     void write_empty_span() {
-        // An empty write (zero bytes) on a valid file — LittleFS should
-        // write 0 bytes and return 0, which matches data.size() == 0, so NONE
         auto ret = file::write(file::name_t::ASCON_SEED, {});
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
 
         ret = file::write(file::name_t::PASSWORD, {});
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
 
         ret = file::write(file::name_t::PNUMBERS, {});
-        TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
+        TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
     }
 
-    void test_get_boot_count_after_deinit() {
+    void get_boot_count_after_deinit() {
         // Assumes deinit has already been called by the caller/sequence
         auto rc = file::get_boot_cycle_count();
         TEST_ASSERT_FALSE(rc.has_value());
@@ -134,7 +132,7 @@ namespace file_test {
         ret = file::deinit();
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
-        RUN_TEST(test_get_boot_count_after_deinit);
+        RUN_TEST(get_boot_count_after_deinit);
     }
 
 } // namespace file_test

@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 4.1)
 
 add_library(drivers STATIC
+    src/file.cpp
+    src/tasks.cpp
+    src/random.cpp
     src/hd44780.cpp
     src/sim800l.cpp
-    src/file.cpp
-    src/secure_system.cpp
     src/syscalls.cpp
-    src/random.cpp
+    src/secure_system.cpp
 )
 
 set_target_properties(drivers PROPERTIES

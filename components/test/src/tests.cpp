@@ -1,17 +1,17 @@
-#include "stm32f1xx_hal.h"
+#include "unity.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
 #include "tests.hpp"
 #include "test_file.hpp"
-#include "test_switch.hpp"
+#include "test_random.hpp"
 #include "test_keypad.hpp"
+#include "test_switch.hpp"
 #include "test_hd44780.hpp"
+#include "test_sim800l.hpp"
 
 extern "C" {
-
-#include "unity.h"
 
     void setUp() {
     }
@@ -27,8 +27,10 @@ namespace tests {
 
         UNITY_BEGIN();
 
-        file_test::all();
         lcd_test::all();
+        gsm_test::all();
+        rnd_test::all();
+        file_test::all();
         switch_test::all();
         keypad_test::all();
 

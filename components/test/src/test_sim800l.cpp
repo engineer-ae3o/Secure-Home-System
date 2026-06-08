@@ -1,13 +1,11 @@
-extern "C" {
 #include "unity.h"
-}
 
-#include "sim800l.hpp"
 #include "utils.hpp"
+#include "sim800l.hpp"
 
 #include <array>
-#include <string_view>
 #include <cstring>
+#include <string_view>
 
 // NOTE: All tests below require a physical SIM800L module connected and
 //       powered, with a registered SIM card and useable network signal,
@@ -21,14 +19,13 @@ namespace gsm_test {
 
     namespace {
         // Valid fixtures
-        constexpr std::string_view VALID_NUMBER  = "08012345678";  // 11 chars, exactly MAX_PHONE_NUMBER_LEN
-        constexpr std::string_view SHORT_NUMBER  = "0801234";      // 7 chars, well within limit
-        constexpr std::string_view VALID_SMS     = "Test message";
-        constexpr std::string_view EMPTY_SMS     = "";
+        constexpr std::string_view VALID_NUMBER = "08012345678"; // 11 chars, exactly MAX_PHONE_NUMBER_LEN
+        constexpr std::string_view SHORT_NUMBER = "0801234";     // 7 chars, well within limit
+        constexpr std::string_view VALID_SMS    = "Test message";
+        constexpr std::string_view EMPTY_SMS    = "";
 
         // Boundary-violation fixtures — never reach the radio
-        constexpr std::string_view SMS_TOO_LONG =
-            "This SMS is intentionally longer than the sixty four character maximum limit!!";
+        constexpr std::string_view SMS_TOO_LONG = "This SMS is intentionally longer than the sixty four character maximum limit!!";
 
         static_assert(SMS_TOO_LONG.size() > gsm::MAX_SMS_LEN);
         static_assert(VALID_NUMBER.size() == gsm::MAX_PHONE_NUMBER_LEN);
@@ -242,8 +239,8 @@ namespace gsm_test {
         RUN_TEST(test_post_deinit_guards);
     }
 
-    // Full integration run — requires live SIM800L + registered SIM card
-    void test_all() {
+    // Full integration run requires live SIM800L + registered SIM card
+    void all() {
         RUN_TEST(test_uninit_guards);
         RUN_TEST(test_init);
 

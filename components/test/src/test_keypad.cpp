@@ -1,10 +1,8 @@
-extern "C" {
 #include "unity.h"
-}
 
+#include "utils.hpp"
 #include "keypad.hpp"
 #include "config.hpp"
-#include "utils.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -67,9 +65,7 @@ namespace keypad_test {
                 .Speed = GPIO_SPEED_FREQ_LOW,
             };
             HAL_GPIO_Init(config::KEYPAD_COLUMN_PINS[col].port, &cfg);
-            HAL_GPIO_WritePin(config::KEYPAD_COLUMN_PINS[col].port,
-                              config::KEYPAD_COLUMN_PINS[col].pin,
-                              GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(config::KEYPAD_COLUMN_PINS[col].port, config::KEYPAD_COLUMN_PINS[col].pin, GPIO_PIN_RESET);
         }
 
         // Release the column pin back to input pull-up.
@@ -117,20 +113,22 @@ namespace keypad_test {
 
     void test_init() {
         const pad::config_t cfg = {
-            .row_port  = config::KEYPAD_ROW_PINS[0].port,
-            .col_port  = config::KEYPAD_COLUMN_PINS[0].port,
-            .row_pins  = {
-                config::KEYPAD_ROW_PINS[0].pin,
-                config::KEYPAD_ROW_PINS[1].pin,
-                config::KEYPAD_ROW_PINS[2].pin,
-                config::KEYPAD_ROW_PINS[3].pin,
-            },
-            .col_pins  = {
-                config::KEYPAD_COLUMN_PINS[0].pin,
-                config::KEYPAD_COLUMN_PINS[1].pin,
-                config::KEYPAD_COLUMN_PINS[2].pin,
-                config::KEYPAD_COLUMN_PINS[3].pin,
-            },
+            .row_port = config::KEYPAD_ROW_PINS[0].port,
+            .col_port = config::KEYPAD_COLUMN_PINS[0].port,
+            .row_pins =
+                {
+                    config::KEYPAD_ROW_PINS[0].pin,
+                    config::KEYPAD_ROW_PINS[1].pin,
+                    config::KEYPAD_ROW_PINS[2].pin,
+                    config::KEYPAD_ROW_PINS[3].pin,
+                },
+            .col_pins =
+                {
+                    config::KEYPAD_COLUMN_PINS[0].pin,
+                    config::KEYPAD_COLUMN_PINS[1].pin,
+                    config::KEYPAD_COLUMN_PINS[2].pin,
+                    config::KEYPAD_COLUMN_PINS[3].pin,
+                },
         };
 
         auto ret = s_keypad.init(cfg);
@@ -313,7 +311,7 @@ namespace keypad_test {
     // Runner
     // -------------------------------------------------------------------------
 
-    void test_all() {
+    void all() {
         RUN_TEST(test_uninit_guards);
         RUN_TEST(test_init);
 

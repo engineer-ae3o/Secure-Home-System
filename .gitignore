@@ -9,6 +9,5 @@ build/
 .vscode/
 .cache/
 .clangd
-analysis.txt
 CMakeFiles/
 CMakeCache.txt

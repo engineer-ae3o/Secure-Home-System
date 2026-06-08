@@ -1,6 +1,4 @@
-extern "C" {
 #include "unity.h"
-}
 
 #include "utils.hpp"
 #include "hd44780.hpp"
@@ -106,7 +104,7 @@ namespace lcd_test {
     // Sequence — self-contained with its own init/deinit wrapping
     // -------------------------------------------------------------------------
 
-    void all_supplemental() {
+    void all() {
         // Pre: init
         auto ret = lcd::init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);

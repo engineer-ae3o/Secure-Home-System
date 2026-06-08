@@ -227,12 +227,17 @@ extern "C" {
         return 1;
     }
 
+    void put_char(char c) {
+        (void)c;
+    }
+
     int _write(int fd, const void* buf, size_t count) {
         (void)fd;
-        (void)buf;
-        (void)count;
-        errno = EBADF;
-        return -1;
+        const auto* str = static_cast<const char*>(buf);
+        for (size_t i{}; i < count; i++) {
+            put_char(str[i]);
+        }
+        return 0;
     }
 
     caddr_t _sbrk(ptrdiff_t increment) {

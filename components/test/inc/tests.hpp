@@ -10,9 +10,10 @@
 
 namespace tests {
 
-    inline StaticTask_t       test_task_tcb{};
-    inline constexpr uint32_t TESTS_TASK_STACK_BYTES{2048};
-    inline std::array<StackType_t, utils::bytes_to_words(TESTS_TASK_STACK_BYTES)> test_task_stack{};
+    inline StaticTask_t                                                     task_tcb{};
+    inline constexpr uint32_t                                               TASK_PRIORITY{configMAX_PRIORITIES - 1};
+    inline constexpr uint32_t                                               TASK_STACK_BYTES{2048};
+    inline std::array<StackType_t, utils::bytes_to_words(TASK_STACK_BYTES)> task_stack{};
 
     void tests(void* arg);
 

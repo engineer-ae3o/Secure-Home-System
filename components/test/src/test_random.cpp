@@ -1,14 +1,12 @@
-extern "C" {
 #include "unity.h"
-}
 
-#include "random.hpp"
 #include "file.hpp"
 #include "utils.hpp"
+#include "random.hpp"
 
 #include <array>
-#include <algorithm>
 #include <cstring>
+#include <algorithm>
 
 // NOTE: rnd::init() calls file::get_boot_cycle_count() internally.
 //       file::init() MUST be called before rnd::init(), and file::deinit()
@@ -98,7 +96,9 @@ namespace rnd_test {
         auto                    ret = rnd::get_random_numbers(buf);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        const bool all_zero = std::all_of(buf.begin(), buf.end(), [](uint8_t b) { return b == 0; });
+        const bool all_zero = std::all_of(buf.begin(), buf.end(), [](uint8_t b) {
+            return b == 0;
+        });
         TEST_ASSERT_FALSE(all_zero);
     }
 
@@ -108,7 +108,9 @@ namespace rnd_test {
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // All 32 bytes being the same value is astronomically unlikely from a CSPRNG
-        const bool all_same = std::all_of(buf.begin(), buf.end(), [&](uint8_t b) { return b == buf[0]; });
+        const bool all_same = std::all_of(buf.begin(), buf.end(), [&](uint8_t b) {
+            return b == buf[0];
+        });
         TEST_ASSERT_FALSE(all_same);
     }
 
@@ -175,7 +177,7 @@ namespace rnd_test {
     // Runner — manages file + rnd lifecycle
     // -------------------------------------------------------------------------
 
-    void test_all() {
+    void all() {
         // file must be up before rnd::init() since rnd reads the boot cycle count
         auto ret = file::init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);

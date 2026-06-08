@@ -1,10 +1,8 @@
-extern "C" {
 #include "unity.h"
-}
 
+#include "utils.hpp"
 #include "switch.hpp"
 #include "config.hpp"
-#include "utils.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -123,7 +121,7 @@ namespace switch_test {
 
         // Block waiting for the task notification. Use xTaskNotifyWait since
         // irq_handler uses eSetBits — ulTaskNotifyTake would lose the value.
-        uint32_t  notification_value{};
+        uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
         // Restore pin and re-enable NVIC before asserting so state is clean
@@ -144,7 +142,7 @@ namespace switch_test {
         s_reed.irq_handler();
         s_reed.irq_handler();
 
-        uint32_t  notification_value{};
+        uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
         restore_pin_as_input(config::REED_SWITCH.port, config::REED_SWITCH.pin);
@@ -159,7 +157,7 @@ namespace switch_test {
         // Do NOT call irq_handler(). Waiting for a notification should time out.
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 
-        uint32_t  notification_value{};
+        uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
@@ -178,7 +176,7 @@ namespace switch_test {
         drive_pin(config::TAMPER_SWITCH.port, config::TAMPER_SWITCH.pin, GPIO_PIN_SET);
         s_limit.irq_handler();
 
-        uint32_t  notification_value{};
+        uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
         restore_pin_as_input(config::TAMPER_SWITCH.port, config::TAMPER_SWITCH.pin);
@@ -207,21 +205,21 @@ namespace switch_test {
         // The task's notification value should have both bits set.
         HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 
-        drive_pin(config::REED_SWITCH.port,   config::REED_SWITCH.pin,   GPIO_PIN_SET);
+        drive_pin(config::REED_SWITCH.port, config::REED_SWITCH.pin, GPIO_PIN_SET);
         drive_pin(config::TAMPER_SWITCH.port, config::TAMPER_SWITCH.pin, GPIO_PIN_SET);
 
         s_reed.irq_handler();
         s_limit.irq_handler();
 
-        uint32_t  notification_value{};
+        uint32_t   notification_value{};
         BaseType_t result = xTaskNotifyWait(0, 0xFFFFFFFFUL, &notification_value, pdMS_TO_TICKS(NOTIFY_TIMEOUT_MS));
 
-        restore_pin_as_input(config::REED_SWITCH.port,   config::REED_SWITCH.pin);
+        restore_pin_as_input(config::REED_SWITCH.port, config::REED_SWITCH.pin);
         restore_pin_as_input(config::TAMPER_SWITCH.port, config::TAMPER_SWITCH.pin);
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
-        TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::REED),  notification_value);
+        TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::REED), notification_value);
         TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::LIMIT), notification_value);
     }
 
@@ -251,7 +249,7 @@ namespace switch_test {
     // Runner
     // -------------------------------------------------------------------------
 
-    void test_all() {
+    void all() {
         RUN_TEST(test_uninit_guards);
 
         RUN_TEST(test_reed_init);

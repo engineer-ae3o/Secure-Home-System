@@ -333,6 +333,9 @@ namespace rnd {
             vTaskDelay(pdMS_TO_TICKS(1500));
         }
 
+        // Create the mutex
+        s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
+
         // FInally, initialize the ASCON random state and load the seed from flash storage
         // ASCON's random API uses inconsistent error codes. Can't be helped.
         auto rc = ascon_random_init(&s_rng_state);
@@ -355,20 +358,18 @@ namespace rnd {
                                                 entropy_task_stack.data(),
                                                 &entropy_task_tcb);
 
-        // Create the mutex
-        s_task_mutex     = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
         s_is_initialized = true;
 
         return utils::error_t::NONE;
     }
 
     utils::error_t deinit() {
+        if (!s_is_initialized) {
+            return utils::error_t::ERR_INVALID_STATE;
+        }
+
         {
             [[maybe_unused]] mutex_t mutex;
-
-            if (!s_is_initialized) {
-                return utils::error_t::ERR_INVALID_STATE;
-            }
 
             TRY_HAL(HAL_ADC_Stop_DMA(&s_adc_handle));
             TRY_HAL(HAL_DMA_DeInit(&s_dma_handle));
@@ -388,11 +389,12 @@ namespace rnd {
     }
 
     utils::error_t get_random_numbers(std::span<uint8_t> buffer) {
-        [[maybe_unused]] mutex_t mutex;
-
         if (!s_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
+
+        [[maybe_unused]] mutex_t mutex;
+
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());
 
         return utils::error_t::NONE;

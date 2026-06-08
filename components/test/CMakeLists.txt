@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 4.1)
 if (BUILD_TESTS)
 
 add_library(tests STATIC
+    src/test_file.cpp
     src/test_switch.cpp
     src/test_keypad.cpp
-    src/test_file.cpp
+    src/test_random.cpp
+    src/test_sim800l.cpp
     src/test_hd44780.cpp
     src/tests.cpp
 )

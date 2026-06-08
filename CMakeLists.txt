@@ -61,7 +61,7 @@ if (BUILD_TESTS)
 endif()
 
 # Create executable
-add_executable(${CMAKE_PROJECT_NAME} main/main.cpp startup_stm32f103xb.s)
+add_executable(${CMAKE_PROJECT_NAME} main.cpp startup_stm32f103xb.s)
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB USE_HAL_DRIVER)
 
@@ -109,10 +109,12 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -fno-threadsafe-statics
 )
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
-
 if (BUILD_TESTS)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE unity tests)
+    # Order of dependencies being linked in matters
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers ascon_static f103-hal freertos littlefs unity)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC BUILD_TESTS=1)
+else ()
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers ascon_static f103-hal freertos littlefs)
 endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
@@ -136,24 +138,40 @@ add_custom_target(build
 find_program(CPPCHECK cppcheck)
 find_program(OPENOCD openocd)
 
-if (CPPCHECK)
+if(CPPCHECK)
+    message(STATUS "Cppcheck found: ${CPPCHECK}")
+    
     add_custom_target(cppcheck
+        COMMAND mkdir -p .cppcheck
         COMMAND ${CPPCHECK} --enable=all
-                            --inconclusive
-                            --output-file=${CMAKE_SOURCE_DIR}/analysis.txt
-                            --std=gnu++23
-                            --project=${CMAKE_BINARY_DIR}/compile_commands.json
-                            --suppress=missingIncludeSystem
-                            --inline-suppr
-                            --file-filter=main/*.cpp
-                            --file-filter=components/drivers/src/*.cpp
-                            --file-filter=components/drivers/inc/*.hpp
-                            -D__GNUC__=15
-                            -D__GNUC_MINOR__=2
-                            -D__ARM_ARCH_PROFILE='M'
-        COMMENT "Running static analysis"
+            --cppcheck-build-dir=${CMAKE_BINARY_DIR}/.cppcheck
+            --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt
+            --error-exitcode=1
+            --check-level=exhaustive
+            --output-file=${CMAKE_BINARY_DIR}/analysis.txt
+            -DSTM32F103xB -D__GNUC__ -D__ARM_ARCH_7M__ -D__ARM_ARCH_PROFILE=77
+            -I ${CMAKE_SOURCE_DIR}/components/drivers/inc/
+            -I ${CMAKE_SOURCE_DIR}/components/test/inc/
+            -I ${CMAKE_SOURCE_DIR}/components/Unity/src/
+            -I ${CMAKE_SOURCE_DIR}/components/freertos/portable/GCC/ARM_CM3/
+            -I ${CMAKE_SOURCE_DIR}/components/f103-hal/Inc/
+            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/m-profile/
+            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/
+            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Include/
+            -I ${CMAKE_SOURCE_DIR}/components/freertos/include/
+            -I ${CMAKE_SOURCE_DIR}/components/ascon-suite/src/
+            -I ${CMAKE_SOURCE_DIR}/components/littlefs/
+            -I ${CMAKE_SOURCE_DIR}/components/etl/
+            ${CMAKE_SOURCE_DIR}/main.cpp
+            ${CMAKE_SOURCE_DIR}/components/drivers/src/
+            ${CMAKE_SOURCE_DIR}/components/test/src/
+        COMMENT "Running static analysis..."
+        VERBATIM
     )
+else()
+    message(WARNING "Cppcheck not found. Static analysis will not be available.")
 endif()
+
 
 if (OPENOCD)
     # Flash via openocd

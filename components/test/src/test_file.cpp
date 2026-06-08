@@ -1,13 +1,11 @@
-extern "C" {
 #include "unity.h"
-}
 
 #include "file.hpp"
 #include "utils.hpp"
 
 #include <array>
-#include <string_view>
 #include <cstring>
+#include <string_view>
 
 namespace file_test {
 
@@ -17,8 +15,8 @@ namespace file_test {
 
         static_assert(PAYLOAD.size() == 16);
 
-        constexpr uint32_t HALF_OFFSET  = PAYLOAD.size() / 2; // 8
-        constexpr uint32_t LAST_OFFSET  = PAYLOAD.size() - 1; // 15
+        constexpr uint32_t HALF_OFFSET = PAYLOAD.size() / 2; // 8
+        constexpr uint32_t LAST_OFFSET = PAYLOAD.size() - 1; // 15
     } // namespace
 
     // -------------------------------------------------------------------------
@@ -27,17 +25,14 @@ namespace file_test {
 
     void test_write_at_offset() {
         // Write full payload first so the file has known content
-        auto ret = file::write(file::name_t::ASCON_SEED,
-                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Overwrite the second half only
         constexpr std::string_view PATCH = "QRSTUVWX";
         static_assert(PATCH.size() == HALF_OFFSET);
 
-        ret = file::write(file::name_t::ASCON_SEED,
-                          {reinterpret_cast<const uint8_t*>(PATCH.data()), PATCH.size()},
-                          HALF_OFFSET);
+        ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PATCH.data()), PATCH.size()}, HALF_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read back full content and verify the first half is untouched,
@@ -49,14 +44,13 @@ namespace file_test {
         const auto first_half  = std::string_view{reinterpret_cast<const char*>(buf.data()), HALF_OFFSET};
         const auto second_half = std::string_view{reinterpret_cast<const char*>(buf.data() + HALF_OFFSET), HALF_OFFSET};
 
-        TEST_ASSERT_TRUE(first_half  == PAYLOAD.substr(0, HALF_OFFSET));
+        TEST_ASSERT_TRUE(first_half == PAYLOAD.substr(0, HALF_OFFSET));
         TEST_ASSERT_TRUE(second_half == PATCH);
     }
 
     void test_read_at_offset() {
         // Write known payload
-        auto ret = file::write(file::name_t::PASSWORD,
-                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = file::write(file::name_t::PASSWORD, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read only the second half via offset
@@ -70,15 +64,12 @@ namespace file_test {
 
     void test_read_write_last_byte_offset() {
         // Write full payload
-        auto ret = file::write(file::name_t::PNUMBERS,
-                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = file::write(file::name_t::PNUMBERS, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Overwrite the single last byte
         const uint8_t last_byte = 0xFFU;
-        ret = file::write(file::name_t::PNUMBERS,
-                          {&last_byte, 1},
-                          LAST_OFFSET);
+        ret                     = file::write(file::name_t::PNUMBERS, {&last_byte, 1}, LAST_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read it back
@@ -94,8 +85,7 @@ namespace file_test {
 
     void test_read_undersized_buffer() {
         // Write a full payload
-        auto ret = file::write(file::name_t::ASCON_SEED,
-                               {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read with a buffer smaller than what was written — LittleFS will
@@ -144,7 +134,7 @@ namespace file_test {
     //            init/deinit wrapping
     // -------------------------------------------------------------------------
 
-    void test_all_supplemental() {
+    void all() {
         // Pre: init
         auto ret = file::init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);

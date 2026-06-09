@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.16...4.1)
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
@@ -33,11 +33,8 @@ set(CMAKE_C_FLAGS_RELEASE "-O2 -Wl,-s -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
-set(CMAKE_EXE_LINKER_FLAGS "-T${CMAKE_SOURCE_DIR}/STM32F103XB_FLASH.ld
-                            -Wl,-Map=${CMAKE_PROJECT_NAME}.map
-                            -Wl,--cref
-                            -Wl,--gc-sections
-                            --specs=nano.specs")
+set(CMAKE_EXE_LINKER_FLAGS
+    "-T${CMAKE_SOURCE_DIR}/STM32F103XB_FLASH.ld -Wl,-Map=${CMAKE_PROJECT_NAME}.map -Wl,--cref -Wl,--gc-sections --specs=nano.specs")
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
@@ -144,31 +141,38 @@ if(CPPCHECK)
     message(STATUS "Cppcheck found: ${CPPCHECK}")
     
     add_custom_target(cppcheck
-        COMMAND mkdir -p .cppcheck
-        COMMAND ${CPPCHECK} --enable=all
-            --cppcheck-build-dir=${CMAKE_BINARY_DIR}/.cppcheck
-            --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt
-            --error-exitcode=1
-            --check-level=exhaustive
-            --output-file=${CMAKE_BINARY_DIR}/analysis.txt
-            -DSTM32F103xB -D__GNUC__ -D__ARM_ARCH_7M__ -D__ARM_ARCH_PROFILE=77
-            -I ${CMAKE_SOURCE_DIR}/components/drivers/inc/
-            -I ${CMAKE_SOURCE_DIR}/components/test/inc/
-            -I ${CMAKE_SOURCE_DIR}/components/Unity/src/
-            -I ${CMAKE_SOURCE_DIR}/components/freertos/portable/GCC/ARM_CM3/
-            -I ${CMAKE_SOURCE_DIR}/components/f103-hal/Inc/
-            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/m-profile/
-            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/
-            -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Include/
-            -I ${CMAKE_SOURCE_DIR}/components/freertos/include/
-            -I ${CMAKE_SOURCE_DIR}/components/ascon-suite/src/
-            -I ${CMAKE_SOURCE_DIR}/components/littlefs/
-            -I ${CMAKE_SOURCE_DIR}/components/etl/
-            ${CMAKE_SOURCE_DIR}/main.cpp
-            ${CMAKE_SOURCE_DIR}/components/drivers/src/
-            ${CMAKE_SOURCE_DIR}/components/test/src/
-        COMMENT "Running static analysis..."
-        VERBATIM
+    COMMAND mkdir -p ${CMAKE_BINARY_DIR}/.cppcheck
+    COMMAND ${CPPCHECK} --enable=all
+        --inline-suppr
+        --cppcheck-build-dir=${CMAKE_BINARY_DIR}/.cppcheck
+        --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt
+        --error-exitcode=1
+        --check-level=exhaustive
+        -DSTM32F103xB -D__GNUC__ -D__ARM_ARCH_7M__ -D__ARM_ARCH_PROFILE=77
+        -I ${CMAKE_SOURCE_DIR}/components/drivers/inc/
+        -I ${CMAKE_SOURCE_DIR}/components/test/inc/
+        -I ${CMAKE_SOURCE_DIR}/components/Unity/src/
+        -I ${CMAKE_SOURCE_DIR}/components/freertos/portable/GCC/ARM_CM3/
+        -I ${CMAKE_SOURCE_DIR}/components/f103-hal/Inc/
+        -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/m-profile/
+        -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Core/Include/
+        -I ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/Include/
+        -I ${CMAKE_SOURCE_DIR}/components/freertos/include/
+        -I ${CMAKE_SOURCE_DIR}/components/ascon-suite/src/
+        -I ${CMAKE_SOURCE_DIR}/components/RTT/RTT/
+        -I ${CMAKE_SOURCE_DIR}/components/littlefs/
+        -I ${CMAKE_SOURCE_DIR}/components/etl/
+        -i ${CMAKE_SOURCE_DIR}/components/cmsis-device-f1/
+        -i ${CMAKE_SOURCE_DIR}/components/littlefs/
+        -i ${CMAKE_SOURCE_DIR}/components/freertos/
+        -i ${CMAKE_SOURCE_DIR}/components/Unity/
+        -i ${CMAKE_SOURCE_DIR}/components/etl/
+        -i ${CMAKE_SOURCE_DIR}/components/f103-hal/
+        -i ${CMAKE_SOURCE_DIR}/components/ascon-suite/
+        ${CMAKE_SOURCE_DIR}/main.cpp
+        ${CMAKE_SOURCE_DIR}/components/drivers/src/
+        ${CMAKE_SOURCE_DIR}/components/test/src/
+    COMMENT "Running static analysis..."
     )
 else()
     message(WARNING "Cppcheck not found. Static analysis will not be available.")

@@ -14,21 +14,37 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build gcc-arm-none-eabi binutils-arm-none-eabi clang-format cppcheck
+          sudo apt-get install -y ninja-build gcc-arm-none-eabi binutils-arm-none-eabi cppcheck
+          cppcheck --version
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+          sudo apt-get install -y clang-format-21
+          wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | sudo apt-key add -
+          echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/kitware.list
+          sudo apt-get update
+          sudo apt-get install -y cmake
 
       - name: Check formatting
         run: |
-          find . -path ./build -prune -o  -path ./components/freertos -prune -o -path ./components/f103-hal -prune -o
-          -path ./components/littlefs -prune -o -path ./components/ascon-suite -prune -o -path ./components/cmsis-device-f1
-          -prune -o -path ./components/etl -prune -o -path ./components/Unity -prune -o -path ./components/RTT -prune -o
-          \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -print | xargs clang-format --dry-run --Werror
+            find . \
+            -path ./build -prune -o \
+            -path ./components/freertos -prune -o \
+            -path ./components/f103-hal -prune -o \
+            -path ./components/littlefs -prune -o \
+            -path ./components/ascon-suite -prune -o \
+            -path ./components/cmsis-device-f1 -prune -o \
+            -path ./components/etl -prune -o \
+            -path ./components/Unity -prune -o \
+            -path ./components/RTT -prune -o \
+            \( -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" \) -print | xargs clang-format-21 --dry-run --Werror
 
       - name: Configure
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=TRUE -G Ninja
 
       - name: Build
-        run: cmake --build build --target build
-      
+        run: cmake --build build
+
       - name: Static analysis
         run: cmake --build build --target cppcheck

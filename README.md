@@ -232,9 +232,9 @@ For the keypad specifically, the target column pin must be reconfigured as outpu
 
 ## External Dependencies
 
-- **ST HAL**: `stm32f1xx_hal` (used directly)
-- **FreeRTOS**: task, queue, timer, semaphore APIs
-- **LittleFS**: filesystem for internal flash
-- **ASCON**: Ascon-AEAD128 cipher, Ascon-Hash256 and Ascon's CSPRNG
-- **ETL (Embedded Template Library)**: `etl::string` used in the GSM driver for building AT command strings without heap allocation
-- **Unity**: test framework (on-device)
+- **ST HAL:** `stm32f1xx_hal`
+- **FreeRTOS:** task, queue, timer, semaphore APIs
+- **LittleFS:** filesystem for internal flash
+- **ASCON:** Ascon-AEAD128 cipher, Ascon-Hash256 and Ascon's CSPRNG
+- **ETL (Embedded Template Library):** `etl::string` used in the GSM driver for building AT command strings without heap allocation
+- **Unity:** test framework (on-target)

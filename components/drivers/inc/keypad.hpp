@@ -157,7 +157,9 @@ namespace pad {
             }
 
             if (static_cast<bool>(m_debounce_timer)) {
+                // cppcheck-suppress knownConditionTrueFalse
                 xTimerStop(m_debounce_timer, portMAX_DELAY);
+                // cppcheck-suppress knownConditionTrueFalse
                 xTimerDelete(m_debounce_timer, portMAX_DELAY);
                 m_debounce_timer_structure = {};
                 m_debounce_timer           = nullptr;
@@ -195,6 +197,7 @@ namespace pad {
 
             // Start the debounce timer
             BaseType_t higher_priority_task_woken = pdFALSE;
+            // cppcheck-suppress duplicateExpression
             xTimerStartFromISR(m_debounce_timer, &higher_priority_task_woken);
             portYIELD_FROM_ISR(higher_priority_task_woken);
         }

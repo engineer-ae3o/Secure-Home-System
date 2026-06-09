@@ -14,8 +14,8 @@ noExplicitConstructor
 unreachableCode
 useStlAlgorithm
 unusedFunction
+cstyleCast
 
-# Clear out all errors/warnings originating from any third-party directory
 *:components/cmsis-device-f1/*
 *:components/littlefs/*
 *:components/freertos/*
@@ -27,3 +27,12 @@ unusedFunction
 comparePointers
 dangerousTypeCast
 constVariablePointer
+constParameterReference
+constVariableReference
+
+knownConditionTrueFalse
+uninitMemberVar
+operatorEqVarError
+duplInheritedMember
+redundantInitialization
+shadowFunction

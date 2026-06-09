@@ -1530,7 +1530,7 @@ extern "C" {
         reg_value = SCB->AIRCR;                                                     /* read old register configuration    */
         reg_value &= ~((uint32_t)(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_PRIGROUP_Msk)); /* clear bits to change               */
         reg_value  = (reg_value | ((uint32_t)0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
-                      (PriorityGroupTmp << SCB_AIRCR_PRIGROUP_Pos)); /* Insert write key and priority group */
+                     (PriorityGroupTmp << SCB_AIRCR_PRIGROUP_Pos)); /* Insert write key and priority group */
         SCB->AIRCR = reg_value;
     }
 

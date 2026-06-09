@@ -301,7 +301,7 @@ static HAL_StatusTypeDef UART_Transmit_IT(UART_HandleTypeDef* huart);
 static HAL_StatusTypeDef UART_EndTransmit_IT(UART_HandleTypeDef* huart);
 static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef* huart);
 static HAL_StatusTypeDef
-UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+            UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef* huart, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
 static void UART_SetConfig(UART_HandleTypeDef* huart);
 
 /**

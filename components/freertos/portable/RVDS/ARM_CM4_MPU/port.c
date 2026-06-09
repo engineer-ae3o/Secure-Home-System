@@ -1071,7 +1071,7 @@ __asm void xPortPendSVHandler(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    ldr r3, = pxCurrentTCB /* r3 = &( pxCurrentTCB ). */
+    ldr             r3, = pxCurrentTCB /* r3 = &( pxCurrentTCB ). */
                 ldr r2,
         [r3] /* r2 = pxCurrentTCB. */
         ldr r1,
@@ -1121,7 +1121,7 @@ __asm void xPortPendSVHandler(void) {
 # 0 msr basepri, r0
 
         /*------------ Program MPU. ------------ */
-        ldr r3, = pxCurrentTCB /* r3 = &( pxCurrentTCB ). */
+        ldr             r3, = pxCurrentTCB /* r3 = &( pxCurrentTCB ). */
                     ldr r2,
         [r3] /* r2 = pxCurrentTCB. */
         add r2,
@@ -1176,7 +1176,7 @@ __asm void xPortPendSVHandler(void) {
 
         ldmdb r1 !,
         {r0, r4 - r11} /* r0 contains PSP after the hardware had saved context. r4-r11 contain hardware saved context. */
-    msr psp,
+    msr          psp,
         r0 stmia r0 !,
         {r4 - r11} /* Copy the hardware saved context on the task stack. */
     ldmdb r1 !,
@@ -1241,7 +1241,7 @@ __asm void vPortEnableVFP(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    ldr.w r0, = 0xE000ED88 /* The FPU enable bits are in the CPACR. */
+    ldr.w         r0, = 0xE000ED88 /* The FPU enable bits are in the CPACR. */
               ldr r1,
           [r0]
 

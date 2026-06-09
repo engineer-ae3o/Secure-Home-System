@@ -45,7 +45,7 @@ The clock tree is configured manually in `syscalls.cpp`.
 **APB1**: 36 MHz (≤ 36 MHz limit)  
 **APB2**: 72 MHz
 
-Flash is configured for 2 wait states (`FLASH_ACR_LATENCY_1` — the macro naming is ST's fault) with the prefetch buffer enabled before the PLL is brought up.
+Flash is configured for 2 wait states (`FLASH_ACR_LATENCY_1`: the macro naming is ST's fault) with the prefetch buffer enabled before the PLL is brought up.
 
 ### HAL Tick vs FreeRTOS Tick
 
@@ -65,7 +65,7 @@ Beyond clock init and HAL tick redirection, this file covers:
 - **No heap**: Dynamic allocation is not available. Everything is statically allocated.
 - **SCB hardening**: `DIV_0_TRP` and `UNALIGN_TRP` are enabled at startup so divide-by-zero and unaligned accesses fault immediately rather than silently producing garbage.
 
-### `file.cpp` — LittleFS Abstraction
+### `file.cpp`: LittleFS Abstraction
 
 Files are stored on a 32 KB region of internal flash (32 × 1 KB blocks, 5000 erase cycles). LittleFS handles wear leveling.
 
@@ -78,13 +78,13 @@ Four logical files exist:
 | `PNUMBERS` | `cqwogto` | ASCON-encrypted phone numbers |
 | `ASCON_SEED` | `sgscjhw` | CSPRNG seed state |
 
-File names in flash are intentionally obfuscated. This is weak protection but adds noise against casual flash dumps — the actual sensitive data is cryptographically protected regardless.
+File names in flash are intentionally obfuscated. This is weak protection but adds noise against casual flash dumps: the actual sensitive data is cryptographically protected regardless.
 
 The `COUNTER` file is opened, read, incremented and closed at bootup. The `PNUMBERS`, `ASCON_SEED` and `PASSWORD` files stay open for the lifetime of the system. Write caching is per-file via LittleFS's `lfs_file_config` buffer mechanism; `sync()` forces a commit to flash.
 
 Flash programming on STM32F1 is halfword (16-bit) granular. The LittleFS `prog` callback writes in 2-byte units, unlocking and relocking the flash controller around each page program sequence.
 
-### `random.cpp` — Entropy and CSPRNG
+### `random.cpp`: Entropy and CSPRNG
 
 The RNG is an ASCON-based CSPRNG (`ascon_random_state_t`) seeded from four mixed sources:
 
@@ -108,9 +108,9 @@ A low-priority FreeRTOS task (`entropy_task`) wakes every 60s, accumulates 32 by
 
 The seed is persisted on every 60s cycle so that if power is lost, the next boot starts from a non-zero seed with meaningful prior state.
 
-### `sim800l.cpp` — GSM Driver
+### `sim800l.cpp`: GSM Driver
 
-The SIM800L communicates over USART1 at 57600 baud with DMA on both TX (DMA1 CH4) and RX (DMA1 CH5). Reception uses `HAL_UARTEx_ReceiveToIdle_DMA()` — the UART idle line interrupt fires when the module stops transmitting, triggering `HAL_UARTEx_RxEventCallback`. The callback stores the received byte count and sends a task notification to the calling task, which blocks on `ulTaskNotifyTake()` with a configurable timeout.
+The SIM800L communicates over USART1 at 57600 baud with DMA on both TX (DMA1 CH4) and RX (DMA1 CH5). Reception uses `HAL_UARTEx_ReceiveToIdle_DMA()`: the UART idle line interrupt fires when the module stops transmitting, triggering `HAL_UARTEx_RxEventCallback`. The callback stores the received byte count and sends a task notification to the calling task, which blocks on `ulTaskNotifyTake()` with a configurable timeout.
 
 A `cleanup_t` RAII guard zeros `s_rx_idle_line_size` and `s_calling_task_handle` on every transaction exit, preventing stale state from a timed-out transaction leaking into the next one.
 
@@ -124,7 +124,7 @@ AT command handling is table-driven. The response from the GSM module when the `
 
 `get_imsi()` returns `std::expected<std::array<char, 16>, error_t>`. The IMSI response format is `\r\n{15 digits}\r\n\r\nOK\r\n` (25 bytes minimum); parsing finds the first `\r\n` and copies the 15 characters that follow.
 
-### `hd44780.cpp` — LCD Driver
+### `hd44780.cpp`: LCD Driver
 
 The HD44780 is wired via a PCF8574 I2C backpack at address `0x27`. Communication is 4-bit mode. The backpack byte layout is `[D7 D6 D5 D4 | BL | EN | RW | RS]`.
 
@@ -134,7 +134,7 @@ Initialization follows the HD44780 datasheet power-on sequence with explicit del
 
 `println()` accepts a `pad_to_whitespace` parameter (default true) that pads the remainder of the 16-character line with spaces. This prevents ghost characters from a previous longer string persisting on the display.
 
-### `keypad.hpp` — 4×4 Matrix Keypad (Header-Only Template)
+### `keypad.hpp`: 4×4 Matrix Keypad (Header-Only Template)
 
 `keypad_t<N>` is a header-only template parameterized by queue length. Rows are driven LOW by default. Any key press pulls a column LOW, triggering the falling-edge EXTI interrupt on that column pin.
 
@@ -150,7 +150,7 @@ The debounce timer callback (`debounce_timer_cb`) does the actual key identifica
 4. Restores all rows to LOW
 5. Clears pending EXTI bits again and unsets the `EXTI->IMR` mask
 
-### `switch.hpp` — NC Switch Detection (Header-Only Template)
+### `switch.hpp`: NC Switch Detection (Header-Only Template)
 
 `switch_t<type>` handles both the reed switch and tamper switch. NC switches are wired with pull-ups; opening the switch (intrusion) drives the pin HIGH, triggering the rising-edge EXTI interrupt.
 
@@ -224,7 +224,7 @@ Tests use the Unity test framework running on device (not hosted). Each module's
 4. Block on `xTaskNotifyWait()` or `xQueueReceive()` with a timeout
 5. Assert received value, restore GPIO, re-enable NVIC
 
-For the keypad specifically, the target column pin must be reconfigured as output push-pull and driven LOW before calling `irq_handler()` — the debounce timer callback reads the actual IDR register during scanning, so the GPIO state must be physically correct at callback execution time (~50 ms after the trigger).
+For the keypad specifically, the target column pin must be reconfigured as output push-pull and driven LOW before calling `irq_handler()`: the debounce timer callback reads the actual IDR register during scanning, so the GPIO state must be physically correct at callback execution time (~50 ms after the trigger).
 
 **Statistical RNG tests** use 32–64 byte sample sizes. The probability of a false failure on any assertion (all-zero output, all-identical bytes, byte diversity threshold) is below 2⁻²⁵⁶.
 
@@ -232,9 +232,9 @@ For the keypad specifically, the target column pin must be reconfigured as outpu
 
 ## External Dependencies
 
-- **ST HAL** — `stm32f1xx_hal` (used directly)
-- **FreeRTOS** — task, queue, timer, semaphore APIs
-- **LittleFS** — filesystem for internal flash
-- **ASCON** — Ascon-AEAD128 cipher, Ascon-Hash256 and Ascon's CSPRNG
-- **ETL (Embedded Template Library)** — `etl::string` used in the GSM driver for building AT command strings without heap allocation
-- **Unity** — test framework (on-device)
+- **ST HAL**: `stm32f1xx_hal` (used directly)
+- **FreeRTOS**: task, queue, timer, semaphore APIs
+- **LittleFS**: filesystem for internal flash
+- **ASCON**: Ascon-AEAD128 cipher, Ascon-Hash256 and Ascon's CSPRNG
+- **ETL (Embedded Template Library)**: `etl::string` used in the GSM driver for building AT command strings without heap allocation
+- **Unity**: test framework (on-device)

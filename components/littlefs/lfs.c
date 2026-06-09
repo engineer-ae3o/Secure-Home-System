@@ -2011,18 +2011,18 @@ static int lfs_dir_splittingcompact(
         while (end - split > 1) {
             lfs_size_t size = 0;
             int        err  = lfs_dir_traverse(lfs,
-                                               source,
-                                               0,
-                                               0xffffffff,
-                                               attrs,
-                                               attrcount,
-                                               LFS_MKTAG(0x400, 0x3ff, 0),
-                                               LFS_MKTAG(LFS_TYPE_NAME, 0, 0),
-                                               split,
-                                               end,
-                                               -split,
-                                               lfs_dir_commit_size,
-                                               &size);
+                                       source,
+                                       0,
+                                       0xffffffff,
+                                       attrs,
+                                       attrcount,
+                                       LFS_MKTAG(0x400, 0x3ff, 0),
+                                       LFS_MKTAG(LFS_TYPE_NAME, 0, 0),
+                                       split,
+                                       end,
+                                       -split,
+                                       lfs_dir_commit_size,
+                                       &size);
             if (err) {
                 return err;
             }

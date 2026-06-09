@@ -104,10 +104,7 @@ namespace nc {
 
             // Send notification to calling task
             BaseType_t higher_priority_task_woken{};
-            xTaskNotifyFromISR(m_config.calling_task_handle,
-                               std::to_underlying(type),
-                               eSetBits,
-                               &higher_priority_task_woken);
+            xTaskNotifyFromISR(m_config.calling_task_handle, std::to_underlying(type), eSetBits, &higher_priority_task_woken);
             portYIELD_FROM_ISR(higher_priority_task_woken);
         }
     };

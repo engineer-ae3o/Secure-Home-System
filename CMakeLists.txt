@@ -113,10 +113,10 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 
 if (BUILD_TESTS)
     # Order of dependencies being linked in matters
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers rtt ascon_static f103-hal freertos littlefs unity rtt)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers rtt ascon_static f103-hal freertos littlefs unity)
     target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC BUILD_TESTS=1)
 else ()
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers rtt ascon_static f103-hal freertos littlefs rtt)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers rtt ascon_static f103-hal freertos littlefs)
 endif()
 
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES

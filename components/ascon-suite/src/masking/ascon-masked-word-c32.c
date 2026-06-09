@@ -664,8 +664,8 @@ void ascon_masked_word_x4_store(uint8_t* data, const ascon_masked_word_t* word) 
     uint32_t low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
     uint32_t high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^
                      ascon_mask32_unrotate_share3_0(word->W[6]);
-    uint32_t low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
-                     ascon_mask32_unrotate_share3_0(word->W[7]);
+    uint32_t low2 = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
+                    ascon_mask32_unrotate_share3_0(word->W[7]);
     uint32_t high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     uint32_t low3  = (high2 & 0x0000FFFFU) | (low2 << 16);
     ascon_combine(high1);
@@ -687,8 +687,8 @@ void ascon_masked_word_x4_store_partial(uint8_t* data, unsigned size, const asco
     low1  = (word->W[0] & 0x0000FFFFU) | (word->W[1] << 16);
     high2 = ascon_mask32_unrotate_share1_0(word->W[2]) ^ ascon_mask32_unrotate_share2_0(word->W[4]) ^
             ascon_mask32_unrotate_share3_0(word->W[6]);
-    low2  = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
-            ascon_mask32_unrotate_share3_0(word->W[7]);
+    low2 = ascon_mask32_unrotate_share1_0(word->W[3]) ^ ascon_mask32_unrotate_share2_0(word->W[5]) ^
+           ascon_mask32_unrotate_share3_0(word->W[7]);
     high3 = (high2 >> 16) | (low2 & 0xFFFF0000U);
     low3  = (high2 & 0x0000FFFFU) | (low2 << 16);
     ascon_combine(high1);

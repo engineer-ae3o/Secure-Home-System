@@ -165,8 +165,7 @@ namespace lcd {
 
         // Set the pins to analog
         GPIO_InitTypeDef pin_deinit = {
-            .Pin   = static_cast<uint32_t>(config::LCD_SDA.pin | config::LCD_SCL.pin |
-                                         config::LCD_LED.pin),
+            .Pin   = static_cast<uint32_t>(config::LCD_SDA.pin | config::LCD_SCL.pin | config::LCD_LED.pin),
             .Mode  = GPIO_MODE_ANALOG,
             .Pull  = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
@@ -243,8 +242,7 @@ namespace lcd {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        HAL_GPIO_WritePin(
-            config::LCD_LED.port, config::LCD_LED.pin, (on ? GPIO_PIN_SET : GPIO_PIN_RESET));
+        HAL_GPIO_WritePin(config::LCD_LED.port, config::LCD_LED.pin, (on ? GPIO_PIN_SET : GPIO_PIN_RESET));
 
         return utils::error_t::NONE;
     }

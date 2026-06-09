@@ -190,7 +190,7 @@ __asm void prvPortStartFirstTask(void) {
      * Not all M0 parts have the application vector table at address 0. */
     /* *INDENT-OFF* */
 
-    ldr r3, = pxCurrentTCB /* Obtain location of pxCurrentTCB. */
+    ldr             r3, = pxCurrentTCB /* Obtain location of pxCurrentTCB. */
                 ldr r1,
         [r3] ldr    r0,
         [r1] /* The first item in pxCurrentTCB is the task top of stack. */
@@ -204,8 +204,8 @@ __asm void prvPortStartFirstTask(void) {
         r0 isb pop {
             r0 - r5
         } /* Pop the registers that are saved automatically. */
-    mov     lr,
-            r5 /* lr is now in r5. */
+    mov lr,
+        r5 /* lr is now in r5. */
             pop {
                 r3
             } /* The return address is now in r3. */

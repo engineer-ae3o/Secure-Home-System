@@ -157,9 +157,7 @@ namespace pad {
             }
 
             if (static_cast<bool>(m_debounce_timer)) {
-                // cppcheck-suppress knownConditionTrueFalse
                 xTimerStop(m_debounce_timer, portMAX_DELAY);
-                // cppcheck-suppress knownConditionTrueFalse
                 xTimerDelete(m_debounce_timer, portMAX_DELAY);
                 m_debounce_timer_structure = {};
                 m_debounce_timer           = nullptr;

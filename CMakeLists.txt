@@ -59,11 +59,12 @@ if (BUILD_TESTS)
 endif()
 
 # Create executable
-add_executable(${CMAKE_PROJECT_NAME} main.cpp startup_stm32f103xb.s)
+set(EXECUTABLE_NAME "${CMAKE_PROJECT_NAME}.elf")
+add_executable(${EXECUTABLE_NAME} main.cpp startup_stm32f103xb.s)
 
-target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC STM32F103xB USE_HAL_DRIVER)
+target_compile_definitions(${EXECUTABLE_NAME} PUBLIC STM32F103xB USE_HAL_DRIVER)
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC components/test/inc/
+target_include_directories(${EXECUTABLE_NAME} PUBLIC components/test/inc/
                                           components/drivers/inc/
                                           components/Unity/src/
                                           components/freertos/portable/GCC/ARM_CM3/
@@ -78,7 +79,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC components/test/inc/
                                           components/etl/
 )
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
+target_compile_options(${EXECUTABLE_NAME} PRIVATE 
         -ffast-math
         -fno-math-errno
         -fno-finite-loops
@@ -110,13 +111,13 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 
 if (BUILD_TESTS)
     # Order of dependencies being linked in matters
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tests drivers rtt ascon_static f103-hal freertos littlefs unity)
-    target_compile_definitions(${CMAKE_PROJECT_NAME} PUBLIC BUILD_TESTS=1)
+    target_link_libraries(${EXECUTABLE_NAME} PRIVATE tests drivers rtt ascon_static f103-hal freertos littlefs unity)
+    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC BUILD_TESTS=1)
 else ()
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE drivers rtt ascon_static f103-hal freertos littlefs)
+    target_link_libraries(${EXECUTABLE_NAME} PRIVATE drivers rtt ascon_static f103-hal freertos littlefs)
 endif()
 
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     C_STANDARD 23
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS ON
@@ -128,10 +129,10 @@ set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
 # Commands
 add_custom_target(build
     COMMENT "Building project"
-    DEPENDS ${CMAKE_PROJECT_NAME}
-    COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_NAME}.bin
-    COMMAND ${CMAKE_OBJDUMP} -D -S ${CMAKE_PROJECT_NAME} > ${CMAKE_PROJECT_NAME}.s
-    COMMAND ${CMAKE_SIZE} ${CMAKE_PROJECT_NAME}
+    DEPENDS ${EXECUTABLE_NAME}
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_NAME} ${CMAKE_PROJECT_NAME}.bin
+    COMMAND ${CMAKE_OBJDUMP} -D -S ${EXECUTABLE_NAME} > ${CMAKE_PROJECT_NAME}.s
+    COMMAND ${CMAKE_SIZE} ${EXECUTABLE_NAME}
 )
 
 find_program(CPPCHECK cppcheck)
@@ -182,7 +183,7 @@ endif()
 if (OPENOCD)
     # Flash via openocd
     add_custom_target(flash
-        COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${CMAKE_PROJECT_NAME} verify reset exit"
+        COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${EXECUTABLE_NAME} verify reset exit"
         COMMENT "Flashing device"
     )
 
@@ -195,6 +196,6 @@ endif()
 
 # Launch GDB
 add_custom_target(gdb
-    COMMAND ${CMAKE_GDB} ${CMAKE_PROJECT_NAME}
+    COMMAND ${CMAKE_GDB} ${EXECUTABLE_NAME}
     COMMENT "Launching GDB"
 )

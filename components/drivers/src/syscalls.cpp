@@ -30,7 +30,7 @@ extern "C" {
 
         // Enable the HSE
         RCC->CR |= RCC_CR_HSEON;
-        while (!static_cast<bool>(RCC->CR & RCC_CR_HSERDY)) {
+        while (!(RCC->CR & RCC_CR_HSERDY)) {
         }
 
         // Set HSE as PLL source and multiply the 8MHz HSE by 9 to get a 72MHz clock speed
@@ -44,7 +44,7 @@ extern "C" {
 
         // Enable the PLL
         RCC->CR |= RCC_CR_PLLON;
-        while ((!static_cast<bool>(RCC->CR & RCC_CR_PLLRDY))) {
+        while (!(RCC->CR & RCC_CR_PLLRDY)) {
         }
 
         // Switch the system clock to the PLL
@@ -61,6 +61,10 @@ extern "C" {
 
         // Enable exceptions on divide by 0 and unaligned trapping
         SCB->CCR |= (SCB_CCR_DIV_0_TRP_Msk | SCB_CCR_UNALIGN_TRP_Msk);
+
+        // Disable the JTAG interface
+        __HAL_RCC_AFIO_CLK_ENABLE();
+        __HAL_AFIO_REMAP_SWJ_NOJTAG();
     }
 
     // Cortex-M Fault Handlers
@@ -151,8 +155,7 @@ extern "C" {
         __WFI();
     }
 
-    // Setup TIM2 to be used by the HAL since
-    // FreeRTOS already consumes SysTick
+    // Setup TIM2 to be used by the HAL since FreeRTOS already consumes SysTick
     static std::atomic<uint32_t> s_hal_tick{};
 
     HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {

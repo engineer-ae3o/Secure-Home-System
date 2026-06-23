@@ -3,13 +3,13 @@
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/secure-home",
+            "executable": "${workspaceFolder}/build/secure-home.elf",
             "name": "Debug with OpenOCD",
             "gdbPath": "arm-none-eabi-gdb",
             "serverpath": "openocd",
             "request": "launch",
             "type": "cortex-debug",
-            "device": "STM32F103C8",
+            "device": "STM32F103C8T6",
             "servertype": "openocd",
             "liveWatch": {
                 "enabled": true,

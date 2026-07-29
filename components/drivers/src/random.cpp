@@ -2,8 +2,8 @@
 
 #include "random.hpp"
 #include "config.hpp"
-#include "file.hpp"
 #include "utils.hpp"
+#include "file.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -12,6 +12,7 @@
 #include "ascon/random.h"
 
 #include <array>
+#include <cstdint>
 
 namespace rnd {
 
@@ -85,9 +86,10 @@ namespace rnd {
         uint32_t s_boot_cycle_count{};
 
         // Tasks TCBs and Stacks
-        constexpr uint32_t                                                       ENTROPY_TASK_STACK_BYTES{512};
-        TaskHandle_t                                                             entropy_task_handle{};
-        StaticTask_t                                                             entropy_task_tcb{};
+        constexpr uint32_t ENTROPY_TASK_STACK_BYTES{512};
+        TaskHandle_t       entropy_task_handle{};
+        StaticTask_t       entropy_task_tcb{};
+
         std::array<StackType_t, utils::bytes_to_words(ENTROPY_TASK_STACK_BYTES)> entropy_task_stack{};
 
         // Synchronization across multi threaded access to the rand API
@@ -95,23 +97,23 @@ namespace rnd {
         StaticSemaphore_t s_task_mutex_buffer{};
 
         // RAII helper for taking and freeing the mutex
-        struct mutex_t {
+        struct scoped_mutex_t {
         public:
             // We block forever because because access to the rand API is critical
             // to the operation of the system, so we can afford to block indefinitely
             // till we take the mutex.
-            mutex_t() {
+            scoped_mutex_t() {
                 xSemaphoreTakeRecursive(s_task_mutex, portMAX_DELAY);
             }
 
-            ~mutex_t() {
+            ~scoped_mutex_t() {
                 xSemaphoreGiveRecursive(s_task_mutex);
             }
 
-            mutex_t(const mutex_t&)            = delete;
-            mutex_t& operator=(const mutex_t&) = delete;
-            mutex_t(mutex_t&&)                 = delete;
-            mutex_t& operator=(mutex_t&&)      = delete;
+            scoped_mutex_t(const scoped_mutex_t&)            = delete;
+            scoped_mutex_t& operator=(const scoped_mutex_t&) = delete;
+            scoped_mutex_t(scoped_mutex_t&&)                 = delete;
+            scoped_mutex_t& operator=(scoped_mutex_t&&)      = delete;
         };
 
         // Helpers
@@ -128,7 +130,7 @@ namespace rnd {
         // This function gets the boot cycle counter, timing jitter between TIM2 running on the main PLL and the RTC
         // running on the LSI and ADC samples on seven channels and mixes them together to be used as our entropy source.
         uint8_t get_entropy_mixture() {
-            [[maybe_unused]] mutex_t mutex;
+            [[maybe_unused]] scoped_mutex_t lock;
 
             // We use a simple XOR-based mixture function to mix the different sources of entropy together.
             // This is not a cryptographically secure way to mix entropy, but it is sufficient for our
@@ -146,9 +148,9 @@ namespace rnd {
             // as its clock source. Mix in the entropy from TIM2 and the RTC.
             entropy ^= xor_bytes_in_word(s_rtc_jitter);
 
-            // Pack the LSBs of all the ADC samples before use
+            // Pack the 4 LSBs of all the ADC samples before use
             uint32_t packed_adc_samples{};
-            for (uint32_t shift{}; const auto sample : s_adc_buf) {
+            for (uint32_t shift{}; const auto& sample : s_adc_buf) {
                 packed_adc_samples |= (sample & 0xFU) << shift;
                 shift += 4;
             }
@@ -167,39 +169,41 @@ namespace rnd {
         [[noreturn]] void entropy_task(void* arg) {
             (void)arg;
 
-            // Get entropy to feed the RNG
-            std::array<uint8_t, 32> entropy{};
+            constexpr uint32_t MAX_CONSECUTIVE_ERRORS        = 5;
+            constexpr uint32_t TIME_BETWEEN_ENTROPY_READS_MS = 30;
+            constexpr uint32_t NUM_OF_ENTROPY_SAMPLES        = 32;
+            constexpr uint32_t ENTROPY_TASK_DELAY_MS         = 60'000;
 
-            uint32_t          err_counter{};
-            constexpr uint8_t MAX_CONSECUTIVE_ERRORS{5};
+            std::array<uint8_t, NUM_OF_ENTROPY_SAMPLES> entropy{};
+
+            uint8_t cons_error_counter{};
+            int     ret_val{};
 
             while (true) {
-
                 for (auto& data : entropy) {
                     data = get_entropy_mixture();
                     // Wait some time between calls to the get entropy function to allow
-                    // the ADC readings on the channels to change, even a little bit.
-                    vTaskDelay(pdMS_TO_TICKS(30));
+                    // the ADC readings on the channels to change, even if by just a little bit.
+                    vTaskDelay(pdMS_TO_TICKS(TIME_BETWEEN_ENTROPY_READS_MS));
                 }
 
                 {
-                    [[maybe_unused]] mutex_t mutex;
-
-                    // Feed the entropy into ASCON and save the current seed to flash
+                    [[maybe_unused]] scoped_mutex_t lock;
+                    // Feed the data gathered into the CSPRNG and save the seed to flash
                     ascon_random_feed(&s_rng_state, entropy.data(), entropy.size());
-                    auto ret = ascon_random_save_seed(&s_rng_state, &s_ascon_storage);
-
-                    if (ret != 0) {
-                        err_counter++;
-                        if (err_counter == MAX_CONSECUTIVE_ERRORS) {
-                            utils::panic();
-                        }
-                    }
-                    err_counter = 0;
+                    ret_val = ascon_random_save_seed(&s_rng_state, &s_ascon_storage);
                 }
 
-                // We gather entropy to update the ASCON seed every 60s
-                vTaskDelay(pdMS_TO_TICKS(60'000));
+                if (ret_val != 0) {
+                    cons_error_counter++;
+                    if (cons_error_counter == MAX_CONSECUTIVE_ERRORS) {
+                        utils::panic();
+                    }
+                } else {
+                    cons_error_counter = 0;
+                }
+
+                vTaskDelay(pdMS_TO_TICKS(ENTROPY_TASK_DELAY_MS));
             }
         }
 
@@ -219,7 +223,7 @@ namespace rnd {
 
         GPIO_InitTypeDef pins_a = {
             .Pin   = static_cast<uint32_t>(config::ADC_PINS[0].pin | config::ADC_PINS[1].pin | config::ADC_PINS[2].pin |
-                                         config::ADC_PINS[3].pin),
+                                           config::ADC_PINS[3].pin),
             .Mode  = GPIO_MODE_ANALOG,
             .Pull  = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_LOW,
@@ -369,7 +373,7 @@ namespace rnd {
         }
 
         {
-            [[maybe_unused]] mutex_t mutex;
+            [[maybe_unused]] scoped_mutex_t lock;
 
             TRY_HAL(HAL_ADC_Stop_DMA(&s_adc_handle));
             TRY_HAL(HAL_DMA_DeInit(&s_dma_handle));
@@ -393,12 +397,11 @@ namespace rnd {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        if (buffer.size() == 0 || buffer.data() == nullptr) {
+        if (buffer.empty() || buffer.data() == nullptr) {
             return utils::error_t::ERR_INVALID_ARG;
         }
 
-        [[maybe_unused]] mutex_t mutex;
-
+        [[maybe_unused]] scoped_mutex_t lock;
         ascon_random_fetch(&s_rng_state, buffer.data(), buffer.size());
 
         return utils::error_t::NONE;

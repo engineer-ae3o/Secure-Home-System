@@ -71,7 +71,7 @@ namespace utils {
 
 } // namespace utils
 
-// Macros for error checking and propagating
+// Macros for error checking and propagation to reduce verbosity
 #define TRY(func)                                                                                                                          \
     do {                                                                                                                                   \
         if (auto ret_ = (func); ret_ != utils::error_t::NONE) {                                                                            \

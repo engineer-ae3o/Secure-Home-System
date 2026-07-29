@@ -1,21 +1,8 @@
 cmake_minimum_required(VERSION 3.16...4.1)
 
-set(CMAKE_SYSTEM_NAME Generic)
-set(CMAKE_SYSTEM_PROCESSOR ARM)
-set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-
-set(CMAKE_C_COMPILER   arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
-set(CMAKE_AR           arm-none-eabi-ar)
-set(CMAKE_OBJCOPY      arm-none-eabi-objcopy)
-set(CMAKE_OBJDUMP      arm-none-eabi-objdump)
-set(CMAKE_SIZE         arm-none-eabi-size)
-set(CMAKE_GDB          arm-none-eabi-gdb)
-
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
+endif()
 
 set(CMAKE_PROJECT_NAME secure-home)
 
@@ -24,8 +11,7 @@ enable_language(C CXX ASM)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -mfloat-abi=soft -ffunction-sections -fdata-sections -fno-common")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wnoexcept -Wwrite-strings -Wformat=2 -Wnull-dereference -fno-exceptions -fno-rtti -Wstrict-aliasing=2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnoexcept -Wwrite-strings -Wformat=2 -Wnull-dereference -fno-exceptions -fno-rtti -Wstrict-aliasing=2")
 
 set(CMAKE_C_FLAGS_DEBUG "-Og -g3 -ggdb -DDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Wl,-s -DNDEBUG")
@@ -42,8 +28,18 @@ endif()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
-# Enable tests to be built
-set(BUILD_TESTS TRUE)
+# Enable tests to be built. Overridable via -DBUILD_TESTS=ON/OFF or a preset.
+option(BUILD_TESTS "Build the Unity test suite" ON)
+
+# Tests pull in Unity, RTT, extra flash/RAM, and are meant for interactive
+# debug sessions. A release image with tests baked in isn't a real release
+# artifact, so refuse to configure that combination.
+if(BUILD_TESTS AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(FATAL_ERROR
+        "BUILD_TESTS=ON is incompatible with CMAKE_BUILD_TYPE=Release. "
+        "Tests are for Debug builds only; use -DBUILD_TESTS=OFF for Release, "
+        "or build Debug if you need the test suite.")
+endif()
 
 # Process sub-modules
 add_subdirectory(components/drivers/)
@@ -179,8 +175,9 @@ else()
     message(WARNING "Cppcheck not found. Static analysis will not be available.")
 endif()
 
-
 if (OPENOCD)
+    message(STATUS "OpenOCD found: ${OPENOCD}")
+
     # Flash via openocd
     add_custom_target(flash
         COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${EXECUTABLE_NAME} verify reset exit"

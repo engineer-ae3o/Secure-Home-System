@@ -3,7 +3,7 @@
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/secure-home.elf",
+            "executable": "${workspaceFolder}/build/debug/secure-home.elf",
             "name": "Debug with OpenOCD",
             "gdbPath": "arm-none-eabi-gdb",
             "serverpath": "openocd",

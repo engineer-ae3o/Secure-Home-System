@@ -240,7 +240,7 @@ static void              IRDA_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 static void              IRDA_DMATxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
 static void              IRDA_DMARxOnlyAbortCallback(DMA_HandleTypeDef* hdma);
 static HAL_StatusTypeDef
-            IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
+IRDA_WaitOnFlagUntilTimeout(IRDA_HandleTypeDef* hirda, uint32_t Flag, FlagStatus Status, uint32_t Tickstart, uint32_t Timeout);
 static void IRDA_EndTxTransfer(IRDA_HandleTypeDef* hirda);
 static void IRDA_EndRxTransfer(IRDA_HandleTypeDef* hirda);
 

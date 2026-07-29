@@ -213,7 +213,7 @@ __asm void vPortSVCHandler(void) {
     /* *INDENT-OFF* */
     PRESERVE8
 
-    ldr             r3, = pxCurrentTCB /* Restore the context. */
+    ldr r3, = pxCurrentTCB /* Restore the context. */
                 ldr r1,
         [r3] /* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
         ldr r0,

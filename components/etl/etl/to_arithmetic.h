@@ -624,8 +624,8 @@ namespace etl {
 
                     // Find the maximum absolute value for the type value we're trying to convert to.
                     const accumulator_type maximum = is_negative  ? etl::absolute_unsigned(etl::integral_limits<TValue>::min)
-                                                                   : is_decimal ? etl::integral_limits<TValue>::max
-                                                                                : etl::integral_limits<typename etl::make_unsigned<TValue>::type>::max;
+                                                     : is_decimal ? etl::integral_limits<TValue>::max
+                                                                  : etl::integral_limits<typename etl::make_unsigned<TValue>::type>::max;
                     // Do the conversion.
                     etl::to_arithmetic_result<accumulator_type> accumulator_result = to_arithmetic_integral<TChar>(view, radix, maximum);
 

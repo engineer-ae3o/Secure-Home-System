@@ -261,7 +261,7 @@ static void SPI_DMAAbortOnError(DMA_HandleTypeDef* hdma);
 static void SPI_DMATxAbortCallback(DMA_HandleTypeDef* hdma);
 static void SPI_DMARxAbortCallback(DMA_HandleTypeDef* hdma);
 static HAL_StatusTypeDef
-            SPI_WaitFlagStateUntilTimeout(SPI_HandleTypeDef* hspi, uint32_t Flag, FlagStatus State, uint32_t Timeout, uint32_t Tickstart);
+SPI_WaitFlagStateUntilTimeout(SPI_HandleTypeDef* hspi, uint32_t Flag, FlagStatus State, uint32_t Timeout, uint32_t Tickstart);
 static void SPI_TxISR_8BIT(struct __SPI_HandleTypeDef* hspi);
 static void SPI_TxISR_16BIT(struct __SPI_HandleTypeDef* hspi);
 static void SPI_RxISR_8BIT(struct __SPI_HandleTypeDef* hspi);

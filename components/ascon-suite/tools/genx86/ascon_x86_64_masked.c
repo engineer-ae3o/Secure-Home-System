@@ -389,21 +389,21 @@ static void gen_permute(int max_shares) {
     int         share;
     char*       reg_list[]      = {/* RDI keeps the state pointer throughout the function because
          * we need the state to be able to spill to and reload from */
-                        REG_RAX,
-                        REG_RCX,
-                        REG_R8,
-                        REG_R9,
-                        REG_R10,
-                        REG_R11,
-                        REG_R12,
-                        REG_R13,
-                        REG_R14,
-                        REG_R15,
-                        REG_RBX,
-                        REG_RBP,
-                        REG_RSI,
-                        REG_RDX,
-                        NULL};
+                                   REG_RAX,
+                                   REG_RCX,
+                                   REG_R8,
+                                   REG_R9,
+                                   REG_R10,
+                                   REG_R11,
+                                   REG_R12,
+                                   REG_R13,
+                                   REG_R14,
+                                   REG_R15,
+                                   REG_RBX,
+                                   REG_RBP,
+                                   REG_RSI,
+                                   REG_RDX,
+                                   NULL};
     char*       reg_names[7][4] = {
         {"x0_a", "x0_b", "x0_c", "x0_d"},
         {"x1_a", "x1_b", "x1_c", "x1_d"},

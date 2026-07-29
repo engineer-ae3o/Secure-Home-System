@@ -1800,9 +1800,10 @@ int SEGGER_RTT_SetNameDownBuffer(unsigned BufferIndex, const char* sName) {
     volatile SEGGER_RTT_BUFFER_DOWN* pDown;
 
     INIT();
-    pRTTCB =
-        (volatile SEGGER_RTT_CB*)((uintptr_t)&_SEGGER_RTT +
-                                  SEGGER_RTT_UNCACHED_OFF); // Access RTTCB uncached to make sure we see changes made by the J-Link side and all of our changes go into HW directly
+
+    // Access RTTCB uncached to make sure we see changes made by the J-Link side and all of our changes go into HW directly
+    pRTTCB = (volatile SEGGER_RTT_CB*)((uintptr_t)&_SEGGER_RTT + SEGGER_RTT_UNCACHED_OFF);
+
     if (BufferIndex < SEGGER_RTT_MAX_NUM_DOWN_BUFFERS) {
         SEGGER_RTT_LOCK();
         pDown        = &pRTTCB->aDown[BufferIndex];

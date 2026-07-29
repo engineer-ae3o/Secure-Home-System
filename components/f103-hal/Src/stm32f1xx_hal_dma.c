@@ -162,13 +162,13 @@ HAL_StatusTypeDef HAL_DMA_Init(DMA_HandleTypeDef* hdma) {
     /* calculation of the channel index */
     if ((uint32_t)(hdma->Instance) < (uint32_t)(DMA2_Channel1)) {
         /* DMA1 */
-        hdma->ChannelIndex = (((uint32_t)hdma->Instance - (uint32_t)DMA1_Channel1) / ((uint32_t)DMA1_Channel2 - (uint32_t)DMA1_Channel1))
-                             << 2;
+        hdma->ChannelIndex   = (((uint32_t)hdma->Instance - (uint32_t)DMA1_Channel1) / ((uint32_t)DMA1_Channel2 - (uint32_t)DMA1_Channel1))
+                               << 2;
         hdma->DmaBaseAddress = DMA1;
     } else {
         /* DMA2 */
-        hdma->ChannelIndex = (((uint32_t)hdma->Instance - (uint32_t)DMA2_Channel1) / ((uint32_t)DMA2_Channel2 - (uint32_t)DMA2_Channel1))
-                             << 2;
+        hdma->ChannelIndex   = (((uint32_t)hdma->Instance - (uint32_t)DMA2_Channel1) / ((uint32_t)DMA2_Channel2 - (uint32_t)DMA2_Channel1))
+                               << 2;
         hdma->DmaBaseAddress = DMA2;
     }
 #else
@@ -238,13 +238,13 @@ HAL_StatusTypeDef HAL_DMA_DeInit(DMA_HandleTypeDef* hdma) {
     /* calculation of the channel index */
     if ((uint32_t)(hdma->Instance) < (uint32_t)(DMA2_Channel1)) {
         /* DMA1 */
-        hdma->ChannelIndex = (((uint32_t)hdma->Instance - (uint32_t)DMA1_Channel1) / ((uint32_t)DMA1_Channel2 - (uint32_t)DMA1_Channel1))
-                             << 2;
+        hdma->ChannelIndex   = (((uint32_t)hdma->Instance - (uint32_t)DMA1_Channel1) / ((uint32_t)DMA1_Channel2 - (uint32_t)DMA1_Channel1))
+                               << 2;
         hdma->DmaBaseAddress = DMA1;
     } else {
         /* DMA2 */
-        hdma->ChannelIndex = (((uint32_t)hdma->Instance - (uint32_t)DMA2_Channel1) / ((uint32_t)DMA2_Channel2 - (uint32_t)DMA2_Channel1))
-                             << 2;
+        hdma->ChannelIndex   = (((uint32_t)hdma->Instance - (uint32_t)DMA2_Channel1) / ((uint32_t)DMA2_Channel2 - (uint32_t)DMA2_Channel1))
+                               << 2;
         hdma->DmaBaseAddress = DMA2;
     }
 #else

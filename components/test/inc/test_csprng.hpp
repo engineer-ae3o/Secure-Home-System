@@ -1,7 +1,7 @@
 #pragma once
 
-namespace rnd_test {
+namespace rnd::test {
 
     void all();
 
-} // namespace rnd_test
+} // namespace rnd::test

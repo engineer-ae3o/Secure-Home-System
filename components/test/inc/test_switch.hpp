@@ -1,7 +1,7 @@
 #pragma once
 
-namespace switch_test {
+namespace nc::test {
 
     void all();
 
-} // namespace switch_test
+} // namespace nc::test

@@ -21,12 +21,12 @@
 // Both the REED (PB12) and LIMIT (PB13) switches map to EXTI15_10_IRQn, so one
 // NVIC disable covers both. Each is exercised with its own switch instance.
 
-namespace switch_test {
+namespace nc::test {
 
     namespace {
         // NC switch instances under test
-        nc::switch_t<nc::type_t::REED>  s_reed;
-        nc::switch_t<nc::type_t::LIMIT> s_limit;
+        switch_t<type_t::REED>  s_reed;
+        switch_t<type_t::LIMIT> s_limit;
 
         constexpr uint32_t NOTIFY_TIMEOUT_MS{100};
 
@@ -55,6 +55,7 @@ namespace switch_test {
             };
             HAL_GPIO_Init(port, &cfg);
         }
+
     } // namespace
 
     void uninit_guards() {
@@ -66,7 +67,7 @@ namespace switch_test {
     }
 
     void reed_init() {
-        const nc::config_t cfg = {
+        const config_t cfg = {
             .port                = config::REED_SWITCH.port,
             .pin                 = config::REED_SWITCH.pin,
             .irq_type            = EXTI15_10_IRQn,
@@ -82,7 +83,7 @@ namespace switch_test {
     }
 
     void limit_init() {
-        const nc::config_t cfg = {
+        const config_t cfg = {
             .port                = config::TAMPER_SWITCH.port,
             .pin                 = config::TAMPER_SWITCH.pin,
             .irq_type            = EXTI15_10_IRQn,
@@ -118,7 +119,7 @@ namespace switch_test {
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
-        TEST_ASSERT_EQUAL(std::to_underlying(nc::type_t::REED), notification_value);
+        TEST_ASSERT_EQUAL(std::to_underlying(type_t::REED), notification_value);
     }
 
     void reed_irq_multiple_triggers_accumulate_bits() {
@@ -138,7 +139,7 @@ namespace switch_test {
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
         // REED bit must be set; value should still be exactly REED since REED|REED == REED
-        TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::REED), notification_value);
+        TEST_ASSERT_BITS_HIGH(std::to_underlying(type_t::REED), notification_value);
     }
 
     void reed_no_spurious_notification_without_trigger() {
@@ -167,14 +168,14 @@ namespace switch_test {
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
-        TEST_ASSERT_EQUAL(std::to_underlying(nc::type_t::LIMIT), notification_value);
+        TEST_ASSERT_EQUAL(std::to_underlying(type_t::LIMIT), notification_value);
     }
 
     void both_types_bits_are_distinct() {
         // REED and LIMIT must have different, non-overlapping type bits so a task
         // waiting on notifications can distinguish which switch triggered
-        constexpr auto reed_bit  = std::to_underlying(nc::type_t::REED);
-        constexpr auto limit_bit = std::to_underlying(nc::type_t::LIMIT);
+        constexpr auto reed_bit  = std::to_underlying(type_t::REED);
+        constexpr auto limit_bit = std::to_underlying(type_t::LIMIT);
 
         TEST_ASSERT_NOT_EQUAL(reed_bit, limit_bit);
         TEST_ASSERT_EQUAL(0U, reed_bit & limit_bit);
@@ -199,8 +200,8 @@ namespace switch_test {
         HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
         TEST_ASSERT_EQUAL(pdTRUE, result);
-        TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::REED), notification_value);
-        TEST_ASSERT_BITS_HIGH(std::to_underlying(nc::type_t::LIMIT), notification_value);
+        TEST_ASSERT_BITS_HIGH(std::to_underlying(type_t::REED), notification_value);
+        TEST_ASSERT_BITS_HIGH(std::to_underlying(type_t::LIMIT), notification_value);
     }
 
     void reed_deinit() {
@@ -243,4 +244,4 @@ namespace switch_test {
         RUN_TEST(uninit_guards);
     }
 
-} // namespace switch_test
+} // namespace nc::test

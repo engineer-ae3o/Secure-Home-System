@@ -26,11 +26,11 @@
 //   5. Verify the received character matches KEYS[row][col]
 //   6. Restore the column pin to input pull-up and re-enable NVIC
 
-namespace keypad_test {
+namespace pad::test {
 
     namespace {
         // Create the keypad instance
-        pad::keypad_t<config::QUEUE_SIZE> s_keypad;
+        keypad_t<config::QUEUE_SIZE> s_keypad;
 
         // Column IRQ lines; all three must be disabled during tests
         // PB3 → EXTI3,  PB4 → EXTI4,  PB5+PB8 → EXTI9_5
@@ -105,7 +105,7 @@ namespace keypad_test {
     }
 
     void init() {
-        const pad::config_t cfg = {
+        const config_t cfg = {
             .row_port = config::KEYPAD_ROW_PINS[0].port,
             .col_port = config::KEYPAD_COLUMN_PINS[0].port,
             .row_pins =
@@ -160,7 +160,7 @@ namespace keypad_test {
         // the callback correctly isolates [row][col].
         enable_col_irqs(false);
 
-        const char expected = pad::KEYS[row][col];
+        const char expected = KEYS[row][col];
         const char received = simulate_key_and_receive(queue, col);
 
         enable_col_irqs();
@@ -256,7 +256,7 @@ namespace keypad_test {
 
         // Should run QUEUE_SIZE times
         while (xQueueReceive(queue, &item, 0) == pdTRUE) {
-            TEST_ASSERT_EQUAL(pad::KEYS[0][0], item);
+            TEST_ASSERT_EQUAL(KEYS[0][0], item);
         }
     }
 
@@ -310,4 +310,4 @@ namespace keypad_test {
         RUN_TEST(post_deinit_guards);
     }
 
-} // namespace keypad_test
+} // namespace pad::test

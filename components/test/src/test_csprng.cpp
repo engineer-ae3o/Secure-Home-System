@@ -9,7 +9,7 @@
 #include <cstring>
 #include <algorithm>
 
-namespace rnd_test {
+namespace rnd::test {
 
     void uninit_guards() {
         std::array<uint8_t, 16> buf{};
@@ -68,14 +68,14 @@ namespace rnd_test {
     //
     // These are statistical sanity checks, not cryptographic proofs.
     // With a 32-byte buffer the probability of a false failure on any
-    // individual assertion is negligible (< 2^-256 for the collision test).
+    // individual assertion is negligible.
 
     void output_not_all_zeros() {
         std::array<uint8_t, 32> buf{};
         auto                    ret = rnd::get_random_numbers(buf);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        const bool all_zero = std::ranges::all_of(buf, [](uint8_t b) {
+        const bool all_zero = std::ranges::all_of(buf, [](uint8_t b) noexcept {
             return b == 0;
         });
         TEST_ASSERT_FALSE(all_zero);
@@ -174,4 +174,4 @@ namespace rnd_test {
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
     }
 
-} // namespace rnd_test
+} // namespace rnd::test

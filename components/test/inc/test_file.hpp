@@ -1,7 +1,7 @@
 #pragma once
 
-namespace file_test {
+namespace file::test {
 
     void all();
 
-} // namespace file_test
+} // namespace file::test

@@ -7,7 +7,7 @@
 #include <cstring>
 #include <string_view>
 
-namespace file_test {
+namespace file::test {
 
     namespace {
         // 16 byte data, large enough to split into sub-regions for offset tests
@@ -21,20 +21,20 @@ namespace file_test {
 
     void write_at_offset() {
         // Write full payload first so the file has known content
-        auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = write(name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Overwrite the second half only
         constexpr std::string_view PATCH = "QRSTUVWX";
         static_assert(PATCH.size() == HALF_OFFSET);
 
-        ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PATCH.data()), PATCH.size()}, HALF_OFFSET);
+        ret = write(name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PATCH.data()), PATCH.size()}, HALF_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read back full content and verify the first half is untouched,
         // second half reflects the patch
         std::array<uint8_t, PAYLOAD.size()> buf{};
-        ret = file::read(file::name_t::ASCON_SEED, buf);
+        ret = read(name_t::ASCON_SEED, buf);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         const auto first_half  = std::string_view{reinterpret_cast<const char*>(buf.data()), HALF_OFFSET};
@@ -46,12 +46,12 @@ namespace file_test {
 
     void read_at_offset() {
         // Write known payload
-        auto ret = file::write(file::name_t::PASSWORD, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = write(name_t::PASSWORD, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read only the second half via offset
         std::array<uint8_t, HALF_OFFSET> buf{};
-        ret = file::read(file::name_t::PASSWORD, buf, HALF_OFFSET);
+        ret = read(name_t::PASSWORD, buf, HALF_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         const auto result = std::string_view{reinterpret_cast<const char*>(buf.data()), buf.size()};
@@ -60,31 +60,31 @@ namespace file_test {
 
     void read_write_last_byte_offset() {
         // Write full payload
-        auto ret = file::write(file::name_t::PNUMBERS, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = write(name_t::PNUMBERS, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Overwrite the single last byte
         const uint8_t last_byte = 0xFFU;
-        ret                     = file::write(file::name_t::PNUMBERS, {&last_byte, 1}, LAST_OFFSET);
+        ret                     = write(name_t::PNUMBERS, {&last_byte, 1}, LAST_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read it back
         uint8_t read_byte{};
-        ret = file::read(file::name_t::PNUMBERS, {&read_byte, 1}, LAST_OFFSET);
+        ret = read(name_t::PNUMBERS, {&read_byte, 1}, LAST_OFFSET);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
         TEST_ASSERT_EQUAL(0xFFU, read_byte);
     }
 
     void read_undersized_buffer() {
         // Write a full payload
-        auto ret = file::write(file::name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
+        auto ret = write(name_t::ASCON_SEED, {reinterpret_cast<const uint8_t*>(PAYLOAD.data()), PAYLOAD.size()});
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Read with a buffer smaller than what was written; LittleFS will
         // return exactly buf.size() bytes, which matches data.size(), so this
         // should succeed and return only the first N bytes
         std::array<uint8_t, HALF_OFFSET> small_buf{};
-        ret = file::read(file::name_t::ASCON_SEED, small_buf);
+        ret = read(name_t::ASCON_SEED, small_buf);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         const auto result = std::string_view{reinterpret_cast<const char*>(small_buf.data()), small_buf.size()};
@@ -92,30 +92,30 @@ namespace file_test {
     }
 
     void write_empty_span() {
-        auto ret = file::write(file::name_t::ASCON_SEED, {});
+        auto ret = write(name_t::ASCON_SEED, {});
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
 
-        ret = file::write(file::name_t::PASSWORD, {});
+        ret = write(name_t::PASSWORD, {});
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
 
-        ret = file::write(file::name_t::PNUMBERS, {});
+        ret = write(name_t::PNUMBERS, {});
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_ARG, ret);
     }
 
     void get_boot_count_after_deinit() {
         // Assumes deinit has already been called by the caller/sequence
-        auto rc = file::get_boot_cycle_count();
+        auto rc = get_boot_cycle_count();
         TEST_ASSERT_FALSE(rc.has_value());
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, rc.error());
     }
 
     void all() {
         // Setup
-        auto ret = file::init();
+        auto ret = init();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Double init should fail
-        ret = file::init();
+        ret = init();
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
         RUN_TEST(write_at_offset);
@@ -125,14 +125,14 @@ namespace file_test {
         RUN_TEST(write_empty_span);
 
         // Teardown
-        ret = file::deinit();
+        ret = deinit();
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
         // Double deinit should fail
-        ret = file::deinit();
+        ret = deinit();
         TEST_ASSERT_EQUAL(utils::error_t::ERR_INVALID_STATE, ret);
 
         RUN_TEST(get_boot_count_after_deinit);
     }
 
-} // namespace file_test
+} // namespace file::test

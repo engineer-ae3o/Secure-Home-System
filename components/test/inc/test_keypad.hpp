@@ -1,7 +1,7 @@
 #pragma once
 
-namespace keypad_test {
+namespace pad::test {
 
     void all();
 
-} // namespace keypad_test
+} // namespace pad::test

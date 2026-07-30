@@ -1,7 +1,6 @@
 #include "unity.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
+#include "utils.hpp"
 
 #include "tests.hpp"
 #include "test_file.hpp"
@@ -10,6 +9,13 @@
 #include "test_switch.hpp"
 #include "test_hd44780.hpp"
 #include "test_sim800l.hpp"
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include <array>
+#include <cstdint>
+#include <type_traits>
 
 extern "C" {
     void setUp() {
@@ -21,21 +27,43 @@ extern "C" {
 
 namespace tests {
 
-    void tests(void* arg) {
-        UNUSED(arg);
+    namespace {
 
-        UNITY_BEGIN();
+        StaticTask_t       task_tcb{};
+        constexpr uint32_t TASK_PRIORITY    = configMAX_PRIORITIES - 1;
+        constexpr uint32_t TASK_STACK_BYTES = 4096;
+        constexpr uint32_t TASK_STACK_DEPTH = utils::bytes_to_words(TASK_STACK_BYTES);
 
-        // lcd_test::all();
-        // gsm_test::all();
-        rnd_test::all();
-        file_test::all();
-        switch_test::all();
-        keypad_test::all();
+        std::array<StackType_t, TASK_STACK_DEPTH> task_stack{};
 
-        UNITY_END();
+        static_assert(sizeof(task_stack) == TASK_STACK_BYTES);
+        static_assert(std::is_same_v<decltype(task_stack)::value_type, uint32_t>, "Word size must be 32 bits");
 
-        vTaskDelete(nullptr);
+        /**
+         * @brief The test runner is in the form of a FreeRTOS task. By default,
+         *        it assumes it has the entire hardware to itself, so must not be
+         *        run simultaneously with any other threads. It runs all the tests,
+         *        deinitializes its internal state and then deletes itself.
+         */
+        void runner(void* arg) {
+            UNUSED(arg);
+            UNITY_BEGIN();
+
+            nc::test::all();
+            rnd::test::all();
+            pad::test::all();
+            file::test::all();
+            // lcd::test::all();
+            // gsm::test::all();
+
+            UNITY_END();
+            vTaskDelete(nullptr);
+        }
+
+    } // namespace
+
+    void run() {
+        xTaskCreateStatic(runner, "Test Runner", TASK_STACK_DEPTH, nullptr, TASK_PRIORITY, task_stack.data(), &task_tcb);
     }
 
 } // namespace tests

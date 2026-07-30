@@ -1,7 +1,7 @@
 #pragma once
 
-namespace lcd_test {
+namespace lcd::test {
 
     void all();
 
-} // namespace lcd_test
+} // namespace lcd::test

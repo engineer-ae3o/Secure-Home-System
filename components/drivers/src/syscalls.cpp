@@ -1,7 +1,8 @@
 #include "stm32f1xx_hal.h"
 
-#include "config.hpp"
+#include "log.hpp"
 #include "utils.hpp"
+#include "config.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -19,9 +20,9 @@
 extern "C" {
 
     // These are extern declared in the HAL headers. Need to be defined here.
-    uint32_t      SystemCoreClock{};    // System Clock Frequency (Core Clock)
-    const uint8_t AHBPrescTable[16U]{}; // AHB prescalers table values
-    const uint8_t APBPrescTable[8U]{};  // APB prescalers table values
+    uint32_t      SystemCoreClock{};   // System Clock Frequency (Core Clock)
+    const uint8_t AHBPrescTable[16]{}; // AHB prescalers table values
+    const uint8_t APBPrescTable[8]{};  // APB prescalers table values
 
     void system_init() {
         // Enable the prefetch queue and set the flash latency to 2 wait states
@@ -65,9 +66,12 @@ extern "C" {
         // Disable the JTAG interface
         __HAL_RCC_AFIO_CLK_ENABLE();
         __HAL_AFIO_REMAP_SWJ_NOJTAG();
+
+        // Initialize the logging system
+        log::init();
     }
 
-    // Cortex-M Fault Handlers
+    // Fault Handlers
     [[noreturn]] __attribute__((naked)) void HardFault_Handler() {
         __asm volatile("tst lr, #4\n"
                        "ite eq\n"
@@ -139,7 +143,7 @@ extern "C" {
     // FreeRTOS hooks
     void vApplicationStackOverflowHook(TaskHandle_t xTask, const char* pcTaskName) {
         (void)xTask;
-        (void)pcTaskName;
+        log::log<log::level_t::ERROR>("ERROR", "Stack overflow in %s. Halting...", pcTaskName);
         __asm volatile("bkpt #0");
         while (true) {
         }

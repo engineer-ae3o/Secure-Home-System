@@ -75,7 +75,7 @@ namespace rnd_test {
         auto                    ret = rnd::get_random_numbers(buf);
         TEST_ASSERT_EQUAL(utils::error_t::NONE, ret);
 
-        const bool all_zero = std::all_of(buf.begin(), buf.end(), [](uint8_t b) {
+        const bool all_zero = std::ranges::all_of(buf, [](uint8_t b) {
             return b == 0;
         });
         TEST_ASSERT_FALSE(all_zero);

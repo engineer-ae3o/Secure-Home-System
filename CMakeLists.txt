@@ -10,6 +10,7 @@ project(${CMAKE_PROJECT_NAME})
 enable_language(C CXX ASM)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnoexcept -Wwrite-strings -Wformat=2 -Wnull-dereference -fno-exceptions -fno-rtti -Wstrict-aliasing=2")
 
@@ -133,6 +134,7 @@ add_custom_target(build
 
 find_program(CPPCHECK cppcheck)
 find_program(OPENOCD openocd)
+find_program(CLANG_TIDY clang-tidy)
 
 if(CPPCHECK)
     message(STATUS "Cppcheck found: ${CPPCHECK}")
@@ -172,26 +174,41 @@ if(CPPCHECK)
     COMMENT "Running static analysis..."
     )
 else()
-    message(WARNING "Cppcheck not found. Static analysis will not be available.")
+    message(WARNING "Cppcheck not found. Static analysis will not be available for this target.")
+endif()
+
+if(CLANG_TIDY)
+    message(STATUS "Clang-Tidy found: ${CLANG_TIDY}")
+    
+    add_custom_target(clang-tidy
+        COMMAND ${CLANG_TIDY}
+            -p=${CMAKE_BINARY_DIR}
+            --warnings-as-errors=*
+            ${CMAKE_SOURCE_DIR}/main.cpp
+            ${CMAKE_SOURCE_DIR}/components/drivers/src/*.cpp
+            ${CMAKE_SOURCE_DIR}/components/test/src/*.cpp
+        COMMENT "Running clang-tidy analysis..."
+    )
+else()
+    message(WARNING "clang-tidy not found. Static analysis will not be available for this target.")
 endif()
 
 if (OPENOCD)
     message(STATUS "OpenOCD found: ${OPENOCD}")
 
-    # Flash via openocd
     add_custom_target(flash
         COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg -c "program ${EXECUTABLE_NAME} verify reset exit"
         COMMENT "Flashing device"
     )
 
-    # Start an OpenOCD server
     add_custom_target(openocd
         COMMAND ${OPENOCD} -f ${CMAKE_SOURCE_DIR}/openocd.cfg
         COMMENT "Starting OpenOCD server"
     )
+else()
+    message(WARNING "OpenOCD not found. Flashing and debugging won't be possible")
 endif()
 
-# Launch GDB
 add_custom_target(gdb
     COMMAND ${CMAKE_GDB} ${EXECUTABLE_NAME}
     COMMENT "Launching GDB"

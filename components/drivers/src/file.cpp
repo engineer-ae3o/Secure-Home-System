@@ -26,24 +26,24 @@ namespace file {
         StaticSemaphore_t s_task_mutex_buffer{};
 
         // RAII helper for taking and freeing the mutex
-        struct mutex_t {
+        struct scoped_mutex_t {
         public:
             // Block forever till mutex is taken. This is because the flash storage is critical
             // for the system's operation, and if a task is waiting to access it, it's likely
             // that it needs to access it to make progress. So we might as well block indefinitely
             // until we can take the mutex.
-            mutex_t() {
+            scoped_mutex_t() {
                 xSemaphoreTake(s_task_mutex, portMAX_DELAY);
             }
 
-            ~mutex_t() {
+            ~scoped_mutex_t() {
                 xSemaphoreGive(s_task_mutex);
             }
 
-            mutex_t(const mutex_t&)            = delete;
-            mutex_t& operator=(const mutex_t&) = delete;
-            mutex_t(mutex_t&&)                 = delete;
-            mutex_t& operator=(mutex_t&&)      = delete;
+            scoped_mutex_t(const scoped_mutex_t&)            = delete;
+            scoped_mutex_t& operator=(const scoped_mutex_t&) = delete;
+            scoped_mutex_t(scoped_mutex_t&&)                 = delete;
+            scoped_mutex_t& operator=(scoped_mutex_t&&)      = delete;
         };
 
         // Cache and lookahead sizes
@@ -216,7 +216,7 @@ namespace file {
 
                     auto ret = HAL_FLASHEx_Erase(&erase, &page_error);
                     if (ret != HAL_OK || page_error != 0xFFFFFFFFU) {
-                        // Clear flash error flag
+                        // Clear flash error flag before returning
                         __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_PGERR);
                         rc = LFS_ERR_CORRUPT;
                     }
@@ -260,11 +260,10 @@ namespace file {
 
         // Setup filesystem
         bool first_boot{};
-        auto ret = lfs_mount(&s_lfs_handle, &s_lfs_config);
-        if (ret < 0) {
+        int  ret = lfs_mount(&s_lfs_handle, &s_lfs_config);
+        if (ret < 0) [[unlikely]] {
             // This error should happen only once, at first boot
             TRY_LFS(lfs_format(&s_lfs_handle, &s_lfs_config), utils::error_t::FILE_FS_FAILED_TO_FORMAT);
-
             TRY_LFS(lfs_mount(&s_lfs_handle, &s_lfs_config), utils::error_t::FILE_FS_FAILED_TO_MOUNT);
             first_boot = true;
         }
@@ -341,7 +340,7 @@ namespace file {
         {
             // Take the mutex to make sure no other thread is using any of the files while we are
             // deinitializing it. We have to wait for all other tasks to finish use of the mutex
-            [[maybe_unused]] mutex_t mutex;
+            [[maybe_unused]] scoped_mutex_t lock;
 
             // Close both files before unmounting file system
             TRY_LFS(lfs_file_close(&s_lfs_handle, &s_file_lut[std::to_underlying(name_t::PASSWORD)].file),
@@ -382,13 +381,12 @@ namespace file {
             return utils::error_t::ERR_INVALID_ARG;
         }
 
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             return utils::error_t::ERR_INVALID_ARG;
         }
+
+        [[maybe_unused]] scoped_mutex_t lock;
 
         TRY_LFS(lfs_file_seek(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, static_cast<int>(byte_offset), LFS_SEEK_SET),
                 utils::error_t::FILE_FAILED_TO_SEEK);
@@ -410,13 +408,12 @@ namespace file {
             return utils::error_t::ERR_INVALID_ARG;
         }
 
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             return utils::error_t::ERR_INVALID_ARG;
         }
+
+        [[maybe_unused]] scoped_mutex_t lock;
 
         TRY_LFS(lfs_file_seek(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file, static_cast<int>(byte_offset), LFS_SEEK_SET),
                 utils::error_t::FILE_FAILED_TO_SEEK);
@@ -434,13 +431,12 @@ namespace file {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-
         // The counter file is not to be accessed during normal operation
         if (file == name_t::COUNTER || file == name_t::COUNT) {
             return utils::error_t::ERR_INVALID_ARG;
         }
+
+        [[maybe_unused]] scoped_mutex_t lock;
 
         TRY_LFS(lfs_file_sync(&s_lfs_handle, &s_file_lut[std::to_underlying(file)].file), utils::error_t::FILE_FAILED_TO_SYNC);
 

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16...4.1)
 add_library(drivers STATIC
     src/file.cpp
     src/tasks.cpp
-    src/random.cpp
+    src/csprng.cpp
     src/hd44780.cpp
     src/sim800l.cpp
     src/syscalls.cpp

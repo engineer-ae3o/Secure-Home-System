@@ -84,7 +84,7 @@ The `COUNTER` file is opened, read, incremented and closed at bootup. The `PNUMB
 
 Flash programming on STM32F1 is halfword (16-bit) granular. The LittleFS `prog` callback writes in 2-byte units, unlocking and relocking the flash controller around each page program sequence.
 
-### `random.cpp`: Entropy and CSPRNG
+### `csprng.cpp`: Entropy and CSPRNG
 
 The RNG is an ASCON-based CSPRNG (`ascon_random_state_t`) seeded from four mixed sources:
 

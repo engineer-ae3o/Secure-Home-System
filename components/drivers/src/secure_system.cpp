@@ -2,7 +2,7 @@
 
 #include "secure_system.hpp"
 #include "sim800l.hpp"
-#include "random.hpp"
+#include "csprng.hpp"
 #include "config.hpp"
 #include "file.hpp"
 

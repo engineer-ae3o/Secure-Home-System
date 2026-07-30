@@ -2,7 +2,7 @@
 
 #include "file.hpp"
 #include "utils.hpp"
-#include "random.hpp"
+#include "csprng.hpp"
 
 #include <array>
 #include <ranges>

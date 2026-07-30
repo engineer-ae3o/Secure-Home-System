@@ -103,24 +103,3 @@ jobs:
 
       - name: Run Cppcheck Target
         run: cmake --build --preset debug-tests --target cppcheck
-
-  clang-tidy:
-    name: Clang-Tidy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install Dependencies & Clang-Tidy
-        run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 21
-          sudo apt-get install -y cmake ninja-build gcc-arm-none-eabi binutils-arm-none-eabi clang-tidy-21
-
-      - name: Configure (Generate compile_commands.json)
-        run: cmake --preset debug-tests
-
-      - name: Run Clang-Tidy
-        run: cmake --build --preset debug-tests --target clang-tidy

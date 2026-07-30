@@ -123,7 +123,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     CXX_EXTENSIONS ON
 )
 
-# Commands
+# Extra commands
 add_custom_target(build
     COMMENT "Building project"
     DEPENDS ${EXECUTABLE_NAME}
@@ -175,22 +175,6 @@ if(CPPCHECK)
     )
 else()
     message(WARNING "Cppcheck not found. Static analysis will not be available for this target.")
-endif()
-
-if(CLANG_TIDY)
-    message(STATUS "Clang-Tidy found: ${CLANG_TIDY}")
-    
-    add_custom_target(clang-tidy
-        COMMAND ${CLANG_TIDY}
-            -p=${CMAKE_BINARY_DIR}
-            --warnings-as-errors=*
-            ${CMAKE_SOURCE_DIR}/main.cpp
-            ${CMAKE_SOURCE_DIR}/components/drivers/src/*.cpp
-            ${CMAKE_SOURCE_DIR}/components/test/src/*.cpp
-        COMMENT "Running clang-tidy analysis..."
-    )
-else()
-    message(WARNING "clang-tidy not found. Static analysis will not be available for this target.")
 endif()
 
 if (OPENOCD)

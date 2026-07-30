@@ -5,7 +5,7 @@
 
 #include "tests.hpp"
 #include "test_file.hpp"
-#include "test_random.hpp"
+#include "test_csprng.hpp"
 #include "test_keypad.hpp"
 #include "test_switch.hpp"
 #include "test_hd44780.hpp"

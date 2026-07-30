@@ -1,6 +1,5 @@
 #include "stm32f1xx_hal.h"
 
-#include "log.hpp"
 #include "utils.hpp"
 #include "config.hpp"
 
@@ -68,7 +67,7 @@ extern "C" {
         __HAL_AFIO_REMAP_SWJ_NOJTAG();
 
         // Initialize the logging system
-        log::init();
+        utils::init();
     }
 
     // Fault Handlers
@@ -143,7 +142,7 @@ extern "C" {
     // FreeRTOS hooks
     void vApplicationStackOverflowHook(TaskHandle_t xTask, const char* pcTaskName) {
         (void)xTask;
-        log::log<log::level_t::ERROR>("ERROR", "Stack overflow in %s. Halting...", pcTaskName);
+        utils::log<utils::level_t::ERROR>("ERROR", "Stack overflow in %s. Halting...", pcTaskName);
         __asm volatile("bkpt #0");
         while (true) {
         }

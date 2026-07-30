@@ -62,6 +62,7 @@ target_include_directories(tests PUBLIC inc/
                                           ../freertos/include/
                                           ../ascon-suite/src/
                                           ../littlefs/
+                                          ../RTT/RTT/
                                           ../etl/
 )
 

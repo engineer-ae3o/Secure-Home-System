@@ -14,8 +14,9 @@ namespace lcd {
 
     namespace {
 
-        I2C_HandleTypeDef s_handle{};
-        bool              s_is_initialized{};
+        I2C_HandleTypeDef g_handle{};
+
+        bool g_is_initialized{};
 
         // Offsets for calculating offset position
         constexpr std::array<uint8_t, ROWS> OFFSETS = {
@@ -25,10 +26,10 @@ namespace lcd {
             // 0x14U, 0x54U
         };
 
-        constexpr uint32_t TIMEOUT_MS{50};
+        constexpr uint32_t TIMEOUT_MS = 50;
 
         // I2C address of the backpack on the HD44780 controller
-        constexpr uint8_t ADDRESS{0x27U};
+        constexpr uint8_t ADDRESS = 0x27;
 
         // Helpers
         utils::error_t send_nibble(uint8_t nibble, uint8_t rs) {
@@ -39,20 +40,20 @@ namespace lcd {
 
             // Fuck me sideways. ST requires you to shift the address to the left by 1 place
             // For some f***ing reason, it can't be done internally. Not like it's const or some shit
-            auto ret = HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
+            auto ret = HAL_I2C_Master_Transmit(&g_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
             if (ret != HAL_OK) {
                 return utils::error_t::ERR_TIMEOUT;
             }
 
             // Pulse the EN bit
             data |= static_cast<uint8_t>(1U << 2); // EN high
-            ret = HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
+            ret = HAL_I2C_Master_Transmit(&g_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
             if (ret != HAL_OK) {
                 return utils::error_t::ERR_TIMEOUT;
             }
 
             data &= static_cast<uint8_t>(~(1U << 2)); // EN low
-            ret = HAL_I2C_Master_Transmit(&s_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
+            ret = HAL_I2C_Master_Transmit(&g_handle, (ADDRESS << 1), &data, 1, TIMEOUT_MS);
             if (ret != HAL_OK) {
                 return utils::error_t::ERR_TIMEOUT;
             }
@@ -79,24 +80,24 @@ namespace lcd {
 
     // Public API
     utils::error_t init() {
-        if (s_is_initialized) {
+        if (g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
         // Initialize the I2C bus
         __HAL_RCC_I2C1_CLK_ENABLE();
 
-        s_handle.Instance             = config::LCD_I2C_PORT;
-        s_handle.Init.ClockSpeed      = 100'000U;
-        s_handle.Init.DutyCycle       = I2C_DUTYCYCLE_2;
-        s_handle.Init.OwnAddress1     = 0;
-        s_handle.Init.OwnAddress2     = 0;
-        s_handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
-        s_handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-        s_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-        s_handle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+        g_handle.Instance             = config::LCD_I2C_PORT;
+        g_handle.Init.ClockSpeed      = 100'000U;
+        g_handle.Init.DutyCycle       = I2C_DUTYCYCLE_2;
+        g_handle.Init.OwnAddress1     = 0;
+        g_handle.Init.OwnAddress2     = 0;
+        g_handle.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
+        g_handle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+        g_handle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+        g_handle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
 
-        TRY_HAL(HAL_I2C_Init(&s_handle));
+        TRY_HAL(HAL_I2C_Init(&g_handle));
 
         // Initialize the I2C GPIO pins
         __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -150,18 +151,18 @@ namespace lcd {
         TRY(send_cmd(0x0CU)); // Display on
         vTaskDelay(pdMS_TO_TICKS(2));
 
-        s_is_initialized = true;
+        g_is_initialized = true;
 
         return utils::error_t::NONE;
     }
 
     utils::error_t deinit() {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        TRY_HAL(HAL_I2C_DeInit(&s_handle));
-        s_handle = {};
+        TRY_HAL(HAL_I2C_DeInit(&g_handle));
+        g_handle = {};
 
         // Set the pins to analog
         GPIO_InitTypeDef pin_deinit = {
@@ -172,13 +173,13 @@ namespace lcd {
         };
         HAL_GPIO_Init(config::LCD_SDA.port, &pin_deinit);
 
-        s_is_initialized = false;
+        g_is_initialized = false;
 
         return utils::error_t::NONE;
     }
 
     utils::error_t put_char(unsigned char c, uint8_t col, uint8_t line) {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
@@ -195,7 +196,7 @@ namespace lcd {
     }
 
     utils::error_t println(std::string_view str, uint8_t line, bool pad_to_whitespace) {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
@@ -227,7 +228,7 @@ namespace lcd {
     }
 
     utils::error_t clear_screen() {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
@@ -238,7 +239,7 @@ namespace lcd {
     }
 
     utils::error_t backlight_on(bool on) {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 

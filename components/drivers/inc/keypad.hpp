@@ -13,10 +13,10 @@
 
 namespace pad {
 
-    constexpr inline uint8_t DEBOUNCE_TIME_MS{50};
+    constexpr inline uint8_t DEBOUNCE_TIME_MS = 50;
 
-    constexpr inline uint8_t ROWS{4};
-    constexpr inline uint8_t COLUMNS{4};
+    constexpr inline uint8_t ROWS    = 4;
+    constexpr inline uint8_t COLUMNS = 4;
 
     constexpr inline std::array<std::array<char, COLUMNS>, ROWS> KEYS = {{
         {'1', '2', '3', 'A'},
@@ -26,8 +26,9 @@ namespace pad {
     }};
 
     struct config_t {
-        GPIO_TypeDef*                 row_port{};
-        GPIO_TypeDef*                 col_port{};
+        GPIO_TypeDef* row_port{};
+        GPIO_TypeDef* col_port{};
+
         std::array<uint16_t, ROWS>    row_pins{};
         std::array<uint16_t, COLUMNS> col_pins{};
     };

@@ -18,38 +18,39 @@ namespace gsm {
 
     namespace {
         // Global state. It is what it is
-        UART_HandleTypeDef s_huart{};
-        DMA_HandleTypeDef  s_hdma_tx{};
-        DMA_HandleTypeDef  s_hdma_rx{};
-        TaskHandle_t       s_calling_task_handle{};
-        SemaphoreHandle_t  s_task_mutex{};
-        StaticSemaphore_t  s_task_mutex_buffer{};
+        UART_HandleTypeDef g_huart{};
+        DMA_HandleTypeDef  g_hdma_tx{};
+        DMA_HandleTypeDef  g_hdma_rx{};
 
-        bool s_is_initialized{};
+        TaskHandle_t      g_calling_task_handle{};
+        SemaphoreHandle_t g_task_mutex{};
+        StaticSemaphore_t g_task_mutex_buffer{};
+
+        bool g_is_initialized{};
 
         // This is needed because we are receiving UART data, we don't
         // know the length of the data we will get. The UART idle line
         // ISR puts the actual length of the data received here.
-        volatile uint16_t s_rx_idle_line_size{};
+        volatile uint16_t g_rx_idle_line_size{};
 
-        constexpr uint32_t UART_IDLE_LINE_BUF_BYTE{64};
+        constexpr uint32_t UART_IDLE_LINE_BUF_BYTE = 64;
 
-        constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK{6};
-        constexpr uint32_t DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS{5000};
+        constexpr uint32_t NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK = 6;
+        constexpr uint32_t WAIT_BETWEEN_SIG_CHECK_MS         = 5000;
 
-        constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT{10};
-        constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS{250};
+        constexpr uint32_t NUM_OF_TIMES_TO_SEND_AT     = 10;
+        constexpr uint32_t DELAY_BETWEEN_TX_AT_CMDS_MS = 250;
 
-        constexpr uint32_t TIMEOUT_MS{50};
-        constexpr uint32_t DEINIT_TIMEOUT_MS{5000};
+        constexpr uint32_t TIMEOUT_MS        = 50;
+        constexpr uint32_t DEINIT_TIMEOUT_MS = 5000;
 
         // RAII helper for cleaning up stale used state
         struct cleanup_t {
             cleanup_t() = default;
 
             ~cleanup_t() {
-                s_rx_idle_line_size   = {};
-                s_calling_task_handle = {};
+                g_rx_idle_line_size   = {};
+                g_calling_task_handle = {};
             }
 
             cleanup_t(const cleanup_t&)            = delete;
@@ -59,15 +60,15 @@ namespace gsm {
         };
 
         // RAII helper for taking and freeing the mutex
-        struct mutex_t {
+        struct scoped_mutex_t {
         public:
-            mutex_t(uint32_t timeout_ms = TIMEOUT_MS)
-                : m_mutex_taken(xSemaphoreTakeRecursive(s_task_mutex, pdMS_TO_TICKS(timeout_ms)) == pdTRUE) {
+            scoped_mutex_t(uint32_t timeout_ms = TIMEOUT_MS)
+                : m_mutex_taken(xSemaphoreTakeRecursive(g_task_mutex, pdMS_TO_TICKS(timeout_ms)) == pdTRUE) {
             }
 
-            ~mutex_t() {
+            ~scoped_mutex_t() {
                 if (m_mutex_taken) {
-                    xSemaphoreGiveRecursive(s_task_mutex);
+                    xSemaphoreGiveRecursive(g_task_mutex);
                 }
             }
 
@@ -75,10 +76,10 @@ namespace gsm {
                 return m_mutex_taken;
             }
 
-            mutex_t(const mutex_t&)            = delete;
-            mutex_t& operator=(const mutex_t&) = delete;
-            mutex_t(mutex_t&&)                 = delete;
-            mutex_t& operator=(mutex_t&&)      = delete;
+            scoped_mutex_t(const scoped_mutex_t&)            = delete;
+            scoped_mutex_t& operator=(const scoped_mutex_t&) = delete;
+            scoped_mutex_t(scoped_mutex_t&&)                 = delete;
+            scoped_mutex_t& operator=(scoped_mutex_t&&)      = delete;
 
         private:
             bool m_mutex_taken{};
@@ -135,44 +136,44 @@ namespace gsm {
         // Helpers
         [[nodiscard]] std::expected<std::string_view, utils::error_t>
         transact(std::string_view tx_cmd, std::array<char, UART_IDLE_LINE_BUF_BYTE>& rx_cmd, uint32_t timeout_ms = TIMEOUT_MS) {
-
             // Will clear the rx idle line and calling task handle variables
             [[maybe_unused]] cleanup_t auto_cleanup{};
 
             // Capture calling task since the irq handler sends a notification to it
-            s_calling_task_handle = xTaskGetCurrentTaskHandle();
+            g_calling_task_handle = xTaskGetCurrentTaskHandle();
 
             // We have to start reception on the UART RX line since the SIM800L
             // may start its own transmission immediately after ours is done.
-            if (HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_cmd.data()), rx_cmd.max_size()) != HAL_OK) {
+            if (HAL_UARTEx_ReceiveToIdle_DMA(&g_huart, reinterpret_cast<uint8_t*>(rx_cmd.data()), rx_cmd.max_size()) != HAL_OK) {
                 return std::unexpected(utils::error_t::ERR_HAL_FAIL);
             }
 
             // Transmit the AT command
-            if (HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_cmd.data()), tx_cmd.size()) != HAL_OK) {
+            if (HAL_UART_Transmit_DMA(&g_huart, reinterpret_cast<const uint8_t*>(tx_cmd.data()), tx_cmd.size()) != HAL_OK) {
                 return std::unexpected(utils::error_t::ERR_HAL_FAIL);
             }
 
             // Block till the task notification is received from the ISR
             // If no notification is received within the timeout, return an error.
             if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(timeout_ms)) == 0) {
-                HAL_UART_Abort(&s_huart);
+                HAL_UART_Abort(&g_huart);
                 return std::unexpected(utils::error_t::ERR_FAIL);
             }
 
-            return std::string_view{rx_cmd.data(), s_rx_idle_line_size};
+            return std::string_view{rx_cmd.data(), g_rx_idle_line_size};
         }
 
         utils::error_t send_cmd_and_compare_result(cmd_t cmd, uint32_t timeout_ms = TIMEOUT_MS) {
 
-            utils::error_t ret{utils::error_t::NONE};
+            utils::error_t ret = utils::error_t::NONE;
 
             // Get AT command and the expected response from the LUT
             const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd)];
 
             // The resulting string view gets stored here
             std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-            auto                                      rx_str = transact(tx_str, rx_buf, timeout_ms);
+
+            auto rx_str = transact(tx_str, rx_buf, timeout_ms);
 
             if (!rx_str) {
                 return utils::error_t::ERR_FAIL;
@@ -248,14 +249,14 @@ namespace gsm {
                 }
             }();
 
-            // Don't blame me. AT commands are a mess.
+            // AT commands are a mess.
 
             return ret;
         }
 
         utils::error_t send_init_sequence() {
 
-            utils::error_t ret{utils::error_t::NONE};
+            utils::error_t ret = utils::error_t::NONE;
 
             // We cannot use `send_cmd_and_compare_result(...)` here
             // since we need to send the `AT` command multiple times
@@ -269,12 +270,12 @@ namespace gsm {
                 [[maybe_unused]] cleanup_t auto_cleanup;
 
                 // Capture calling task since the irq handler sends a notification to it
-                s_calling_task_handle = xTaskGetCurrentTaskHandle();
+                g_calling_task_handle = xTaskGetCurrentTaskHandle();
 
                 // We have to start reception on the UART RX line since the SIM800L
                 // may start its own transmission immediately after ours is done.
                 std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-                TRY_HAL(HAL_UARTEx_ReceiveToIdle_DMA(&s_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()));
+                TRY_HAL(HAL_UARTEx_ReceiveToIdle_DMA(&g_huart, reinterpret_cast<uint8_t*>(rx_buf.data()), rx_buf.max_size()));
 
                 // Get the tx data from the LUT
                 const auto& [tx_str, rx_expected] = AT_CMD_LUT[std::to_underlying(cmd_t::AT)];
@@ -283,7 +284,7 @@ namespace gsm {
 
                 // Continuously transmit the `AT` command
                 while (static_cast<bool>(count--)) {
-                    TRY_HAL(HAL_UART_Transmit_DMA(&s_huart, reinterpret_cast<const uint8_t*>(tx_str.data()), tx_str.size()));
+                    TRY_HAL(HAL_UART_Transmit_DMA(&g_huart, reinterpret_cast<const uint8_t*>(tx_str.data()), tx_str.size()));
 
                     // The UART idle line irq handler sends a notification on completion, implying the module has responded.
                     // We block for some ms while waiting for the notification before sending the 'AT' command again.
@@ -295,8 +296,8 @@ namespace gsm {
 
                 if (module_responded) {
                     // Construct a `std::string_view` from the data received. The UART
-                    // idle line ISR puts the actual length received in `s_rx_idle_line_size`.
-                    auto rx_actual = std::string_view{rx_buf.data(), s_rx_idle_line_size};
+                    // idle line ISR puts the actual length received in `g_rx_idle_line_size`.
+                    auto rx_actual = std::string_view{rx_buf.data(), g_rx_idle_line_size};
 
                     // Check if the expected response was in the actual data received
                     if (!rx_actual.contains(rx_expected)) {
@@ -304,13 +305,13 @@ namespace gsm {
                     }
                     // Report an error since the SIM800L didn't respond
                 } else {
-                    HAL_UART_Abort(&s_huart);
+                    HAL_UART_Abort(&g_huart);
                     ret = utils::error_t::GSM_MODULE_NOT_ALIVE;
                 }
 
                 // Return immediately on an error
                 if (ret != utils::error_t::NONE) {
-                    return utils::error_t::GSM_MODULE_NOT_ALIVE;
+                    return ret;
                 }
             }
 
@@ -332,13 +333,13 @@ namespace gsm {
             // Check signal strength
             // We poll here since network connection failure is a recoverable error from
             // the module, so we can poll it until we get a stable network connection
-            for (uint32_t i{0}; i < NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK; i++) {
+            for (uint32_t i{}; i < NUM_OF_TIMES_TO_POLL_SIGNAL_CHECK; i++) {
                 ret = send_cmd_and_compare_result(cmd_t::CHECK_SIGNAL);
                 if (ret == utils::error_t::NONE) {
                     return utils::error_t::NONE;
                 }
 
-                vTaskDelay(pdMS_TO_TICKS(DELAY_BETWEEN_SIGNAL_CHECK_POLL_MS));
+                vTaskDelay(pdMS_TO_TICKS(WAIT_BETWEEN_SIG_CHECK_MS));
             }
 
             // If we get here, we were unable to establish a good connection
@@ -349,7 +350,7 @@ namespace gsm {
 
     // Public API
     utils::error_t init() {
-        if (s_is_initialized) {
+        if (g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
@@ -377,44 +378,44 @@ namespace gsm {
         // Configure the UART channel
         __HAL_RCC_USART1_CLK_ENABLE();
 
-        s_huart.Instance          = config::GSM_UART_PORT;
-        s_huart.Init.BaudRate     = 57600U; // The SIM800L has auto-bauding so it detects our baud rate
-        s_huart.Init.WordLength   = UART_WORDLENGTH_8B;
-        s_huart.Init.StopBits     = UART_STOPBITS_1;
-        s_huart.Init.Parity       = UART_PARITY_NONE;
-        s_huart.Init.Mode         = UART_MODE_TX_RX;
-        s_huart.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-        s_huart.Init.OverSampling = UART_OVERSAMPLING_16;
-        TRY_HAL(HAL_UART_Init(&s_huart));
+        g_huart.Instance          = config::GSM_UART_PORT;
+        g_huart.Init.BaudRate     = 57600U; // The SIM800L has auto-bauding so it detects our baud rate
+        g_huart.Init.WordLength   = UART_WORDLENGTH_8B;
+        g_huart.Init.StopBits     = UART_STOPBITS_1;
+        g_huart.Init.Parity       = UART_PARITY_NONE;
+        g_huart.Init.Mode         = UART_MODE_TX_RX;
+        g_huart.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+        g_huart.Init.OverSampling = UART_OVERSAMPLING_16;
+        TRY_HAL(HAL_UART_Init(&g_huart));
 
         // Configure the DMA channels
         __HAL_RCC_DMA1_CLK_ENABLE();
 
         // TX
-        s_hdma_tx.Instance                 = config::GSM_UART_DMA_TX;
-        s_hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
-        s_hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
-        s_hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
-        s_hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-        s_hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-        s_hdma_tx.Init.Mode                = DMA_NORMAL;
-        s_hdma_tx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
+        g_hdma_tx.Instance                 = config::GSM_UART_DMA_TX;
+        g_hdma_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+        g_hdma_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
+        g_hdma_tx.Init.MemInc              = DMA_MINC_ENABLE;
+        g_hdma_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+        g_hdma_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+        g_hdma_tx.Init.Mode                = DMA_NORMAL;
+        g_hdma_tx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
 
-        TRY_HAL(HAL_DMA_Init(&s_hdma_tx));
-        __HAL_LINKDMA(&s_huart, hdmatx, s_hdma_tx);
+        TRY_HAL(HAL_DMA_Init(&g_hdma_tx));
+        __HAL_LINKDMA(&g_huart, hdmatx, g_hdma_tx);
 
         // RX
-        s_hdma_rx.Instance                 = config::GSM_UART_DMA_RX;
-        s_hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-        s_hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
-        s_hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
-        s_hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-        s_hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-        s_hdma_rx.Init.Mode                = DMA_NORMAL;
-        s_hdma_rx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
+        g_hdma_rx.Instance                 = config::GSM_UART_DMA_RX;
+        g_hdma_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+        g_hdma_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+        g_hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
+        g_hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+        g_hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+        g_hdma_rx.Init.Mode                = DMA_NORMAL;
+        g_hdma_rx.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
 
-        TRY_HAL(HAL_DMA_Init(&s_hdma_rx));
-        __HAL_LINKDMA(&s_huart, hdmarx, s_hdma_rx);
+        TRY_HAL(HAL_DMA_Init(&g_hdma_rx));
+        __HAL_LINKDMA(&g_huart, hdmarx, g_hdma_rx);
 
         // Enable the NVIC irqs and set priorities to lowest
         HAL_NVIC_SetPriority(USART1_IRQn, 15, 0);
@@ -428,22 +429,22 @@ namespace gsm {
         TRY(send_init_sequence());
 
         // Create the mutex as recursive
-        s_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&s_task_mutex_buffer);
+        g_task_mutex = xSemaphoreCreateRecursiveMutexStatic(&g_task_mutex_buffer);
 
-        s_is_initialized = true;
+        g_is_initialized = true;
 
         return utils::error_t::NONE;
     }
 
     utils::error_t deinit() {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
         {
             // Take the mutex to make sure no other thread is using the SIM800L while we are
             // deinitializing it. We have to wait for all other tasks to finish use of the mutex
-            [[maybe_unused]] mutex_t mutex(portMAX_DELAY);
+            [[maybe_unused]] scoped_mutex_t mutex(portMAX_DELAY);
 
             // Tell the SIM800L to deinitialize itself. We don't care
             // if there's an error so we can ignore the return value.
@@ -455,15 +456,15 @@ namespace gsm {
             HAL_NVIC_DisableIRQ(DMA1_Channel5_IRQn);
 
             // Deinitialize the USART and DMA channels
-            TRY_HAL(HAL_DMA_DeInit(&s_hdma_tx));
-            TRY_HAL(HAL_DMA_DeInit(&s_hdma_rx));
-            TRY_HAL(HAL_UART_DeInit(&s_huart));
+            TRY_HAL(HAL_DMA_DeInit(&g_hdma_tx));
+            TRY_HAL(HAL_DMA_DeInit(&g_hdma_rx));
+            TRY_HAL(HAL_UART_DeInit(&g_huart));
 
-            s_huart               = {};
-            s_hdma_tx             = {};
-            s_hdma_rx             = {};
-            s_rx_idle_line_size   = {};
-            s_calling_task_handle = {};
+            g_huart               = {};
+            g_hdma_tx             = {};
+            g_hdma_rx             = {};
+            g_rx_idle_line_size   = {};
+            g_calling_task_handle = {};
 
             // Set TX and RX pins as analog
             GPIO_InitTypeDef gpio_deinit = {
@@ -476,22 +477,21 @@ namespace gsm {
         }
 
         // Unintialize the mutex
-        vSemaphoreDelete(s_task_mutex);
-        s_task_mutex        = {};
-        s_task_mutex_buffer = {};
+        vSemaphoreDelete(g_task_mutex);
+        g_task_mutex        = {};
+        g_task_mutex_buffer = {};
 
-        s_is_initialized = false;
+        g_is_initialized = false;
 
         return utils::error_t::NONE;
     }
 
     utils::error_t get_sim_status() {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
+        [[maybe_unused]] scoped_mutex_t mutex;
         if (!mutex) {
             return utils::error_t::ERR_TIMEOUT;
         }
@@ -513,22 +513,21 @@ namespace gsm {
     }
 
     utils::error_t send_sms(std::string_view sms, std::string_view number, bool check_sim_status) {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return utils::error_t::ERR_INVALID_STATE;
         }
 
-        if (sms.size() == 0 || sms.data() == nullptr || number.size() == 0 || number.data() == nullptr) {
+        if (sms.empty() || sms.data() == nullptr || number.empty() || number.data() == nullptr) {
             return utils::error_t::ERR_INVALID_ARG;
-        }
-
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
-        if (!mutex) {
-            return utils::error_t::ERR_TIMEOUT;
         }
 
         if (sms.size() > MAX_SMS_LEN || number.size() > MAX_PHONE_NUMBER_LEN) {
             return utils::error_t::ERR_INVALID_ARG;
+        }
+
+        [[maybe_unused]] scoped_mutex_t mutex;
+        if (!mutex) {
+            return utils::error_t::ERR_TIMEOUT;
         }
 
         if (check_sim_status) {
@@ -553,7 +552,8 @@ namespace gsm {
 
         // The resulting string view gets stored here
         std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_num_buf{};
-        auto                                      rx_num_str = transact({number_command.data(), number_command.size()}, rx_num_buf);
+
+        auto rx_num_str = transact({number_command.data(), number_command.size()}, rx_num_buf);
 
         if (!rx_num_str) {
             return utils::error_t::ERR_FAIL;
@@ -571,7 +571,8 @@ namespace gsm {
 
         // The resulting string view gets stored here
         std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_sms_buf{};
-        auto                                      rx_sms_str = transact({sms_command.data(), sms_command.size()}, rx_sms_buf);
+
+        auto rx_sms_str = transact({sms_command.data(), sms_command.size()}, rx_sms_buf);
 
         if (!rx_sms_str) {
             return utils::error_t::ERR_FAIL;
@@ -582,12 +583,11 @@ namespace gsm {
     }
 
     std::expected<std::array<char, IMSI_BUF_SIZE>, utils::error_t> get_imsi() {
-        if (!s_is_initialized) {
+        if (!g_is_initialized) {
             return std::unexpected(utils::error_t::ERR_INVALID_STATE);
         }
 
-        // RAII handling for mutex acquisition and releasing
-        [[maybe_unused]] mutex_t mutex;
+        [[maybe_unused]] scoped_mutex_t mutex;
         if (!mutex) {
             return std::unexpected(utils::error_t::ERR_TIMEOUT);
         }
@@ -607,13 +607,14 @@ namespace gsm {
 
         // The resulting string view gets stored here
         std::array<char, UART_IDLE_LINE_BUF_BYTE> rx_buf{};
-        auto                                      rx_str = transact(AT_CMD_LUT[std::to_underlying(cmd_t::GET_IMSI)].tx, rx_buf);
+
+        auto rx_str = transact(AT_CMD_LUT[std::to_underlying(cmd_t::GET_IMSI)].tx, rx_buf);
 
         if (!rx_str) {
             return std::unexpected(utils::error_t::ERR_FAIL);
         }
 
-        // Makes sure `s_rx_idle_line_size` has enough data before copying any data
+        // Makes sure `g_rx_idle_line_size` has enough data before copying any data
         // NOTE: The module is supposed to send a carriage return, a newline, the 15
         // digit IMSI, another carriage and newline, yet another carriage and newline
         // a "OK" and a final carriage and newline, giving us 25 characters total.
@@ -644,30 +645,30 @@ namespace gsm {
 extern "C" {
     // UART RX done callback
     void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t Size) {
-        if (huart->Instance == gsm::s_huart.Instance) {
-            if (gsm::s_calling_task_handle == nullptr) {
+        if (huart->Instance == gsm::g_huart.Instance) {
+            if (gsm::g_calling_task_handle == nullptr) {
                 return;
             }
             // Save the length that was received
-            gsm::s_rx_idle_line_size = Size;
+            gsm::g_rx_idle_line_size = Size;
             BaseType_t higher_priority_task_woken{};
-            vTaskNotifyGiveFromISR(gsm::s_calling_task_handle, &higher_priority_task_woken);
+            vTaskNotifyGiveFromISR(gsm::g_calling_task_handle, &higher_priority_task_woken);
             portYIELD_FROM_ISR(higher_priority_task_woken);
         }
     }
 
     // UART1 irq handler
     void USART1_IRQHandler() {
-        HAL_UART_IRQHandler(&gsm::s_huart);
+        HAL_UART_IRQHandler(&gsm::g_huart);
     }
 
     // DMA TX irq handler
     void DMA1_Channel4_IRQHandler() {
-        HAL_DMA_IRQHandler(&gsm::s_hdma_tx);
+        HAL_DMA_IRQHandler(&gsm::g_hdma_tx);
     }
 
     // DMA RX irq handler
     void DMA1_Channel5_IRQHandler() {
-        HAL_DMA_IRQHandler(&gsm::s_hdma_rx);
+        HAL_DMA_IRQHandler(&gsm::g_hdma_rx);
     }
 }

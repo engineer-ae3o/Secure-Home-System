@@ -180,14 +180,14 @@ extern "C" {
     }
 
     uint32_t HAL_GetTick() {
-        return s_hal_tick;
+        return s_hal_tick.load(std::memory_order_relaxed);
     }
 
     void TIM2_IRQHandler() {
         if (TIM2->SR & TIM_SR_UIF) {
-            // Clear update interrupt flag and increment the timer
+            // Clear the update interrupt flag and increment the timer
             TIM2->SR &= ~TIM_SR_UIF;
-            s_hal_tick++;
+            s_hal_tick.fetch_add(1, std::memory_order_relaxed);
         }
     }
 
@@ -223,8 +223,7 @@ extern "C" {
 
     _ssize_t _write(int fd, const void* buf, size_t len) {
         (void)fd;
-        SEGGER_RTT_Write(0, buf, len);
-        return static_cast<int>(len);
+        return static_cast<int>(SEGGER_RTT_Write(0, buf, len));
     }
 
     int _kill(pid_t pid, int sig) {

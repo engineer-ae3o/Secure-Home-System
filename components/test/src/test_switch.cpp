@@ -11,15 +11,12 @@
 #include <cstdint>
 
 // Test strategy:
-//   1. Disable NVIC for EXTI15_10_IRQn so no hardware interrupt fires
+//   1. Disable NVIC for the necessary irq line so no hardware interrupt fires
 //   2. Reconfigure the pin as output and drive it HIGH (simulates NC switch
 //      opening, the rising edge that would have triggered the real ISR)
 //   3. Call irq_handler() directly to simulate the ISR executing
 //   4. Block on xTaskNotifyWait() with a reasonable timeout
 //   5. Verify the notification value carries the correct type bit
-//
-// Both the REED (PB12) and LIMIT (PB13) switches map to EXTI15_10_IRQn, so one
-// NVIC disable covers both. Each is exercised with its own switch instance.
 
 namespace nc::test {
 

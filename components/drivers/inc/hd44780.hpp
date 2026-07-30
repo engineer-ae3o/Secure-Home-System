@@ -7,8 +7,8 @@
 
 namespace lcd {
 
-    constexpr inline uint8_t ROWS{2};
-    constexpr inline uint8_t COLUMNS{16};
+    constexpr inline uint8_t ROWS = 2;
+    constexpr inline uint8_t COLUMNS = 16;
 
     /**
      * @brief Initializes the HD44780 display controller as

@@ -9,17 +9,17 @@
 namespace file {
 
     // Flash programming and read sizes
-    constexpr uint32_t MIN_READ_SIZE_BYTES{1};
-    constexpr uint32_t PROG_SIZE_BYTES{2};
+    constexpr uint32_t MIN_READ_SIZE_BYTES = 1;
+    constexpr uint32_t PROG_SIZE_BYTES     = 2;
 
     // Flash block details
-    constexpr uint32_t BLOCK_COUNT{32};
-    constexpr uint32_t BLOCK_SIZE_BYTES{1024};
-    constexpr uint32_t BLOCK_CYCLES{5'000};
+    constexpr uint32_t BLOCK_COUNT      = 32;
+    constexpr uint32_t BLOCK_SIZE_BYTES = 1024;
+    constexpr uint32_t BLOCK_CYCLES     = 5'000;
 
     // File name and max file number limit
-    constexpr uint32_t MAX_NAME_LEN{8};
-    constexpr uint32_t MAX_FILE_SIZE_BYTES{4096};
+    constexpr uint32_t MAX_NAME_LEN        = 8;
+    constexpr uint32_t MAX_FILE_SIZE_BYTES = 4096;
 
     // File identifiers for the different files being used
     enum class name_t : uint8_t {
@@ -60,25 +60,26 @@ namespace file {
     /**
      * @brief Writes raw binary data from the provided span buffer into the specified file.
      * 
-     * @param[in] file Target file identifier where the data will be written.
-     * @param[in] data Buffer containing data to be written to the file.
+     * @param[in] file  Target file identifier where the data will be written.
+     * @param[in] data  Buffer containing data to be written to the file.
+     * @param[in] offset Offset (absolute) into file to start the write from.
      */
-    utils::error_t write(name_t file, std::span<const uint8_t> data, uint32_t byte_offset = 0);
+    utils::error_t write(name_t file, std::span<const uint8_t> data, uint32_t offset = 0);
 
     /**
      * @brief Reads raw binary data from the specified file directly into the provided destination span.
      * 
-     * @param[in]  file Target file identifier to read the data from.
-     * @param[out] data View over the pre-allocated contiguous memory buffer where the 
-     *                  fetched bytes will be stored.
+     * @param[in] file   Target file identifier to read the data from.
+     * @param[out] data  Buffer inwhich the read data will be stored.
+     * @param[in] offset Offset (absolute) into file to start the read from.
      */
-    utils::error_t read(name_t file, std::span<uint8_t> data, uint32_t byte_offset = 0);
+    utils::error_t read(name_t file, std::span<uint8_t> data, uint32_t offset = 0);
 
     /**
      * @brief Forces any pending cached or buffered write data associated with the specified file 
      *        to be committed immediately to non-volatile physical storage.
      * 
-     * @param[in] file Target file identifier to flush and synchronize.
+     * @param[in] file Target file identifier to flush cache for.
      */
     utils::error_t sync(name_t file);
 

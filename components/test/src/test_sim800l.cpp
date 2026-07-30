@@ -10,14 +10,18 @@
 namespace gsm::test {
 
     namespace {
+
         // Valid fixtures
-        constexpr std::string_view VALID_NUMBER = "08012345678"; // 11 chars, exactly MAX_PHONE_NUMBER_LEN
+        constexpr std::string_view VALID_NUMBER = "08052879413"; // 11 chars, exactly MAX_PHONE_NUMBER_LEN
         constexpr std::string_view SHORT_NUMBER = "0801234";     // 7 chars, well within limit
         constexpr std::string_view VALID_SMS    = "Test message";
         constexpr std::string_view EMPTY_SMS{};
 
-        // Boundary-violation fixtures: never reach the radio
-        constexpr std::string_view SMS_TOO_LONG = "This SMS is intentionally longer than the sixty four character maximum limit!!";
+        // Boundary violation fixtures: never reach the radio
+        constexpr std::string_view SMS_TOO_LONG =
+            "This SMS is intentionally longer than the 255 character maximum limit. Still going. You're still here?"
+            "Go away. What are you still doing here? Man you're a buzz kill. Go on, get off and go do something useful"
+            "with yer life for once. Go make mama proud. Get lost man. Finally, it ends";
 
         static_assert(SMS_TOO_LONG.size() > MAX_SMS_LEN);
         static_assert(VALID_NUMBER.size() == MAX_PHONE_NUMBER_LEN);

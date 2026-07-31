@@ -39,11 +39,11 @@ namespace utils {
 
     } // namespace
 
-    void init() {
+    inline void init() {
         g_log_mutex = xSemaphoreCreateMutexStatic(&g_log_mutex_buffer);
     }
 
-    void deinit() {
+    inline void deinit() {
         if (g_log_mutex) {
             vSemaphoreDelete(g_log_mutex);
             g_log_mutex = nullptr;
@@ -55,10 +55,10 @@ namespace utils {
     constexpr inline level_t SYSTEM_LOG_LEVEL = level_t::INFO;
 
     template<level_t level, typename... Args>
-    void log(const char* tag, const char* fmt, Args&&... args) {
+    void log(const char* tag, const char* fmt, Args... args) {
         // Filter based on the system log level
         if constexpr (std::to_underlying(level) >= std::to_underlying(SYSTEM_LOG_LEVEL)) {
-            // Acquire RAII lock
+            // Acquire lock
             [[maybe_unused]] scoped_mutex_t mutex;
 
             // Set the output color
@@ -68,6 +68,8 @@ namespace utils {
                 SEGGER_RTT_WriteString(0, RTT_CTRL_TEXT_YELLOW);
             } else if constexpr (level == level_t::ERROR) {
                 SEGGER_RTT_WriteString(0, RTT_CTRL_TEXT_RED);
+            } else {
+                static_assert(false);
             }
 
             // Get time stamp of the caller and write tag.
@@ -75,7 +77,7 @@ namespace utils {
             SEGGER_RTT_printf(0, "(%lums) [%s]: ", time_stamp_ms, tag);
 
             // Write the actual message
-            SEGGER_RTT_printf(0, fmt, std::forward<Args>(args)...);
+            SEGGER_RTT_printf(0, fmt, args...);
 
             // End line and clear the used color
             SEGGER_RTT_WriteString(0, "\r\n" RTT_CTRL_RESET);

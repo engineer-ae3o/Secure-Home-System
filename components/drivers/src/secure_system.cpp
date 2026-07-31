@@ -36,7 +36,7 @@ namespace ss {
             std::array<std::array<uint8_t, gsm::MAX_PHONE_NUMBER_LEN>, MAX_PNUMBERS> pnumbers{};
         };
 
-        // Data storage for the files being used
+        // Storage for the data being stored in the files
         [[maybe_unused]] password_file_data_t g_pswd_file_storage{};
         [[maybe_unused]] pnumbers_file_data_t g_pnumbers_file_storage{};
 

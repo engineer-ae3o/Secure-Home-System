@@ -158,8 +158,8 @@ extern "C" {
         __WFI();
     }
 
-    // Setup TIM2 to be used by the HAL since FreeRTOS already consumes SysTick
-    static std::atomic<uint32_t> s_hal_tick{};
+    // Setup TIM2 to be used by the HAL since FreeRTOS already consumes the SysTick timer
+    static std::atomic<uint32_t> s_hal_tick_ms{};
 
     HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
         // Enable TIM2 clock
@@ -176,21 +176,21 @@ extern "C" {
         TIM2->CR1 |= TIM_CR1_CEN;
 
         // Configure NVIC settings for TIM2
-        NVIC_EnableIRQ(TIM2_IRQn);
         NVIC_SetPriority(TIM2_IRQn, TickPriority);
+        NVIC_EnableIRQ(TIM2_IRQn);
 
         return HAL_OK;
     }
 
     uint32_t HAL_GetTick() {
-        return s_hal_tick.load(std::memory_order_relaxed);
+        return s_hal_tick_ms.load(std::memory_order_relaxed);
     }
 
     void TIM2_IRQHandler() {
         if (TIM2->SR & TIM_SR_UIF) {
-            // Clear the update interrupt flag and increment the timer
+            // Clear the update interrupt flag and increment the tick counter
             TIM2->SR &= ~TIM_SR_UIF;
-            s_hal_tick.fetch_add(1, std::memory_order_relaxed);
+            s_hal_tick_ms.fetch_add(1, std::memory_order_relaxed);
         }
     }
 

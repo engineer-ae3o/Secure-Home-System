@@ -19,9 +19,11 @@
 
 extern "C" {
     void setUp() {
+        utils::log<utils::level_t::INFO>("Tests", "Setting up the unity test suite.");
     }
 
     void tearDown() {
+        utils::log<utils::level_t::INFO>("Tests", "Tests complete. Tearing down unity.");
     }
 }
 
